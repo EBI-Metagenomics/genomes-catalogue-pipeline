@@ -1,0 +1,4 @@
+fa_file:
+  class: File
+  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/roary_1_1/pan_genome_reference.fa
+faa_file: pan_genome_reference.faa

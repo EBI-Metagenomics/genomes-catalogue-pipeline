@@ -1,0 +1,4 @@
+fasta_file:
+  class: File
+  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/prokka_one/GUT_GENOME001921.faa
+outputname: eggnog_out

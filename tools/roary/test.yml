@@ -1,0 +1,43 @@
+gffs:
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME000132.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME000263.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME000301.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME000834.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME000920.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME000951.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME000960.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001088.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001165.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001182.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001497.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001587.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001600.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001603.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001625.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001774.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001822.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001914.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001992.gff
+  - class: File
+    path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/1_1_gff/GUT_GENOME001996.gff
+
+roary_outfolder: roary

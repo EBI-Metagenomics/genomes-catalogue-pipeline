@@ -1,0 +1,18 @@
+many_genomes:
+  - class: Directory
+    path:
+  - class: Directory
+    path:
+# ...
+mash_folder:
+  - class: File
+    path:
+  - class: File
+    path:
+# ...
+mmseqs_limit_i:
+  - 1.0
+  - 0.95
+  - 0.90
+  - 0.50
+mmseqs_limit_c: 0.8

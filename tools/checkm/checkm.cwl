@@ -20,13 +20,13 @@ arguments:
   - prefix: -x
     valueFrom: 'fa'
     position: 2
-  - prefix: --tab_table
+  - valueFrom: --tab_table
     position: 5
 
 
 inputs:
   input_folder:
-    type: string
+    type: Directory
     inputBinding:
       position: 3
 

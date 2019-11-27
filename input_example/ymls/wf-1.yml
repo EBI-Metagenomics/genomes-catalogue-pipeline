@@ -1,0 +1,5 @@
+genomes_folder:
+  class: Directory
+  path: ../test-exit-2  # test many-genomes
+#   path: ../test-exit-1  # test many-genomes and one-genome
+#   path: ../test-exit-3  # test one-genome

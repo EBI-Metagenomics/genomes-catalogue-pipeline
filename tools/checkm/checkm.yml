@@ -1,2 +1,4 @@
-input_folder: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/test_genomes/
+input_folder:
+  class: Directory
+  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/test_genomes/
 checkm_outfolder: checkm_outfolder
