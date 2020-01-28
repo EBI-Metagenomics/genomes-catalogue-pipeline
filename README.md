@@ -46,6 +46,15 @@ If exit code == 3, run: \
 `cwltool workflows/wf-exit-3.cwl workflows/yml_patterns/wf-2.yml` \
 Note: You can manually change parameters of MMseqs2 for protein clustering in <b>workflows/yml_patterns/wf-2.yml</b>
 
+Output files/folders:
+- checkm_quality.csv
+- gtdb-tk_output/
+- taxcheck_output/
+- mmseqs_output/
+- mash_trees/
+- cluster__X
+- cluster__...
+
 ## Pipeline structure
 
 ![Pipeline overview](cwl_pipeline.png)
