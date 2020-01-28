@@ -48,7 +48,7 @@ Note: You can manually change parameters of MMseqs2 for protein clustering in <b
 
 ## Pipeline structure
 
-![Pipeline overview](https://github.com/EBI-Metagenomics/genomes-pipeline/blob/master/cwl_pipeline.pdf)
+![Pipeline overview](cwl_pipeline.png)
 
 ### Tool description
 - CheckM: Estimate genome completeness and contamination.
