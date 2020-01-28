@@ -48,6 +48,8 @@ Note: You can manually change parameters of MMseqs2 for protein clustering in <b
 
 ## Pipeline structure
 
+![Pipeline overview](https://github.com/EBI-Metagenomics/genomes-pipeline/blob/master/cwl_pipeline.pdf)
+
 ### Tool description
 - CheckM: Estimate genome completeness and contamination.
 - TaxCheck: Wrapper of the contig annotation tool (CAT) to predict taxonomy consistency across contigs.
