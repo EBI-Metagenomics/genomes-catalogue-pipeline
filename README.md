@@ -26,7 +26,7 @@ A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, DH 
 
 ## How to run
 
-1. Add path of folder with all input genomes to YML file: <b>workflows/yml_patterns/wf-1.yml</b>
+1. Add path of input genomes folder to YML file: <b>workflows/yml_patterns/wf-1.yml</b>
 
 2. Run first workflow with: \
 `cwltool workflows/wf-1.cwl workflows/yml_patterns/wf-1.yml > output-wf-1.json` \
