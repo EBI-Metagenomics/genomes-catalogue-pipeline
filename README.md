@@ -62,7 +62,7 @@ Note: You can manually change parameters of MMseqs2 for protein clustering in <b
 - InterProScan: Protein functional annotation using the InterPro database.
 - eggNOG-mapper: Protein functional annotation using the eggNOG database.
 
-### First part (quality control, clustering and taxonomic assignment): **wf-1.cwl**
+### Part 1 (quality control, clustering and taxonomic assignment): **wf-1.cwl**
 
     1.1) checkm 
     1.2) checkm2csv 
@@ -84,7 +84,7 @@ output:
  - many_genomes (list of clusters/folders that have more than one genome)
  - mash_folder (list of mash-files from "many_genomes" clusters)
 
-### Second part (functional annotation):
+### Part 2 (functional annotation)
 Check \
 ======> if many_genomes and one_genome presented: **run wf-exit-1.cwl**
 
@@ -125,5 +125,5 @@ Step 2.1 + 2.3
 ======> if many_genomes NOT presented BUT one_genome presented: **run wf-exit-3.cwl**    
 Step 2.2 + 2.3
 
-### Third part (clean-up)
+### Part 3 (clean-up)
 Copies all relevant output to one result folder
