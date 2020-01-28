@@ -124,4 +124,4 @@ Step 2.1 + 2.3
 Step 2.2 + 2.3
 
 ### Third part (clean-up)
-Copy all outputs to one result folder
+Copies all relevant output to one result folder
