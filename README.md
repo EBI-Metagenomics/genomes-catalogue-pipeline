@@ -8,7 +8,7 @@ A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, DH 
 
 1. Install the necessary dependencies:
 - cwltool (tested v1.0.2)
-- R (tested v3.5.2)
+- R (tested v3.5.2). Packages: reshape2, fastcluster, optparse, data.table and ape.
 - Python v2.7 and v3.6
 - CheckM (tested v1.0.11)
 - Contig Annotation Tool (tested v5.0)
@@ -20,13 +20,13 @@ A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, DH 
 - InterProScan (tested v5.35-74.0 and v5.38-76.0)
 - eggNOG-mapper (tested v2.0)
 
-2. Make sure all installed tools, as well as the custom_scripts/ folder are added to your $PATH environment.
+2. Make sure all installed tools, as well as the <b>custom_scripts/</b> folder are added to your $PATH environment.
 
-3. Edit scripts/taxcheck.sh to point CAT to the installed diamond and database paths (variables $diamond_path, $cat_db_path and $cat_tax_path)
+3. Edit <b>custom_scripts/taxcheck.sh</b> to point CAT to the installed diamond and database paths (variables $diamond_path, $cat_db_path and $cat_tax_path)
 
 ## How to run
 
-1. Add path of folder with all input genomes to YML file: workflows/yml_patterns/wf-1.yml
+1. Add path of folder with all input genomes to YML file: <b>workflows/yml_patterns/wf-1.yml</b>
 
 2. Run first workflow with: \
 `cwltool workflows/wf-1.cwl workflows/yml_patterns/wf-1.yml > output-wf-1.json` \
@@ -44,7 +44,7 @@ If exit code == 2, run: \
 `cwltool workflows/wf-exit-2.cwl workflows/yml_patterns/wf-2.yml` \
 If exit code == 3, run: \
 `cwltool workflows/wf-exit-3.cwl workflows/yml_patterns/wf-2.yml` \
-Note: You can manually change parameters of MMseqs2 for protein clustering in workflows/yml_patterns/wf-2.yml \
+Note: You can manually change parameters of MMseqs2 for protein clustering in <b>workflows/yml_patterns/wf-2.yml</b> \
 
 ## Pipeline structure
 
