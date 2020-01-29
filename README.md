@@ -1,19 +1,88 @@
-# genomes-pipeline
+# MGnify genome analysis pipeline
+
+MGnify CWL pipeline to characterize a set of isolate or metagenome-assembled genomes (MAGs) using the workflow described in the following publication: 
+
+A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, DH Parks, P Hugenholtz, N Segata, NC Kyrpides and RD Finn. [A unified sequence catalogue of over 280,000 genomes obtained from the human gut microbiome.](https://www.biorxiv.org/content/10.1101/762682v1) <i>bioRxiv</i>. doi: https://doi.org/10.1101/762682
+
+## Installation
+
+1. Install the necessary dependencies:
+- cwltool (tested v1.0.2)
+- R (tested v3.5.2). Packages: reshape2, fastcluster, optparse, data.table and ape.
+- Python v2.7 and v3.6
+- CheckM (tested v1.0.11)
+- Contig Annotation Tool (tested v5.0)
+- GTDB-Tk (tested v0.3.1 and v1.0.2)
+- dRep (tested v2.2.4)
+- Prokka (tested 1.14.0)
+- Roary (tested 3.12.0)
+- MMseqs2 (tested v8-fac81)
+- InterProScan (tested v5.35-74.0 and v5.38-76.0)
+- eggNOG-mapper (tested v2.0)
+
+2. Make sure all these tools, as well as the <b>custom_scripts/</b> folder, are added to your $PATH environment.
+
+3. Edit <b>custom_scripts/taxcheck.sh</b> to point CAT to the installed diamond and database paths (variables $diamond_path, $cat_db_path and $cat_tax_path)
+
+## How to run
+
+1. Add path of input genomes folder to YML file: <b>workflows/yml_patterns/wf-1.yml</b>
+
+2. Run first workflow with: \
+`cwltool workflows/wf-1.cwl workflows/yml_patterns/wf-1.yml > output-wf-1.json` \
+Output json will be saved to a separate file.
+
+3. Run parser of output json \
+`python3 workflows/parser_yml.py -j output-wf-1.json -y workflows/yml_patterns/wf-2.yml`
+
+4. Check exit code of parser \
+`echo $?`
+
+5. If exit code == 1, run: \
+`cwltool workflows/wf-exit-1.cwl workflows/yml_patterns/wf-2.yml` \
+If exit code == 2, run: \
+`cwltool workflows/wf-exit-2.cwl workflows/yml_patterns/wf-2.yml` \
+If exit code == 3, run: \
+`cwltool workflows/wf-exit-3.cwl workflows/yml_patterns/wf-2.yml` \
+Note: You can manually change parameters of MMseqs2 for protein clustering in <b>workflows/yml_patterns/wf-2.yml</b>
+
+Output files/folders:
+- checkm_quality.csv
+- gtdb-tk_output/
+- taxcheck_output/
+- mmseqs_output/
+- mash_trees/
+- cluster__X
+- cluster__...
 
 ## Pipeline structure
 
-#### First part **wf-1.cwl**
+![Pipeline overview](pipeline_overview.png)
 
-    1.1) checkm \
-    1.2) checkm2csv \
-    1.3) dRep \
+### Tool description
+- CheckM: Estimate genome completeness and contamination.
+- TaxCheck: Wrapper of the contig annotation tool (CAT) to predict taxonomy consistency across contigs.
+- GTDB-Tk: Genome taxonomic assignment using the GTDB framework.
+- dRep: Genome de-replication.
+- Mash2Nwk: Generate Mash distance tree of conspecific genomes.
+- Prokka: Predict protein-coding sequences from genome assembly.
+- Roary: Infer pan-genome from a set of conspecific genomes.
+- MMseqs2: Cluster protein-coding sequences.
+- InterProScan: Protein functional annotation using the InterPro database.
+- eggNOG-mapper: Protein functional annotation using the eggNOG database.
 
-    1.4.1) GTDB-Tk  \
+### Part 1 (quality control, clustering and taxonomic assignment): **wf-1.cwl**
 
-    1.4.2) split_drep.py \
-    1.5) classify_folders.py \
+    1.1) checkm 
+    1.2) checkm2csv 
+    1.3) dRep 
 
-    2) taxcheck  \
+    1.4.1) GTDB-Tk
+
+    1.4.2) split_drep.py
+    1.5) classify_folders.py
+
+    2) taxcheck
 
 output: 
  - checkm_csv
@@ -24,7 +93,7 @@ output:
  - many_genomes (list of clusters/folders that have more than one genome)
  - mash_folder (list of mash-files from "many_genomes" clusters)
 
-#### Second part
+### Part 2 (functional annotation)
 Check \
 ======> if many_genomes and one_genome presented: **run wf-exit-1.cwl**
 
@@ -65,50 +134,5 @@ Step 2.1 + 2.3
 ======> if many_genomes NOT presented BUT one_genome presented: **run wf-exit-3.cwl**    
 Step 2.2 + 2.3
 
-#### Finally
-Copy all outputs to one result folder
-
-## Dependencies
-- R (tested v3.5.2)
-- Python v2.7 and v3.6
-- CheckM (tested v1.0.11)
-- Contig Annotation Tool (tested v5.0)
-- GTDB-Tk (tested v0.3.1 and v1.0.2)
-- dRep (tested v2.2.4)
-- Prokka (tested 1.14.0)
-- Roary (tested 3.12.0)
-- MMseqs2 (tested v8-fac81)
-- InterProScan (tested v5.35-74.0 and v5.38-76.0)
-- eggNOG-mapper (tested v2.0)
-
-## Tool description
-- CheckM: Estimate genome completeness and contamination.
-- TaxCheck: Wrapper of the contig annotation tool (CAT) to predict taxonomy consistency across contigs.
-- GTDB-Tk: Genome taxonomic assignment using the GTDB framework.
-- dRep: Genome de-replication.
-- Mash2Nwk: Generate Mash distance tree of conspecific genomes.
-- Prokka: Predict protein-coding sequences from genome assembly.
-- Roary: Infer pan-genome from a set of conspecific genomes.
-- MMseqs2: Cluster protein-coding sequences.
-- InterProScan: Protein functional annotation using the InterPro database.
-- eggNOG-mapper: Protein functional annotation using the eggNOG database.
-
-## How to run
-
-1) Add path to folder with your genomes to YML file: workflows/yml_patterns/wf-1.yml
-2) Run first workflow with: \
-cwl: workflows/wf-1.cwl \
-yml: workflows/yml_patterns/wf-1.yml (already changed to your data) \
-Save output json to separate file. Example \
-`cwltool workflows/wf-1.cwl workflows/yml_patterns/wf-1.yml > output-wf-1.json`
-3) Run parser of output json \
-`python3 workflows/parser_yml.py -j output-wf-1.json -y workflows/yml_patterns/wf-2.yml`
-4) Check exit code of parser \
-`echo $?` \
-5*) If you want you can manually change limits for mmseqs_wf in workflows/yml_patterns/wf-2.yml \
-5) If exit code == 1: run 
-`cwltool workflows/wf-exit-1.cwl workflows/yml_patterns/wf-2.yml` \
-If exit code == 2: run 
-`cwltool workflows/wf-exit-2.cwl workflows/yml_patterns/wf-2.yml` \
-If exit code == 3: run 
-`cwltool workflows/wf-exit-3.cwl workflows/yml_patterns/wf-2.yml`
+### Part 3 (clean-up)
+Copies all relevant output to one result folder
