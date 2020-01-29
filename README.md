@@ -20,7 +20,7 @@ A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, DH 
 - InterProScan (tested v5.35-74.0 and v5.38-76.0)
 - eggNOG-mapper (tested v2.0)
 
-2. Make sure all installed tools, as well as the <b>custom_scripts/</b> folder are added to your $PATH environment.
+2. Make sure all these tools, as well as the <b>custom_scripts/</b> folder are added to your $PATH environment.
 
 3. Edit <b>custom_scripts/taxcheck.sh</b> to point CAT to the installed diamond and database paths (variables $diamond_path, $cat_db_path and $cat_tax_path)
 
