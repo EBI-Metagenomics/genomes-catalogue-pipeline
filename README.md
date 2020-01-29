@@ -1,4 +1,4 @@
-# MGnify genome analysis CWL pipeline
+# MGnify genome analysis pipeline
 
 MGnify CWL pipeline to characterize a set of isolate or metagenome-assembled genomes (MAGs) using the workflow described in the following publication: 
 
