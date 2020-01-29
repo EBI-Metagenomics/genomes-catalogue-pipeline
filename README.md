@@ -57,6 +57,7 @@ Output files/folders:
 
 ## Pipeline structure
 
+![Pipeline overview](pipeline_overview.png)
 
 ### Tool description
 - CheckM: Estimate genome completeness and contamination.
