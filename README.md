@@ -57,7 +57,6 @@ Output files/folders:
 
 ## Pipeline structure
 
-![Pipeline overview](cwl_pipeline.png)
 
 ### Tool description
 - CheckM: Estimate genome completeness and contamination.
