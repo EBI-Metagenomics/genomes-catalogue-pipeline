@@ -95,7 +95,7 @@ output:
 
 ### Part 2 (functional annotation)
 Check \
-======> if many_genomes and one_genome presented: **run wf-exit-1.cwl**
+======> if many_genomes and one_genome present: **run wf-exit-1.cwl**
 
         **2.1. For many_genomes part**
             
@@ -128,10 +128,10 @@ Check \
         output: OUTPUT_3
          - mmseqs folder
     
-======> if many_genomes presented BUT one_genome NOT presented: **run wf-exit-2.cwl**    
+======> if many_genomes present BUT one_genome NOT present: **run wf-exit-2.cwl**    
 Step 2.1 + 2.3
 
-======> if many_genomes NOT presented BUT one_genome presented: **run wf-exit-3.cwl**    
+======> if many_genomes NOT present BUT one_genome present: **run wf-exit-3.cwl**    
 Step 2.2 + 2.3
 
 ### Part 3 (clean-up)
