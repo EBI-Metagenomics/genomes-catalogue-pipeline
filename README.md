@@ -2,7 +2,7 @@
 
 MGnify CWL pipeline to characterize a set of isolate or metagenome-assembled genomes (MAGs) using the workflow described in the following publication: 
 
-A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, DH Parks, P Hugenholtz, N Segata, NC Kyrpides and RD Finn. [A unified sequence catalogue of over 280,000 genomes obtained from the human gut microbiome.](https://www.biorxiv.org/content/10.1101/762682v1) <i>bioRxiv</i>. doi: https://doi.org/10.1101/762682
+A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, E Sakharova, DH Parks, P Hugenholtz, N Segata, NC Kyrpides and RD Finn. [A unified catalog of 204,938 reference genomes from the human gut microbiome.](https://www.nature.com/articles/s41587-020-0603-3) <i>Nature Biotechnol</i>. doi: https://doi.org/10.1038/s41587-020-0603-3
 
 ## Installation
 
