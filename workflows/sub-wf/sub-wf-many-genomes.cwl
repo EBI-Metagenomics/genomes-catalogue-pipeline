@@ -31,6 +31,11 @@ outputs:
     type: Directory
     outputSource: create_cluster_genomes/out
 
+  mash_folder:
+    type: Directory
+    outputSource: return_mash_dir/out
+
+
 steps:
   preparation:
     run: ../../utils/get_files_from_dir.cwl
@@ -131,3 +136,18 @@ steps:
         source: cluster
         valueFrom: cluster_$(self.basename)
     out: [ pool_directory ]
+
+# ----------- << mash trees >> -----------
+  process_mash:
+    scatter: input_mash
+    run: ../../tools/mash2nwk/mash2nwk.cwl
+    in:
+      input_mash: mash_files
+    out: [mash_tree]
+
+  return_mash_dir:
+    run: ../../utils/return_directory.cwl
+    in:
+      list: process_mash/mash_tree
+      dir_name: { default: 'mash_trees' }
+    out: [ out ]
