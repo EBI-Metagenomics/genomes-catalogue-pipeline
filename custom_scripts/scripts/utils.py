@@ -19,6 +19,8 @@ def download_fasta(url, folder, accession, unzip):
         outfile = '{}.fa.gz'.format(accession)
         if unzip:
             outfile = outfile[:-3]
+        if not os.path.exists(folder):
+            os.makedirs(folder)
         outpath = os.path.join(folder, outfile)
         while attempt < max_attempts:
             try:
