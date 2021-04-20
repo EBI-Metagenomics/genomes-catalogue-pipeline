@@ -1,0 +1,5 @@
+infile:
+  class: File
+  path: input_ena.txt
+directory: ENA
+unzip: true

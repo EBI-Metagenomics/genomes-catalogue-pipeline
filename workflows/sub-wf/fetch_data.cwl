@@ -26,7 +26,7 @@ outputs:
 
 steps:
   download_from_ena:
-    run: ../../tools/fetch_data/cwl/fetch_ena.cwl
+    run: ../../tools/fetch_data/fetch_ena.cwl
     when: $(inputs.type == 'ENA')
     in:
       type: download_from
@@ -36,7 +36,7 @@ steps:
     out: [ downloaded_files ]
 
   download_from_ncbi:
-    run: ../../tools/fetch_data/cwl/fetch_ena.cwl
+    run: ../../tools/fetch_data/fetch_ena.cwl
     when: $(inputs.type == 'NCBI')
     in:
       type: download_from
