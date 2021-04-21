@@ -41,10 +41,11 @@ outputs:
     outputSource: wf-2/many_genomes_roary
   many_genomes_prokka:
     type:
-      type: array?
-      items:
-        type: array
-        items: Directory
+      - 'null'
+      - type: array
+        items:
+          type: array
+          items: Directory
     outputSource: wf-2/many_genomes_prokka
   many_genomes_genomes:
     type: Directory[]?
@@ -100,7 +101,7 @@ steps:
       mmseqs_limit_i: mmseqs_limit_i
     out:
       - mash_folder
-      - many_genomes:
+      - many_genomes
       - many_genomes_roary
       - many_genomes_prokka
       - many_genomes_genomes

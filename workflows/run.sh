@@ -13,7 +13,6 @@ while getopts :m:n:c:a:g: option; do
 		n) NUM_CORES=${OPTARG};;
 		c) CUR_DIR=${OPTARG};;
 		a) NAME_RUN=${OPTARG};;
-		g) GENOMES=${OPTARG};;
 	esac
 done
 
@@ -35,10 +34,6 @@ echo "Create empty ${LOG_DIR} and YML-file"
 
 mkdir -p ${LOG_DIR} ${OUT_TOOL}
 
-cp $PIPELINE_FOLDER/workflows/yml_patterns/wf-1.yml ${OUT_TOOL}
-export YML=${OUT_TOOL}/wf-main.yml
-echo " ${GENOMES}" >> ${YML}
-
 echo "Set TOIL_LSF_ARGS"
 export JOB_GROUP=genome_pipeline
 bgadd -L 50 /${USER}_${JOB_GROUP} > /dev/null
@@ -46,20 +41,23 @@ bgmod -L 50 /${USER}_${JOB_GROUP} > /dev/null
 export TOIL_LSF_ARGS="-g /${USER}_${JOB_GROUP} -P bigmem"  #-q production-rh74
 
 export CWL=${PIPELINE_FOLDER}/workflows/wf-main.cwl
+export YML=${PIPELINE_FOLDER}/tests/wfs/wf-main.yml
 
 # --------------------------------- 2 ---------------------------------
 echo "Out json would be in ${OUT_TOOL}/out.json"
 
 mkdir -p ${JOB_TOIL} ${TMPDIR} && \
 cd ${WORK_DIR} && \
-time cwltoil \
+time toil-cwl-runner \
   --no-container \
   --batchSystem LSF \
-  --disableCaching \
+  --preserve-entire-environment \
+  --enable-dev \
+  --disableChaining \
   --defaultMemory ${MEMORY} \
   --defaultCores ${NUM_CORES} \
   --jobStore ${JOB_TOIL}/${NAME_RUN} \
   --outdir ${OUT_TOOL} \
   --retryCount 3 \
   --logFile ${LOG_DIR}/${NAME_RUN}.log \
-${CWL} ${YML} > ${OUT_TOOL}/out1.json
+${CWL} ${YML} > ${OUT_TOOL}/out.json

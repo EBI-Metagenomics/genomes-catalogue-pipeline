@@ -19,9 +19,8 @@ outputs:
   downloaded_folder:
     type: Directory
     outputSource:
-      source:
-        - download_from_ena/downloaded_files
-        - download_from_ncbi/downloaded_files
+      - download_from_ena/downloaded_files
+      - download_from_ncbi/downloaded_files
     pickValue: first_non_null
 
 steps:

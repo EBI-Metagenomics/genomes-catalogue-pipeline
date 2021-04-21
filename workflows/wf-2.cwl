@@ -29,10 +29,11 @@ outputs:
     outputSource: process_many_genomes/roary_folder
   many_genomes_prokka:
     type:
-      type: array?
-      items:
-        type: array
-        items: Directory
+      - 'null'
+      - type: array
+        items:
+          type: array
+          items: Directory
     outputSource: process_many_genomes/prokka_folder
   many_genomes_genomes:
     type: Directory[]?
