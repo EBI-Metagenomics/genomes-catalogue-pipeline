@@ -10,10 +10,13 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  download_from: string  # ENA or NCBI
-  infile: File            # file containing a list of GenBank accessions, one accession per line
-  directory_name: string  # directory name to download files to
+  download_from: string?  # ENA or NCBI
+  infile: File?            # file containing a list of GenBank accessions, one accession per line
+  directory_name: string?  # directory name to download files to
   unzip: boolean?
+
+  genomes: Directory?
+
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
 
@@ -69,6 +72,7 @@ outputs:
 steps:
 # ----------- << download data >> -----------
   download:
+    when: $(inputs.download_from !== undefined)
     run: sub-wf/fetch_data.cwl
     in:
       download_from: download_from
@@ -81,7 +85,11 @@ steps:
   wf-1:
     run: wf-1.cwl
     in:
-      genomes_folder: download/downloaded_folder
+      genomes_folder:
+        source:
+          - download/downloaded_folder
+          - genomes
+        pickValue: first_non_null
     out:
       - checkm_csv
       - gtdbtk
