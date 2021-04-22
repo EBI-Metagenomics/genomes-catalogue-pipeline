@@ -2,7 +2,13 @@
 cwlVersion: v1.0
 
 class: ExpressionTool
-requirements: { InlineJavascriptRequirement: {} }
+
+requirements:
+  InlineJavascriptRequirement: {}
+  ResourceRequirement:
+    ramMin: 200
+    coresMin: 1
+
 inputs:
   dir: Directory
 expression: '${return {"files": inputs.dir.listing};}'

@@ -4,6 +4,9 @@ label: Returns a directory named after inputs.newname, containing all input file
 
 requirements:
   InlineJavascriptRequirement: {}
+  ResourceRequirement:
+    ramMin: 200
+    coresMin: 1
 
 inputs:
   directory:

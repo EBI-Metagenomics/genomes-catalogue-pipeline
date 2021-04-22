@@ -50,7 +50,7 @@ mkdir -p ${JOB_TOIL} ${TMPDIR} && \
 cd ${WORK_DIR} && \
 time toil-cwl-runner \
   --no-container \
-  --batchSystem LSF \
+  --batchSystem lsf \
   --preserve-entire-environment \
   --enable-dev \
   --disableChaining \

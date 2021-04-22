@@ -1,11 +1,15 @@
 cwlVersion: v1.0
 class: ExpressionTool
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
   InlineJavascriptRequirement: {}
   StepInputExpressionRequirement: {}
   ScatterFeatureRequirement: {}
+  ResourceRequirement:
+    ramMin: 100
+    coresMin: 1
 
 inputs:
   list_files: File[]
