@@ -1,6 +1,6 @@
-genomes:
+genomes_folder:
   class: Directory
-  path: ../../test-exit-3
+  path: ../../input_example/test-exit-3
 mmseqs_limit_i:
   - 1.0
   - 0.95

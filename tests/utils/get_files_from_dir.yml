@@ -1,0 +1,3 @@
+dir:
+  class: Directory
+  path: ../../input_example/test-exit-3

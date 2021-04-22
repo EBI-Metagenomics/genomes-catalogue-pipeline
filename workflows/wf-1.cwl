@@ -57,6 +57,7 @@ steps:
       directory_array: taxcheck/taxcheck_folder
       newname: { default: "taxcheck_output" }
     out: [ pool_directory ]
+
 # ----------- << checkm >> -----------
   checkm:
     run: ../tools/checkm/checkm.cwl
