@@ -26,15 +26,16 @@ outputs:
 
   many_genomes:
     type: Directory[]?
-    outputSource: classify_clusters/many_genomes
+    outputSource: drep/many_genomes
   one_genome:
     type: Directory[]?
-    outputSource: classify_clusters/one_genome
+    outputSource: drep/one_genome
   mash_folder:
     type: File[]?
-    outputSource: classify_clusters/mash_folder
+    outputSource: drep/mash_folder
 
 steps:
+
 # ----------- << taxcheck subwf >> -----------
   taxcheck:
     run: sub-wf/taxcheck-subwf.cwl
@@ -56,28 +57,17 @@ steps:
       out_checkm: checkm/stdout
     out: [ csv ]
 
-# ----------- << drep >> -----------
+# ----------- << drep subwf >> -----------
   drep:
-    run: ../tools/drep/drep.cwl
-    in:
-      genomes: genomes_folder
-      drep_outfolder: { default: 'drep_outfolder' }
-      checkm_csv: checkm2csv/csv
-    out: [ out_folder, dereplicated_genomes ]
-
-  split_drep:
-    run: ../tools/drep/split_drep.cwl
+    run: sub-wf/drep-subwf.cwl
     in:
       genomes_folder: genomes_folder
-      drep_folder: drep/out_folder
-      split_outfolder: { default: 'split_outfolder' }
-    out: [ split_out ]
-
-  classify_clusters:
-    run: ../tools/drep/classify_folders.cwl
-    in:
-      clusters: split_drep/split_out
-    out: [many_genomes, one_genome, mash_folder]
+      checkm_csv: checkm2csv/csv
+    out:
+      - many_genomes
+      - one_genome
+      - mash_folder
+      - dereplicated_genomes
 
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:

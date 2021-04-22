@@ -1,3 +1,3 @@
 genomes_folder:
   class: Directory
-  path: ../../input_example/test-exit-3
+  path: ../../../input_example/test-exit-3
