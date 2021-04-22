@@ -12,7 +12,10 @@ requirements:
 inputs:
   genomes_folder: Directory
 
-outputs: []
+outputs:
+  taxcheck_dir:
+    type: Directory
+    outputSource: return_taxcheck_dir/pool_directory
 
 steps:
 # ----------- << taxcheck >> -----------

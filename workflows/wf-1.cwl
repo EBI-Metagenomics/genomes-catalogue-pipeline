@@ -22,7 +22,7 @@ outputs:
     outputSource: gtdbtk/gtdbtk_folder
   taxcheck_dir:
     type: Directory
-    outputSource: return_taxcheck_dir/pool_directory
+    outputSource: taxcheck/taxcheck_dir
 
   many_genomes:
     type: Directory[]?
@@ -35,28 +35,12 @@ outputs:
     outputSource: classify_clusters/mash_folder
 
 steps:
-# ----------- << taxcheck >> -----------
-  prep_taxcheck:
-    run: ../utils/get_files_from_dir.cwl
-    in:
-      dir: genomes_folder
-    out: [files]
-
+# ----------- << taxcheck subwf >> -----------
   taxcheck:
-    run: ../tools/taxcheck/taxcheck.cwl
-    scatter: genomes_fasta
+    run: sub-wf/taxcheck-subwf.cwl
     in:
-      genomes_fasta: prep_taxcheck/files
-      taxcheck_outfolder: { default: 'taxcheck'}
-      taxcheck_outname: { default: 'taxcheck'}
-    out: [ taxcheck_folder ]
-
-  return_taxcheck_dir:
-    run: ../utils/return_dir_of_dir.cwl
-    in:
-      directory_array: taxcheck/taxcheck_folder
-      newname: { default: "taxcheck_output" }
-    out: [ pool_directory ]
+      genomes_folder: genomes_folder
+    out: taxcheck_dir
 
 # ----------- << checkm >> -----------
   checkm:
