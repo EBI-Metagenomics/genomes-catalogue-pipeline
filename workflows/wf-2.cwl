@@ -49,15 +49,15 @@ outputs:
     type: Directory[]?
     outputSource: process_one_genome/cluster_folder_genome
 
-  mmseqs:
+  mmseqs_output:
     type: Directory
-    outputSource: return_mmseq_dir/pool_directory
+    outputSource: mmseqs/mmseqs_dir
 
 steps:
 
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
-    when: $(inputs.cluster)
+    when: $(inputs.cluster !== undefined)
     run: sub-wf/sub-wf-many-genomes.cwl
     scatter: cluster
     in:
@@ -73,7 +73,7 @@ steps:
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
-    when: $(inputs.cluster)
+    when: $(inputs.cluster !== undefined)
     run: sub-wf/sub-wf-one-genome.cwl
     scatter: cluster
     in:
@@ -85,40 +85,14 @@ steps:
       - cluster_folder_genome
 
 
-# ----------- << mmseqs >> -----------
-
-  flatten_many:
-   when: $(inputs.many_genomes)
-   run: ../utils/flatten_array.cwl
-   in:
-     many_input: many_genomes
-     arrayTwoDim: process_many_genomes/prokka_faa-s
-   out: [array1d]
-
-  concatenate:
-    run: ../utils/concatenate.cwl
-    in:
-      files:
-        source:
-          - flatten_many/array1d
-          - process_one_genome/prokka_faa-s
-        linkMerge: merge_flattened
-        pickValue: all_non_null
-      outputFileName: { default: 'prokka_cat.fa' }
-    out: [ result ]
+# ----------- << mmseqs subwf>> -----------
 
   mmseqs:
-    run: ../tools/mmseqs/mmseqs.cwl
-    scatter: limit_i
+    run: sub-wf/mmseq-subwf.cwl
     in:
-      input_fasta: concatenate/result
+      prokka_many: process_many_genomes/prokka_faa-s
+      prokka_one: process_one_genome/prokka_faa-s
       limit_i: mmseqs_limit_i
       limit_c: mmseqs_limit_c
-    out: [ outdir ]
+    out: [ mmseqs_dir ]
 
-  return_mmseq_dir:
-    run: ../utils/return_dir_of_dir.cwl
-    in:
-      directory_array: mmseqs/outdir
-      newname: { default: "mmseqs_output" }
-    out: [ pool_directory ]

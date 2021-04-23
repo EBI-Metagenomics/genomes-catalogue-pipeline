@@ -118,7 +118,7 @@ steps:
       - one_genome
       - one_genome_prokka
       - one_genome_genomes
-      - mmseqs
+      - mmseqs_output
 
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:
