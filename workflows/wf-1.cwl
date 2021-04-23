@@ -16,63 +16,53 @@ outputs:
 
   checkm_csv:
     type: File
-    outputSource: checkm2csv/csv
-  gtdbtk:
-    type: Directory
-    outputSource: gtdbtk/gtdbtk_folder
+    outputSource: checkm_subwf/checkm_csv
   taxcheck_dir:
     type: Directory
-    outputSource: taxcheck/taxcheck_dir
+    outputSource: taxcheck_subwf/taxcheck_dir
 
   many_genomes:
     type: Directory[]?
-    outputSource: drep/many_genomes
+    outputSource: drep_subwf/many_genomes
   one_genome:
     type: Directory[]?
-    outputSource: drep/one_genome
+    outputSource: drep_subwf/one_genome
   mash_folder:
     type: File[]?
-    outputSource: drep/mash_folder
+    outputSource: drep_subwf/mash_folder
+  dereplicated_genomes:
+    type: Directory
+    outputSource: drep_subwf/dereplicated_genomes
+
 
 steps:
 
 # ----------- << taxcheck subwf >> -----------
-  taxcheck:
+  taxcheck_subwf:
     run: sub-wf/taxcheck-subwf.cwl
     in:
       genomes_folder: genomes_folder
-    out: taxcheck_dir
+    out:
+      - taxcheck_dir
 
 # ----------- << checkm >> -----------
-  checkm:
-    run: ../tools/checkm/checkm.cwl
+  checkm_subwf:
+    run: sub-wf/checkm-subwf.cwl
     in:
-      input_folder: genomes_folder
-      checkm_outfolder: { default: 'checkm_outfolder' }
-    out: [ stdout, out_folder ]
+      genomes_folder: genomes_folder
 
-  checkm2csv:
-    run: ../tools/checkm/checkm2csv.cwl
-    in:
-      out_checkm: checkm/stdout
-    out: [ csv ]
+    out:
+      - checkm_csv
 
 # ----------- << drep subwf >> -----------
-  drep:
+  drep_subwf:
     run: sub-wf/drep-subwf.cwl
     in:
       genomes_folder: genomes_folder
-      checkm_csv: checkm2csv/csv
+      checkm_csv: checkm_subwf/checkm_csv
     out:
       - many_genomes
       - one_genome
       - mash_folder
       - dereplicated_genomes
 
-# ----------- << GTDB - Tk >> -----------
-  gtdbtk:
-    run: ../tools/gtdbtk/gtdbtk.cwl
-    in:
-      drep_folder: drep/dereplicated_genomes
-      gtdb_outfolder: { default: 'gtdb-tk_output' }
-    out: [ gtdbtk_folder ]

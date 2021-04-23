@@ -25,9 +25,6 @@ outputs:
   checkm_csv:
     type: File
     outputSource: wf-1/checkm_csv
-  gtdbtk:
-    type: Directory
-    outputSource: wf-1/gtdbtk
   taxcheck_dir:
     type: Directory
     outputSource: wf-1/taxcheck_dir
@@ -68,6 +65,10 @@ outputs:
     type: Directory
     outputSource: wf-2/mmseqs
 
+  gtdbtk:
+    type: Directory
+    outputSource: gtdbtk/gtdbtk_folder
+
 
 steps:
 # ----------- << download data >> -----------
@@ -97,6 +98,7 @@ steps:
       - many_genomes
       - one_genome
       - mash_folder
+      - dereplicated_genomes
 
 # ---------- second part
   wf-2:
@@ -117,3 +119,11 @@ steps:
       - one_genome_prokka
       - one_genome_genomes
       - mmseqs
+
+# ----------- << GTDB - Tk >> -----------
+  gtdbtk:
+    run: ../tools/gtdbtk/gtdbtk.cwl
+    in:
+      drep_folder: wf-1/dereplicated_genomes
+      gtdb_outfolder: { default: 'gtdb-tk_output' }
+    out: [ gtdbtk_folder ]

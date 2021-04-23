@@ -1,0 +1,90 @@
+#cwltest
+
+# 1 Subwf: taxcheck
+- job: taxcheck/taxcheck-one.yml
+  tool: ../../workflows/sub-wf/taxcheck-subwf.cwl
+  short_name: taxcheck-subwf.cwl
+  doc: "Taxcheck sub-wf"
+  output:
+    taxcheck_dir:
+      class: Directory
+      basename: "taxcheck_output"
+      listing:
+        - basename: "GUT_GENOME001921_taxcheck"
+          class: Directory
+          listing:
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.predicted_proteins.gff"
+              checksum: "sha1$d8def38bb056c8352db2517a3ef73caf0b9179d8"
+              size: 543307
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.tax-stats.tsv"
+              checksum: "sha1$04d199860b4e58e9d6bf3eb1bce5e6a0a118f2bd"
+              size: 573
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.ORF2LCA.txt"
+              checksum: "sha1$63734472163a817a30acbc4e2590f6bbac38a64f"
+              size: 101368
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.alignment.diamond"
+              checksum: "sha1$826687457a7063b04ba6cb92655ca6bb5d86794e"
+              size: 198484656
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.contig2classification.official_names.txt"
+              checksum: "sha1$e4a0902b45573f3af992ef4fa32f59ed8bc5fa02"
+              size: 56729
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.summary.txt"
+              checksum: "sha1$aa342ad558047f3d1bbfc251b30b65c7787db956"
+              size: 1077
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.predicted_proteins.faa"
+              checksum: "sha1$f545e93c5406beac5ec1a84023d83b7d936e3b5b"
+              size: 931950
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.contig2classification.txt"
+              checksum: "sha1$d3b1ec27b22f30b780f94868702f34925ed688cc"
+              size: 26087
+            - class: File
+              basename: "GUT_GENOME001921_taxcheck.log"
+              checksum: "sha1$4b8f839f06e647cafa6f73243af1d4d0706c0ed4"
+              size: 3944
+        - basename: "GUT_GENOME000465_taxcheck"
+          class: Directory
+          listing:
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.predicted_proteins.faa"
+              checksum: "sha1$0949346230418ab19ab857894e86ce6c4c86280a"
+              size: 2234755
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.ORF2LCA.txt"
+              checksum: "sha1$a6bd3c9c1461c9b7306a7c2673fb99d017b931c9"
+              size: 244071
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.alignment.diamond"
+              checksum: "sha1$82cdb0d90d022d4e356f41e85bdcb9823ba77e4c"
+              size: 300946665
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.summary.txt"
+              checksum: "sha1$50e8c9b7079c8c32b4a862d6cfaafacc43502bce"
+              size: 1038
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.tax-stats.tsv"
+              checksum: "sha1$1458d855c62a5f6eff754318454ffdc898b4d567"
+              size: 560
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.predicted_proteins.gff"
+              checksum: "sha1$00254ff212096ecb50293e328954368e31f33eb4"
+              size: 1095052
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.log"
+              checksum: "sha1$9316bc3df32665ab6273add981e09f24c7cabd98"
+              size: 3944
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.contig2classification.official_names.txt"
+              checksum: "sha1$e9fe9cf71a195803299615a8a4631de8d96cd214"
+              size: 28682
+            - class: File
+              basename: "GUT_GENOME000465_taxcheck.contig2classification.txt"
+              checksum: "sha1$e810ea68a26e2122c779891aac4abb15e2cbf53e"
+              size: 13586
