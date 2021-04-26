@@ -36,9 +36,9 @@ outputs:
   many_genomes:
     type: Directory[]?
     outputSource: wf-2/many_genomes
-  many_genomes_roary:
+  many_genomes_panaroo:
     type: Directory[]?
-    outputSource: wf-2/many_genomes_roary
+    outputSource: wf-2/many_genomes_panaroo
   many_genomes_prokka:
     type:
       - 'null'
@@ -63,7 +63,7 @@ outputs:
 
   mmseqs:
     type: Directory
-    outputSource: wf-2/mmseqs
+    outputSource: wf-2/mmseqs_output
 
   gtdbtk:
     type: Directory
@@ -114,7 +114,7 @@ steps:
     out:
       - mash_folder
       - many_genomes
-      - many_genomes_roary
+      - many_genomes_panaroo
       - many_genomes_prokka
       - many_genomes_genomes
       - one_genome

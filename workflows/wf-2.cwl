@@ -24,9 +24,9 @@ outputs:
   many_genomes:
     type: Directory[]?
     outputSource: process_many_genomes/cluster_folder
-  many_genomes_roary:
+  many_genomes_panaroo:
     type: Directory[]?
-    outputSource: process_many_genomes/roary_folder
+    outputSource: process_many_genomes/panaroo_folder
   many_genomes_prokka:
     type:
       - 'null'
@@ -66,7 +66,7 @@ steps:
     out:
       - prokka_faa-s
       - cluster_folder
-      - roary_folder
+      - panaroo_folder
       - prokka_folder
       - genomes_folder
       - mash_folder
@@ -92,7 +92,7 @@ steps:
     in:
       prokka_many: process_many_genomes/prokka_faa-s
       prokka_one: process_one_genome/prokka_faa-s
-      limit_i: mmseqs_limit_i
-      limit_c: mmseqs_limit_c
+      mmseqs_limit_i: mmseqs_limit_i
+      mmseqs_limit_c: mmseqs_limit_c
     out: [ mmseqs_dir ]
 

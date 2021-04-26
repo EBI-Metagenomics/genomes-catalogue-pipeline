@@ -14,9 +14,9 @@ inputs:
     type:
       - 'null'
       - type: array
-          items:
-            type: array
-            items: File
+        items:
+          type: array
+          items: File
   prokka_one: File[]?
 
   mmseqs_limit_c: float

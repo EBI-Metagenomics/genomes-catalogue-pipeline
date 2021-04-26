@@ -21,9 +21,9 @@ outputs:
   cluster_folder:
     type: Directory
     outputSource: create_cluster_folder/out
-  roary_folder:
+  panaroo_folder:
     type: Directory
-    outputSource: return_roary_cluster_dir/pool_directory
+    outputSource: return_panaroo_cluster_dir/pool_directory
   prokka_folder:
     type: Directory[]
     outputSource: return_prokka_cluster_dir/dir_of_dir
@@ -51,17 +51,18 @@ steps:
       outdirname: {default: prokka_output }
     out: [ gff, faa, outdir ]
 
-  roary:
-    run: ../../tools/roary/roary.cwl
+  panaroo:
+    run: ../../tools/panaroo/panaroo.cwl
     in:
       gffs: prokka/gff
-      roary_outfolder: {default: roary_output }
-    out: [ pan_genome_reference-fa, roary_dir ]
+      panaroo_outfolder: {default: panaroo_output }
+      threads: {default: 8 }
+    out: [ pan_genome_reference-fa, panaroo_dir ]
 
   translate:
     run: ../../utils/translate_genes.cwl
     in:
-      fa_file: roary/pan_genome_reference-fa
+      fa_file: panaroo/pan_genome_reference-fa
       faa_file:
         source: cluster
         valueFrom: $(self.basename)_pan_genome_reference.faa
@@ -125,13 +126,13 @@ steps:
         valueFrom: cluster_$(self.basename)
     out: [ dir_of_dir ]
 
-  return_roary_cluster_dir:
+  return_panaroo_cluster_dir:
     run: ../../utils/return_dir_of_dir.cwl
     in:
       directory_array:
         linkMerge: merge_nested
         source:
-          - roary/roary_dir
+          - panaroo/panaroo_dir
       newname:
         source: cluster
         valueFrom: cluster_$(self.basename)
