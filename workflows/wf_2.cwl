@@ -39,19 +39,6 @@ outputs:
     type: Directory[]?
     outputSource: process_many_genomes/genomes_folder
 
-  one_genome:
-    type: Directory[]?
-    outputSource: process_one_genome/cluster_folder
-  one_genome_prokka:
-    type: Directory[]?
-    outputSource: process_one_genome/cluster_folder_prokka
-  one_genome_genomes:
-    type: Directory[]?
-    outputSource: process_one_genome/cluster_folder_genome
-
-  mmseqs_output:
-    type: Directory
-    outputSource: mmseqs/mmseqs_dir
 
 steps:
 
@@ -71,30 +58,4 @@ steps:
       - prokka_folder
       - genomes_folder
       - mash_folder
-
-# ----------- << one genome cluster processing >> -----------
-  process_one_genome:
-    when: $(inputs.marker != 'null')
-    run: sub-wf/sub-wf-one-genome.cwl
-    scatter: cluster
-    in:
-      marker: one_genome
-      cluster: one_genome
-    out:
-      - prokka_faa-s
-      - cluster_folder
-      - cluster_folder_prokka
-      - cluster_folder_genome
-
-
-# ----------- << mmseqs subwf>> -----------
-
-  mmseqs:
-    run: sub-wf/mmseq-subwf.cwl
-    in:
-      prokka_many: process_many_genomes/prokka_faa-s
-      prokka_one: process_one_genome/prokka_faa-s
-      mmseqs_limit_i: mmseqs_limit_i
-      mmseqs_limit_c: mmseqs_limit_c
-    out: [ mmseqs_dir ]
 

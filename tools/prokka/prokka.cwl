@@ -9,7 +9,7 @@ requirements:
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
-baseCommand: [prokka]
+baseCommand: [ prokka ]
 
 arguments:
   - valueFrom: '16'

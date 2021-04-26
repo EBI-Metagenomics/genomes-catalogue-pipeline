@@ -29,17 +29,31 @@ outputs:
       - wf-1/ncbi_csv
     pickValue: first_non_null
 
-  mash_folder:
+  many_genomes_1:
+    type: Directory[]?
+    outputSource: wf-1/many_genomes
+  one_genome_1:
+    type: Directory[]?
+    outputSource: wf-1/one_genome
+  mash_folder_1:
+    type: File[]?
+    outputSource: wf-1/mash_folder
+  dereplicated_genomes_1:
+    type: Directory
+    outputSource: wf-1/dereplicated_genomes
+
+
+  mash_folder_2:
     type: Directory?
     outputSource: wf-2/mash_folder
 
-  many_genomes:
+  many_genomes_2:
     type: Directory[]?
     outputSource: wf-2/many_genomes
-  many_genomes_panaroo:
+  many_genomes_panaroo_2:
     type: Directory[]?
     outputSource: wf-2/many_genomes_panaroo
-  many_genomes_prokka:
+  many_genomes_prokka_2:
     type:
       - 'null'
       - type: array
@@ -47,27 +61,10 @@ outputs:
           type: array
           items: Directory
     outputSource: wf-2/many_genomes_prokka
-  many_genomes_genomes:
+  many_genomes_genomes_2:
     type: Directory[]?
     outputSource: wf-2/many_genomes_genomes
 
-  one_genome:
-    type: Directory[]?
-    outputSource: wf-2/one_genome
-  one_genome_prokka:
-    type: Directory[]?
-    outputSource: wf-2/one_genome_prokka
-  one_genome_genomes:
-    type: Directory[]?
-    outputSource: wf-2/one_genome_genomes
-
-  mmseqs:
-    type: Directory
-    outputSource: wf-2/mmseqs_output
-
-#  gtdbtk:
-#    type: Directory
-#    outputSource: gtdbtk/gtdbtk_folder
 
 
 steps:
@@ -102,9 +99,8 @@ steps:
       - mash_folder
       - dereplicated_genomes
 
-# ---------- second part
   wf-2:
-    run: wf-2.cwl
+    run: wf_2.cwl
     in:
       many_genomes: wf-1/many_genomes
       mash_folder: wf-1/mash_folder
@@ -117,15 +113,3 @@ steps:
       - many_genomes_panaroo
       - many_genomes_prokka
       - many_genomes_genomes
-      - one_genome
-      - one_genome_prokka
-      - one_genome_genomes
-      - mmseqs_output
-
-# ----------- << GTDB - Tk >> -----------
-#  gtdbtk:
-#    run: ../tools/gtdbtk/gtdbtk.cwl
-#    in:
-#      drep_folder: wf-1/dereplicated_genomes
-#      gtdb_outfolder: { default: 'gtdb-tk_output' }
-#    out: [ gtdbtk_folder ]
