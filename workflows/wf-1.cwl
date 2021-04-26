@@ -11,11 +11,12 @@ requirements:
 
 inputs:
   genomes_folder: Directory
+  type_download: string
+  ena_csv: File?
 
 outputs:
-
-  checkm_csv:
-    type: File
+  ncbi_csv:
+    type: File?
     outputSource: checkm_subwf/checkm_csv
 
   many_genomes:
@@ -37,9 +38,10 @@ steps:
 # ----------- << checkm >> -----------
   checkm_subwf:
     run: sub-wf/checkm-subwf.cwl
+    when: $(inputs.type == "NCBI")
     in:
+      type: type_download
       genomes_folder: genomes_folder
-
     out:
       - checkm_csv
 
@@ -48,7 +50,11 @@ steps:
     run: sub-wf/drep-subwf.cwl
     in:
       genomes_folder: genomes_folder
-      checkm_csv: checkm_subwf/checkm_csv
+      input_csv:
+        source:
+          - checkm_subwf/checkm_csv
+          - ena_csv
+        pickValue: first_non_null
     out:
       - many_genomes
       - one_genome

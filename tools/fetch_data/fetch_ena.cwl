@@ -33,3 +33,7 @@ outputs:
     type: Directory
     outputBinding:
       glob: $(inputs.directory)
+  stats_file:
+    type: File
+    outputBinding:
+      glob: $(inputs.directory)/*.txt

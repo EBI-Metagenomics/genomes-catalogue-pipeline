@@ -22,9 +22,12 @@ inputs:
 
 
 outputs:
-  checkm_csv:
+  output_csv:
     type: File
-    outputSource: wf-1/checkm_csv
+    outputSource:
+      - download/stats_download_ena
+      - wf-1/ncbi_csv
+    pickValue: first_non_null
 
   mash_folder:
     type: Directory?
@@ -77,20 +80,23 @@ steps:
       infile: infile
       directory_name: directory_name
       unzip: unzip
-    out: [ downloaded_folder ]
+    out:
+      - downloaded_folder
+      - stats_download_ena
 
 # ---------- first part
   wf-1:
     run: wf-1.cwl
     in:
+      type_download: download_from
+      ena_csv: download/stats_download_ena
       genomes_folder:
         source:
           - download/downloaded_folder
           - genomes
         pickValue: first_non_null
     out:
-      - checkm_csv
-      - gtdbtk
+      - ncbi_csv
       - many_genomes
       - one_genome
       - mash_folder

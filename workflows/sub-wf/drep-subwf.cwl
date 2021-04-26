@@ -11,7 +11,7 @@ requirements:
 
 inputs:
   genomes_folder: Directory
-  checkm_csv: File
+  input_csv: File
 
 outputs:
 
@@ -35,7 +35,7 @@ steps:
     in:
       genomes: genomes_folder
       drep_outfolder: { default: 'drep_outfolder' }
-      checkm_csv: checkm_csv
+      checkm_csv: input_csv
     out: [ out_folder, dereplicated_genomes ]
 
   split_drep:

@@ -22,6 +22,9 @@ outputs:
       - download_from_ena/downloaded_files
       - download_from_ncbi/downloaded_files
     pickValue: first_non_null
+  stats_download_ena:
+    type: File?
+    outputSource: download_from_ena/stats_file
 
 steps:
   download_from_ena:
@@ -32,7 +35,9 @@ steps:
       infile: infile
       directory: directory_name
       unzip: unzip
-    out: [ downloaded_files ]
+    out:
+     - downloaded_files
+     - stats_file
 
   download_from_ncbi:
     run: ../../tools/fetch_data/fetch_ena.cwl
