@@ -25,9 +25,6 @@ outputs:
   checkm_csv:
     type: File
     outputSource: wf-1/checkm_csv
-  taxcheck_dir:
-    type: Directory
-    outputSource: wf-1/taxcheck_dir
 
   mash_folder:
     type: Directory?
@@ -94,7 +91,6 @@ steps:
     out:
       - checkm_csv
       - gtdbtk
-      - taxcheck_dir
       - many_genomes
       - one_genome
       - mash_folder

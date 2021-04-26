@@ -17,9 +17,6 @@ outputs:
   checkm_csv:
     type: File
     outputSource: checkm_subwf/checkm_csv
-  taxcheck_dir:
-    type: Directory
-    outputSource: taxcheck_subwf/taxcheck_dir
 
   many_genomes:
     type: Directory[]?
@@ -36,14 +33,6 @@ outputs:
 
 
 steps:
-
-# ----------- << taxcheck subwf >> -----------
-  taxcheck_subwf:
-    run: sub-wf/taxcheck-subwf.cwl
-    in:
-      genomes_folder: genomes_folder
-    out:
-      - taxcheck_dir
 
 # ----------- << checkm >> -----------
   checkm_subwf:
