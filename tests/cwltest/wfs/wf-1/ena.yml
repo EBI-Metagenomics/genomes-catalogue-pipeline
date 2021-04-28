@@ -1,0 +1,7 @@
+genomes_folder:
+  class: Directory
+  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/genomes-pipeline/ENA
+type_download: ENA
+ena_csv:
+  class: File
+  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/genomes-pipeline/ENA/genome_stats.txt

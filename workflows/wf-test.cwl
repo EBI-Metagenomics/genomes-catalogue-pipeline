@@ -16,6 +16,7 @@ inputs:
   unzip: boolean?
 
   genomes: Directory?
+  csv: File?
 
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
@@ -23,10 +24,8 @@ inputs:
 
 outputs:
   output_csv:
-    type: File
-    outputSource:
-      - download/stats_download_ena
-      - wf-1/ncbi_csv
+    type: File?
+    outputSource: wf-1/ncbi_csv
     pickValue: first_non_null
 
   many_genomes_1:
@@ -66,32 +65,15 @@ outputs:
     outputSource: wf-2/many_genomes_genomes
 
 
-
 steps:
-# ----------- << download data >> -----------
-  download:
-    when: $(inputs.download_from !== undefined)
-    run: part-1/fetch_data.cwl
-    in:
-      download_from: download_from
-      infile: infile
-      directory_name: directory_name
-      unzip: unzip
-    out:
-      - downloaded_folder
-      - stats_download_ena
 
 # ---------- first part
   wf-1:
     run: part-1/wf-1.cwl
     in:
       type_download: download_from
-      ena_csv: download/stats_download_ena
-      genomes_folder:
-        source:
-          - download/downloaded_folder
-          - genomes
-        pickValue: first_non_null
+      ena_csv: csv
+      genomes_folder: genomes
     out:
       - ncbi_csv
       - many_genomes
