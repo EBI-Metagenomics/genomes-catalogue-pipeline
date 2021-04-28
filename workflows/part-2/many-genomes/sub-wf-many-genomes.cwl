@@ -38,13 +38,13 @@ outputs:
 
 steps:
   preparation:
-    run: ../../utils/get_files_from_dir.cwl
+    run: ../../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
     out: [files]
 
   prokka:
-    run: ../../tools/prokka/prokka.cwl
+    run: ../../../tools/prokka/prokka.cwl
     scatter: fa_file
     in:
       fa_file: preparation/files
@@ -52,7 +52,7 @@ steps:
     out: [ gff, faa, outdir ]
 
   panaroo:
-    run: ../../tools/panaroo/panaroo.cwl
+    run: ../../../tools/panaroo/panaroo.cwl
     in:
       gffs: prokka/gff
       panaroo_outfolder: {default: panaroo_output }
@@ -60,7 +60,7 @@ steps:
     out: [ pan_genome_reference-fa, panaroo_dir ]
 
   translate:
-    run: ../../utils/translate_genes.cwl
+    run: ../../../utils/translate_genes.cwl
     in:
       fa_file: panaroo/pan_genome_reference-fa
       faa_file:
@@ -69,13 +69,13 @@ steps:
     out: [ converted_faa ]
 
   IPS:
-    run: ../../tools/IPS/InterProScan.cwl
+    run: ../../../tools/IPS/InterProScan.cwl
     in:
       inputFile: translate/converted_faa
     out: [annotations]
 
   eggnog:
-    run: ../../tools/eggnog/eggnog.cwl
+    run: ../../../tools/eggnog/eggnog.cwl
     in:
       fasta_file: translate/converted_faa
       outputname:
@@ -85,7 +85,7 @@ steps:
 # --------------------------------------- result folder -----------------------------------------
 
   get_mash_file:
-    run: ../../utils/get_file_pattern.cwl
+    run: ../../../utils/get_file_pattern.cwl
     in:
       list_files: mash_files
       pattern:
@@ -94,7 +94,7 @@ steps:
     out: [ file_pattern ]
 
   create_cluster_folder:
-    run: ../../utils/return_directory.cwl
+    run: ../../../utils/return_directory.cwl
     in:
       list:
         - translate/converted_faa
@@ -108,7 +108,7 @@ steps:
     out: [ out ]
 
   create_cluster_genomes:
-    run: ../../utils/return_directory.cwl
+    run: ../../../utils/return_directory.cwl
     in:
       list: preparation/files
       dir_name:
@@ -117,7 +117,7 @@ steps:
     out: [ out ]
 
   return_prokka_cluster_dir:
-    run: ../../utils/return_dir_of_dir.cwl
+    run: ../../../utils/return_dir_of_dir.cwl
     scatter: directory
     in:
       directory: prokka/outdir
@@ -127,7 +127,7 @@ steps:
     out: [ dir_of_dir ]
 
   return_panaroo_cluster_dir:
-    run: ../../utils/return_dir_of_dir.cwl
+    run: ../../../utils/return_dir_of_dir.cwl
     in:
       directory_array:
         linkMerge: merge_nested
@@ -141,13 +141,13 @@ steps:
 # ----------- << mash trees >> -----------
   process_mash:
     scatter: input_mash
-    run: ../../tools/mash2nwk/mash2nwk.cwl
+    run: ../../../tools/mash2nwk/mash2nwk.cwl
     in:
       input_mash: mash_files
     out: [mash_tree]
 
   return_mash_dir:
-    run: ../../utils/return_directory.cwl
+    run: ../../../utils/return_directory.cwl
     in:
       list: process_mash/mash_tree
       dir_name: { default: 'mash_trees' }

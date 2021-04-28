@@ -31,7 +31,7 @@ outputs:
 steps:
 
   drep:
-    run: ../../tools/drep/drep.cwl
+    run: ../../../tools/drep/drep.cwl
     in:
       genomes: genomes_folder
       drep_outfolder: { default: 'drep_outfolder' }
@@ -39,7 +39,7 @@ steps:
     out: [ out_folder, dereplicated_genomes ]
 
   split_drep:
-    run: ../../tools/drep/split_drep.cwl
+    run: ../../../tools/drep/split_drep.cwl
     in:
       genomes_folder: genomes_folder
       drep_folder: drep/out_folder
@@ -47,7 +47,7 @@ steps:
     out: [ split_out ]
 
   classify_clusters:
-    run: ../../tools/drep/classify_folders.cwl
+    run: ../../../tools/drep/classify_folders.cwl
     in:
       clusters: split_drep/split_out
     out: [many_genomes, one_genome, mash_folder]

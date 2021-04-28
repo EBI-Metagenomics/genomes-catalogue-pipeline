@@ -23,10 +23,10 @@ outputs:
 
   many_genomes:
     type: Directory[]?
-    outputSource: process_many_genomes/cluster_folder
+    outputSource: process_many_genomes/many_genomes
   many_genomes_panaroo:
     type: Directory[]?
-    outputSource: process_many_genomes/panaroo_folder
+    outputSource: process_many_genomes/many_genomes_panaroo
   many_genomes_prokka:
     type:
       - 'null'
@@ -34,10 +34,10 @@ outputs:
         items:
           type: array
           items: Directory
-    outputSource: process_many_genomes/prokka_folder
+    outputSource: process_many_genomes/many_genomes_prokka
   many_genomes_genomes:
     type: Directory[]?
-    outputSource: process_many_genomes/genomes_folder
+    outputSource: process_many_genomes/many_genomes_genomes
 
   one_genome:
     type: Directory[]?
@@ -57,29 +57,25 @@ steps:
 
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
-    when: $(inputs.marker != 'null')
-    run: sub-wf/sub-wf-many-genomes.cwl
-    scatter: cluster
+    when: $(inputs.input_clusters != 'null')
+    run: many-genomes/wrapper-many-genomes.cwl
     in:
-      marker: many_genomes
-      cluster: many_genomes
+      input_clusters: many_genomes
       mash_files: mash_folder
     out:
-      - prokka_faa-s
-      - cluster_folder
-      - panaroo_folder
-      - prokka_folder
-      - genomes_folder
       - mash_folder
+      - many_genomes
+      - many_genomes_panaroo
+      - many_genomes_prokka
+      - prokka_seqs
+      - many_genomes_genomes
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
-    when: $(inputs.marker != 'null')
-    run: sub-wf/sub-wf-one-genome.cwl
-    scatter: cluster
+    when: $(inputs.input_cluster != 'null')
+    run: one-genome/wrapper-one-genome.cwl
     in:
-      marker: one_genome
-      cluster: one_genome
+      input_cluster: one_genome
     out:
       - prokka_faa-s
       - cluster_folder
@@ -90,9 +86,9 @@ steps:
 # ----------- << mmseqs subwf>> -----------
 
   mmseqs:
-    run: sub-wf/mmseq-subwf.cwl
+    run: mmseq-subwf.cwl
     in:
-      prokka_many: process_many_genomes/prokka_faa-s
+      prokka_many: process_many_genomes/prokka_seqs
       prokka_one: process_one_genome/prokka_faa-s
       mmseqs_limit_i: mmseqs_limit_i
       mmseqs_limit_c: mmseqs_limit_c

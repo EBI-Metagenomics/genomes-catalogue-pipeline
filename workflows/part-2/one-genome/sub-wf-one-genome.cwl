@@ -30,13 +30,13 @@ outputs:
 
 steps:
   preparation:
-    run: ../../utils/get_files_from_dir.cwl
+    run: ../../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
     out: [files]
 
   prokka:
-    run: ../../tools/prokka/prokka.cwl
+    run: ../../../tools/prokka/prokka.cwl
     in:
       fa_file:
         source: preparation/files
@@ -45,13 +45,13 @@ steps:
     out: [ faa, outdir ]
 
   IPS:
-    run: ../../tools/IPS/InterProScan.cwl
+    run: ../../../tools/IPS/InterProScan.cwl
     in:
       inputFile: prokka/faa
     out: [annotations]
 
   eggnog:
-    run: ../../tools/eggnog/eggnog.cwl
+    run: ../../../tools/eggnog/eggnog.cwl
     in:
       fasta_file: prokka/faa
       outputname:
@@ -60,7 +60,7 @@ steps:
     out: [annotations, seed_orthologs]
 
   create_cluster_folder:
-    run: ../../utils/return_directory.cwl
+    run: ../../../utils/return_directory.cwl
     in:
       list:
         - IPS/annotations
@@ -72,7 +72,7 @@ steps:
     out: [ out ]
 
   create_cluster_genomes:
-    run: ../../utils/return_directory.cwl
+    run: ../../../utils/return_directory.cwl
     in:
       list: preparation/files
       dir_name:
@@ -81,7 +81,7 @@ steps:
     out: [ out ]
 
   return_prokka_cluster_dir:
-    run: ../../utils/return_dir_of_dir.cwl
+    run: ../../../utils/return_dir_of_dir.cwl
     in:
       directory_array:
         linkMerge: merge_nested

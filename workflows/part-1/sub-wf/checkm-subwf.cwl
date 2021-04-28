@@ -21,14 +21,14 @@ outputs:
 steps:
 
   checkm:
-    run: ../../tools/checkm/checkm.cwl
+    run: ../../../tools/checkm/checkm.cwl
     in:
       input_folder: genomes_folder
       checkm_outfolder: { default: 'checkm_outfolder' }
     out: [ stdout, out_folder ]
 
   checkm2csv:
-    run: ../../tools/checkm/checkm2csv.cwl
+    run: ../../../tools/checkm/checkm2csv.cwl
     in:
       out_checkm: checkm/stdout
     out: [ csv ]

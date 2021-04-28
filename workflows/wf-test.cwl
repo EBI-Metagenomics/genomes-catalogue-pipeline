@@ -71,7 +71,7 @@ steps:
 # ----------- << download data >> -----------
   download:
     when: $(inputs.download_from !== undefined)
-    run: sub-wf/fetch_data.cwl
+    run: part-1/fetch_data.cwl
     in:
       download_from: download_from
       infile: infile
@@ -83,7 +83,7 @@ steps:
 
 # ---------- first part
   wf-1:
-    run: wf-1.cwl
+    run: part-1/wf-1.cwl
     in:
       type_download: download_from
       ena_csv: download/stats_download_ena
@@ -100,7 +100,7 @@ steps:
       - dereplicated_genomes
 
   wf-2:
-    run: wf_2.cwl
+    run: part-2/wf-2.cwl
     in:
       many_genomes: wf-1/many_genomes
       mash_folder: wf-1/mash_folder
