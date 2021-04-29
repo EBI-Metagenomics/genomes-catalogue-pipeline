@@ -11,7 +11,7 @@ requirements:
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
-baseCommand: ["split_drep.py"]
+baseCommand: [ split_drep.py ]
 
 
 inputs:

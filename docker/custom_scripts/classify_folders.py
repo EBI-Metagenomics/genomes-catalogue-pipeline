@@ -38,8 +38,9 @@ if __name__ == "__main__":
                 if not os.path.exists(path_cluster_many):
                     os.makedirs(path_cluster_many)
                 for genome in genomes:
-                    shutil.copy(os.path.join(drep_clusters, cluster, genome),
-                                os.path.join(path_cluster_many, genome))
+                    old_path = os.path.join(drep_clusters, cluster, genome)
+                    new_path = os.path.join(path_cluster_many, genome)
+                    shutil.copy(old_path, new_path)
                 mashes = [i for i in dir_files if i.endswith('mash.tsv')]
                 if len(mashes) > 0:
                     mash = mashes[0]
@@ -48,6 +49,7 @@ if __name__ == "__main__":
                 if not os.path.exists(path_cluster_one):
                     os.makedirs(path_cluster_one)
                 for genome in genomes:
-                    shutil.copy(os.path.join(drep_clusters, cluster, genome),
-                                os.path.join(path_cluster_one, genome))
+                    old_path = os.path.join(drep_clusters, cluster, genome)
+                    new_path = os.path.join(path_cluster_one, genome)
+                    shutil.copy(old_path, new_path)
 

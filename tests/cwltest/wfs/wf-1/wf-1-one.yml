@@ -1,3 +1,5 @@
 genomes_folder:
   class: Directory
-  path: ../../input_example/test-one
+  path: ../../../../input_example/test-one
+type_download: ENA
+ena_csv: ../../../../input_example/test-one/test-one.csv

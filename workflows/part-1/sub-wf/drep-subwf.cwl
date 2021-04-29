@@ -28,6 +28,7 @@ outputs:
     type: Directory
     outputSource: drep/dereplicated_genomes
 
+
 steps:
 
   drep:
@@ -50,4 +51,10 @@ steps:
     run: ../../../tools/drep/classify_folders.cwl
     in:
       clusters: split_drep/split_out
-    out: [many_genomes, one_genome, mash_folder]
+    out:
+      - many_genomes
+      - one_genome
+      - mash_folder
+      - stderr
+      - stdout
+

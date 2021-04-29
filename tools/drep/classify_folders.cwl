@@ -9,17 +9,23 @@ requirements:
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
-baseCommand: [classify_folders.py]
+baseCommand: [ classify_folders.py ]
 
 arguments:
   - valueFrom: $(inputs.clusters.location.split('file://')[1])
     prefix: '-i'
+
+stderr: stderr.txt
+stdout: stdout.txt
 
 inputs:
   clusters:
     type: Directory
 
 outputs:
+  stderr: stderr
+  stdout: stdout
+
   many_genomes:
     type: Directory[]?
     outputBinding:

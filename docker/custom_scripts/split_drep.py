@@ -3,6 +3,7 @@
 import os
 import sys
 import argparse
+from shutil import copy
 
 def getClusters(drep_out):
     clusters = {}
@@ -54,6 +55,6 @@ if __name__ == "__main__":
             for genome in genomes:
                 src = "%s/%s" % (os.path.abspath(args.fasta_folder), genome)
                 dst = "%s/%s" % (cluster_output, genome)
-                os.symlink(src, dst)
+                copy(src, dst)
             splitMash(args.drep_folder, genomes, args.output_folder, c)
                 
