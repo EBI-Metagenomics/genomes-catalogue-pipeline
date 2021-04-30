@@ -8,20 +8,25 @@ export NUM_CORES=8
 export PIPELINE_FOLDER=/hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/genomes-pipeline
 export CUR_DIR=${PIPELINE_FOLDER}/test
 
-while getopts :m:n:c:a:g: option; do
+export CWL=${PIPELINE_FOLDER}/workflows/wf-main.cwl
+export YML=${PIPELINE_FOLDER}/tests/cwltest/wfs/wf-main/wf-main-ena.yml
+
+while getopts :m:n:c:a:l:y: option; do
 	case "${option}" in
 		m) MEMORY=${OPTARG};;
 		n) NUM_CORES=${OPTARG};;
 		c) CUR_DIR=${OPTARG};;
 		a) NAME_RUN=${OPTARG};;
+		l) CWL=${OPTARG};;
+		y) YML=${OPTARG};;
 	esac
 done
 
 # --------------------------------- 1 ---------------------------------
 echo "Activating envs"
-#source /hps/nobackup/production/metagenomics/software/toil-20200722/v3nv/bin/activate
-#source /nfs/production/interpro/metagenomics/mags-scripts/annot-config
-#export PATH=$PATH:/homes/emgpr/.nvm/versions/node/v12.10.0/bin/
+source /hps/nobackup/production/metagenomics/software/toil-20200722/v3nv/bin/activate
+source /nfs/production/interpro/metagenomics/mags-scripts/annot-config
+export PATH=$PATH:/homes/emgpr/.nvm/versions/node/v12.10.0/bin/
 
 echo "Set folders"
 export WORK_DIR=${CUR_DIR}/work-dir
@@ -41,13 +46,10 @@ bgadd -L 50 /${USER}_${JOB_GROUP} > /dev/null
 bgmod -L 50 /${USER}_${JOB_GROUP} > /dev/null
 export TOIL_LSF_ARGS="-g /${USER}_${JOB_GROUP} -P bigmem"  #-q production-rh74
 
-export CWL=${PIPELINE_FOLDER}/workflows/wf-main.cwl
-export YML=${PIPELINE_FOLDER}/tests/wfs/wf-main-ena.yml
-
 # --------------------------------- 2 ---------------------------------
 echo "Out json would be in ${NAME_RUN}/out.json"
 
-rm -rf ${JOB_TOIL} && mkdir -p ${JOB_TOIL} ${TMPDIR} && \
+rm -rf ${JOB_TOIL}/${NAME_RUN} && mkdir -p ${TMPDIR} && \
 cd ${WORK_DIR} && \
 time toil-cwl-runner \
   --no-container \

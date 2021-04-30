@@ -30,6 +30,6 @@ inputs:
 
 outputs:
   downloaded_files:
-    type: Directory
+    type: Directory?
     outputBinding:
       glob: $(inputs.directory)

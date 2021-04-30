@@ -1,7 +1,7 @@
 download_from: ENA
 infile:
   class: File
-  path: ../tools/fetch_data/input_ena.txt
+  path: ../../../../input_example/input_ena.txt
 directory_name: ENA_download
 unzip: true
 mmseqs_limit_i:

@@ -1,0 +1,12 @@
+download_from: NCBI
+infile:
+  class: File
+  path: ../../../../input_example/input_ncbi.txt
+directory_name: NCBI_download
+unzip: true
+mmseqs_limit_i:
+  - 1.0
+  - 0.95
+  - 0.90
+  - 0.50
+mmseqs_limit_c: 0.8

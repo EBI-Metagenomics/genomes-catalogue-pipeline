@@ -30,10 +30,10 @@ inputs:
 
 outputs:
   downloaded_files:
-    type: Directory
+    type: Directory?
     outputBinding:
       glob: $(inputs.directory)
   stats_file:
-    type: File
+    type: File?
     outputBinding:
       glob: $(inputs.directory)/*.txt

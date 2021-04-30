@@ -1,6 +1,6 @@
 genomes_folder:
   class: Directory
-  path: ../../input_example/test-one
+  path: ../../../../input_example/test-one
 mmseqs_limit_i:
   - 1.0
   - 0.95

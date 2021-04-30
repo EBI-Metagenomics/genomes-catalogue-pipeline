@@ -21,19 +21,19 @@ arguments:
     valueFrom: 'fa'
     position: 2
   - valueFrom: --tab_table
-    position: 5
+    position: 3
 
 
 inputs:
   input_folder:
     type: Directory
     inputBinding:
-      position: 3
+      position: 4
 
   checkm_outfolder:
     type: string
     inputBinding:
-      position: 4
+      position: 5
 
 stdout: checkm.out
 

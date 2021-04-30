@@ -69,6 +69,10 @@ outputs:
 #    type: Directory
 #    outputSource: gtdbtk/gtdbtk_folder
 
+  flag_no_data:
+    type: File?
+    outputSource: download/flag_no-data
+
 
 steps:
 # ----------- << download data >> -----------
@@ -83,6 +87,7 @@ steps:
     out:
       - downloaded_folder
       - stats_download_ena
+      - flag_no-data
 
 # ---------- first part
   wf-1:

@@ -1,5 +1,6 @@
+download_from: ENA
 infile:
   class: File
   path: ../../../../input_example/input_ena.txt
-directory: ENA
-unzip: true
+directory_name: ena-test
+unzip: false

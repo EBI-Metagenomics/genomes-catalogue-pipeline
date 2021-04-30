@@ -25,8 +25,12 @@ outputs:
   stats_download_ena:
     type: File?
     outputSource: download_from_ena/stats_file
+  flag_no-data:
+    type: File?
+    outputSource: touch_flag/created_file
 
 steps:
+
   download_from_ena:
     run: ../../tools/fetch_data/fetch_ena.cwl
     when: $(inputs.type == 'ENA')
@@ -40,7 +44,7 @@ steps:
      - stats_file
 
   download_from_ncbi:
-    run: ../../tools/fetch_data/fetch_ena.cwl
+    run: ../../tools/fetch_data/fetch_ncbi.cwl
     when: $(inputs.type == 'NCBI')
     in:
       type: download_from
@@ -48,3 +52,12 @@ steps:
       directory: directory_name
       unzip: unzip
     out: [ downloaded_files ]
+
+  touch_flag:
+    run: ../../utils/touch_file.cwl
+    when: $(!inputs.downloaded_files_ena && !inputs.downloaded_files_ncbi)
+    in:
+      downloaded_files_ena: download_from_ena/downloaded_files
+      downloaded_files_ncbi: download_from_ncbi/downloaded_files
+      filename: { default: "no-data" }
+    out: [ created_file ]

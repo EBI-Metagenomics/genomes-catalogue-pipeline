@@ -250,3 +250,65 @@
             basename: "GUT_GENOME001921.fa"
             checksum: "sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8"
             size: 2369043
+
+# 5 Subwf: fetch-data-subwf
+- job: fetch_data/ena.yml
+  tool: ../../../workflows/part-1/fetch_data.cwl
+  short_name: fetch_data.cwl
+  doc: "Fetch from ENA"
+  output:
+    flag_no-data: null
+    stats_download_ena:
+      class: File
+      basename: "genome_stats.txt"
+      size: 261
+    downloaded_folder:
+      basename: "ena-test"
+      class: Directory
+      listing:
+        - basename: "CAJPIV01.fa.gz"
+          size: 751553
+          class: File
+        - basename: "CAJPIP01.fa.gz"
+          size: 385838
+          class: File
+        - basename: "CAJPIR01.fa.gz"
+          size: 448396
+          class: File
+        - basename: "CAJPIT01.fa.gz"
+          size: 572101
+          class: File
+        - basename: "genome_stats.txt"
+          size: 261
+          class: File
+        - basename: "CAJPIQ01.fa.gz"
+          size: 235137
+          class: File
+        - basename: "CAJPIW01.fa.gz"
+          size: 374955
+          class: File
+        - basename: "CAJPIO01.fa.gz"
+          size: 260558
+          class: File
+        - basename: "CAJPIU01.fa.gz"
+          size: 600919
+          class: File
+
+# 6 Subwf: fetch-data-subwf
+- job: fetch_data/ncbi.yml
+  tool: ../../../workflows/part-1/fetch_data.cwl
+  short_name: fetch_data.cwl
+  doc: "Fetch from NCBI"
+  output:
+    flag_no-data: null
+    stats_download_ena: null
+    downloaded_folder:
+      basename: "ncbi-test"
+      class: Directory
+      listing:
+        - basename: "GCA_009108045.fa.gz"
+          size: 1612320
+          class: File
+        - basename: "GCA_009148315.fa.gz"
+          size: 655874
+          class: File
