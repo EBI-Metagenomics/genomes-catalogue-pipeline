@@ -11,6 +11,10 @@ requirements:
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
+hints:
+  DockerRequirement:
+    dockerPull: microbiomeinformatics/genomes-pipeline.checkm:v1
+
 baseCommand: ["checkm", "lineage_wf"]
 
 arguments:

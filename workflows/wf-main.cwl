@@ -10,13 +10,17 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
+  # download params
   download_from: string?  # ENA or NCBI
   infile: File?            # file containing a list of GenBank accessions, one accession per line
   directory_name: string?  # directory name to download files to
   unzip: boolean?
 
+  # no download
   genomes: Directory?
+  csv: File?
 
+  # common input
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
 
@@ -77,7 +81,7 @@ outputs:
 steps:
 # ----------- << download data >> -----------
   download:
-    when: $(inputs.download_from !== undefined)
+    when: $(Boolean(inputs.download_from))
     run: part-1/fetch_data.cwl
     in:
       download_from: download_from
@@ -94,7 +98,11 @@ steps:
     run: part-1/wf-1.cwl
     in:
       type_download: download_from
-      ena_csv: download/stats_download_ena
+      ena_csv:
+        source:
+          - download/stats_download_ena
+          - csv
+        pickValue: first_non_null
       genomes_folder:
         source:
           - download/downloaded_folder

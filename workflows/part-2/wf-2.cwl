@@ -57,7 +57,7 @@ steps:
 
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
-    when: $(inputs.input_clusters != 'null')
+    when: $(Boolean(inputs.input_clusters))
     run: many-genomes/wrapper-many-genomes.cwl
     in:
       input_clusters: many_genomes
@@ -72,7 +72,7 @@ steps:
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
-    when: $(inputs.input_cluster != 'null')
+    when: $(Boolean(inputs.input_cluster))
     run: one-genome/wrapper-one-genome.cwl
     in:
       input_cluster: one_genome

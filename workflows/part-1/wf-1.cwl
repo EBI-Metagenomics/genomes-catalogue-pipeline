@@ -11,7 +11,7 @@ requirements:
 
 inputs:
   genomes_folder: Directory
-  type_download: string
+  type_download: string?
   ena_csv: File?
 
 outputs:
