@@ -1,6 +1,11 @@
 genomes:
   class: Directory
   path: ../../../../input_example/test-many
+
+csv:
+  class: File
+  path: ../../../../input_example/test-many/test-many.csv
+
 mmseqs_limit_i:
   - 1.0
   - 0.95

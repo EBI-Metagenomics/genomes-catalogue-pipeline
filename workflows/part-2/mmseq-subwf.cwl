@@ -31,7 +31,7 @@ outputs:
 steps:
 
   flatten_many:
-   when: $(inputs.arrayTwoDim !== undefined)
+   when: $(Boolean(inputs.arrayTwoDim))
    run: ../../utils/flatten_array.cwl
    in:
      arrayTwoDim: prokka_many

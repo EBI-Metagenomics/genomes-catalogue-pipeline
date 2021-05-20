@@ -61,7 +61,7 @@ steps:
     run: many-genomes/wrapper-many-genomes.cwl
     in:
       input_clusters: many_genomes
-      mash_files: mash_folder
+      mash_folder: mash_folder
     out:
       - mash_folder
       - many_genomes

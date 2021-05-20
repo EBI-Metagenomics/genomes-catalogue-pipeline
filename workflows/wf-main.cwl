@@ -27,7 +27,7 @@ inputs:
 
 outputs:
   output_csv:
-    type: File
+    type: File?
     outputSource:
       - download/stats_download_ena
       - wf-1/ncbi_csv
