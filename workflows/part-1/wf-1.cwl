@@ -12,7 +12,10 @@ requirements:
 inputs:
   genomes_folder: Directory
   type_download: string?
-  ena_csv: File?
+  ena_csv:
+    type:
+      - 'null'
+      - File
 
 outputs:
   ncbi_csv:
