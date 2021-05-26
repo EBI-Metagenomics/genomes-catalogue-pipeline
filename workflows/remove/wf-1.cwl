@@ -38,16 +38,6 @@ outputs:
 
 steps:
 
-# ----------- << checkm >> -----------
-  checkm_subwf:
-    run: sub-wf/checkm-subwf.cwl
-    when: $(inputs.type == "NCBI")
-    in:
-      type: type_download
-      genomes_folder: genomes_folder
-    out:
-      - checkm_csv
-
 # ----------- << drep subwf >> -----------
   drep_subwf:
     run: sub-wf/drep-subwf.cwl

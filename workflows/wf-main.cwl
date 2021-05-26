@@ -26,12 +26,9 @@ inputs:
 
 
 outputs:
-  output_csv:
-    type: File?
-    outputSource:
-      - download/stats_download_ena
-      - wf-1/ncbi_csv
-    pickValue: first_non_null
+  #output_csv:
+  #  type: File?
+  #  outputSource: download/stats_download
 
   mash_folder:
     type: Directory?
@@ -90,38 +87,37 @@ steps:
       unzip: unzip
     out:
       - downloaded_folder
-      - stats_download_ena
+      - stats_download
       - flag_no-data
 
-# ---------- first part
-  wf-1:
-    run: part-1/wf-1.cwl
+# ---------- first part - dRep
+  drep_subwf:
+    run: part-1/sub-wf/drep-subwf.cwl
     in:
-      type_download: download_from
-      ena_csv:
-        source:
-          - download/stats_download_ena
-          - csv
-        pickValue: first_non_null
       genomes_folder:
         source:
           - download/downloaded_folder
           - genomes
         pickValue: first_non_null
+      input_csv:
+        source:
+          - download/stats_download  # for ENA / NCBI
+          - csv  # for no fetch
+        pickValue: first_non_null
     out:
-      - ncbi_csv
       - many_genomes
       - one_genome
       - mash_folder
       - dereplicated_genomes
 
+
 # ---------- second part
   wf-2:
     run: part-2/wf-2.cwl
     in:
-      many_genomes: wf-1/many_genomes
-      mash_folder: wf-1/mash_folder
-      one_genome: wf-1/one_genome
+      many_genomes: drep_subwf/many_genomes
+      mash_folder: drep_subwf/mash_folder
+      one_genome: drep_subwf/one_genome
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
     out:
@@ -139,6 +135,6 @@ steps:
 #  gtdbtk:
 #    run: ../tools/gtdbtk/gtdbtk.cwl
 #    in:
-#      drep_folder: wf-1/dereplicated_genomes
+#      drep_folder: drep_subwf/dereplicated_genomes
 #      gtdb_outfolder: { default: 'gtdb-tk_output' }
 #    out: [ gtdbtk_folder ]
