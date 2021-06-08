@@ -27,9 +27,18 @@ outputs:
   dereplicated_genomes:
     type: Directory
     outputSource: drep/dereplicated_genomes
+  weights_file:
+    type: File
+    outputSource: generate_weights/file_with_weights
 
 
 steps:
+  generate_weights:
+    run: ../../../tools/generate_weight_table/generate_extra_weight_table.cwl
+    in:
+      input_directory: genomes_folder
+      output: { default: "extra_weight_table.txt" }
+    out: [ file_with_weights ]
 
   drep:
     run: ../../../tools/drep/drep.cwl
@@ -37,6 +46,7 @@ steps:
       genomes: genomes_folder
       drep_outfolder: { default: 'drep_outfolder' }
       checkm_csv: input_csv
+      extra_weights: generate_weights/file_with_weights
     out: [ out_folder, dereplicated_genomes ]
 
   split_drep:

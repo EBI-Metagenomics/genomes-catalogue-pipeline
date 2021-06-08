@@ -54,6 +54,12 @@ inputs:
       position: 8
       prefix: '--genomeInfo'
 
+  extra_weights:
+    type: File?
+    inputBinding:
+      position: 11
+      prefix: '-extraW'
+
 outputs:
 
   out_folder:

@@ -74,6 +74,10 @@ outputs:
     type: File?
     outputSource: download/flag_no-data
 
+  weights:
+    type: File
+    outputSource: drep_subwf/weights_file
+
 
 steps:
 # ----------- << download data >> -----------
@@ -109,7 +113,7 @@ steps:
       - one_genome
       - mash_folder
       - dereplicated_genomes
-
+      - weights_file
 
 # ---------- second part
   wf-2:

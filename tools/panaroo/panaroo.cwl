@@ -26,6 +26,7 @@ arguments:
   - valueFrom: "0.5"
     position: 8
     prefix: "-f"
+  - valueFrom: "--no_clean_edges"
 
 inputs:
   threads:
