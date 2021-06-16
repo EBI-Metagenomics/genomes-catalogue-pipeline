@@ -10,3 +10,4 @@ mmseqs_limit_i:
   - 0.90
   - 0.50
 mmseqs_limit_c: 0.8
+skip_gtdbtk_step: skip

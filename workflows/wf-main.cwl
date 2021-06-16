@@ -20,15 +20,18 @@ inputs:
   genomes: Directory?
   csv: File?
 
+  # no gtdbtk
+  skip_gtdbtk_step: string
+
   # common input
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
 
 
 outputs:
-  #output_csv:
-  #  type: File?
-  #  outputSource: download/stats_download
+  output_csv:
+    type: File?
+    outputSource: download/stats_download
 
   mash_folder:
     type: Directory?
@@ -66,9 +69,9 @@ outputs:
     type: Directory
     outputSource: wf-2/mmseqs_output
 
-#  gtdbtk:
-#    type: Directory
-#    outputSource: gtdbtk/gtdbtk_folder
+  gtdbtk:
+    type: Directory
+    outputSource: gtdbtk/gtdbtk_folder
 
   flag_no_data:
     type: File?
@@ -136,9 +139,11 @@ steps:
       - mmseqs_output
 
 # ----------- << GTDB - Tk >> -----------
-#  gtdbtk:
-#    run: ../tools/gtdbtk/gtdbtk.cwl
-#    in:
-#      drep_folder: drep_subwf/dereplicated_genomes
-#      gtdb_outfolder: { default: 'gtdb-tk_output' }
-#    out: [ gtdbtk_folder ]
+  gtdbtk:
+    when: $(inputs.skip_flag !== 'skip')
+    run: ../tools/gtdbtk/gtdbtk.cwl
+    in:
+      skip_flag: skip_gtdbtk_step
+      drep_folder: drep_subwf/dereplicated_genomes
+      gtdb_outfolder: { default: 'gtdb-tk_output' }
+    out: [ gtdbtk_folder ]
