@@ -1,8 +1,0 @@
-seq:
-  class: File
-  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/genomes-pipeline/result-one-tmp/cluster_1_0/prokka_output/GUT_GENOME000465.faa
-
-db: mmseqs.db
-
-limit_i: 1.0
-limit_c: 0.8

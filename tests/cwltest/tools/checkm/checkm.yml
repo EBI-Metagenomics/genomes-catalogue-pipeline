@@ -1,5 +1,5 @@
 input_folder:
   class: Directory
-  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/genomes-pipeline/test/NCBI_download
+  path: ../../../../input_example/test-one
 
 checkm_outfolder: checkm_outfolder_test

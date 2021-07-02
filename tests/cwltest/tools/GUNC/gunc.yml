@@ -1,0 +1,3 @@
+input_fasta:
+  class: File
+  path: test.faa
