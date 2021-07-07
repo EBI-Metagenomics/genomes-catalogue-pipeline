@@ -27,6 +27,8 @@ inputs:
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
 
+  gunc_db_path: string
+
 
 outputs:
   output_csv:
@@ -127,6 +129,7 @@ steps:
       one_genome: drep_subwf/one_genome
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
+      gunc_db_path: gunc_db_path
     out:
       - mash_folder
       - many_genomes

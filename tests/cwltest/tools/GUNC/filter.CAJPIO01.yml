@@ -1,0 +1,7 @@
+csv:
+  class: File
+  path: ../../../../input_example/ENA/genome_stats.txt
+
+gunc:
+  class: File
+  path: ../../../../input_example/ENA/GUNC/CAJPIT01.GUNC.maxCSS_level.tsv

@@ -12,7 +12,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/gunc:v1"
+    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.gunc:v2"
 
 baseCommand: [ "filter.sh" ]
 

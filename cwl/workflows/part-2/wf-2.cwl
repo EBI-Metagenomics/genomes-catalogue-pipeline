@@ -16,6 +16,7 @@ inputs:
   mmseqs_limit_c: float         # common
   mmseqs_limit_i: float[]       # common
   csv: File
+  gunc_db_path: string
 
 outputs:
   mash_folder:
@@ -78,6 +79,7 @@ steps:
     in:
       input_cluster: one_genome
       csv: csv
+      gunc_db_path: gunc_db_path
     out:
       - prokka_faa-s
       - cluster_folder

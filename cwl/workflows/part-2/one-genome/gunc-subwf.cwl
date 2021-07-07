@@ -12,6 +12,7 @@ requirements:
 inputs:
   input_fasta: File
   input_csv: File
+  gunc_db_path: string
 
 outputs:
   complete-flag:
@@ -26,7 +27,7 @@ steps:
     run: ../../../tools/GUNC/gunc.cwl
     in:
       input_fasta: input_fasta
-      outdir_gunc: { default: "gunc_output" }
+      db_path: gunc_db_path
     out: [ gunc_tsv ]
 
   filter:

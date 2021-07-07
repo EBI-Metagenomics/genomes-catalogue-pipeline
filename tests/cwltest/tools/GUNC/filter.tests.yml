@@ -1,0 +1,26 @@
+#cwltest
+
+- job: filter.passed.yml
+  tool: ../../../../cwl/tools/GUNC/filter_gunc.cwl
+  short_name: filter_gunc.cwl
+  doc: "filter GUNC output. passed"
+  output:
+    complete:
+      basename: "complete.txt"
+      class: File
+      size: 0
+      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+    empty: null
+
+
+- job: filter.CAJPIO01.yml
+  tool: ../../../../cwl/tools/GUNC/filter_gunc.cwl
+  short_name: filter_gunc.cwl
+  doc: "filter GUNC output. empty"
+  output:
+    empty:
+      basename: "empty.txt"
+      class: File
+      size: 0
+      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+    complete: null

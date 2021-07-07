@@ -33,5 +33,10 @@ RUN pip3 install gunc
 RUN mkdir /data
 WORKDIR /data
 
+COPY filter.sh /tools/
+RUN chmod a+x /tools/*
+
+ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools
+
 # Entrypoint
 CMD ["/bin/bash", "-c"]

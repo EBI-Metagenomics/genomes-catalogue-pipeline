@@ -11,6 +11,7 @@ requirements:
 
 inputs:
   cluster: Directory
+  gunc_db_path: string
   csv: File
 
 outputs:
@@ -43,6 +44,7 @@ steps:
         source: preparation/files
         valueFrom: $(self[0])
       input_csv: csv
+      gunc_db_path: gunc_db_path
     out:
       - complete-flag
       - empty-flag

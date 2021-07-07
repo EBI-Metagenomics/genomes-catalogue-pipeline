@@ -12,6 +12,7 @@ requirements:
 inputs:
   input_cluster: Directory[]
   csv: File
+  gunc_db_path: string
 
 outputs:
 
@@ -36,6 +37,7 @@ steps:
     in:
       cluster: input_cluster
       csv: csv
+      gunc_db_path: gunc_db_path
     out:
       - prokka_faa-s  # File
       - cluster_folder  # Dir
