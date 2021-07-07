@@ -1,0 +1,3 @@
+requests~=2.22.0
+retry
+xmltodict~=0.12.0

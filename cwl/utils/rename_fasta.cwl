@@ -11,11 +11,10 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../docker/genome-catalog-update/scripts/rename_fasta.py
+        location: ../../docker/genomes-catalog-update/scripts/rename_fasta.py
 
 hints:
   DockerRequirement:
-    #dockerPull: microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1
     dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
 
 baseCommand: [ rename_fasta.py ]

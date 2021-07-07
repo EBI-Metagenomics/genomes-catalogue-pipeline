@@ -11,7 +11,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/genome-catalog-update/scripts/generate_extra_weight_table.py
+        location: ../../../docker/genomes-catalog-update/scripts/generate_extra_weight_table.py
 
 hints:
   DockerRequirement:

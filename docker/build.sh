@@ -12,7 +12,7 @@ cd drep && docker build -t microbiomeinformatics/${NAME}.drep:v1 .
 cd eggnong && docker build -t microbiomeinformatics/${NAME}.eggnog:v1 .
 
 # genome-catalog-update [ pushed ]
-cd genome-catalog-update && docker build -t microbiomeinformatics/${NAME}.genome-catalog-update:v1 .
+cd genomes-catalog-update && docker build -t microbiomeinformatics/${NAME}.genome-catalog-update:v1 .
 
 # mmseqs
 cd  mmseqs && docker build -t microbiomeinformatics/${NAME}-mmseqs:v1 .
