@@ -1,0 +1,12 @@
+genomes:
+  class: Directory
+  path: ../../../../input_example/ENA
+drep_outfolder: drep-output
+
+checkm_csv:
+  class: File
+  path: ../../../../input_example/ENA/genome_stats.txt
+
+extra_weights:
+  class: File
+  path: ../../../../input_example/ENA/weights.tsv

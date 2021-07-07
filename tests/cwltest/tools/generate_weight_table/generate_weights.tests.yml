@@ -1,0 +1,12 @@
+#cwltest
+
+- job: generate_weights.yml
+  tool: ../../../../cwl/tools/generate_weight_table/generate_extra_weight_table.cwl
+  short_name: generate_extra_weight_table.cwl
+  doc: "generate extra weights for dRep step"
+  output:
+    file_with_weights:
+      basename: "weights.tsv"
+      class: File
+      size: 126
+      checksum: sha1$68140740a58bdc4e78bba671704669f21016f23a

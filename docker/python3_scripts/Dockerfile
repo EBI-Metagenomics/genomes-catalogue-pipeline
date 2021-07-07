@@ -4,14 +4,16 @@ LABEL maintainer="Ekaterina Sakharova <kates@ebi.ac.uk>"
 
 RUN apt-get update && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir -q biopython
+RUN /usr/local/bin/python -m pip install --upgrade pip && pip install --no-cache-dir -q biopython
 
+COPY requirements.txt /
+RUN pip install -r /requirements.txt
 
 COPY checkm2csv.py \
      classify_folders.py \
      split_drep.py \
      translate_genes.py \
-/tools
+/tools/
 
 RUN chmod a+x /tools/*
 

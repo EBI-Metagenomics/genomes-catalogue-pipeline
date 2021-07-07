@@ -29,8 +29,6 @@ RUN wget -O prodigal https://github.com/hyattpd/Prodigal/releases/download/v$pro
 # Install GUNC
 RUN pip3 install gunc
 
-RUN mkdir /gunc_db && gunc download_db /gunc_db
-
 # Workdir
 RUN mkdir /data
 WORKDIR /data
