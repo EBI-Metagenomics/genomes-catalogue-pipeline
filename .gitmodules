@@ -1,0 +1,3 @@
+[submodule "docker/genome-catalog-update"]
+	path = docker/genome-catalog-update
+	url = https://github.com/EBI-Metagenomics/genome-catalog-update.git

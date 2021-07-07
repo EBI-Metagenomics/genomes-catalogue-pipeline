@@ -1,0 +1,339 @@
+#cwltest
+
+- job: drep.yml
+  tool: ../../../../cwl/tools/drep/drep.cwl
+  short_name: drep.cwl
+  doc: "dRep"
+  output:
+    dereplicated_genomes:
+      basename: dereplicated_genomes
+      class: Directory
+      listing:
+        - class: File
+          basename: CAJPIT01.fa
+          checksum: sha1$004aaf3f2a302b9d579087cdec4e96e98ea405bd
+          size: 1880698
+        - class: File
+          basename: CAJPIU01.fa
+          checksum: sha1$6aa4ac4d4588ffc2235b488f20e6b045d203a12e
+          size: 1977565
+        - class: File
+          basename: CAJPIR01.fa
+          checksum: sha1$3dd96cc178852a49e06545ddacd3ee4aa0207c01
+          size: 1468727
+        - class: File
+          basename: CAJPIS01.fa
+          checksum: sha1$7df5bd1ae657ac611d76aa3f0b3af49421243072
+          size: 1222952
+        - class: File
+          basename: CAJPIP01.fa
+          checksum: sha1$58ac66bb7216b9b2a5c641e84c2afa17f417795b
+          size: 1283947
+        - class: File
+          basename: CAJPIQ01.fa
+          checksum: sha1$3c1fae5b3569b743849dece6ae644b3df7a79be2
+          size: 772051
+        - class: File
+          basename: CAJPIV01.fa
+          checksum: sha1$9c62c170cc83779e1964e8ebc1b8c34d4cc7ce82
+          size: 2476921
+        - class: File
+          basename: CAJPIO01.fa
+          checksum: sha1$53ea8ae9cf9e2d3ccf025bb1bda87e892a0f8bc3
+          size: 846466
+        - class: File
+          basename: CAJPIW01.fa
+          checksum: sha1$025083cc704a34bf85fdef28c14f8eb6ad436f0a
+          size: 1238006
+    out_folder:
+      basename: drep-output
+      class: Directory
+      listing:
+        - class: Directory
+          basename: data_tables
+          listing:
+            - class: File
+              basename: genomeInfo.csv
+              checksum: sha1$4ed41e93950525f26fd0525c16c8cc60cbd8773b
+              size: 367
+            - class: File
+              basename: Mdb.csv
+              checksum: sha1$0aa29b7ca5a37f0698a473361724006d73e1dd18
+              size: 2624
+            - class: File
+              basename: Ndb.csv
+              checksum: sha1$84d7b4112f2d52cd6d5e4dbe690363a9453b0d30
+              size: 1009
+            - class: File
+              basename: Wdb.csv
+              checksum: sha1$933e8e5807a0df8525f726b576d3f6c1d3cdf716
+              size: 326
+            - class: File
+              basename: Sdb.csv
+              checksum: sha1$ed16e7f756319f80511fb577ba32e70e82fbe8d6
+              size: 282
+            - class: File
+              basename: genomeInformation.csv
+              checksum: sha1$86ba89964028af3836d3824097ce57c2f91e5dee
+              size: 414
+            - class: File
+              basename: Bdb.csv
+              checksum: sha1$456b1c40700c024a60b9a1853878926923fb8e9f
+              size: 822
+            - class: File
+              basename: Widb.csv
+              checksum: sha1$286646505a70add2f3a8a9322b1b8e9a8bc2c936
+              size: 825
+            - class: File
+              basename: Cdb.csv
+              checksum: sha1$2a2b4cbf2ba5511acf5f8524c9cd9b084fe6377f
+              size: 564
+        - class: Directory
+          basename: dereplicated_genomes
+          listing:
+            - class: File
+              basename: CAJPIT01.fa
+              checksum: sha1$004aaf3f2a302b9d579087cdec4e96e98ea405bd
+              size: 1880698
+            - class: File
+              basename: CAJPIU01.fa
+              checksum: sha1$6aa4ac4d4588ffc2235b488f20e6b045d203a12e
+              size: 1977565
+            - class: File
+              basename: CAJPIR01.fa
+              checksum: sha1$3dd96cc178852a49e06545ddacd3ee4aa0207c01
+              size: 1468727
+            - class: File
+              basename: CAJPIS01.fa
+              checksum: sha1$7df5bd1ae657ac611d76aa3f0b3af49421243072
+              size: 1222952
+            - class: File
+              basename: CAJPIP01.fa
+              checksum: sha1$58ac66bb7216b9b2a5c641e84c2afa17f417795b
+              size: 1283947
+            - class: File
+              basename: CAJPIQ01.fa
+              checksum: sha1$3c1fae5b3569b743849dece6ae644b3df7a79be2
+              size: 772051
+            - class: File
+              basename: CAJPIV01.fa
+              checksum: sha1$9c62c170cc83779e1964e8ebc1b8c34d4cc7ce82
+              size: 2476921
+            - class: File
+              basename: CAJPIO01.fa
+              checksum: sha1$53ea8ae9cf9e2d3ccf025bb1bda87e892a0f8bc3
+              size: 846466
+            - class: File
+              basename: CAJPIW01.fa
+              checksum: sha1$025083cc704a34bf85fdef28c14f8eb6ad436f0a
+              size: 1238006
+        - class: Directory
+          basename: figures
+          listing:
+            - class: File
+              basename: Clustering_scatterplots.pdf
+              checksum: sha1$7dd8f93e851704868e435047f971ac106ddb970c
+              size: 24274
+            - class: File
+              basename: Cluster_scoring.pdf
+              checksum: sha1$5f30b8ea6b7af044cc7e399233e2dff04ef98e91
+              size: 29202
+            - class: File
+              basename: Winning_genomes.pdf
+              checksum: sha1$849ef53c39ebba39f9a992280a4ddb6adc553927
+              size: 18528
+            - class: File
+              basename: Secondary_clustering_dendrograms.pdf
+              checksum: sha1$1c704054a91b5d732fd2dc63626610c706e2fb63
+              size: 793
+            - class: File
+              basename: Secondary_clustering_MDS.pdf
+              checksum: sha1$1c704054a91b5d732fd2dc63626610c706e2fb63
+              size: 793
+            - class: File
+              basename: Primary_clustering_dendrogram.pdf
+              checksum: sha1$294e9535605aeca39419162cd4389b7a94a25542
+              size: 16891
+        - class: Directory
+          basename: log
+          listing:
+            - class: File
+              basename: warnings.txt
+              checksum: sha1$adc83b19e793491b1c6ea0fd8b46cd9f32e592fc
+              size: 1
+            - class: File
+              basename: cluster_arguments.json
+              checksum: sha1$b20b5baec398e61c998592297f60384b15f3fd33
+              size: 1005
+            - class: File
+              basename: logger.log
+              checksum: sha1$14f64d4bc68e61d7cee474ccc3ab1f082b7c7513
+              size: 45695
+        - class: Directory
+          basename: data
+          listing:
+            - class: Directory
+              basename: MASH_files
+              listing:
+                - class: Directory
+                  basename: MASH_files
+                  listing:
+                    - class: Directory
+                      basename: sketches
+                      listing:
+                        - class: Directory
+                          basename: chunk_0
+                          listing:
+                            - class: File
+                              basename: CAJPIR01.fa.msh
+                              checksum: sha1$2e28a81e73315ae8466e7f61b131ff79282e94c9
+                              size: 8272
+                            - class: File
+                              basename: CAJPIS01.fa.msh
+                              checksum: sha1$66ab5e636643f48b1472a81b78d16dd9bdc25cf3
+                              size: 8272
+                            - class: File
+                              basename: CAJPIU01.fa.msh
+                              checksum: sha1$47b99f9f21ab29b1f1cc1c118f175ac5af398271
+                              size: 8272
+                            - class: File
+                              basename: CAJPIT01.fa.msh
+                              checksum: sha1$a01043fd39c5f2b391f5c9bb1a9304cd1a50f760
+                              size: 8272
+                            - class: File
+                              basename: CAJPIQ01.fa.msh
+                              checksum: sha1$11855fdc92e5d3bf41edb330fe2c6ca575fb04ed
+                              size: 8272
+                            - class: File
+                              basename: CAJPIP01.fa.msh
+                              checksum: sha1$3cc4f109d002156a1997c1e78c68d6a0ba9a2971
+                              size: 8272
+                            - class: File
+                              basename: CAJPIO01.fa.msh
+                              checksum: sha1$96fa501bc53a741c8718d54d65b0d6953d921dc1
+                              size: 8272
+                            - class: File
+                              basename: chunk_all.msh
+                              checksum: sha1$757c4e529361c9cdb27bf9d73803e4fa7f970cf5
+                              size: 73560
+                            - class: File
+                              basename: CAJPIV01.fa.msh
+                              checksum: sha1$80805995fb7bfa27b1c3f3783421cffb3e0dfd78
+                              size: 8272
+                            - class: File
+                              basename: CAJPIW01.fa.msh
+                              checksum: sha1$825ae0f3e623866ef49d49be910671e280e2b560
+                              size: 8272
+                    - class: File
+                      basename: chunk_0_MASH_table.tsv
+                      checksum: sha1$b935ea802debf27dd82abb5e8044a6dc4fa4c8ee
+                      size: 12096
+            - class: Directory
+              basename: Clustering_files
+              listing:
+                - class: File
+                  basename: primary_linkage.pickle
+                  checksum: sha1$6e7cddff4d04a8c0dbe3ae76d546a793e5bcbbbc
+                  size: 2227
+            - class: Directory
+              basename: ANImf_files
+              listing:
+                - class: Directory
+                  basename: CAJPIT01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIT01.fa_vs_CAJPIT01.fa.delta.filtered
+                      checksum: sha1$5f1bd5f19357582c74975e5c5e5ea0cbb72b2501
+                      size: 18398
+                    - class: File
+                      basename: CAJPIT01.fa_vs_CAJPIT01.fa.delta
+                      checksum: sha1$048e5dc4f9b597ebfe83e4caa26622b65f81dfe3
+                      size: 18398
+                - class: Directory
+                  basename: CAJPIU01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIU01.fa_vs_CAJPIU01.fa.delta.filtered
+                      checksum: sha1$1e199fd49d1938134112725b168a40098acc2b8d
+                      size: 35516
+                    - class: File
+                      basename: CAJPIU01.fa_vs_CAJPIU01.fa.delta
+                      checksum: sha1$8c2b723f73ffcec2716df7dd4274a01840f97caa
+                      size: 35869
+                - class: Directory
+                  basename: CAJPIR01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIR01.fa_vs_CAJPIR01.fa.delta.filtered
+                      checksum: sha1$315444236157fa84377a6c0ed7e047a3e8eb8fbe
+                      size: 12133
+                    - class: File
+                      basename: CAJPIR01.fa_vs_CAJPIR01.fa.delta
+                      checksum: sha1$2bf6c40172bda028edd912aa4639e756369a75ca
+                      size: 13558
+                - class: Directory
+                  basename: CAJPIS01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIS01.fa_vs_CAJPIS01.fa.delta.filtered
+                      checksum: sha1$4eaf17e46133e453988912f838266aa6c251b2dc
+                      size: 18690
+                    - class: File
+                      basename: CAJPIS01.fa_vs_CAJPIS01.fa.delta
+                      checksum: sha1$d9c52afd23aabfbdbc3d2dcb9b1574d0456ede8b
+                      size: 19136
+                - class: Directory
+                  basename: CAJPIP01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIP01.fa_vs_CAJPIP01.fa.delta.filtered
+                      checksum: sha1$43095481cdad040d52c55be2bcd71a6b78cc8134
+                      size: 23567
+                    - class: File
+                      basename: CAJPIP01.fa_vs_CAJPIP01.fa.delta
+                      checksum: sha1$f2f8563be7677f6b5d1d23fe495dfea20d41470c
+                      size: 23567
+                - class: Directory
+                  basename: CAJPIQ01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIQ01.fa_vs_CAJPIQ01.fa.delta
+                      checksum: sha1$285024b8593548c9206b02abdcc221062d523823
+                      size: 11043
+                    - class: File
+                      basename: CAJPIQ01.fa_vs_CAJPIQ01.fa.delta.filtered
+                      checksum: sha1$08ba58c4b1e27974796257631cfe2b44f6bcafcb
+                      size: 7673
+                - class: Directory
+                  basename: CAJPIV01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIV01.fa_vs_CAJPIV01.fa.delta.filtered
+                      checksum: sha1$69e205647f275634cb9bafbe56bdc0ecd4bda0a1
+                      size: 31296
+                    - class: File
+                      basename: CAJPIV01.fa_vs_CAJPIV01.fa.delta
+                      checksum: sha1$b44a5274adffaefc561c27b3c5dceb2b47a0c00e
+                      size: 34256
+                - class: Directory
+                  basename: CAJPIO01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIO01.fa_vs_CAJPIO01.fa.delta.filtered
+                      checksum: sha1$20c9b528f7bb73685d14377358b07039adb139bf
+                      size: 1174
+                    - class: File
+                      basename: CAJPIO01.fa_vs_CAJPIO01.fa.delta
+                      checksum: sha1$419322c5c7afbb29d54deb848af4205737ac1fea
+                      size: 1174
+                - class: Directory
+                  basename: CAJPIW01.fa
+                  listing:
+                    - class: File
+                      basename: CAJPIW01.fa_vs_CAJPIW01.fa.delta
+                      checksum: sha1$44d369154eb58bec6f3dd748086f36f16b9d348c
+                      size: 26131
+                    - class: File
+                      basename: CAJPIW01.fa_vs_CAJPIW01.fa.delta.filtered
+                      checksum: sha1$25d7e8fb11acc1d3177ba0d124e9d1f5c2913c59
+                      size: 25917

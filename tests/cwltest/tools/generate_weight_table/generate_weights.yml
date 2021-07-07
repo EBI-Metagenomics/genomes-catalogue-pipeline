@@ -1,0 +1,4 @@
+output: weights.tsv
+input_directory:
+  class: Directory
+  path: ../../../../input_example/ENA

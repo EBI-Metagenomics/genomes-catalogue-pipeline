@@ -1,0 +1,6 @@
+genomes_folder:
+  class: Directory
+  path: ../../../../input_example/test-one
+input_csv:
+  class: File
+  path: ../../../../input_example/test-one/test-one.csv

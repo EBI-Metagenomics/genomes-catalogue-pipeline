@@ -1,9 +1,0 @@
-genomes_folder:
-  class: Directory
-  path: ../../input_example/test-one
-mmseqs_limit_i:
-  - 1.0
-  - 0.95
-  - 0.90
-  - 0.50
-mmseqs_limit_c: 0.8

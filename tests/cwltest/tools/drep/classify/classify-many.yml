@@ -1,0 +1,3 @@
+clusters:
+  class: Directory
+  path: ../input/many

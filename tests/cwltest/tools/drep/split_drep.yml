@@ -1,0 +1,7 @@
+genomes_folder:
+  class: Directory
+  path: ../../../../input_example/ENA/
+drep_folder:
+  class: Directory
+  path: ../../../../input_example/ENA/drep-output-small
+split_outfolder: split-drep-output

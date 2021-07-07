@@ -1,0 +1,70 @@
+#cwltest
+
+- job: classify/classify-one.yml
+  tool: ../../../../cwl/tools/drep/classify_folders.cwl
+  short_name: classify_folders.cwl
+  doc: "Classify folders only one"
+  output:
+    many_genomes: null
+    mash_folder: null
+    one_genome:
+      - basename: "1_1"
+        class: Directory
+        listing:
+          - class: File
+            basename: "1.fa"
+      - basename: "2_1"
+        class: Directory
+        listing:
+          - class: File
+            basename: "1.fa"
+
+- job: classify/classify-many.yml
+  tool: ../../../../cwl/tools/drep/classify_folders.cwl
+  short_name: classify_folders.cwl
+  doc: "Classify folders only many"
+  output:
+    many_genomes:
+      - basename: "1_1"
+        class: Directory
+        listing:
+          - class: File
+            basename: "1.fa"
+          - class: File
+            basename: "2.fa"
+      - basename: "2_1"
+        class: Directory
+        listing:
+          - class: File
+            basename: "1.fa"
+          - class: File
+            basename: "2.fa"
+    mash_folder:
+      - basename: "1.mash.tsv"
+        class: File
+      - basename: "2.mash.tsv"
+        class: File
+    one_genome: null
+
+- job: classify/classify-mixed.yml
+  tool: ../../../../cwl/tools/drep/classify_folders.cwl
+  short_name: classify_folders.cwl
+  doc: "Classify folders many and one"
+  output:
+    many_genomes:
+      - basename: "1_1"
+        class: Directory
+        listing:
+          - class: File
+            basename: "1.fa"
+          - class: File
+            basename: "2.fa"
+    mash_folder:
+      - basename: "1.mash.tsv"
+        class: File
+    one_genome:
+      - basename: "2_1"
+        class: Directory
+        listing:
+          - class: File
+            basename: "1.fa"

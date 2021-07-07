@@ -1,0 +1,7 @@
+genomes:
+  path: ../../../input_example/test-one
+  class: Directory
+prefix: MGYG
+start_number: 1
+output_filename: names
+output_dirname: renamed_genomes

@@ -1,0 +1,110 @@
+#cwltest
+
+- job: split_drep.yml
+  tool: ../../../../cwl/tools/drep/split_drep.cwl
+  short_name: split_drep.cwl
+  doc: "split dRep results into folders"
+  output:
+    split_out:
+      basename: split-drep-output
+      class: Directory
+      listing:
+        - class: Directory
+          basename: '1_0'
+          listing:
+            - class: File
+              basename: 1_0_mash.tsv
+              checksum: sha1$1eb2a9edd2ca529c4c0c13618273bc6dded56e27
+              size: 64
+            - class: File
+              basename: CAJPIO01.fa
+              checksum: sha1$53ea8ae9cf9e2d3ccf025bb1bda87e892a0f8bc3
+              size: 846466
+        - class: Directory
+          basename: '5_0'
+          listing:
+            - class: File
+              basename: CAJPIS01.fa
+              checksum: sha1$7df5bd1ae657ac611d76aa3f0b3af49421243072
+              size: 1222952
+            - class: File
+              basename: 5_0_mash.tsv
+              checksum: sha1$bd19ffd25635795e40568fe8857e2e2b405b79be
+              size: 64
+        - class: Directory
+          basename: '8_0'
+          listing:
+            - class: File
+              basename: CAJPIV01.fa
+              checksum: sha1$9c62c170cc83779e1964e8ebc1b8c34d4cc7ce82
+              size: 2476921
+            - class: File
+              basename: 8_0_mash.tsv
+              checksum: sha1$d7df966b92ffe7f4129b799fdf58fb104a2c0d85
+              size: 64
+        - class: Directory
+          basename: '2_0'
+          listing:
+            - class: File
+              basename: 2_0_mash.tsv
+              checksum: sha1$c2b66dfb7c18a8391e88843255fce44815e0080e
+              size: 64
+            - class: File
+              basename: CAJPIP01.fa
+              checksum: sha1$58ac66bb7216b9b2a5c641e84c2afa17f417795b
+              size: 1283947
+        - class: Directory
+          basename: '6_0'
+          listing:
+            - class: File
+              basename: CAJPIT01.fa
+              checksum: sha1$004aaf3f2a302b9d579087cdec4e96e98ea405bd
+              size: 1880698
+            - class: File
+              basename: 6_0_mash.tsv
+              checksum: sha1$076a5221d54e628fdbeb2fc7dd1f9c982dabb8f8
+              size: 64
+        - class: Directory
+          basename: '3_0'
+          listing:
+            - class: File
+              basename: 3_0_mash.tsv
+              checksum: sha1$db96008cb7e948b4395f6580b9932af441ac2fc0
+              size: 64
+            - class: File
+              basename: CAJPIQ01.fa
+              checksum: sha1$3c1fae5b3569b743849dece6ae644b3df7a79be2
+              size: 772051
+        - class: Directory
+          basename: '9_0'
+          listing:
+            - class: File
+              basename: 9_0_mash.tsv
+              checksum: sha1$f91eddd9585a8dea269cee620e22b3492cd53ada
+              size: 64
+            - class: File
+              basename: CAJPIW01.fa
+              checksum: sha1$025083cc704a34bf85fdef28c14f8eb6ad436f0a
+              size: 1238006
+        - class: Directory
+          basename: '7_0'
+          listing:
+            - class: File
+              basename: CAJPIU01.fa
+              checksum: sha1$6aa4ac4d4588ffc2235b488f20e6b045d203a12e
+              size: 1977565
+            - class: File
+              basename: 7_0_mash.tsv
+              checksum: sha1$087b055a4a7e92320e360476e5de15ef76f1b7ea
+              size: 64
+        - class: Directory
+          basename: '4_0'
+          listing:
+            - class: File
+              basename: CAJPIR01.fa
+              checksum: sha1$3dd96cc178852a49e06545ddacd3ee4aa0207c01
+              size: 1468727
+            - class: File
+              basename: 4_0_mash.tsv
+              checksum: sha1$8efb79e0ac5c3899d9b55c1f75c34a7901b3a941
+              size: 64

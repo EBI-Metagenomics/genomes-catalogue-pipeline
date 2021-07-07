@@ -1,0 +1,5 @@
+genomes_folder:
+  class: Directory
+  path: ../../../../input_example/test-many
+type_download: ENA
+ena_csv: ../../../../input_example/test-many/test-many.csv

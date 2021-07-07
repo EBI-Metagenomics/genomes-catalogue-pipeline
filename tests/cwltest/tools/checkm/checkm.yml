@@ -1,0 +1,5 @@
+input_folder:
+  class: Directory
+  path: ../../../../input_example/test-one
+
+checkm_outfolder: checkm_outfolder_test

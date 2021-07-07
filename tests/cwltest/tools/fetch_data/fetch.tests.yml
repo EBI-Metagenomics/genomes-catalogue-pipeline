@@ -1,0 +1,56 @@
+#cwltest
+
+- job: fetch_ena.yml
+  tool: ../../../../cwl/tools/fetch_data/fetch_ena.cwl
+  short_name: fetch_ena.cwl
+  doc: "fetch ENA"
+  output:
+    downloaded_files:
+      basename: ENA
+      class: Directory
+      listing:
+        - class: File
+          basename: CAJPIT01.fa
+          checksum: sha1$004aaf3f2a302b9d579087cdec4e96e98ea405bd
+          size: 1880698
+        - class: File
+          basename: CAJPIU01.fa
+          checksum: sha1$6aa4ac4d4588ffc2235b488f20e6b045d203a12e
+          size: 1977565
+        - class: File
+          basename: CAJPIR01.fa
+          checksum: sha1$3dd96cc178852a49e06545ddacd3ee4aa0207c01
+          size: 1468727
+        - class: File
+          basename: genome_stats.txt
+          checksum: sha1$ff0383769aa45919b5ccd8e864034ab530181d32
+          size: 234
+        - class: File
+          basename: CAJPIS01.fa
+          checksum: sha1$7df5bd1ae657ac611d76aa3f0b3af49421243072
+          size: 1222952
+        - class: File
+          basename: CAJPIP01.fa
+          checksum: sha1$58ac66bb7216b9b2a5c641e84c2afa17f417795b
+          size: 1283947
+        - class: File
+          basename: CAJPIQ01.fa
+          checksum: sha1$3c1fae5b3569b743849dece6ae644b3df7a79be2
+          size: 772051
+        - class: File
+          basename: CAJPIV01.fa
+          checksum: sha1$9c62c170cc83779e1964e8ebc1b8c34d4cc7ce82
+          size: 2476921
+        - class: File
+          basename: CAJPIO01.fa
+          checksum: sha1$53ea8ae9cf9e2d3ccf025bb1bda87e892a0f8bc3
+          size: 846466
+        - class: File
+          basename: CAJPIW01.fa
+          checksum: sha1$025083cc704a34bf85fdef28c14f8eb6ad436f0a
+          size: 1238006
+    stats_file:
+      basename: genome_stats.txt
+      class: File
+      checksum: sha1$ff0383769aa45919b5ccd8e864034ab530181d32
+      size: 234

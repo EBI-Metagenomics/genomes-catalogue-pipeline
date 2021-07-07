@@ -1,0 +1,13 @@
+genomes:
+  class: Directory
+  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/genomes-pipeline/ENA
+csv:
+  class: File
+  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/genomes-pipeline/ENA/genome_stats.txt
+download_from: ENA
+mmseqs_limit_i:
+  - 1.0
+  - 0.95
+  - 0.90
+  - 0.50
+mmseqs_limit_c: 0.8

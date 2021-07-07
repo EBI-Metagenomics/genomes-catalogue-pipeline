@@ -1,5 +1,0 @@
-input_fasta:
-  class: File
-  path:
-limit_i: 1.0
-limit_c: 0.8
