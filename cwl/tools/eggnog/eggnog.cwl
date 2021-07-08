@@ -6,7 +6,7 @@ label: "eggNOG"
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.eggnog:v1"
+    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.eggnog-mapper:v1"
 
 requirements:
   ResourceRequirement:

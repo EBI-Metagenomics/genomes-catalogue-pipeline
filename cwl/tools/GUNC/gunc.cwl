@@ -31,7 +31,7 @@ inputs:
 
 outputs:
   gunc_tsv:
-    type: Directory
+    type: File
     outputBinding:
       glob: "GUNC*maxCSS_level.tsv"
 

@@ -10,6 +10,13 @@ requirements:
     coresMin: 4
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
+  InitialWorkDirRequirement:
+    listing:
+      - class: File
+        location: ../../../docker/mash2nwk/mash2nwk1.R
+hints:
+  DockerRequirement:
+    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.mash2nwk:v1"
 
 baseCommand: ["mash2nwk1.R"]
 

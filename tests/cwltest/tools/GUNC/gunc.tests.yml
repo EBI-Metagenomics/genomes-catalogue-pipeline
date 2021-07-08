@@ -5,3 +5,9 @@
   short_name: gunc.cwl
   doc: "GUNC CAJPIT01"
   output:
+
+- job: gunc-CAJPIO01.yml
+  tool: ../../../../cwl/tools/GUNC/gunc.cwl
+  short_name: gunc.cwl
+  doc: "GUNC CAJPIO01"
+  output:
