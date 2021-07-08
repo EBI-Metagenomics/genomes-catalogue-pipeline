@@ -1,7 +1,0 @@
-#cwltest
-
-- job: checkm.yml
-  tool: ../../../../cwl/tools/checkm/checkm.cwl
-  short_name: checkm.cwl
-  doc: "CheckM"
-  output:
