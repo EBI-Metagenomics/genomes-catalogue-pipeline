@@ -1,0 +1,79 @@
+#cwltest
+
+- job: prokka-CAJPIO01.yml
+  tool: ../../../../cwl/tools/prokka/prokka.cwl
+  short_name: prokka.cwl
+  doc: prokka CAJPIO01
+  output:
+    faa:
+      basename: CAJPIO01.faa
+      class: File
+      checksum: sha1$ba6efd4a04910fbcf3c1991a8695c4806a080244
+      size: 290641
+    gff:
+      basename: CAJPIO01.gff
+      class: File
+      checksum: sha1$214fb08eca78952e0ae1f459c8e7fa2925ecdfbd
+      size: 1050664
+    outdir:
+      basename: prokka_CAJPIO01
+      class: Directory
+      listing:
+        - 
+          basename: CAJPIO01.log
+          class: File
+        - 
+          basename: CAJPIO01.ffn
+          checksum: sha1$bf4749c869269357f12ea07b978b6033fee19230
+          class: File
+          size: 808706
+        - 
+          basename: CAJPIO01.sqn
+          checksum: sha1$499a5454d96a3feedb456c822b4359e3572c2b39
+          class: File
+          size: 2904038
+        - 
+          basename: CAJPIO01.gbk
+          checksum: sha1$9ffdd4fd6d71598a0ea73ffbd5a167782dd09f68
+          class: File
+          size: 1742304
+        - 
+          basename: CAJPIO01.err
+          checksum: sha1$a145c6b6f1436f65dd2a508fa99cc2726b832dae
+          class: File
+          size: 309359
+        - 
+          basename: CAJPIO01.fsa
+          checksum: sha1$a9c0a076f676ec88c852bd50ee3223bd3fb3dd23
+          class: File
+          size: 845914
+        - 
+          basename: CAJPIO01.tsv
+          checksum: sha1$21155da3839fedcca0890646d76ba0ae5a74038e
+          class: File
+          size: 50138
+        - 
+          basename: CAJPIO01.tbl
+          checksum: sha1$ac116635b7a116b634d27a0b19529632aac1e774
+          class: File
+          size: 148788
+        - 
+          basename: CAJPIO01.txt
+          checksum: sha1$bbd6651d7bfba925fabca55b5787cdf72fe33d0b
+          class: File
+          size: 75
+        - 
+          basename: CAJPIO01.fna
+          checksum: sha1$30cb080ac14de8aaf170f3878141e4f5c3622d54
+          class: File
+          size: 845446
+        - 
+          basename: CAJPIO01.gff
+          checksum: sha1$214fb08eca78952e0ae1f459c8e7fa2925ecdfbd
+          class: File
+          size: 1050664
+        - 
+          basename: CAJPIO01.faa
+          checksum: sha1$ba6efd4a04910fbcf3c1991a8695c4806a080244
+          class: File
+          size: 290641
