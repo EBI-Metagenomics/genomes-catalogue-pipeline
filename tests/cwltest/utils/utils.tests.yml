@@ -1,5 +1,22 @@
-# cwltest
+#cwltest
 
+# get_files_from_dir
+- job: get_files_from_dir.yml
+  tool: ../../utils/get_files_from_dir.cwl
+  short_name: get_files_from_dir.cwl
+  doc: "Get a list of files from directory"
+  output:
+    files:
+      - basename: "GUT_GENOME001921.fa"
+        class: File
+        checksum: "sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8"
+        size: 2369043
+      - basename: "GUT_GENOME000465.fa"
+        class: File
+        checksum: "sha1$90e3b84fe64029a3c556d90a8cebf3fb11e4bb01"
+        size: 5484822
+
+# rename contigs
 - job: rename_fasta.yml
   tool: ../../../cwl/utils/rename_fasta.cwl
   short_name: rename_fasta.cwl

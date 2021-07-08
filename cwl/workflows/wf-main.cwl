@@ -130,6 +130,11 @@ steps:
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
       gunc_db_path: gunc_db_path
+      csv:
+        source:
+          - download/stats_download  # for ENA / NCBI
+          - csv  # for no fetch
+        pickValue: first_non_null
     out:
       - mash_folder
       - many_genomes

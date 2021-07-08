@@ -19,16 +19,14 @@ hints:
 
 baseCommand: [ classify_folders.py ]
 
-arguments:
-  - valueFrom: $(inputs.clusters.location.split('file://')[1])
-    prefix: '-i'
-
 stderr: stderr.txt
 stdout: stdout.txt
 
 inputs:
   clusters:
     type: Directory
+    inputBinding:
+      prefix: -i
 
 outputs:
   stderr: stderr

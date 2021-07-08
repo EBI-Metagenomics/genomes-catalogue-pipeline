@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: microbiomeinformatics/genomes-pipeline.checkm:v1.1.3
+    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.checkm:v1"
 
 baseCommand: ["checkm", "lineage_wf"]
 

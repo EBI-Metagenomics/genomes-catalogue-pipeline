@@ -38,7 +38,7 @@ steps:
 # ----------- << download data >> -----------
   download:
     when: $(Boolean(inputs.download_from))
-    run: part-1/fetch_data.cwl
+    run: sub-wf/fetch_data.cwl
     in:
       download_from: download_from
       infile: infile
