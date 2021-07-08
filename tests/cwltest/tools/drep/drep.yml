@@ -1,6 +1,6 @@
 genomes:
   class: Directory
-  path: ../../../../input_example/ENA
+  path: ../../../../input_example/ENA/genomes
 drep_outfolder: drep-output
 
 checkm_csv:
