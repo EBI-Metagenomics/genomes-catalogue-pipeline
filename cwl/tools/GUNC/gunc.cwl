@@ -24,7 +24,7 @@ inputs:
       position: 1
       prefix: -i
   db_path:
-    type: string?
+    type: File?
     inputBinding:
       position: 2
       prefix: -r
