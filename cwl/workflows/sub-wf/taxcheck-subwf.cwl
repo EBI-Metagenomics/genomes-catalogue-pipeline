@@ -20,13 +20,13 @@ outputs:
 steps:
 # ----------- << taxcheck >> -----------
   prep_taxcheck:
-    run: ../../../utils/get_files_from_dir.cwl
+    run: ../../utils/get_files_from_dir.cwl
     in:
       dir: genomes_folder
     out: [files]
 
   taxcheck:
-    run: ../../../tools/taxcheck/taxcheck.cwl
+    run: ../../tools/taxcheck/taxcheck.cwl
     scatter: genomes_fasta
     in:
       genomes_fasta: prep_taxcheck/files
@@ -35,7 +35,7 @@ steps:
     out: [ taxcheck_folder ]
 
   return_taxcheck_dir:
-    run: ../../../utils/return_dir_of_dir.cwl
+    run: ../../utils/return_dir_of_dir.cwl
     in:
       directory_array: taxcheck/taxcheck_folder
       newname: { default: "taxcheck_output" }

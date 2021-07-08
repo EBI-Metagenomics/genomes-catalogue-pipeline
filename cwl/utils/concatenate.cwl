@@ -5,6 +5,10 @@ $namespaces:
 
 baseCommand: [ cat ]
 
+hints:
+  - class: DockerRequirement
+    dockerPull: debian:stable-slim
+
 inputs:
   - id: files
     type: 'File[]'

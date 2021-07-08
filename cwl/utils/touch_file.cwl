@@ -3,7 +3,7 @@ class: CommandLineTool
 
 hints:
   DockerRequirement:
-    dockerPull: ubuntu:latest
+    dockerPull: debian:stable-slim
   ResourceRequirement:
     coresMin: 1
     ramMin: 1000

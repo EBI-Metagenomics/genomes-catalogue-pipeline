@@ -61,7 +61,7 @@ steps:
 
 # ----------- << checkm >> -----------
   checkm_subwf:
-    run: sub-wf/checkm-subwf.cwl
+    run: checkm-subwf.cwl
     when: $(inputs.type == 'NCBI')
     in:
       type: download_from

@@ -34,14 +34,14 @@ outputs:
 
 steps:
   generate_weights:
-    run: ../../../tools/generate_weight_table/generate_extra_weight_table.cwl
+    run: ../../tools/generate_weight_table/generate_extra_weight_table.cwl
     in:
       input_directory: genomes_folder
       output: { default: "extra_weight_table.txt" }
     out: [ file_with_weights ]
 
   drep:
-    run: ../../../tools/drep/drep.cwl
+    run: ../../tools/drep/drep.cwl
     in:
       genomes: genomes_folder
       drep_outfolder: { default: 'drep_outfolder' }
@@ -50,7 +50,7 @@ steps:
     out: [ out_folder, dereplicated_genomes ]
 
   split_drep:
-    run: ../../../tools/drep/split_drep.cwl
+    run: ../../tools/drep/split_drep.cwl
     in:
       genomes_folder: genomes_folder
       drep_folder: drep/out_folder
@@ -58,7 +58,7 @@ steps:
     out: [ split_out ]
 
   classify_clusters:
-    run: ../../../tools/drep/classify_folders.cwl
+    run: ../../tools/drep/classify_folders.cwl
     in:
       clusters: split_drep/split_out
     out:

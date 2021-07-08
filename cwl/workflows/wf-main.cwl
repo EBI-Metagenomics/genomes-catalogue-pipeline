@@ -88,7 +88,7 @@ steps:
 # ----------- << download data >> -----------
   download:
     when: $(Boolean(inputs.download_from))
-    run: part-1/fetch_data.cwl
+    run: sub-wf/fetch_data.cwl
     in:
       download_from: download_from
       infile: infile
@@ -101,7 +101,7 @@ steps:
 
 # ---------- first part - dRep
   drep_subwf:
-    run: part-1/sub-wf/drep-subwf.cwl
+    run: sub-wf/drep-subwf.cwl
     in:
       genomes_folder:
         source:
@@ -122,7 +122,7 @@ steps:
 
 # ---------- second part
   wf-2:
-    run: part-2/wf-2.cwl
+    run: sub-wf/subwf-process_clusters.cwl
     in:
       many_genomes: drep_subwf/many_genomes
       mash_folder: drep_subwf/mash_folder
