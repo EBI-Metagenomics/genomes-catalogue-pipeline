@@ -40,9 +40,11 @@ inputs:
       position: 5
 
 stdout: checkm.out
+stderr: checkm.err
 
 outputs:
   stdout: stdout
+  stderr: stderr
 
   out_folder:
     type: Directory

@@ -1,0 +1,3 @@
+out_checkm:
+  class: File
+  path: ../../../../input_example/test-one/checkm.out
