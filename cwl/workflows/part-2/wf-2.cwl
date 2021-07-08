@@ -16,7 +16,7 @@ inputs:
   mmseqs_limit_c: float         # common
   mmseqs_limit_i: float[]       # common
   csv: File
-  gunc_db_path: string
+  gunc_db_path: File
 
 outputs:
   mash_folder:

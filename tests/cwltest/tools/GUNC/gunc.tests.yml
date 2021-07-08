@@ -1,7 +1,7 @@
 #cwltest
 
-- job: filter.passed.yml
-  tool: ../../../../cwl/tools/GUNC/filter_gunc.cwl
-  short_name: filter_gunc.cwl
-  doc: "filter GUNC output. passed"
+- job: gunc-CAJPIT01.yml
+  tool: ../../../../cwl/tools/GUNC/gunc.cwl
+  short_name: gunc.cwl
+  doc: "GUNC CAJPIT01"
   output:

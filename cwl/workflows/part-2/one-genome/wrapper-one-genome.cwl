@@ -12,7 +12,7 @@ requirements:
 inputs:
   input_cluster: Directory[]
   csv: File
-  gunc_db_path: string
+  gunc_db_path: File
 
 outputs:
 

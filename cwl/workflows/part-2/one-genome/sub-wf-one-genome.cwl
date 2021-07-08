@@ -11,7 +11,7 @@ requirements:
 
 inputs:
   cluster: Directory
-  gunc_db_path: string
+  gunc_db_path: File
   csv: File
 
 outputs:

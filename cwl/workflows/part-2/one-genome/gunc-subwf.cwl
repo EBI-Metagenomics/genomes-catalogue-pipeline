@@ -12,7 +12,7 @@ requirements:
 inputs:
   input_fasta: File
   input_csv: File
-  gunc_db_path: string
+  gunc_db_path: File
 
 outputs:
   complete-flag:

@@ -27,7 +27,7 @@ inputs:
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
 
-  gunc_db_path: string
+  gunc_db_path: File
 
 
 outputs:
