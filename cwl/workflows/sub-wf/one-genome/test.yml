@@ -1,0 +1,9 @@
+cluster:
+  class: Directory
+  path: /home/ubuntu/kate/genomes-pipeline/9_0
+gunc_db_path:
+  class: File
+  path: /home/ubuntu/db/gunc_db_2.0.4.dmnd
+csv:
+  class: File
+  path: /home/ubuntu/kate/genomes-pipeline/genome_stats.txt

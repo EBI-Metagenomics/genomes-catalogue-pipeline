@@ -1,0 +1,13 @@
+#cwltest
+
+- job: gunc.bad.yml
+  tool: ../../../../cwl/workflows/sub-wf/one-genome/gunc-subwf.cwl
+  short_name: gunc-subwf.cwl
+  doc: "GUNC subwf with not passed example"
+  output:
+    complete-flag: null
+    empty-flag:
+      basename: empty.txt
+      class: File
+      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+      size: 0

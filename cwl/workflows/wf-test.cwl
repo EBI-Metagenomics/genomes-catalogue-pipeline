@@ -36,13 +36,21 @@ outputs:
     outputSource:
       - download/stats_ena
       - checkm_subwf/checkm_csv
+      - download/flag_no-data
     pickValue: first_non_null
 
-  flag_no_data:
+  many_genomes:
+    type: Directory[]?
+    outputSource: drep_subwf/many_genomes
+  one_genome:
+    type: Directory[]?
+    outputSource: drep_subwf/one_genome
+  mash_folder:
+    type: File[]?
+    outputSource: drep_subwf/mash_folder
+  weights_file:
     type: File?
-    outputSource: download/flag_no-data
-
-
+    outputSource: drep_subwf/weights_file
 
 steps:
 # ----------- << download data >> -----------
@@ -63,10 +71,35 @@ steps:
 # ----------- << checkm for NCBI>> -----------
   checkm_subwf:
     run: sub-wf/checkm-subwf.cwl
-    when: $(inputs.type == 'NCBI' and !inputs.flag)
+    when: $(inputs.type == 'NCBI' && !inputs.flag)
     in:
       type: download_from
       flag: download/flag_no-data
       genomes_folder: download/downloaded_folder_ncbi
     out:
       - checkm_csv
+
+# ---------- dRep + split
+  drep_subwf:
+    run: sub-wf/drep-subwf.cwl
+    when: $(!inputs.flag)
+    in:
+      flag: download/flag_no-data
+      genomes_folder:
+        source:
+          - download/downloaded_folder_ena
+          - download/downloaded_folder_ncbi
+          - genomes
+        pickValue: first_non_null
+      input_csv:
+        source:
+          - checkm_subwf/checkm_csv  # for NCBI
+          - download/stats_ena  # for ENA
+          - csv  # for no fetch
+        pickValue: first_non_null
+    out:
+      - many_genomes
+      - one_genome
+      - mash_folder
+      - dereplicated_genomes
+      - weights_file
