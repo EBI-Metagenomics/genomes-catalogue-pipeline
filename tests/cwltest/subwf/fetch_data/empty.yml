@@ -3,4 +3,4 @@ infile:
   class: File
   path: bad.txt
 directory_name: empty-test
-unzip: false
+unzip: true

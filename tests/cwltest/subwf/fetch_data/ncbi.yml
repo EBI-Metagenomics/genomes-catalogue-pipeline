@@ -3,4 +3,4 @@ infile:
   class: File
   path: ../../../../input_example/input_ncbi.txt
 directory_name: ncbi-test
-unzip: false
+unzip: true
