@@ -82,6 +82,7 @@ steps:
         source: cluster
         valueFrom: $(self.basename)
     out: [annotations, seed_orthologs]
+
 # --------------------------------------- result folder -----------------------------------------
 
   get_mash_file:

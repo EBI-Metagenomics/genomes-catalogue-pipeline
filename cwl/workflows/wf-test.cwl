@@ -20,19 +20,29 @@ inputs:
   genomes: Directory?
   csv: File?
 
+  # no gtdbtk
+  skip_gtdbtk_step: string
+
   # common input
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
+
+  gunc_db_path: File
 
 
 outputs:
   output_csv:
     type: File?
-    outputSource: download/stats_download
+    outputSource:
+      - download/stats_ena
+      - checkm_subwf/checkm_csv
+    pickValue: first_non_null
 
-  genomes:
-    type: Directory
-    outputSource: download/downloaded_folder
+  flag_no_data:
+    type: File?
+    outputSource: download/flag_no-data
+
+
 
 steps:
 # ----------- << download data >> -----------
@@ -45,6 +55,18 @@ steps:
       directory_name: directory_name
       unzip: unzip
     out:
-      - downloaded_folder
-      - stats_download
+      - downloaded_folder_ena
+      - downloaded_folder_ncbi
+      - stats_ena
       - flag_no-data
+
+# ----------- << checkm for NCBI>> -----------
+  checkm_subwf:
+    run: sub-wf/checkm-subwf.cwl
+    when: $(inputs.type == 'NCBI' and !inputs.flag)
+    in:
+      type: download_from
+      flag: download/flag_no-data
+      genomes_folder: download/downloaded_folder_ncbi
+    out:
+      - checkm_csv

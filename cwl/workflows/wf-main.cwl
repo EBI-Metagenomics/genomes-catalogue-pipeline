@@ -37,14 +37,14 @@ outputs:
 
   mash_folder:
     type: Directory?
-    outputSource: wf-2/mash_folder
+    outputSource: clusters_annotation/mash_folder
 
   many_genomes:
     type: Directory[]?
-    outputSource: wf-2/many_genomes
+    outputSource: clusters_annotation/many_genomes
   many_genomes_panaroo:
     type: Directory[]?
-    outputSource: wf-2/many_genomes_panaroo
+    outputSource: clusters_annotation/many_genomes_panaroo
   many_genomes_prokka:
     type:
       - 'null'
@@ -52,24 +52,24 @@ outputs:
         items:
           type: array
           items: Directory
-    outputSource: wf-2/many_genomes_prokka
+    outputSource: clusters_annotation/many_genomes_prokka
   many_genomes_genomes:
     type: Directory[]?
-    outputSource: wf-2/many_genomes_genomes
+    outputSource: clusters_annotation/many_genomes_genomes
 
   one_genome:
     type: Directory[]?
-    outputSource: wf-2/one_genome
+    outputSource: clusters_annotation/one_genome
   one_genome_prokka:
     type: Directory[]?
-    outputSource: wf-2/one_genome_prokka
+    outputSource: clusters_annotation/one_genome_prokka
   one_genome_genomes:
     type: Directory[]?
-    outputSource: wf-2/one_genome_genomes
+    outputSource: clusters_annotation/one_genome_genomes
 
   mmseqs:
     type: Directory
-    outputSource: wf-2/mmseqs_output
+    outputSource: clusters_annotation/mmseqs_output
 
   gtdbtk:
     type: Directory
@@ -95,11 +95,23 @@ steps:
       directory_name: directory_name
       unzip: unzip
     out:
-      - downloaded_folder
-      - stats_download
+      - downloaded_folder_ena
+      - downloaded_folder_ncbi
+      - stats_ena
       - flag_no-data
 
-# ---------- first part - dRep
+# ----------- << checkm for NCBI>> -----------
+  checkm_subwf:
+    run: sub-wf/checkm-subwf.cwl
+    when: $(inputs.type == 'NCBI' and !flag)
+    in:
+      type: download_from
+      flag: download/flag_no-data
+      genomes_folder: download_from_ncbi/downloaded_files
+    out:
+      - checkm_csv
+
+# ---------- dRep
   drep_subwf:
     run: sub-wf/drep-subwf.cwl
     in:
@@ -110,7 +122,8 @@ steps:
         pickValue: first_non_null
       input_csv:
         source:
-          - download/stats_download  # for ENA / NCBI
+          - checkm_subwf/checkm_csv
+          - download/stats_ena  # for ENA / NCBI
           - csv  # for no fetch
         pickValue: first_non_null
     out:
@@ -120,8 +133,8 @@ steps:
       - dereplicated_genomes
       - weights_file
 
-# ---------- second part
-  wf-2:
+# ---------- annotation
+  clusters_annotation:
     run: sub-wf/subwf-process_clusters.cwl
     in:
       many_genomes: drep_subwf/many_genomes
@@ -132,7 +145,8 @@ steps:
       gunc_db_path: gunc_db_path
       csv:
         source:
-          - download/stats_download  # for ENA / NCBI
+          - checkm_subwf/checkm_csv
+          - download/stats_ena  # for ENA / NCBI
           - csv  # for no fetch
         pickValue: first_non_null
     out:
