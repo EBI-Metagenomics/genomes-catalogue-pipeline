@@ -11,6 +11,10 @@ print("genome,completeness,contamination,strain_heterogeneity")
 with open(sys.argv[1], "r") as f:
     next(f)
     for line in f:
+        if 'INFO:' in line:
+            continue
+        if 'Completeness' in line and 'Contamination' in line:
+            continue
         cols = line.strip("\n").split("\t")
         genome = cols[0]
         complet = cols[-3]
