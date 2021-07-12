@@ -1,0 +1,6 @@
+list:
+  - class: File
+    path: concatenate.yml
+  - class: File
+    path: flatten_array.yml
+dir_name: wrapped_directory
