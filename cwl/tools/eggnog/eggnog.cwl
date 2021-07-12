@@ -28,11 +28,14 @@ inputs:
       separate: true
       prefix: -i
     label: Input FASTA file containing query sequences
-
   outputname:
     type: string
     inputBinding:
       prefix: --output
+  data_dir:
+    type: Directory?
+    inputBinding:
+      prefix: --data_dir
 
 outputs:
   annotations:
