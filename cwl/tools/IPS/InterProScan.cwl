@@ -49,8 +49,8 @@ requirements:
   - class: InlineJavascriptRequirement
 
 hints:
-#  - class: DockerRequirement
-#    dockerPull: 'biocontainers/interproscan:v5.30-69.0_cv1'
+  - class: DockerRequirement
+    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.interproscan:v1"
   - class: gx:interface
     gx:inputs:
       - gx:name: applications
