@@ -15,6 +15,8 @@ RUN install2.r \
 
 RUN mkdir /tools
 COPY mash2nwk1.R /tools
+RUN chmod a+x /tools/*
+ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools
 
 # Workdir
 RUN mkdir /data

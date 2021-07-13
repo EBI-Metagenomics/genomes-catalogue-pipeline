@@ -1,0 +1,7 @@
+#cwltest
+
+- job: mash2nwk.yml
+  tool: ../../../../cwl/tools/mash2nwk/mash2nwk.cwl
+  short_name: mash2nwk.cwl
+  doc: "convert mash-file to network"
+  output:

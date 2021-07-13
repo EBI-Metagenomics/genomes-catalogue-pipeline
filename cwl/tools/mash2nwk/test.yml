@@ -1,3 +1,0 @@
-input_mash:
-  class: File
-  path: /hps/nobackup2/production/metagenomics/databases/human-gut_resource/cwl_pipeline/output/split_outfolder/mash_tsv/1_1_mash.tsv
