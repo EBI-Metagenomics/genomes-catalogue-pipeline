@@ -1,4 +1,4 @@
 fa_file:
   class: File
-  path: ../../../../input_example/test-many/GUT_GENOME000070.fa
+  path: ../../../../input_example/test-many/genomes/GUT_GENOME000070.fa
 outdirname: prokka_GUT_GENOME000070

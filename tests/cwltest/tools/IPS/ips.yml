@@ -1,0 +1,7 @@
+inputFile:
+  class: File
+  path: ../../../../input_example/test-many/translated/many_pan_genome_reference.faa
+
+databases:
+  class: Directory
+  path: /data/db/data

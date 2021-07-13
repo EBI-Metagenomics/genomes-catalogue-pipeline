@@ -1,6 +1,6 @@
 genomes:
   class: Directory
-  path: ../../../../input_example/test-many
+  path: ../../../../input_example/test-many/genomes
 
 csv:
   class: File

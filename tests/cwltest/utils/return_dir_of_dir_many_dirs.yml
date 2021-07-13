@@ -2,6 +2,6 @@ directory_array:
   - class: Directory
     path: ../../../input_example/test-one
   - class: Directory
-    path: ../../../input_example/test-many
+    path: ../../../input_example/test-many/genomes
 
 newname: many_dirs
