@@ -17,6 +17,8 @@ inputs:
   mmseqs_limit_i: float[]       # common
   csv: File
   gunc_db_path: File
+  InterProScan_databases: [string, Directory]
+  chunk_size_IPS: int
 
 outputs:
   mash_folder:
@@ -64,6 +66,8 @@ steps:
     in:
       input_clusters: many_genomes
       mash_folder: mash_folder
+      InterProScan_databases: InterProScan_databases
+      chunk_size_IPS: chunk_size_IPS
     out:
       - mash_folder
       - many_genomes
@@ -80,6 +84,8 @@ steps:
       input_cluster: one_genome
       csv: csv
       gunc_db_path: gunc_db_path
+      InterProScan_databases: InterProScan_databases
+      chunk_size_IPS: chunk_size_IPS
     out:
       - prokka_faa-s
       - cluster_folder

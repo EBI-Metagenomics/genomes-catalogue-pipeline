@@ -12,6 +12,8 @@ requirements:
 inputs:
   input_clusters: Directory[]
   mash_folder: File[]
+  InterProScan_databases: [string, Directory]
+  chunk_size_IPS: int
 
 outputs:
   mash_folder:
@@ -51,6 +53,8 @@ steps:
     in:
       cluster: input_clusters
       mash_files: mash_folder
+      InterProScan_databases: InterProScan_databases
+      chunk_size_IPS: chunk_size_IPS
     out:
       - prokka_faa-s  # File[]
       - cluster_folder  # Dir

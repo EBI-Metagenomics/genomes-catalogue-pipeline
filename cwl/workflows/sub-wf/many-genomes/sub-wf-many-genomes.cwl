@@ -12,6 +12,8 @@ requirements:
 inputs:
   cluster: Directory
   mash_files: File[]
+  InterProScan_databases: [string, Directory]
+  chunk_size_IPS: int
 
 outputs:
   prokka_faa-s:
@@ -69,10 +71,13 @@ steps:
     out: [ converted_faa ]
 
   IPS:
-    run: ../../../tools/IPS/InterProScan.cwl
+    run: ../../chunking-subwf-IPS.cwl
     in:
-      inputFile: translate/converted_faa
-    out: [annotations]
+      flag: gunc/complete-flag
+      faa: translate/converted_faa
+      chunk_size: chunk_size_IPS
+      InterProScan_databases: InterProScan_databases
+    out: [ips_result]
 
   eggnog:
     run: ../../../tools/eggnog/eggnog.cwl
@@ -99,7 +104,7 @@ steps:
     in:
       list:
         - translate/converted_faa
-        - IPS/annotations
+        - IPS/ips_result
         - eggnog/annotations
         - eggnog/seed_orthologs
         - get_mash_file/file_pattern

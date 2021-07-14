@@ -29,6 +29,8 @@ inputs:
 
   gunc_db_path: File
 
+  InterProScan_databases: [string, Directory]
+  chunk_size_IPS: int
 
 outputs:
   output_csv:
@@ -103,27 +105,30 @@ steps:
 # ----------- << checkm for NCBI>> -----------
   checkm_subwf:
     run: sub-wf/checkm-subwf.cwl
-    when: $(inputs.type == 'NCBI' and !flag)
+    when: $(inputs.type == 'NCBI' && !inputs.flag)
     in:
       type: download_from
       flag: download/flag_no-data
-      genomes_folder: download_from_ncbi/downloaded_files
+      genomes_folder: download/downloaded_folder_ncbi
     out:
       - checkm_csv
 
-# ---------- dRep
+# ---------- dRep + split
   drep_subwf:
     run: sub-wf/drep-subwf.cwl
+    when: $(!inputs.flag)
     in:
+      flag: download/flag_no-data
       genomes_folder:
         source:
-          - download/downloaded_folder
+          - download/downloaded_folder_ena
+          - download/downloaded_folder_ncbi
           - genomes
         pickValue: first_non_null
       input_csv:
         source:
-          - checkm_subwf/checkm_csv
-          - download/stats_ena  # for ENA / NCBI
+          - checkm_subwf/checkm_csv  # for NCBI
+          - download/stats_ena  # for ENA
           - csv  # for no fetch
         pickValue: first_non_null
     out:
@@ -143,6 +148,8 @@ steps:
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
       gunc_db_path: gunc_db_path
+      InterProScan_databases: InterProScan_databases
+      chunk_size_IPS: chunk_size_IPS
       csv:
         source:
           - checkm_subwf/checkm_csv

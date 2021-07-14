@@ -13,6 +13,7 @@ COPY checkm2csv.py \
      classify_folders.py \
      split_drep.py \
      translate_genes.py \
+     split_to_chunks.py \
 /tools/
 
 RUN chmod a+x /tools/*

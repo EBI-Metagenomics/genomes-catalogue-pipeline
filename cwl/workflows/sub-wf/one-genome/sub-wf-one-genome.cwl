@@ -14,6 +14,8 @@ inputs:
   gunc_db_path: File
   csv: File
 
+  InterProScan_databases: [string, Directory]
+  chunk_size_IPS: int
 outputs:
 
   prokka_faa-s:
@@ -62,11 +64,13 @@ steps:
 
   IPS:
     when: $(Boolean(inputs.flag))
-    run: ../../../tools/IPS/InterProScan.cwl
+    run: ../../chunking-subwf-IPS.cwl
     in:
       flag: gunc/complete-flag
-      inputFile: prokka/faa
-    out: [annotations]
+      faa: prokka/faa
+      chunk_size: chunk_size_IPS
+      InterProScan_databases: InterProScan_databases
+    out: [ips_result]
 
   eggnog:
     when: $(Boolean(inputs.flag))
@@ -85,7 +89,7 @@ steps:
     in:
       flag: gunc/complete-flag
       list:
-        - IPS/annotations
+        - IPS/ips_result
         - eggnog/annotations
         - eggnog/seed_orthologs
       dir_name:

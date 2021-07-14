@@ -13,6 +13,8 @@ inputs:
   input_cluster: Directory[]
   csv: File
   gunc_db_path: File
+  InterProScan_databases: [string, Directory]
+  chunk_size_IPS: int
 
 outputs:
 
@@ -38,6 +40,8 @@ steps:
       cluster: input_cluster
       csv: csv
       gunc_db_path: gunc_db_path
+      InterProScan_databases: InterProScan_databases
+      chunk_size_IPS: chunk_size_IPS
     out:
       - prokka_faa-s  # File
       - cluster_folder  # Dir
