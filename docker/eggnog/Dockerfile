@@ -1,4 +1,4 @@
-FROM alpine:3.14.0
+FROM ubuntu:latest
 
 LABEL Maintainer="Ekaterina Sakharova <kates@ebi.ac.uk>"
 LABEL software="eggNOG"
@@ -11,28 +11,31 @@ LABEL license="GPL3"
 ENV VERSION=2.1.3
 ENV VERSION_DIAMOND=2.0.11
 
-RUN apk add --no-cache \
-        bash \
+# deps
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y \
         git \
-        build-base \
-        zlib-dev \
+        wget \
         python3 \
         python3-dev \
-        py3-setuptools \
-        py3-numpy \
-        cython \
-        linux-headers
+        python3-numpy \
+        cython3 \
+        zlib1g-dev \
+        python3-pip \
+        python3-setuptools
 
 # install diamond
 WORKDIR /usr/local/bin/
-RUN wget https://github.com/bbuchfink/diamond/releases/download/v${VERSION_DIAMOND}/diamond-linux64.tar.gz && \
+RUN wget -q https://github.com/bbuchfink/diamond/releases/download/v${VERSION_DIAMOND}/diamond-linux64.tar.gz && \
     tar -xzf diamond-linux64.tar.gz && \
     rm -rf diamond-linux64.tar.gz && \
     chmod a+x diamond
 
 # install eggnog
 WORKDIR /opt
-RUN wget https://github.com/eggnogdb/eggnog-mapper/archive/$VERSION.tar.gz && \
+RUN wget -q https://github.com/eggnogdb/eggnog-mapper/archive/$VERSION.tar.gz && \
     tar -xzf $VERSION.tar.gz && \
     rm -rf $VERSION.tar.gz && \
     cd eggnog-mapper-$VERSION && \

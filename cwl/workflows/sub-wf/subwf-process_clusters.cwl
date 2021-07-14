@@ -19,6 +19,10 @@ inputs:
   gunc_db_path: File
   InterProScan_databases: [string, Directory]
   chunk_size_IPS: int
+  chunk_size_eggnog: int
+  db_diamond_eggnog: [string?, File?]
+  db_eggnog: [string?, File?]
+  data_dir_eggnog: [string?, Directory?]
 
 outputs:
   mash_folder:
@@ -68,6 +72,10 @@ steps:
       mash_folder: mash_folder
       InterProScan_databases: InterProScan_databases
       chunk_size_IPS: chunk_size_IPS
+      chunk_size_eggnog: chunk_size_eggnog
+      db_diamond_eggnog: db_diamond_eggnog
+      db_eggnog: db_eggnog
+      data_dir_eggnog: data_dir_eggnog
     out:
       - mash_folder
       - many_genomes
@@ -86,6 +94,10 @@ steps:
       gunc_db_path: gunc_db_path
       InterProScan_databases: InterProScan_databases
       chunk_size_IPS: chunk_size_IPS
+      chunk_size_eggnog: chunk_size_eggnog
+      db_diamond_eggnog: db_diamond_eggnog
+      db_eggnog: db_eggnog
+      data_dir_eggnog: data_dir_eggnog
     out:
       - prokka_faa-s
       - cluster_folder

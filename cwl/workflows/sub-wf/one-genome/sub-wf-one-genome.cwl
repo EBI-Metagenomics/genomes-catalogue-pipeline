@@ -16,6 +16,12 @@ inputs:
 
   InterProScan_databases: [string, Directory]
   chunk_size_IPS: int
+
+  chunk_size_eggnog: int
+  db_diamond_eggnog: [string?, File?]
+  db_eggnog: [string?, File?]
+  data_dir_eggnog: [string?, Directory?]
+
 outputs:
 
   prokka_faa-s:
@@ -74,13 +80,15 @@ steps:
 
   eggnog:
     when: $(Boolean(inputs.flag))
-    run: ../../../tools/eggnog/eggnog.cwl
+    run: ../../chunking-subwf-eggnog.cwl
     in:
       flag: gunc/complete-flag
-      fasta_file: prokka/faa
-      outputname:
-        source: cluster
-        valueFrom: $(self.basename)
+      faa_file: prokka/faa
+      chunk_size: chunk_size_eggnog
+      db_diamond: db_diamond_eggnog
+      db: db_eggnog
+      data_dir: data_dir_eggnog
+      cpu: { default: 16 }
     out: [annotations, seed_orthologs]
 
   create_cluster_folder:
