@@ -1,7 +1,20 @@
 class: CommandLineTool
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 label: 'InterProScan: protein sequence classifier'
+
+requirements:
+  - class: ResourceRequirement
+    ramMin: 20000
+    coresMin: 16
+  - class: InlineJavascriptRequirement
+  - class: InitialWorkDirRequirement
+    listing:
+      - entry: $(inputs.databases)
+        entryname: $("/opt/interproscan-5.52-86.0/data") 
+  - class: DockerRequirement
+    dockerPull: "microbiomeinformatics/genomes-pipeline.interproscan:v1"
+
 
 baseCommand: [interproscan.sh]
 
@@ -42,29 +55,9 @@ outputs:
     outputBinding:
       glob: $(inputs.inputFile.nameroot).IPS.tsv
 
-requirements:
-
-  - class: ResourceRequirement
-    ramMin: 20000
-    coresMin: 16
-  - class: InlineJavascriptRequirement
-
-hints:
-  - class: DockerRequirement
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.interproscan:v1"
-  - class: gx:interface
-    gx:inputs:
-      - gx:name: applications
-        gx:type: text
-        gx:optional: True
-      - gx:name: proteinFile
-        gx:type: data
-        gx:format: 'txt'
 
 $namespaces:
-  gx: "http://galaxyproject.org/cwl#"
   edam: 'http://edamontology.org/'
-  iana: 'https://www.iana.org/assignments/media-types/'
   s: 'http://schema.org/'
 
 $schemas:
@@ -80,11 +73,6 @@ doc: >-
   nucleic) to be scanned against InterPro's signatures. Signatures are
   predictive models, provided by several different databases, that make up the
   InterPro consortium.
-
-
-  This tool description is using a Docker container tagged as version
-  v5.30-69.0.
-
 
   Documentation on how to run InterProScan 5 can be found here:
   https://github.com/ebi-pf-team/interproscan/wiki/HowToRun

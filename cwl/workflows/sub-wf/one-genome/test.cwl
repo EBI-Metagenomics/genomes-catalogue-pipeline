@@ -14,7 +14,10 @@ inputs:
   gunc_db_path: File
   csv: File
 
-outputs: []
+outputs:
+  prokka_faa-s:
+    type: File?
+    outputSource: prokka/faa
 
 steps:
   preparation:
@@ -34,3 +37,14 @@ steps:
     out:
       - complete-flag
       - empty-flag
+
+  prokka:
+    when: $(Boolean(inputs.flag))
+    run: ../../../tools/prokka/prokka.cwl
+    in:
+      flag: gunc/complete-flag
+      fa_file:
+        source: preparation/files
+        valueFrom: $(self[0])
+      outdirname: { default: prokka_output }
+    out: [ faa, outdir ]

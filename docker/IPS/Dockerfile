@@ -13,7 +13,11 @@ RUN apt update && \
     apt install -y \
         default-jre \
         python3 \
+        libpcre3-dev \
+        cpanminus \
+        build-essential \
         wget
+RUN cpanm Data::Dumper
 
 # Install IPS
 ARG ipsVersion=5.52-86.0

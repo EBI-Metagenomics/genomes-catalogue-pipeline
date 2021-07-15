@@ -9,7 +9,11 @@ A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, E S
 1. Install all necessary tools:
 - [cwltool](https://github.com/common-workflow-language/cwltool) (tested v1.0.2)
 - [Docker](https://www.docker.com/)
-
+- [conda](https://docs.conda.io/en/latest/)
+- run installation script 
+```bash
+bash installation/install.sh
+```
 
 ## Installation without Docker
 
