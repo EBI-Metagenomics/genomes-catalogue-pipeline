@@ -8,6 +8,9 @@ requirements:
     coresMin: 2
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
+hints:
+  DockerRequirement:
+    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.gtdb-tk:v1"
 
 baseCommand: ["gtdbtk", "classify_wf"]
 

@@ -18,8 +18,10 @@ cd genomes-catalog-update && docker build -t microbiomeinformatics/${NAME}.genom
 cd GUNC && docker build -t microbiomeinformatics/${NAME}.gunc:v2 .
 
 # GTDB-Tk
+cd gtdb-tk && docker build -t microbiomeinformatics/${NAME}.gtdb-tk:v1 .
 
 # IPS
+cd IPS && docker build -t microbiomeinformatics/${NAME}.interproscan:v1 .
 
 # mash2nwk
 cd mash2nwk && docker build -t microbiomeinformatics/${NAME}.mash2nwk:v1 .
