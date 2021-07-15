@@ -1,7 +1,8 @@
 fasta_file:
   class: File
   path: ../../../../input_example/test-many/translated/many_pan_genome_reference.faa
-
+  format: edam:format_1929
+  
 data_dir:
   class: Directory
   path: ../../../../db/

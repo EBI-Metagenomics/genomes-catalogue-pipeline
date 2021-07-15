@@ -8,11 +8,7 @@
     annotations:
       basename: test-eggnog.emapper.annotations
       class: File
-      checksum: sha1$b86c2cb284f82b381e2189ef81ff94ad2b9c447e
-      size: 1327802
     seed_orthologs:
       basename: test-eggnog.emapper.seed_orthologs
       class: File
-      checksum: sha1$6d6aeb6daaa4c82759cedb33839d0a99f09c452a
-      size: 296445
       
