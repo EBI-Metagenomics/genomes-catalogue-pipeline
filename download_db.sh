@@ -1,10 +1,13 @@
 #!/bin/bash
 
-# download db for GUNC
+# GUNC database
 wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz && gunzip gunc_db_2.0.4.dmnd.gz
 
-# eggnog dbs
+# EGGnog database
 wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db.tgz && tar -xvzf eggnog_db.tgz
 
-# ips dbs
+# InterProScan database
 wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/interproscan_5.52-86.0_data.tgz && tar -xvzf interproscan_5.52-86.0_data.tgz
+
+# GTDB-Tk Database
+wget https://data.gtdb.ecogenomic.org/releases/latest/auxillary_files/gtdbtk_data.tar.gz && tar -zxvf gtdbtk_data.tar.gz

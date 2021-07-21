@@ -12,5 +12,8 @@ RUN conda install -c conda-forge -c bioconda -c defaults gtdbtk && conda clean -
 RUN mkdir /data
 WORKDIR /data
 
+# reference data mount point
+ENV GTDBTK_DATA_PATH=/refdata
+
 # Entrypoint
 CMD ["/bin/bash", "-c"]
