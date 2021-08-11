@@ -1,0 +1,13 @@
+ena_folder:
+  class: Directory
+  path: ../../../../input_example/ENA/genomes
+ena_csv:
+  class: File
+  path: ../../../../input_example/ENA/genome_stats.txt
+ncbi_folder:
+  class: Directory
+  path: ../../../../input_example/test-one
+ncbi_csv:
+  class: File
+  path: ../../../../input_example/test-one/test-one.csv
+outputname: genomes

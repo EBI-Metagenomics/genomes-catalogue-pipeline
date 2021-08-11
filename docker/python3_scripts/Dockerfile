@@ -14,6 +14,7 @@ COPY checkm2csv.py \
      split_drep.py \
      translate_genes.py \
      split_to_chunks.py \
+     unite_ena_ncbi.py \
 /tools/
 
 RUN chmod a+x /tools/*

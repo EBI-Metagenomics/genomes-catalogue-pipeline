@@ -10,9 +10,15 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  genomes_ena: Directory?
-  ena_csv: File?
-  genomes_ncbi: Directory?
+  # download params
+  download_from: string?  # ENA or NCBI
+  infile: File?            # file containing a list of GenBank accessions, one accession per line
+  directory_name: string?  # directory name to download files to
+  unzip: boolean?
+
+  # no download
+  genomes: Directory?
+  csv: File?
 
   # no gtdbtk
   skip_gtdbtk_step: string
@@ -23,93 +29,74 @@ inputs:
 
   gunc_db_path: File
 
-  InterProScan_databases: [string, Directory]
-  chunk_size_IPS: int
-  chunk_size_eggnog: int
-  db_diamond_eggnog: [string?, File?]
-  db_eggnog: [string?, File?]
-  data_dir_eggnog: [string?, Directory?]
 
 outputs:
   output_csv:
-    type: File
-    outputSource: unite_folders/csv
-
-  mash_folder:
-    type: Directory?
-    outputSource: clusters_annotation/mash_folder
+    type: File?
+    outputSource:
+      - download/stats_ena
+      - checkm_subwf/checkm_csv
+      - download/flag_no-data
+    pickValue: first_non_null
 
   many_genomes:
     type: Directory[]?
-    outputSource: clusters_annotation/many_genomes
-  many_genomes_panaroo:
-    type: Directory[]?
-    outputSource: clusters_annotation/many_genomes_panaroo
-  many_genomes_prokka:
-    type:
-      - 'null'
-      - type: array
-        items:
-          type: array
-          items: Directory
-    outputSource: clusters_annotation/many_genomes_prokka
-  many_genomes_genomes:
-    type: Directory[]?
-    outputSource: clusters_annotation/many_genomes_genomes
-
+    outputSource: drep_subwf/many_genomes
   one_genome:
     type: Directory[]?
-    outputSource: clusters_annotation/one_genome
-  one_genome_prokka:
-    type: Directory[]?
-    outputSource: clusters_annotation/one_genome_prokka
-  one_genome_genomes:
-    type: Directory[]?
-    outputSource: clusters_annotation/one_genome_genomes
-
-  mmseqs:
-    type: Directory
-    outputSource: clusters_annotation/mmseqs_output
-
-  gtdbtk:
-    type: Directory
-    outputSource: gtdbtk/gtdbtk_folder
-
-  weights:
-    type: File
+    outputSource: drep_subwf/one_genome
+  mash_folder:
+    type: File[]?
+    outputSource: drep_subwf/mash_folder
+  weights_file:
+    type: File?
     outputSource: drep_subwf/weights_file
 
-
 steps:
+# ----------- << download data >> -----------
+  download:
+    when: $(Boolean(inputs.download_from))
+    run: sub-wf/fetch_data.cwl
+    in:
+      download_from: download_from
+      infile: infile
+      directory_name: directory_name
+      unzip: unzip
+    out:
+      - downloaded_folder_ena
+      - downloaded_folder_ncbi
+      - stats_ena
+      - flag_no-data
 
 # ----------- << checkm for NCBI>> -----------
   checkm_subwf:
     run: sub-wf/checkm-subwf.cwl
-    when: $(Boolean(inputs.genomes_folder))
+    when: $(inputs.type == 'NCBI' && !inputs.flag)
     in:
-      genomes_folder: genomes_ncbi
+      type: download_from
+      flag: download/flag_no-data
+      genomes_folder: download/downloaded_folder_ncbi
     out:
       - checkm_csv
-
-# unite NCBI and ENA
-  unite_folders:
-    run: ../tools/unite_ena_ncbi/unite.cwl
-    in:
-      ena_folder: genomes_ena
-      ncbi_folder: genomes_ncbi
-      ena_csv: ena_csv
-      ncbi_csv: checkm_subwf/checkm_csv
-      outputname: { default: "genomes"}
-    out:
-      - genomes
-      - csv
 
 # ---------- dRep + split
   drep_subwf:
     run: sub-wf/drep-subwf.cwl
+    when: $(!inputs.flag)
     in:
-      genomes_folder: unite_folders/genomes
-      input_csv: unite_folders/csv
+      flag: download/flag_no-data
+      genomes_folder:
+        source:
+          - download/downloaded_folder_ena
+          - download/downloaded_folder_ncbi
+          - genomes
+        pickValue: first_non_null
+      input_csv:
+        source:
+          - checkm_subwf/checkm_csv  # for NCBI
+          - download/stats_ena  # for ENA
+          - csv  # for no fetch
+        pickValue: first_non_null
     out:
       - many_genomes
       - one_genome

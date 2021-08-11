@@ -3,7 +3,7 @@
 export NAME=genomes-pipeline
 
 # checkm
-cd  checkm && docker build -t microbiomeinformatics/${NAME}.checkm:v1.1.3 .
+cd  checkm && docker build -t microbiomeinformatics/${NAME}.checkm:v1 .
 
 # drep
 cd drep && docker build -t microbiomeinformatics/${NAME}.drep:v1 .
