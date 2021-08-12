@@ -50,6 +50,18 @@ inputs:
       position: 5
       prefix: -o
 
+  max_number:
+    type: int
+    inputBinding:
+      position: 6
+      prefix: --max
+
+  csv:
+    type: int
+    inputBinding:
+      position: 7
+      prefix: --csv
+
 outputs:
   naming_table:
     type: File
@@ -60,4 +72,9 @@ outputs:
     type: Directory
     outputBinding:
       glob: $(inputs.output_dirname)
+
+  renamed_csv:
+    type: File
+    outputBinding:
+      glob: $(inputs.csv.nameroot)_renamed.$(inputs.csv.nameext)
 

@@ -8,7 +8,8 @@ import shutil
 logging.basicConfig(level=logging.INFO)
 
 
-def main(fasta_file_directory, prefix, index, cluster_file, table_file, num_digits, rename_deflines, outdir=None):
+def main(fasta_file_directory, prefix, index, cluster_file, table_file, num_digits, rename_deflines, outdir=None,
+		 max_number=None, csv=None):
 	names = dict()  # matches old and new names
 	files = os.listdir(fasta_file_directory)
 	logging.info('Renaming files...')
@@ -27,11 +28,17 @@ def main(fasta_file_directory, prefix, index, cluster_file, table_file, num_digi
 				except OSError as e:
 					logging.error('Unable to delete {}: {}'.format(file, e))
 			index += 1
+			if index > max_number:
+				print('index is bigger than requested number in catalogue')
+				exit(1)
 	logging.info('Printing names to table...')
 	print_table(names, table_file)
 	if cluster_file:
 		logging.info('Renaming clusters...')
 		rename_clusters(names, cluster_file)
+	if csv:
+		logging.info('Renaming csv...')
+		rename_csv(names, csv)
 
 
 def write_fasta(old_path, new_path, new_name):
@@ -86,6 +93,17 @@ def rename_clusters(names, cluster_file):
 	file_out.close()
 
 
+def rename_csv(names, csv_file):
+	extension = csv_file.split('.')[-1]
+	clusters_renamed = csv_file.replace('.{}'.format(extension), '_renamed.{}'.format(extension))
+	with open(csv_file, 'r') as file_in, open(clusters_renamed, 'w') as file_out:
+		for line in file_in:
+			for g in line.strip().split(','):
+				if g in names:
+					line = line.replace(g, names[g])
+			file_out.write(line)
+
+
 def parse_args():
 	parser = argparse.ArgumentParser(description='Rename multifasta files, cluster information file and create a table '
 												 'matching old and new names')
@@ -93,6 +111,7 @@ def parse_args():
 	parser.add_argument('-p', dest='prefix', required=True, help='Header prefix')
 	parser.add_argument('-i', dest='index', type=int, default=1,
 						help='Number to start naming at (will be in the file name following prefix; default = 1')
+	parser.add_argument('--max', dest='max', type=int, required=False, help='Number to finish naming')
 	parser.add_argument('-c', dest='cluster_file',
 						help='Path to the cluster information file. If provided, the names in the '
 							 'file will be updated as well')
@@ -106,11 +125,13 @@ def parse_args():
 							 'accession.')
 	parser.add_argument('-o', dest='outputdir', required=False,
 						help='Output directory for renamed FASTA files (use in CWL)')
+	parser.add_argument('--csv', dest='csv', required=False,
+						help='CSV file with completeness and contamination')
 	return parser.parse_args()
 
 
 if __name__ == '__main__':
 	args = parse_args()
 	main(args.fasta_file_directory, args.prefix, args.index, args.cluster_file, args.table_file, args.num_digits,
-		 args.rename_deflines, outdir=args.outputdir)
+		 args.rename_deflines, outdir=args.outputdir, max_number=args.max, csv=args.csv)
 

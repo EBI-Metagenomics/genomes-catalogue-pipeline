@@ -14,6 +14,9 @@ inputs:
   ena_csv: File?
   genomes_ncbi: Directory?
 
+  max_accession_mgyg: int
+  min_accession_mgyg: int
+
   # no gtdbtk
   skip_gtdbtk_step: string
 
@@ -34,6 +37,9 @@ outputs:
   output_csv:
     type: File
     outputSource: unite_folders/csv
+  renamed_csv:
+    type: File
+    outputSource: assign_mgygs/renamed_csv
 
   mash_folder:
     type: Directory?
@@ -82,7 +88,7 @@ outputs:
 
 steps:
 
-# ----------- << checkm for NCBI>> -----------
+# ----------- << checkm for NCBI >> -----------
   checkm_subwf:
     run: sub-wf/checkm-subwf.cwl
     when: $(Boolean(inputs.genomes_folder))
@@ -91,7 +97,7 @@ steps:
     out:
       - checkm_csv
 
-# unite NCBI and ENA
+# ----------- << unite NCBI and ENA >> -----------
   unite_folders:
     run: ../tools/unite_ena_ncbi/unite.cwl
     in:
@@ -104,12 +110,28 @@ steps:
       - genomes
       - csv
 
-# ---------- dRep + split
+# ----------- << assign MGYGs >> -----------
+  assign_mgygs:
+    run: ../utils/rename_fasta.cwl
+    in:
+      genomes: unite_folders/genomes
+      prefix: { default: "MGYG"}
+      start_number: min_accession_mgyg
+      max_number: max_accession_mgyg
+      output_filename: { default: "names.tsv"}
+      output_dirname: { default: "mgyg_genomes" }
+      csv: unite_folders/csv
+    out:
+      - naming_table
+      - renamed_genomes
+      - renamed_csv
+
+# ---------- dRep + split -----------
   drep_subwf:
     run: sub-wf/drep-subwf.cwl
     in:
-      genomes_folder: unite_folders/genomes
-      input_csv: unite_folders/csv
+      genomes_folder: assign_mgygs/renamed_genomes
+      input_csv: assign_mgygs/renamed_csv
     out:
       - many_genomes
       - one_genome
