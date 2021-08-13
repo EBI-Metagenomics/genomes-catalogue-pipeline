@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  s: 'http://schema.org/'
 
 requirements:
   ResourceRequirement:
@@ -15,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
 
 baseCommand: [ rename_fasta.py ]
 
@@ -57,7 +55,7 @@ inputs:
       prefix: --max
 
   csv:
-    type: int
+    type: File
     inputBinding:
       position: 7
       prefix: --csv
@@ -76,5 +74,5 @@ outputs:
   renamed_csv:
     type: File
     outputBinding:
-      glob: $(inputs.csv.nameroot)_renamed.$(inputs.csv.nameext)
+      glob: renamed_$(inputs.csv.basename)
 

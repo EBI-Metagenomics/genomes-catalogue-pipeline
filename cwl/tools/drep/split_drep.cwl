@@ -17,7 +17,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.python3:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v1"
 
 baseCommand: [ split_drep.py ]
 

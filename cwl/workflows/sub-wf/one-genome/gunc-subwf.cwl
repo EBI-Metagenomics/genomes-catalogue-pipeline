@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.0
+cwlVersion: v1.2.0-dev2
 class: Workflow
 
 requirements:
@@ -15,12 +15,12 @@ inputs:
   gunc_db_path: File
 
 outputs:
-  complete-flag:
-    type: File?
-    outputSource: filter/complete
-  empty-flag:
-    type: File?
-    outputSource: filter/empty
+  flag:
+    type: File
+    outputSource:
+      - filter/complete
+      - filter/empty
+    pickValue: first_non_null
 
 steps:
   gunc:

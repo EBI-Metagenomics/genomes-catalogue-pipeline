@@ -75,16 +75,15 @@ steps:
     out: [ converted_faa ]
 
   IPS:
-    run: ../../chunking-subwf-IPS.cwl
+    run: ../chunking-subwf-IPS.cwl
     in:
-      flag: gunc/complete-flag
       faa: translate/converted_faa
       chunk_size: chunk_size_IPS
       InterProScan_databases: InterProScan_databases
     out: [ips_result]
 
   eggnog:
-    run: ../../chunking-subwf-eggnog.cwl
+    run: ../chunking-subwf-eggnog.cwl
     in:
       faa_file: translate/converted_faa
       chunk_size: chunk_size_eggnog

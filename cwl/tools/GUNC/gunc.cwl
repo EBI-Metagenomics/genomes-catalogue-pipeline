@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  s: 'http://schema.org/'
 
 requirements:
   ResourceRequirement:
@@ -12,8 +10,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.gunc:v2"
-    #dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v2"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v2"
 
 baseCommand: [ "gunc", "run" ]
 arguments: ["-t", "4"]

@@ -94,14 +94,12 @@ def rename_clusters(names, cluster_file):
 
 
 def rename_csv(names, csv_file):
-	extension = csv_file.split('.')[-1]
-	clusters_renamed = csv_file.replace('.{}'.format(extension), '_renamed.{}'.format(extension))
+	clusters_renamed = "renamed_" + os.path.basename(csv_file)
 	with open(csv_file, 'r') as file_in, open(clusters_renamed, 'w') as file_out:
 		for line in file_in:
-			for g in line.strip().split(','):
-				if g in names:
-					line = line.replace(g, names[g])
-			file_out.write(line)
+			items = line.strip().split(',')
+			genome = names[items[0]] if items[0] in names else items[0]
+			file_out.write(','.join([genome] + items[1:3]) + '\n')
 
 
 def parse_args():

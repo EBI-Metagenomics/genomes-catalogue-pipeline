@@ -11,7 +11,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.prokka:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.prokka:v1"
 
 baseCommand: [ prokka ]
 

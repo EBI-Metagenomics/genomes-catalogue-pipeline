@@ -11,7 +11,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.panaroo:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.panaroo:v1"
 
 baseCommand: [ panaroo ]
 

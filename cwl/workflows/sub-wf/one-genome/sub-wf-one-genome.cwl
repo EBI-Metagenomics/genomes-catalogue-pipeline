@@ -53,15 +53,13 @@ steps:
         valueFrom: $(self[0])
       input_csv: csv
       gunc_db_path: gunc_db_path
-    out:
-      - complete-flag
-      - empty-flag
+    out: [flag]
 
   prokka:
-    when: $(Boolean(inputs.flag))
+    when: $(inputs.flag == 'complete.txt')
     run: ../../../tools/prokka/prokka.cwl
     in:
-      flag: gunc/complete-flag
+      flag: gunc/flag
       fa_file:
         source: preparation/files
         valueFrom: $(self[0])
@@ -69,20 +67,20 @@ steps:
     out: [ faa, outdir ]
 
   IPS:
-    when: $(Boolean(inputs.flag))
-    run: ../../chunking-subwf-IPS.cwl
+    when: $(inputs.flag == 'complete.txt')
+    run: ../chunking-subwf-IPS.cwl
     in:
-      flag: gunc/complete-flag
+      flag: gunc/flag
       faa: prokka/faa
       chunk_size: chunk_size_IPS
       InterProScan_databases: InterProScan_databases
     out: [ips_result]
 
   eggnog:
-    when: $(Boolean(inputs.flag))
-    run: ../../chunking-subwf-eggnog.cwl
+    when: $(inputs.flag == 'complete.txt')
+    run: ../chunking-subwf-eggnog.cwl
     in:
-      flag: gunc/complete-flag
+      flag: gunc/flag
       faa_file: prokka/faa
       chunk_size: chunk_size_eggnog
       db_diamond: db_diamond_eggnog
@@ -92,10 +90,10 @@ steps:
     out: [annotations, seed_orthologs]
 
   create_cluster_folder:
-    when: $(Boolean(inputs.flag))
+    when: $(inputs.flag == 'complete.txt')
     run: ../../../utils/return_directory.cwl
     in:
-      flag: gunc/complete-flag
+      flag: gunc/flag
       list:
         - IPS/ips_result
         - eggnog/annotations
@@ -106,10 +104,10 @@ steps:
     out: [ out ]
 
   create_cluster_genomes:
-    when: $(Boolean(inputs.flag))
+    when: $(inputs.flag == 'complete.txt')
     run: ../../../utils/return_directory.cwl
     in:
-      flag: gunc/complete-flag
+      flag: gunc/flag
       list: preparation/files
       dir_name:
         source: cluster
@@ -117,10 +115,10 @@ steps:
     out: [ out ]
 
   return_prokka_cluster_dir:
-    when: $(Boolean(inputs.flag))
+    when: $(inputs.flag == 'complete.txt')
     run: ../../../utils/return_dir_of_dir.cwl
     in:
-      flag: gunc/complete-flag
+      flag: gunc/flag
       directory_array:
         linkMerge: merge_nested
         source:

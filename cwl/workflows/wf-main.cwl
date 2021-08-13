@@ -26,6 +26,8 @@ inputs:
 
   gunc_db_path: File
 
+  gtdbtk_data: Directory?
+
   InterProScan_databases: [string, Directory]
   chunk_size_IPS: int
   chunk_size_eggnog: int
@@ -155,12 +157,7 @@ steps:
       db_diamond_eggnog: db_diamond_eggnog
       db_eggnog: db_eggnog
       data_dir_eggnog: data_dir_eggnog
-      csv:
-        source:
-          - checkm_subwf/checkm_csv
-          - download/stats_ena  # for ENA / NCBI
-          - csv  # for no fetch
-        pickValue: first_non_null
+      csv: assign_mgygs/renamed_csv
     out:
       - mash_folder
       - many_genomes
@@ -180,4 +177,5 @@ steps:
       skip_flag: skip_gtdbtk_step
       drep_folder: drep_subwf/dereplicated_genomes
       gtdb_outfolder: { default: 'gtdb-tk_output' }
+      refdata: gtdbtk_data
     out: [ gtdbtk_folder ]

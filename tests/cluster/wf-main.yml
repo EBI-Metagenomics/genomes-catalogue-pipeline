@@ -25,22 +25,28 @@ mmseqs_limit_c: 0.8
 # GUNC
 gunc_db_path:
   class: File
-  path:
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
 
 # IPS
 InterProScan_databases:
   class: Directory
-  path:
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
 chunk_size_IPS: 10000
 
 # EggNOG
 chunk_size_eggnog: 100000
 db_diamond_eggnog:
   class: File
-  path:
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_proteins.dmnd
 db_eggnog:
   class: File
-  path:
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
 data_dir_eggnog:
   class: Directory
-  path:
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
+
+# GTDB-Tk
+gtdbtk_data:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202
+
