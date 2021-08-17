@@ -1,18 +1,16 @@
 genomes_ena:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/ENA
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/DATA/small-test
 ena_csv:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/ENA/genome_stats.txt
-genomes_ncbi:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/NCBI
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/DATA/small-test/stats.txt
 
-max_accession_mgyg: 2329
+max_accession_mgyg: 20
 min_accession_mgyg: 1
 
 # no gtdbtk
 skip_gtdbtk_step: skip
+skip_drep_step: no
 
 # common input
 mmseqs_limit_i:

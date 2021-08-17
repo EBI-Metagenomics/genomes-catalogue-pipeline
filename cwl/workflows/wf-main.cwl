@@ -17,8 +17,11 @@ inputs:
   max_accession_mgyg: int
   min_accession_mgyg: int
 
+  # skip dRep step if MAGs were already dereplicated
+  skip_drep_step: string   # set "skip" for skipping
+
   # no gtdbtk
-  skip_gtdbtk_step: string
+  skip_gtdbtk_step: string   # set "skip" for skipping
 
   # common input
   mmseqs_limit_c: float
@@ -36,13 +39,41 @@ inputs:
   data_dir_eggnog: [string?, Directory?]
 
 outputs:
+
+  # ------- unite_folders -------
   output_csv:
     type: File
     outputSource: unite_folders/csv
+
+  # ------- assign_mgygs -------
   renamed_csv:
     type: File
     outputSource: assign_mgygs/renamed_csv
+  naming_table:
+    type: File
+    outputSource: assign_mgygs/naming_table
+  renamed_genomes:
+    type: Directory
+    outputSource: assign_mgygs/renamed_genomes
 
+  # ------- drep -------
+  weights:
+    type: File?
+    outputSource: drep_subwf/weights_file
+  dereplicated_genomes:
+    type: Directory?
+    outputSource: drep_subwf/dereplicated_genomes
+  mash_drep:
+    type: File[]?
+    outputSource: drep_subwf/mash_folder
+  one_clusters:
+    type: Directory[]?
+    outputSource: drep_subwf/one_genome
+  many_clusters:
+    type: Directory[]?
+    outputSource: drep_subwf/many_genomes
+
+  # ------- clusters_annotation -------
   mash_folder:
     type: Directory?
     outputSource: clusters_annotation/mash_folder
@@ -79,13 +110,10 @@ outputs:
     type: Directory
     outputSource: clusters_annotation/mmseqs_output
 
+  # ------- GTDB-Tk -------
   gtdbtk:
-    type: Directory
+    type: Directory?
     outputSource: gtdbtk/gtdbtk_folder
-
-  weights:
-    type: File
-    outputSource: drep_subwf/weights_file
 
 
 steps:
@@ -134,12 +162,13 @@ steps:
     in:
       genomes_folder: assign_mgygs/renamed_genomes
       input_csv: assign_mgygs/renamed_csv
+      skip_flag: skip_drep_step
     out:
       - many_genomes
       - one_genome
-      - mash_folder
-      - dereplicated_genomes
-      - weights_file
+      - mash_folder           # only for non dereplicated mags
+      - dereplicated_genomes  # only for non dereplicated mags
+      - weights_file          # only for non dereplicated mags
 
 # ---------- annotation
   clusters_annotation:
@@ -175,7 +204,11 @@ steps:
     run: ../tools/gtdbtk/gtdbtk.cwl
     in:
       skip_flag: skip_gtdbtk_step
-      drep_folder: drep_subwf/dereplicated_genomes
+      drep_folder:
+        source:
+          - drep_subwf/dereplicated_genomes
+          - assign_mgygs/renamed_genomes
+        pickValue: first_non_null
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
     out: [ gtdbtk_folder ]

@@ -29,7 +29,6 @@ baseCommand: [ split_to_chunks.py ]
 
 inputs:
   seqs:
-    # format: edam:format_1929  # collision with concatenate.cwl
     type: File
     inputBinding:
       prefix: -i
@@ -47,7 +46,7 @@ outputs:
     format: edam:format_1929  # FASTA
     type: File[]
     outputBinding:
-      glob: '*_*'
+      glob: '*_*$(inputs.seqs.nameext)'
 
 $namespaces:
  edam: http://edamontology.org/

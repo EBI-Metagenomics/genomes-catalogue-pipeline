@@ -4,3 +4,5 @@ genomes_folder:
 input_csv:
   class: File
   path: ../../../../input_example/test-one_and_many/test-mixed.csv
+
+skip_flag: no

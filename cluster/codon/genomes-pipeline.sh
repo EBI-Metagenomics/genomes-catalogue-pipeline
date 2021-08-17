@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export CWL=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/cwl/workflows/wf-main.cwl
-export YML=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/tests/cluster/wf-main.yml
+export YML=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/tests/cluster/wf-main_ena_small.yml
 
 export SINGULARITY_HOME=/hps/nobackup/rdf/metagenomics/singularity_cache
 export SINGULARITY_CACHEDIR=$SINGULARITY_HOME

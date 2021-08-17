@@ -280,8 +280,45 @@
         checksum: sha1$71d4c68bb966f9e4333398e28f560cee6978f992
         size: 247767
         format: http://edamontology.org/format_1929
-      - basename: split_to_chunks.py
-        class: File
-        checksum: sha1$aa7ffd49df332a62f66086d4828dff5ebe5824ca
-        size: 1610
-        format: http://edamontology.org/format_1929
+
+# filter nulls files
+- job: filter_nulls_files.yml
+  tool: ../../../cwl/utils/filter_nulls.cwl
+  short_name: filter_nulls.cwl
+  doc: "filter nulls from input array"
+  output:
+    out:
+    - class: Directory
+      basename: help_scripts
+      listing:
+      - class: File
+        basename: convert_json_to_output.py
+        size: 503
+        checksum: sha1$6587b750f49985b6e48b39d1776daa94fa5f7f1a
+      - class: File
+        basename: __init__.py
+        size: 0
+        checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+      - class: File
+        basename: run.sh
+        size: 191
+        checksum: sha1$74b9aeb38391009f7dc584bea29c3554b30200c7
+    - class: Directory
+      basename: data_tables
+      listing:
+      - class: File
+        basename: Mdb.csv
+        size: 2624
+        checksum: sha1$0aa29b7ca5a37f0698a473361724006d73e1dd18
+      - class: File
+        basename: Cdb.csv
+        size: 564
+        checksum: sha1$2a2b4cbf2ba5511acf5f8524c9cd9b084fe6377f
+
+# filter nulls files
+- job: filter_nulls_empty.yml
+  tool: ../../../cwl/utils/filter_nulls.cwl
+  short_name: filter_nulls.cwl
+  doc: "filter nulls from input array of nulls"
+  output:
+    out: null
