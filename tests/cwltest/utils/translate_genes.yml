@@ -1,0 +1,5 @@
+fa_file:
+  class: File
+  path: ../../../input_example/test-many/panaroo-output/pan_genome_reference.fa
+
+faa_file: many_pan_genome_reference.faa

@@ -11,8 +11,11 @@ RUN pip install -r /requirements.txt
 
 COPY checkm2csv.py \
      classify_folders.py \
+     classify_dereplicated.py \
      split_drep.py \
      translate_genes.py \
+     split_to_chunks.py \
+     unite_ena_ncbi.py \
 /tools/
 
 RUN chmod a+x /tools/*

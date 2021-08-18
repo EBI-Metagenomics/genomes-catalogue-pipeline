@@ -1,0 +1,276 @@
+#cwltest
+
+- job: one.yml
+  tool: ../../../../cwl/workflows/sub-wf/drep-subwf.cwl
+  short_name: drep-subwf.cwl
+  doc: "dRep subwf on folder with one-genome clusters"
+  output:
+    dereplicated_genomes:
+      basename: dereplicated_genomes
+      class: Directory
+      listing:
+        - class: File
+          basename: GUT_GENOME001921.fa
+          checksum: sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8
+          size: 2369043
+        - class: File
+          basename: GUT_GENOME000465.fa
+          checksum: sha1$90e3b84fe64029a3c556d90a8cebf3fb11e4bb01
+          size: 5484822
+    many_genomes: null
+    mash_folder: null
+    one_genome:
+      - basename: '1_0'
+        class: Directory
+        listing:
+          - class: File
+            basename: GUT_GENOME000465.fa
+            checksum: sha1$90e3b84fe64029a3c556d90a8cebf3fb11e4bb01
+            size: 5484822
+      - basename: '2_0'
+        class: Directory
+        listing:
+          - class: File
+            basename: GUT_GENOME001921.fa
+            checksum: sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8
+            size: 2369043
+    weights_file:
+      basename: extra_weight_table.txt
+      class: File
+
+
+- job: many.yml
+  tool: ../../../../cwl/workflows/sub-wf/drep-subwf.cwl
+  short_name: drep-subwf.cwl
+  doc: "dRep subwf on folder with many-genome clusters"
+  output:
+    dereplicated_genomes:
+      basename: dereplicated_genomes
+      class: Directory
+      listing:
+        - class: File
+          basename: GUT_GENOME000132.fa
+          checksum: sha1$090c2cdef1e6b9c8d4d4e9d1bf0218e5114870c5
+          size: 3716226
+        - class: File
+          basename: GUT_GENOME000070.fa
+          checksum: sha1$eec6406eb11a5a2bdcca6347216c38b7519918f3
+          size: 5231862
+    many_genomes:
+      - basename: '1_1'
+        class: Directory
+        listing:
+          - class: File
+            basename: GUT_GENOME000132.fa
+            checksum: sha1$090c2cdef1e6b9c8d4d4e9d1bf0218e5114870c5
+            size: 3716226
+          - class: File
+            basename: GUT_GENOME000263.fa
+            checksum: sha1$b39eacc4125088a1c97e6ead54a59546cdfdce0c
+            size: 3864067
+      - basename: '2_1'
+        class: Directory
+        listing:
+          - class: File
+            basename: GUT_GENOME000028.fa
+            checksum: sha1$250f384bf6a4abccae12d49491af24412ec37290
+            size: 5417185
+          - class: File
+            basename: GUT_GENOME000070.fa
+            checksum: sha1$eec6406eb11a5a2bdcca6347216c38b7519918f3
+            size: 5231862
+    mash_folder:
+      - basename: 1_1_mash.tsv
+        class: File
+        checksum: sha1$8d2cd0d1152b005c5c1a9eeb9a7be653eec92de4
+        size: 252
+      - basename: 2_1_mash.tsv
+        class: File
+        checksum: sha1$a85b57cdf64de1df0911d02943425c388efa2db8
+        size: 252
+    one_genome: null
+    weights_file:
+      basename: extra_weight_table.txt
+      class: File
+
+- job: mixed.yml
+  tool: ../../../../cwl/workflows/sub-wf/drep-subwf.cwl
+  short_name: drep-subwf.cwl
+  doc: "dRep subwf on folder with mixed-genome clusters"
+  output:
+    dereplicated_genomes:
+      basename: dereplicated_genomes
+      class: Directory
+      listing:
+        - class: File
+          basename: GUT_GENOME001921.fa
+          checksum: sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8
+          size: 2369043
+        - class: File
+          basename: GUT_GENOME000132.fa
+          checksum: sha1$090c2cdef1e6b9c8d4d4e9d1bf0218e5114870c5
+          size: 3716226
+        - class: File
+          basename: GUT_GENOME000070.fa
+          checksum: sha1$eec6406eb11a5a2bdcca6347216c38b7519918f3
+          size: 5231862
+    many_genomes:
+      - basename: '1_1'
+        class: Directory
+        listing:
+          - class: File
+            basename: GUT_GENOME000132.fa
+            checksum: sha1$090c2cdef1e6b9c8d4d4e9d1bf0218e5114870c5
+            size: 3716226
+          - class: File
+            basename: GUT_GENOME000263.fa
+            checksum: sha1$b39eacc4125088a1c97e6ead54a59546cdfdce0c
+            size: 3864067
+      - basename: '2_1'
+        class: Directory
+        listing:
+          - class: File
+            basename: GUT_GENOME000465.fa
+            checksum: sha1$90e3b84fe64029a3c556d90a8cebf3fb11e4bb01
+            size: 5484822
+          - class: File
+            basename: GUT_GENOME000028.fa
+            checksum: sha1$250f384bf6a4abccae12d49491af24412ec37290
+            size: 5417185
+          - class: File
+            basename: GUT_GENOME000070.fa
+            checksum: sha1$eec6406eb11a5a2bdcca6347216c38b7519918f3
+            size: 5231862
+    mash_folder:
+      - basename: 1_1_mash.tsv
+        class: File
+        size: 252
+      - basename: 2_1_mash.tsv
+        class: File
+        size: 548
+    one_genome:
+      - basename: '3_0'
+        class: Directory
+        listing:
+          - class: File
+            basename: GUT_GENOME001921.fa
+            checksum: sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8
+            size: 2369043
+    weights_file:
+      basename: extra_weight_table.txt
+      class: File
+
+- job: drep_input.yml
+  tool: ../../../../cwl/workflows/sub-wf/drep-subwf.cwl
+  short_name: drep-subwf.cwl
+  doc: "create clusters for already dreplicated mags"
+  output:
+    dereplicated_genomes: null
+    many_genomes: null
+    mash_folder: null
+    one_genome:
+      class: Directory
+      basename: one_genome
+      listing:
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/1_0
+          basename: '1_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/1_0/CAJPIT01.fa
+              basename: CAJPIT01.fa
+              size: 1880698
+              checksum: sha1$004aaf3f2a302b9d579087cdec4e96e98ea405bd
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/1_0/CAJPIT01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/1_0"
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/2_0
+          basename: '2_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/2_0/CAJPIU01.fa
+              basename: CAJPIU01.fa
+              size: 1977565
+              checksum: sha1$6aa4ac4d4588ffc2235b488f20e6b045d203a12e
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/2_0/CAJPIU01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/2_0"
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/3_0
+          basename: '3_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/3_0/CAJPIR01.fa
+              basename: CAJPIR01.fa
+              size: 1468727
+              checksum: sha1$3dd96cc178852a49e06545ddacd3ee4aa0207c01
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/3_0/CAJPIR01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/3_0"
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/4_0
+          basename: '4_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/4_0/CAJPIS01.fa
+              basename: CAJPIS01.fa
+              size: 1222952
+              checksum: sha1$7df5bd1ae657ac611d76aa3f0b3af49421243072
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/4_0/CAJPIS01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/4_0"
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/5_0
+          basename: '5_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/5_0/CAJPIP01.fa
+              basename: CAJPIP01.fa
+              size: 1283947
+              checksum: sha1$58ac66bb7216b9b2a5c641e84c2afa17f417795b
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/5_0/CAJPIP01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/5_0"
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/6_0
+          basename: '6_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/6_0/CAJPIQ01.fa
+              basename: CAJPIQ01.fa
+              size: 772051
+              checksum: sha1$3c1fae5b3569b743849dece6ae644b3df7a79be2
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/6_0/CAJPIQ01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/6_0"
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/7_0
+          basename: '7_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/7_0/CAJPIV01.fa
+              basename: CAJPIV01.fa
+              size: 2476921
+              checksum: sha1$9c62c170cc83779e1964e8ebc1b8c34d4cc7ce82
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/7_0/CAJPIV01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/7_0"
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/8_0
+          basename: '8_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/8_0/CAJPIO01.fa
+              basename: CAJPIO01.fa
+              size: 846466
+              checksum: sha1$53ea8ae9cf9e2d3ccf025bb1bda87e892a0f8bc3
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/8_0/CAJPIO01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/8_0"
+        - location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/9_0
+          basename: '9_0'
+          class: Directory
+          listing:
+            - class: File
+              location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/9_0/CAJPIW01.fa
+              basename: CAJPIW01.fa
+              size: 1238006
+              checksum: sha1$025083cc704a34bf85fdef28c14f8eb6ad436f0a
+              path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/9_0/CAJPIW01.fa"
+          path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome/9_0"
+      location: file:///Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome
+      path: "/Users/kates/Desktop/EBI/CWL/genomes-pipeline/one_genome"
+    weights_file: null

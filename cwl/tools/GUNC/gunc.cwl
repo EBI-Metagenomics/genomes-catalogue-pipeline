@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  s: 'http://schema.org/'
 
 requirements:
   ResourceRequirement:
@@ -12,7 +10,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.gunc:v2"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v2"
 
 baseCommand: [ "gunc", "run" ]
 arguments: ["-t", "4"]
@@ -24,15 +22,15 @@ inputs:
       position: 1
       prefix: -i
   db_path:
-    type: string?
+    type: File?
     inputBinding:
       position: 2
       prefix: -r
 
 outputs:
   gunc_tsv:
-    type: Directory
+    type: File
     outputBinding:
-      glob: "GUNC.maxCSS_level.tsv"
+      glob: "GUNC*maxCSS_level.tsv"
 
 

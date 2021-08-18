@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: microbiomeinformatics/genomes-pipeline.checkm:v1.1.3
+    dockerPull: "microbiomeinformatics/genomes-pipeline.checkm:v1"
 
 baseCommand: ["checkm", "lineage_wf"]
 
@@ -40,9 +40,11 @@ inputs:
       position: 5
 
 stdout: checkm.out
+stderr: checkm.err
 
 outputs:
   stdout: stdout
+  stderr: stderr
 
   out_folder:
     type: Directory

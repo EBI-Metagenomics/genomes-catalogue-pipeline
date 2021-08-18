@@ -1,9 +1,11 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  s: 'http://schema.org/'
 
 baseCommand: [ cat ]
+
+hints:
+  - class: DockerRequirement
+    dockerPull: debian:stable-slim
 
 inputs:
   - id: files

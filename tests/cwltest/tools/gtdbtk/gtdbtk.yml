@@ -1,0 +1,7 @@
+drep_folder:
+  class: Directory
+  path: ../../../../input_example/test-many/genomes
+refdata:
+  class: Directory
+  path: ../../../../db/release202
+gtdb_outfolder: GTDB_out

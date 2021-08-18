@@ -1,6 +1,7 @@
 genomes_folder:
   class: Directory
-  path: ../../../../input_example/test-many
+  path: ../../../../input_example/test-many/genomes
 input_csv:
   class: File
   path: ../../../../input_example/test-many/test-many.csv
+skip_flag: no

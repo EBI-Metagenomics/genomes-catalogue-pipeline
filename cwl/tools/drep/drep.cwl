@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.drep:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v1"
 
 
 baseCommand: ["dRep", "dereplicate"]

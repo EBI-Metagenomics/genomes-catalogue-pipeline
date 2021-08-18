@@ -11,7 +11,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: microbiomeinformatics/genomes-pipeline-mmseqs:v1
+    dockerPull: "microbiomeinformatics/genomes-pipeline.mmseqs:v1"
 
 baseCommand: [ mmseqs_wf.sh ]
 

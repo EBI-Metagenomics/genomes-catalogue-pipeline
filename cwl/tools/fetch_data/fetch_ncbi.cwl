@@ -13,11 +13,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/genome-catalog-update/scripts/fetch_ncbi.py
+        location: ../../../docker/genomes-catalog-update/scripts/fetch_ncbi.py
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
 
 baseCommand: ["fetch_ncbi.py"]
 

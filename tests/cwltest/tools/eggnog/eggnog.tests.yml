@@ -1,0 +1,14 @@
+#cwltest
+
+- job: eggnog.yml
+  tool: ../../../../cwl/tools/eggnog/eggnog.cwl
+  short_name: eggnog.cwl
+  doc: eggnog test
+  output:
+    annotations:
+      basename: test-eggnog.emapper.annotations
+      class: File
+    seed_orthologs:
+      basename: test-eggnog.emapper.seed_orthologs
+      class: File
+      

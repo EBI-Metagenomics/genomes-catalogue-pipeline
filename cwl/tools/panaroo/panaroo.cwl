@@ -9,6 +9,10 @@ requirements:
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
+hints:
+  DockerRequirement:
+    dockerPull: "microbiomeinformatics/genomes-pipeline.panaroo:v1"
+
 baseCommand: [ panaroo ]
 
 arguments:

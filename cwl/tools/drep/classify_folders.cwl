@@ -15,13 +15,9 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "docker.io/microbiomeinformatics/genomes-pipeline.python3:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v1"
 
 baseCommand: [ classify_folders.py ]
-
-arguments:
-  - valueFrom: $(inputs.clusters.location.split('file://')[1])
-    prefix: '-i'
 
 stderr: stderr.txt
 stdout: stdout.txt
@@ -29,6 +25,8 @@ stdout: stdout.txt
 inputs:
   clusters:
     type: Directory
+    inputBinding:
+      prefix: -i
 
 outputs:
   stderr: stderr

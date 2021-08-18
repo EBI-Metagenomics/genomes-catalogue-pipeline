@@ -9,6 +9,10 @@ requirements:
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
+hints:
+  DockerRequirement:
+    dockerPull: "microbiomeinformatics/genomes-pipeline.prokka:v1"
+
 baseCommand: [ prokka ]
 
 arguments:

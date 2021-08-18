@@ -10,41 +10,80 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  # download params
-  download_from: string?  # ENA or NCBI
-  infile: File?            # file containing a list of GenBank accessions, one accession per line
-  directory_name: string?  # directory name to download files to
-  unzip: boolean?
+  genomes_ena: Directory?
+  ena_csv: File?
+  genomes_ncbi: Directory?
 
-  # no download
-  genomes: Directory?
-  csv: File?
+  max_accession_mgyg: int
+  min_accession_mgyg: int
+
+  # skip dRep step if MAGs were already dereplicated
+  skip_drep_step: string   # set "skip" for skipping
 
   # no gtdbtk
-  skip_gtdbtk_step: string
+  skip_gtdbtk_step: string   # set "skip" for skipping
 
   # common input
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
 
-  gunc_db_path: string
+  gunc_db_path: File
 
+  gtdbtk_data: Directory?
+
+  InterProScan_databases: [string, Directory]
+  chunk_size_IPS: int
+  chunk_size_eggnog: int
+  db_diamond_eggnog: [string?, File?]
+  db_eggnog: [string?, File?]
+  data_dir_eggnog: [string?, Directory?]
 
 outputs:
-  output_csv:
-    type: File?
-    outputSource: download/stats_download
 
+  # ------- unite_folders -------
+  output_csv:
+    type: File
+    outputSource: unite_folders/csv
+
+  # ------- assign_mgygs -------
+  renamed_csv:
+    type: File
+    outputSource: assign_mgygs/renamed_csv
+  naming_table:
+    type: File
+    outputSource: assign_mgygs/naming_table
+  renamed_genomes:
+    type: Directory
+    outputSource: assign_mgygs/renamed_genomes
+
+  # ------- drep -------
+  weights:
+    type: File?
+    outputSource: drep_subwf/weights_file
+  dereplicated_genomes:
+    type: Directory?
+    outputSource: drep_subwf/dereplicated_genomes
+  mash_drep:
+    type: File[]?
+    outputSource: drep_subwf/mash_folder
+  one_clusters:
+    type: Directory[]?
+    outputSource: drep_subwf/one_genome
+  many_clusters:
+    type: Directory[]?
+    outputSource: drep_subwf/many_genomes
+
+  # ------- clusters_annotation -------
   mash_folder:
     type: Directory?
-    outputSource: wf-2/mash_folder
+    outputSource: clusters_annotation/mash_folder
 
   many_genomes:
     type: Directory[]?
-    outputSource: wf-2/many_genomes
+    outputSource: clusters_annotation/many_genomes
   many_genomes_panaroo:
     type: Directory[]?
-    outputSource: wf-2/many_genomes_panaroo
+    outputSource: clusters_annotation/many_genomes_panaroo
   many_genomes_prokka:
     type:
       - 'null'
@@ -52,77 +91,88 @@ outputs:
         items:
           type: array
           items: Directory
-    outputSource: wf-2/many_genomes_prokka
+    outputSource: clusters_annotation/many_genomes_prokka
   many_genomes_genomes:
     type: Directory[]?
-    outputSource: wf-2/many_genomes_genomes
+    outputSource: clusters_annotation/many_genomes_genomes
 
   one_genome:
     type: Directory[]?
-    outputSource: wf-2/one_genome
+    outputSource: clusters_annotation/one_genome
   one_genome_prokka:
     type: Directory[]?
-    outputSource: wf-2/one_genome_prokka
+    outputSource: clusters_annotation/one_genome_prokka
   one_genome_genomes:
     type: Directory[]?
-    outputSource: wf-2/one_genome_genomes
+    outputSource: clusters_annotation/one_genome_genomes
 
   mmseqs:
     type: Directory
-    outputSource: wf-2/mmseqs_output
+    outputSource: clusters_annotation/mmseqs_output
 
+  # ------- GTDB-Tk -------
   gtdbtk:
-    type: Directory
+    type: Directory?
     outputSource: gtdbtk/gtdbtk_folder
-
-  flag_no_data:
-    type: File?
-    outputSource: download/flag_no-data
-
-  weights:
-    type: File
-    outputSource: drep_subwf/weights_file
 
 
 steps:
-# ----------- << download data >> -----------
-  download:
-    when: $(Boolean(inputs.download_from))
-    run: part-1/fetch_data.cwl
-    in:
-      download_from: download_from
-      infile: infile
-      directory_name: directory_name
-      unzip: unzip
-    out:
-      - downloaded_folder
-      - stats_download
-      - flag_no-data
 
-# ---------- first part - dRep
-  drep_subwf:
-    run: part-1/sub-wf/drep-subwf.cwl
+# ----------- << checkm for NCBI >> -----------
+  checkm_subwf:
+    run: sub-wf/checkm-subwf.cwl
+    when: $(Boolean(inputs.genomes_folder))
     in:
-      genomes_folder:
-        source:
-          - download/downloaded_folder
-          - genomes
-        pickValue: first_non_null
-      input_csv:
-        source:
-          - download/stats_download  # for ENA / NCBI
-          - csv  # for no fetch
-        pickValue: first_non_null
+      genomes_folder: genomes_ncbi
+    out:
+      - checkm_csv
+
+# ----------- << unite NCBI and ENA >> -----------
+  unite_folders:
+    run: ../tools/unite_ena_ncbi/unite.cwl
+    in:
+      ena_folder: genomes_ena
+      ncbi_folder: genomes_ncbi
+      ena_csv: ena_csv
+      ncbi_csv: checkm_subwf/checkm_csv
+      outputname: { default: "genomes"}
+    out:
+      - genomes
+      - csv
+
+# ----------- << assign MGYGs >> -----------
+  assign_mgygs:
+    run: ../utils/rename_fasta.cwl
+    in:
+      genomes: unite_folders/genomes
+      prefix: { default: "MGYG"}
+      start_number: min_accession_mgyg
+      max_number: max_accession_mgyg
+      output_filename: { default: "names.tsv"}
+      output_dirname: { default: "mgyg_genomes" }
+      csv: unite_folders/csv
+    out:
+      - naming_table
+      - renamed_genomes
+      - renamed_csv
+
+# ---------- dRep + split -----------
+  drep_subwf:
+    run: sub-wf/drep-subwf.cwl
+    in:
+      genomes_folder: assign_mgygs/renamed_genomes
+      input_csv: assign_mgygs/renamed_csv
+      skip_flag: skip_drep_step
     out:
       - many_genomes
       - one_genome
-      - mash_folder
-      - dereplicated_genomes
-      - weights_file
+      - mash_folder           # only for non dereplicated mags
+      - dereplicated_genomes  # only for non dereplicated mags
+      - weights_file          # only for non dereplicated mags
 
-# ---------- second part
-  wf-2:
-    run: part-2/wf-2.cwl
+# ---------- annotation
+  clusters_annotation:
+    run: sub-wf/subwf-process_clusters.cwl
     in:
       many_genomes: drep_subwf/many_genomes
       mash_folder: drep_subwf/mash_folder
@@ -130,6 +180,13 @@ steps:
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
       gunc_db_path: gunc_db_path
+      InterProScan_databases: InterProScan_databases
+      chunk_size_IPS: chunk_size_IPS
+      chunk_size_eggnog: chunk_size_eggnog
+      db_diamond_eggnog: db_diamond_eggnog
+      db_eggnog: db_eggnog
+      data_dir_eggnog: data_dir_eggnog
+      csv: assign_mgygs/renamed_csv
     out:
       - mash_folder
       - many_genomes
@@ -147,6 +204,11 @@ steps:
     run: ../tools/gtdbtk/gtdbtk.cwl
     in:
       skip_flag: skip_gtdbtk_step
-      drep_folder: drep_subwf/dereplicated_genomes
+      drep_folder:
+        source:
+          - drep_subwf/dereplicated_genomes
+          - assign_mgygs/renamed_genomes
+        pickValue: first_non_null
       gtdb_outfolder: { default: 'gtdb-tk_output' }
+      refdata: gtdbtk_data
     out: [ gtdbtk_folder ]

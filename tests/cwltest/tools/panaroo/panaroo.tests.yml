@@ -1,0 +1,70 @@
+#cwltest
+
+- job: panaroo.yml
+  tool: ../../../../cwl/tools/panaroo/panaroo.cwl
+  short_name: panaroo.cwl
+  doc: panaroo on 2 input gffs
+  output:
+    pan_genome_reference-fa:
+      basename: pan_genome_reference.fa
+      class: File
+      checksum: sha1$15ac780608aa69d113eea1c0d7d035441b0f25ce
+      size: 5149297
+    panaroo_dir:
+      location: file:///home/ubuntu/kate/genomes-pipeline/panaroo-output
+      basename: panaroo-output
+      class: Directory
+      listing:
+        - class: File
+          basename: combined_protein_cdhit_out.txt.clstr
+          checksum: sha1$9919e9902b2dd183207d100b05d0fe43c06e4a7c
+          size: 312022
+        - class: File
+          basename: gene_presence_absence.Rtab
+          checksum: sha1$03b39991866263c40b6cde14edb1afd773fbc800
+          size: 60317
+        - class: File
+          basename: combined_protein_cdhit_out.txt
+          checksum: sha1$4abc069907bc7d25d642c0ecf85daccf899d1f33
+          size: 2187348
+        - class: File
+          basename: gene_presence_absence_roary.csv
+          checksum: sha1$d2314f5e5040d3ae0dcdc27f61068fc24aa88958
+          size: 514189
+        - class: File
+          basename: combined_protein_CDS.fasta
+          checksum: sha1$5a10f8ee09faea0a406eac1f7248221cdad438bb
+          size: 3280147
+        - class: File
+          basename: combined_DNA_CDS.fasta
+          checksum: sha1$f493b580913e1181b2712853b7668eeeaad432b2
+          size: 9699963
+        - class: File
+          basename: gene_presence_absence.csv
+          checksum: sha1$19c61cde6e893105273f19390025a00c96eaf68c
+          size: 360973
+        - class: File
+          basename: gene_data.csv
+          checksum: sha1$72afa716f9f5ca2997128589fcc20c665c71aec4
+          size: 13492283
+        - class: File
+          basename: final_graph.gml
+          checksum: sha1$0302c1080ec2d0b3c7b57c68638385757a32fcb3
+          size: 9797993
+        - class: File
+          basename: struct_presence_absence.Rtab
+          checksum: sha1$5b9dba5deb434def69fb44cd7dac611612e620f9
+          size: 451
+        - class: File
+          basename: pre_filt_graph.gml
+          checksum: sha1$9b96ffedb295b59f3bf75718ac5229ba40fcb7ce
+          size: 11774405
+        - class: File
+          basename: summary_statistics.txt
+          checksum: sha1$a8cca3aeac752e7d3f7fb641538b87c91f56ae91
+          size: 198
+        - class: File
+          basename: pan_genome_reference.fa
+          checksum: sha1$15ac780608aa69d113eea1c0d7d035441b0f25ce
+          size: 5149297
+

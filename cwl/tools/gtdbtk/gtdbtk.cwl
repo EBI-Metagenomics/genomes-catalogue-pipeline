@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.0
+cwlVersion: v1.2
 class: CommandLineTool
 
 requirements:
@@ -8,6 +8,14 @@ requirements:
     coresMin: 2
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
+  InitialWorkDirRequirement:
+    listing:
+      - entry: $(inputs.refdata)
+        entryname: $("/refdata")
+      - entry: $(inputs.drep_folder)
+        entryname: $("/data")
+  DockerRequirement:
+    dockerPull: "microbiomeinformatics/genomes-pipeline.gtdb-tk:v1"
 
 baseCommand: ["gtdbtk", "classify_wf"]
 
@@ -16,7 +24,7 @@ arguments:
     valueFrom: '2'
     position: 1
   - prefix: --genome_dir
-    valueFrom: $(inputs.drep_folder.location.split('file://')[1])
+    valueFrom: "/data"
     position: 2
   - prefix: -x
     valueFrom: 'fa'
@@ -29,6 +37,7 @@ inputs:
     inputBinding:
       position: 3
       prefix: '--out_dir'
+  refdata: Directory
 
 outputs:
   gtdbtk_folder:

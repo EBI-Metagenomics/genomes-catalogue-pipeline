@@ -1,0 +1,8 @@
+threads: 8
+gffs:
+  - class: File
+    path: ../../../../input_example/test-many/prokka_GUT_GENOME000028/GUT_GENOME000028.gff
+  - class: File
+    path: ../../../../input_example/test-many/prokka_GUT_GENOME000070/GUT_GENOME000070.gff
+
+panaroo_outfolder: panaroo-output

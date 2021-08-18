@@ -1,0 +1,5 @@
+directory:
+  class: Directory
+  path: ../../../input_example/test-one
+
+newname: one_dir

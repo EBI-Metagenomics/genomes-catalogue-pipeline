@@ -1,0 +1,27 @@
+input_cluster:
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/1_0
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/2_0
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/3_0
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/4_0
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/5_0
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/6_0
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/7_0
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/8_0
+  - class: Directory
+    path: ../../../../input_example/ENA/split-drep-output/9_0
+
+gunc_db_path:
+  class: File
+  path: ../../../../docker/GUNC/gunc_db_2.0.4.dmnd
+
+csv:
+  class: File
+  path: ../../../../input_example/ENA/genome_stats.txt
