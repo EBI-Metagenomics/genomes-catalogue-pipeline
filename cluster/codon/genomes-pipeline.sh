@@ -12,9 +12,10 @@ export SINGULARITY_BINDPATH=$SINGULARITY_HOME/scratch
 
 export OUTDIR=result
 
-while getopts :o: option; do
+while getopts :o:y: option; do
 	case "${option}" in
 		o) OUTDIR=${OPTARG};;
+		y) YML=${OPTARG};;
 	esac
 done
 
