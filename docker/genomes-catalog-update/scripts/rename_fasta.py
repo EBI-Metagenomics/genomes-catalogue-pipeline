@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import shutil
+import re
 
 logging.basicConfig(level=logging.INFO)
 
@@ -17,18 +18,19 @@ def main(fasta_file_directory, prefix, index, cluster_file, table_file, num_digi
 		assert os.path.isfile(cluster_file), 'Provided cluster information file does not exist'
 	for file in files:
 		if file.endswith(('fa', 'fasta')) and not file.startswith(prefix):
-			new_name = '{}{}{}.fa'.format(prefix, '0' * (num_digits - len(str(index))), str(index))
+			accession = '{}{}{}'.format(prefix, '0' * (num_digits - len(str(index))), str(index))
+			new_name = '{}.fa'.format(accession)
 			names[file] = new_name
 			if outdir:
-				rename_to_outdir(file, new_name, input_dir=fasta_file_directory, output_dir=outdir)
+				rename_to_outdir(file, new_name, accession, input_dir=fasta_file_directory, output_dir=outdir)
 			else:
-				rename_fasta(file, new_name, fasta_file_directory, rename_deflines)
+				rename_fasta(file, new_name, fasta_file_directory, rename_deflines, accession)
 				try:
 					os.remove(os.path.join(fasta_file_directory, file))
 				except OSError as e:
 					logging.error('Unable to delete {}: {}'.format(file, e))
 			index += 1
-			if index > max_number:
+			if max_number and index > max_number:
 				print('index is bigger than requested number in catalogue')
 				exit(1)
 	logging.info('Printing names to table...')
@@ -41,36 +43,40 @@ def main(fasta_file_directory, prefix, index, cluster_file, table_file, num_digi
 		rename_csv(names, csv)
 
 
-def write_fasta(old_path, new_path, new_name):
+def write_fasta(old_path, new_path, accession):
 	file_in = open(old_path, 'r')
 	file_out = open(new_path, 'w')
+	spades_regex = re.compile("NODE_[0-9]+_length_([0-9]+)_cov_([0-9.]+)")
 	n = 0
 	for line in file_in:
 		if line.startswith('>'):
-			contig_name = line.strip().split()[0].replace('>', '')
 			n += 1
-			file_out.write('>{}_{}\t{}\n'.format(new_name, n, contig_name))
+			if spades_regex.search(line):
+				length, coverage = [m for m in spades_regex.findall(line.strip())[0]]
+			else:
+				length, coverage = 'NA', 'NA'
+			file_out.write('>{}_{}-length-{}-cov-{}\n'.format(accession, n, length, coverage))
 		else:
 			file_out.write(line)
 	file_in.close()
 	file_out.close()
 
 
-def rename_to_outdir(file, new_name, input_dir, output_dir):
+def rename_to_outdir(file, new_name, accession, input_dir, output_dir):
 	new_path = os.path.join(output_dir, new_name)
 	old_path = os.path.join(input_dir, file)
 	if not os.path.exists(output_dir):
 		os.mkdir(output_dir)
-	write_fasta(old_path, new_path, new_name)
+	write_fasta(old_path, new_path, accession)
 
 
-def rename_fasta(file, new_name, fasta_file_directory, rename_deflines):
+def rename_fasta(file, new_name, fasta_file_directory, rename_deflines, accession):
 	new_path = os.path.join(fasta_file_directory, new_name)
 	old_path = os.path.join(fasta_file_directory, file)
 	if not rename_deflines:
 		shutil.copyfile(old_path, new_path)
 	else:
-		write_fasta(old_path, new_path, new_name)
+		write_fasta(old_path, new_path, accession)
 
 
 def print_table(names, table_file):
@@ -106,7 +112,7 @@ def parse_args():
 	parser = argparse.ArgumentParser(description='Rename multifasta files, cluster information file and create a table '
 												 'matching old and new names')
 	parser.add_argument('-d', dest='fasta_file_directory', required=True, help='Input directory containing FASTA files')
-	parser.add_argument('-p', dest='prefix', required=True, help='Header prefix')
+	parser.add_argument('-p', dest='prefix', default='MGYG', help='Header prefix')
 	parser.add_argument('-i', dest='index', type=int, default=1,
 						help='Number to start naming at (will be in the file name following prefix; default = 1')
 	parser.add_argument('--max', dest='max', type=int, required=False, help='Number to finish naming')
