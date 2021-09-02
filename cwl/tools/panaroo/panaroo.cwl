@@ -59,3 +59,7 @@ outputs:
     type: Directory
     outputBinding:
       glob: $(inputs.panaroo_outfolder)
+  gene_presence_absence:
+    type: File
+    outputBinding:
+      glob: $(inputs.panaroo_outfolder)/gene_presence_absence.Rtab

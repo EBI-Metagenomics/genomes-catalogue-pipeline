@@ -29,11 +29,11 @@ inputs:
 
 outputs:
   out_counts:
-    type: File[]
+    type: Directory
     outputBinding:
-      glob: results/$(inputs.fasta.nameroot)*.out
+      glob: out-results
   fasta_seq:
-    type: File[]
+    type: Directory
     outputBinding:
-      glob: results/$(inputs.fasta.nameroot)*.fasta
+      glob: fasta-results
 

@@ -10,6 +10,7 @@ LABEL Maintainer="Ekaterina Sakharova <kates@ebi.ac.uk>"
 #################################################################################
 
 RUN conda install -c bioconda trnascan-se biopython --yes --freeze-installed && conda clean -afy
+RUN mkdir /tools
 
 COPY cmsearch-deoverlap.pl \
      parse_rRNA-bacteria.py \
@@ -18,5 +19,5 @@ COPY cmsearch-deoverlap.pl \
      rna-detect.sh \
      /tools/
 
-ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools:/opt/conda/bin:/usr/bin/env
+ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/conda/bin:/usr/bin/env:/tools
 RUN chmod a+x /tools/*

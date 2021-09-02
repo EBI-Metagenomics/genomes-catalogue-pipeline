@@ -12,12 +12,6 @@ requirements:
 inputs:
   cluster: Directory
   mash_files: File[]
-  InterProScan_databases: [string, Directory]
-  chunk_size_IPS: int
-  chunk_size_eggnog: int
-  db_diamond_eggnog: [string?, File?]
-  db_eggnog: [string?, File?]
-  data_dir_eggnog: [string?, Directory?]
 
 outputs:
   prokka_faa-s:
@@ -63,35 +57,14 @@ steps:
       gffs: prokka/gff
       panaroo_outfolder: {default: panaroo_output }
       threads: {default: 8 }
-    out: [ pan_genome_reference-fa, panaroo_dir ]
+    out: [ pan_genome_reference-fa, panaroo_dir, gene_presence_absence ]
 
-  translate:
-    run: ../../../tools/translate_genes/translate_genes.cwl
+  get_core_genes:
+    run: ../../../tools/get_core_genes/get_core_genes.cwl
     in:
-      fa_file: panaroo/pan_genome_reference-fa
-      faa_file:
-        source: cluster
-        valueFrom: $(self.basename)_pan_genome_reference.faa
-    out: [ converted_faa ]
-
-  IPS:
-    run: ../chunking-subwf-IPS.cwl
-    in:
-      faa: translate/converted_faa
-      chunk_size: chunk_size_IPS
-      InterProScan_databases: InterProScan_databases
-    out: [ips_result]
-
-  eggnog:
-    run: ../chunking-subwf-eggnog.cwl
-    in:
-      faa_file: translate/converted_faa
-      chunk_size: chunk_size_eggnog
-      db_diamond: db_diamond_eggnog
-      db: db_eggnog
-      data_dir: data_dir_eggnog
-      cpu: { default: 16 }
-    out: [annotations, seed_orthologs]
+      input: panaroo/gene_presence_absence
+      output_filename: {default: "core_genes.txt"}
+    out: [ core_genes ]
 
 # --------------------------------------- result folder -----------------------------------------
 
@@ -108,10 +81,7 @@ steps:
     run: ../../../utils/return_directory.cwl
     in:
       list:
-        - translate/converted_faa
-        - IPS/ips_result
-        - eggnog/annotations
-        - eggnog/seed_orthologs
+        - get_core_genes/core_genes
         - get_mash_file/file_pattern
       dir_name:
         source: cluster

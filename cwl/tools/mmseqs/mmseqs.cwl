@@ -41,3 +41,7 @@ outputs:
     type: Directory
     outputBinding:
       glob: mmseqs_$(inputs.limit_i)_outdir
+  faa:
+    type: File
+    outputBinding:
+      glob: mmseqs_$(inputs.limit_i)_outdir/mmseqs_cluster_rep.fa

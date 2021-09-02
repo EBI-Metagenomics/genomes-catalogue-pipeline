@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.2.0
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -14,23 +14,12 @@ inputs:
   gunc_db_path: File
   csv: File
 
-  InterProScan_databases: [string, Directory]
-  chunk_size_IPS: int
-
-  chunk_size_eggnog: int
-  db_diamond_eggnog: [string?, File?]
-  db_eggnog: [string?, File?]
-  data_dir_eggnog: [string?, Directory?]
-
 outputs:
 
   prokka_faa-s:
     type: File?
     outputSource: prokka/faa
 
-  cluster_folder:
-    type: Directory?
-    outputSource: create_cluster_folder/out
   cluster_folder_prokka:
     type: Directory?
     outputSource: return_prokka_cluster_dir/pool_directory
@@ -65,43 +54,6 @@ steps:
         valueFrom: $(self[0])
       outdirname: { default: prokka_output }
     out: [ faa, outdir ]
-
-  IPS:
-    when: $(inputs.flag == 'complete.txt')
-    run: ../chunking-subwf-IPS.cwl
-    in:
-      flag: gunc/flag
-      faa: prokka/faa
-      chunk_size: chunk_size_IPS
-      InterProScan_databases: InterProScan_databases
-    out: [ips_result]
-
-  eggnog:
-    when: $(inputs.flag == 'complete.txt')
-    run: ../chunking-subwf-eggnog.cwl
-    in:
-      flag: gunc/flag
-      faa_file: prokka/faa
-      chunk_size: chunk_size_eggnog
-      db_diamond: db_diamond_eggnog
-      db: db_eggnog
-      data_dir: data_dir_eggnog
-      cpu: { default: 16 }
-    out: [annotations, seed_orthologs]
-
-  create_cluster_folder:
-    when: $(inputs.flag == 'complete.txt')
-    run: ../../../utils/return_directory.cwl
-    in:
-      flag: gunc/flag
-      list:
-        - IPS/ips_result
-        - eggnog/annotations
-        - eggnog/seed_orthologs
-      dir_name:
-        source: cluster
-        valueFrom: cluster_$(self.basename)
-    out: [ out ]
 
   create_cluster_genomes:
     when: $(inputs.flag == 'complete.txt')

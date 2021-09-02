@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.2.0
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -15,6 +15,7 @@ inputs:
   one_genome: Directory[]?
   mmseqs_limit_c: float         # common
   mmseqs_limit_i: float[]       # common
+  mmseq_limit_annotation: float
   csv: File
   gunc_db_path: File
   InterProScan_databases: [string, Directory]
@@ -47,9 +48,6 @@ outputs:
     type: Directory[]?
     outputSource: process_many_genomes/many_genomes_genomes
 
-  one_genome:
-    type: Directory[]?
-    outputSource: process_one_genome/cluster_folder
   one_genome_prokka:
     type: Directory[]?
     outputSource: process_one_genome/cluster_folder_prokka
@@ -60,6 +58,9 @@ outputs:
   mmseqs_output:
     type: Directory
     outputSource: mmseqs/mmseqs_dir
+  cluster_representatives:
+    type: File
+    outputSource: mmseqs/cluster_reps
 
 steps:
 
@@ -100,7 +101,6 @@ steps:
       data_dir_eggnog: data_dir_eggnog
     out:
       - prokka_faa-s
-      - cluster_folder
       - cluster_folder_prokka
       - cluster_folder_genome
 
@@ -114,5 +114,6 @@ steps:
       prokka_one: process_one_genome/prokka_faa-s
       mmseqs_limit_i: mmseqs_limit_i
       mmseqs_limit_c: mmseqs_limit_c
-    out: [ mmseqs_dir ]
+      mmseq_limit_annotation: mmseq_limit_annotation
+    out: [ mmseqs_dir, cluster_reps ]
 

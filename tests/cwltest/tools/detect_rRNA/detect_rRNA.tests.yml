@@ -6,16 +6,22 @@
   doc: "detect rRNA"
   output:
     fasta_seq:
-      - basename: test_rRNAs.fasta
-        class: File
+      basename: fasta-results
+      class: Directory
+      listing:
+      - class: File
+        basename: test_rRNAs.fasta
         checksum: sha1$5806a39719ec83d443cb7b18cc676c310ef94cdf
         size: 368
     out_counts:
-      - basename: test_rRNAs.out
-        class: File
-        checksum: sha1$cf69c4fa662b4e1de21c4e7abb3e34d037ca750e
-        size: 75
-      - basename: test_tRNA_20aa.out
-        class: File
+      basename: out-results
+      class: Directory
+      listing:
+      - class: File
+        basename: test_tRNA_20aa.out
         checksum: sha1$801cb0fab06fcc880c4aa6cd4ff0b860fa4dd450
         size: 7
+      - class: File
+        basename: test_rRNAs.out
+        checksum: sha1$cf69c4fa662b4e1de21c4e7abb3e34d037ca750e
+        size: 75

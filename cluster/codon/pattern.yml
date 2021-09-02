@@ -8,8 +8,8 @@ skip_drep_step: no
 mmseqs_limit_i:
   - 1.0
   - 0.95
-  - 0.90
   - 0.50
+mmseq_limit_annotation: 0.9
 mmseqs_limit_c: 0.8
 
 # GUNC
@@ -40,3 +40,7 @@ gtdbtk_data:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202
 
+# rRNA
+cm_models:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/rfams_cms

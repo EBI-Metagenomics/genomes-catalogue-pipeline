@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.2.0
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -26,6 +26,7 @@ inputs:
   # common input
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
+  mmseq_limit_annotation: float
 
   gunc_db_path: File
 
@@ -38,14 +39,16 @@ inputs:
   db_eggnog: [string?, File?]
   data_dir_eggnog: [string?, Directory?]
 
+  cm_models: Directory
+
 outputs:
 
-  # ------- unite_folders -------
+# ------- unite_folders -------
   output_csv:
     type: File
     outputSource: unite_folders/csv
 
-  # ------- assign_mgygs -------
+# ------- assign_mgygs -------
   renamed_csv:
     type: File
     outputSource: assign_mgygs/renamed_csv
@@ -56,7 +59,7 @@ outputs:
     type: Directory
     outputSource: assign_mgygs/renamed_genomes
 
-  # ------- drep -------
+# ------- drep -------
   weights:
     type: File?
     outputSource: drep_subwf/weights_file
@@ -73,7 +76,7 @@ outputs:
     type: Directory[]?
     outputSource: drep_subwf/many_genomes
 
-  # ------- clusters_annotation -------
+# ------- clusters_annotation -------
   mash_folder:
     type: Directory?
     outputSource: clusters_annotation/mash_folder
@@ -110,10 +113,31 @@ outputs:
     type: Directory
     outputSource: clusters_annotation/mmseqs_output
 
-  # ------- GTDB-Tk -------
+# ------------ GTDB-Tk --------------
   gtdbtk:
     type: Directory?
     outputSource: gtdbtk/gtdbtk_folder
+
+# ------- functional annotation ----------
+  IPS:
+    type: File
+    outputSource: functional_annotation/ips_result
+
+  eggnog_annotations:
+    type: File
+    outputSource: functional_annotation/eggnog_annotations
+  eggnog_seed_orthologs:
+    type: File
+    outputSource: functional_annotation/eggnog_seed_orthologs
+
+# ---------- rRNA -------------
+  rrna_out:
+    type: Directory
+    outputSource: detect_rrna/rrna_outs
+
+  rrna_fasta:
+    type: Directory
+    outputSource: detect_rrna/rrna_fastas
 
 
 steps:
@@ -179,6 +203,7 @@ steps:
       one_genome: drep_subwf/one_genome
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
+      mmseq_limit_annotation: mmseq_limit_annotation
       gunc_db_path: gunc_db_path
       InterProScan_databases: InterProScan_databases
       chunk_size_IPS: chunk_size_IPS
@@ -197,6 +222,23 @@ steps:
       - one_genome_prokka
       - one_genome_genomes
       - mmseqs_output
+      - cluster_representatives
+
+# ----------- << functional annotation >> ------
+  functional_annotation:
+    run: sub-wf/functional_annotation.cwl
+    in:
+      input_faa: clusters_annotation/cluster_representatives
+      InterProScan_databases: InterProScan_databases
+      chunk_size_IPS: chunk_size_IPS
+      chunk_size_eggnog: chunk_size_eggnog
+      db_diamond_eggnog: db_diamond_eggnog
+      db_eggnog: db_eggnog
+      data_dir_eggnog: data_dir_eggnog
+    out:
+      - ips_result
+      - eggnog_annotations
+      - eggnog_seed_orthologs
 
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:
@@ -212,3 +254,15 @@ steps:
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
     out: [ gtdbtk_folder ]
+
+# ---------- << detect rRNA >> ---------
+  detect_rrna:
+    run: sub-wf/detect_rrna_subwf.cwl
+    in:
+      filtered_genomes:
+        source:
+          - drep_subwf/dereplicated_genomes
+          - assign_mgygs/renamed_genomes
+        pickValue: first_non_null
+      cm_models: cm_models
+    out: [rrna_outs, rrna_fastas]

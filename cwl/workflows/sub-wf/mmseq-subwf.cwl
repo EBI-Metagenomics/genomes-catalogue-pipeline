@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.2.0
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -21,12 +21,17 @@ inputs:
 
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
+  mmseq_limit_annotation: float
 
 outputs:
 
   mmseqs_dir:
     type: Directory
     outputSource: return_mmseq_dir/pool_directory
+  cluster_reps:
+    type: File
+    outputSource: mmseqs_annotations/faa
+
 
 steps:
 
@@ -49,6 +54,7 @@ steps:
       outputFileName: { default: 'prokka_cat.fa' }
     out: [ result ]
 
+# ------ mmseq --------
   mmseqs:
     run: ../../tools/mmseqs/mmseqs.cwl
     scatter: limit_i
@@ -64,3 +70,20 @@ steps:
       directory_array: mmseqs/outdir
       newname: { default: "mmseqs_output" }
     out: [ pool_directory ]
+
+# ------ mmseq for functional annotation ------
+
+  mmseqs_annotations:
+    run: ../../tools/mmseqs/mmseqs.cwl
+    in:
+      input_fasta: concatenate/result
+      limit_i: mmseq_limit_annotation
+      limit_c: mmseqs_limit_c
+    out: [ outdir, faa ]
+
+  add_mmseq:
+    run: ../../utils/return_dir_of_dir.cwl
+    in:
+      directory: mmseqs_annotations/outdir
+      newname: { default: "mmseqs_output" }
+    out: [ dir_of_dir ]
