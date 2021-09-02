@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ $# -eq 0 ]; then
     echo "usage: rna-detect.sh in.fasta cm_db_path"
     echo ""
@@ -29,6 +31,7 @@ cat results/${FILENAME}"_"*.tblout > results/${FILENAME}"_"all.tblout
 
 echo "Removing overlaps..."
 cmsearch-deoverlap.pl --maxkeep --clanin ${cm_db}/ribo.claninfo results/${FILENAME}"_"all.tblout
+mv ${FILENAME}"_"all.tblout.deoverlapped results/
 
 echo "Parsing final results..."
 parse_rRNA-bacteria.py results/${FILENAME}"_"all.tblout.deoverlapped > results/${FILENAME}"_"rRNAs.out

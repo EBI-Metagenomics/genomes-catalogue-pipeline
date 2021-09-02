@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import os
 import sys
@@ -13,7 +13,7 @@ rRNAs_obs = {"5S_rRNA": [], "SSU_rRNA_bacteria": [], "LSU_rRNA_bacteria": []}
 rRNAs_merged = {}
 
 # store start and end position of each hit
-with open(sys.argv[1], "rU") as f:
+with open(sys.argv[1], "r") as f:
    for line in f:
        cols = line.split()
        rfam = cols[2]

@@ -18,5 +18,5 @@ COPY cmsearch-deoverlap.pl \
      rna-detect.sh \
      /tools/
 
-ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools
+ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools:/opt/conda/bin:/usr/bin/env
 RUN chmod a+x /tools/*
