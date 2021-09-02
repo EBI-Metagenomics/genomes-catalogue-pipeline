@@ -1,0 +1,13 @@
+#cwltest
+
+# translate genes
+- job: translate_genes.yml
+  tool: ../../../../cwl/utils/translate_genes.cwl
+  short_name: translate_genes.cwl
+  doc: "translate genes"
+  output:
+    converted_faa:
+      basename: many_pan_genome_reference.faa
+      class: File
+      size: 1744051
+      checksum: sha1$14e5586b5b53b190e265cb8158b3ae8733db5e2a

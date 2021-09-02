@@ -66,7 +66,7 @@ steps:
     out: [ pan_genome_reference-fa, panaroo_dir ]
 
   translate:
-    run: ../../../utils/translate_genes.cwl
+    run: ../../../tools/translate_genes/translate_genes.cwl
     in:
       fa_file: panaroo/pan_genome_reference-fa
       faa_file:

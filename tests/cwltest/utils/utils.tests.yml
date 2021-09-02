@@ -24,47 +24,6 @@
         class: File
         size: 164
 
-# rename contigs
-- job: rename_fasta.yml
-  tool: ../../../cwl/utils/rename_fasta.cwl
-  short_name: rename_fasta.cwl
-  doc: "rename fasta to MGYG"
-  output:
-    naming_table:
-      basename: names
-      class: File
-      checksum: sha1$c7ff9c5d3a01fb77b358c49ecc293e9bf8d58b2e
-      size: 74
-    renamed_csv:
-      basename: renamed_test-one.csv
-      class: File
-      checksum: sha1$c907d6ee8945854f5cfcb7c5661717a781350621
-      size: 86
-    renamed_genomes:
-      basename: renamed_genomes
-      class: Directory
-      listing:
-        - class: File
-          basename: MGYG000000001.fa
-          checksum: sha1$d21c40775baf4ce7d1eb14b0962cbf239ed5fa5d
-          size: 2365282
-        - class: File
-          basename: MGYG000000002.fa
-          checksum: sha1$9e311e0dea3ea87f966dc2ea0e8ea5e9cf35c1ce
-          size: 5485542
-
-# translate genes
-- job: translate_genes.yml
-  tool: ../../../cwl/utils/translate_genes.cwl
-  short_name: translate_genes.cwl
-  doc: "translate genes"
-  output:
-    converted_faa:
-      basename: many_pan_genome_reference.faa
-      class: File
-      size: 1744051
-      checksum: sha1$14e5586b5b53b190e265cb8158b3ae8733db5e2a
-
 # touch file
 - job: touch_file.yml
   tool: ../../../cwl/utils/touch_file.cwl
@@ -247,39 +206,6 @@
           size: 156
           basename: "flatten_array.yml"
           checksum: sha1$630ec9c33bebf699eedafaf9e49cc7d98feb4a11
-
-# split protein fasta to chunks
-- job: protein_chunker.yml
-  tool: ../../../cwl/utils/protein_chunker.cwl
-  short_name: protein_chunker.cwl
-  doc: "split fasta to chunks"
-  output:
-    chunks:
-      - basename: 1001_2000.faa
-        class: File
-        checksum: sha1$4d373f4248caa2656d785437d01384668109a719
-        size: 390548
-        format: http://edamontology.org/format_1929
-      - basename: 1_1000.faa
-        class: File
-        checksum: sha1$ec4ee664a0804d7661a9335d8e150b7e1022dc75
-        size: 356733
-        format: http://edamontology.org/format_1929
-      - basename: 2001_3000.faa
-        class: File
-        checksum: sha1$c55ea818eb8978ba23cc40faf1d91e3318ae31a3
-        size: 383600
-        format: http://edamontology.org/format_1929
-      - basename: 3001_4000.faa
-        class: File
-        checksum: sha1$f328849b17b9dd7dbfc3a2c46fc22ef52b9cdb21
-        size: 365403
-        format: http://edamontology.org/format_1929
-      - basename: 4000_4633.faa
-        class: File
-        checksum: sha1$71d4c68bb966f9e4333398e28f560cee6978f992
-        size: 247767
-        format: http://edamontology.org/format_1929
 
 # filter nulls files
 - job: filter_nulls_files.yml

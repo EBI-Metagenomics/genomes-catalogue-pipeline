@@ -36,7 +36,7 @@ steps:
       seqs: faa_file
       chunk_size: chunk_size
     out: [ chunks ]
-    run: ../../utils/protein_chunker.cwl
+    run: ../../tools/protein_chunker/protein_chunker.cwl
 
   eggnog_homology_searches:
     scatter: fasta_file

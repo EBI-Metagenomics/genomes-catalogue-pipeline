@@ -1,0 +1,6 @@
+fasta:
+  class: File
+  path: test.fa
+cm_models:
+  class: Directory
+  path: models

@@ -142,7 +142,7 @@ steps:
 
 # ----------- << assign MGYGs >> -----------
   assign_mgygs:
-    run: ../utils/rename_fasta.cwl
+    run: ../tools/rename_fasta/rename_fasta.cwl
     in:
       genomes: unite_folders/genomes
       prefix: { default: "MGYG"}

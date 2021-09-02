@@ -29,7 +29,7 @@ steps:
       seqs: faa
       chunk_size: chunk_size
     out: [ chunks ]
-    run: ../../utils/protein_chunker.cwl
+    run: ../../tools/protein_chunker/protein_chunker.cwl
 
   # << InterProScan >>
   interproscan:

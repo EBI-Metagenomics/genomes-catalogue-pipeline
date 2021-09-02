@@ -1,5 +1,5 @@
 genomes:
-  path: ../../../input_example/test-one
+  path: ../../../../input_example/test-one
   class: Directory
 prefix: MGYG
 start_number: 1
@@ -9,4 +9,4 @@ output_dirname: renamed_genomes
 
 csv:
   class: File
-  path: ../../../input_example/test-one/test-one.csv
+  path: ../../../../input_example/test-one/test-one.csv
