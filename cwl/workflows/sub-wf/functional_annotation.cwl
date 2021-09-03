@@ -34,6 +34,13 @@ outputs:
 steps:
 
   IPS:
+    doc: |
+       Subwf will run IPS-chunking if input faa file is not null
+       This subwf consists of
+       1. cut by chunk_size
+       2. run IPS on each chunk
+       3. concatenate results
+    when: $(Boolean(inputs.faa))
     run: chunking-subwf-IPS.cwl
     in:
       faa: input_faa
@@ -42,6 +49,13 @@ steps:
     out: [ips_result]
 
   eggnog:
+    doc: |
+       Subwf will run eggnog-chunking if input faa file is not null
+       This subwf consists of
+       1. cut by chunk_size
+       2. run eggnog on each chunk
+       3. concatenate results
+    when: $(Boolean(inputs.faa_file))
     run: chunking-subwf-eggnog.cwl
     in:
       faa_file: input_faa

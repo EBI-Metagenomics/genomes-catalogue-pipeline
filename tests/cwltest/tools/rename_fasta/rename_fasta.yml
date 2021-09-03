@@ -1,12 +1,12 @@
 genomes:
-  path: ../../../../input_example/test-one
+  path: ../../../../input_example/small_set/results/clusters/1_1
   class: Directory
 prefix: MGYG
 start_number: 1
-max_number: 3
+max_number: 4
 output_filename: names
 output_dirname: renamed_genomes
 
 csv:
   class: File
-  path: ../../../../input_example/test-one/test-one.csv
+  path: ../../../../input_example/small_set/download.csv

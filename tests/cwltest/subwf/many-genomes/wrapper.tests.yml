@@ -1,0 +1,719 @@
+#cwltest
+
+- job: wrapper.test1.yml
+  tool: ../../../../cwl/workflows/sub-wf/many-genomes/wrapper-many-genomes.cwl
+  short_name: wrapper-many-genomes.cwl
+  doc: "many-genomes wrapper"
+  output:
+    many_genomes:
+      - class: Directory
+        basename: cluster_1_1
+        listing:
+          - basename: core_genes.txt
+            nameroot: core_genes
+            nameext: ".txt"
+            class: File
+            checksum: sha1$3f113b8afba0ee0c77c086e2a3aa882ae021f337
+            size: 4880
+          - class: File
+            size: 401
+            basename: 1_1_mash.tsv
+            nameroot: 1_1_mash
+            nameext: ".tsv"
+            checksum: sha1$a687f02d0278ce4aa28d204961a883b0e400b26d
+      - class: Directory
+        basename: cluster_2_1
+        listing:
+          - basename: core_genes.txt
+            nameroot: core_genes
+            nameext: ".txt"
+            class: File
+            checksum: sha1$615b15080383c8a238ea394d504b960b63d6c1bb
+            size: 8458
+          - class: File
+            size: 185
+            basename: 2_1_mash.tsv
+            nameroot: 2_1_mash
+            nameext: ".tsv"
+            checksum: sha1$68f10f993ed7bc8de9fcafce9aba8ecfa4251333
+    many_genomes_genomes:
+      - class: Directory
+        basename: cluster_1_1
+        listing:
+          - class: Directory
+            basename: genomes
+            listing:
+              - class: File
+                basename: CAJLGA01.fa
+                size: 2291990
+                nameroot: CAJLGA01
+                nameext: ".fa"
+                checksum: sha1$cecbaf247c1b1862a88b77f93986cceae1e22a67
+              - class: File
+                basename: CAJKGB01.fa
+                size: 2025917
+                nameroot: CAJKGB01
+                nameext: ".fa"
+                checksum: sha1$211e1b18013b8631df5c4e3290a2d08e05a99841
+              - class: File
+                basename: CAJJTO01.fa
+                size: 1672905
+                nameroot: CAJJTO01
+                nameext: ".fa"
+                checksum: sha1$b2d063739a50fc031eb4eec94180f56988ae6eab
+      - class: Directory
+        basename: cluster_2_1
+        listing:
+          - class: Directory
+            basename: genomes
+            listing:
+              - class: File
+                basename: CAJKRE01.fa
+                size: 2314364
+                nameroot: CAJKRE01
+                nameext: ".fa"
+                checksum: sha1$5a18736b41c827f0de008a8c2da2ca570bb89843
+              - class: File
+                basename: CAJKXJ01.fa
+                size: 2320626
+                nameroot: CAJKXJ01
+                nameext: ".fa"
+                checksum: sha1$9f18ca859df6408ccae0775ddcca5115598029d3
+    many_genomes_panaroo:
+      - class: Directory
+        basename: cluster_1_1
+        listing:
+          basename: panaroo_output
+          nameroot: panaroo_output
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: combined_protein_CDS.fasta
+              checksum: sha1$f26971d9b9c12892e90eff35b288d53fcedc63ae
+              size: 1514760
+              nameroot: combined_protein_CDS
+              nameext: ".fasta"
+            - class: File
+              basename: final_graph.gml
+              checksum: sha1$bd794b108ac9f8dd0308ca447003edd219c0c38f
+              size: 3733339
+              nameroot: final_graph
+              nameext: ".gml"
+            - class: File
+              basename: gene_presence_absence_roary.csv
+              checksum: sha1$d9a0bdb199089eeb85d6300a2f98f65032684f33
+              size: 170862
+              nameroot: gene_presence_absence_roary
+              nameext: ".csv"
+            - class: File
+              basename: combined_protein_cdhit_out.txt.clstr
+              checksum: sha1$0a2595d34a41d23c936faf5bfabcea0315b7e53e
+              size: 160585
+              nameroot: combined_protein_cdhit_out.txt
+              nameext: ".clstr"
+            - class: File
+              basename: pan_genome_reference.fa
+              checksum: sha1$1ff40bc217084dc7643ba652792a963d1c423188
+              size: 1723432
+              nameroot: pan_genome_reference
+              nameext: ".fa"
+            - class: File
+              basename: summary_statistics.txt
+              checksum: sha1$93c8eb43f1ab734c8f471adec2a2875313599f75
+              size: 196
+              nameroot: summary_statistics
+              nameext: ".txt"
+            - class: File
+              basename: gene_data.csv
+              checksum: sha1$014cd17018cd56d648682c7c9e94a590bd15e80c
+              size: 6282844
+              nameroot: gene_data
+              nameext: ".csv"
+            - class: File
+              basename: gene_presence_absence.Rtab
+              checksum: sha1$13aa05d4fcbbcc824ae3c79ec798a058bcd0691a
+              size: 21778
+              nameroot: gene_presence_absence
+              nameext: ".Rtab"
+            - class: File
+              basename: pre_filt_graph.gml
+              checksum: sha1$4e2566d3abca4a919a6a28558efae88cd69b13d6
+              size: 5638864
+              nameroot: pre_filt_graph
+              nameext: ".gml"
+            - class: File
+              basename: combined_protein_cdhit_out.txt
+              checksum: sha1$16042255c423247b1389b9d4325ff2654adf283b
+              size: 1035066
+              nameroot: combined_protein_cdhit_out
+              nameext: ".txt"
+            - class: File
+              basename: struct_presence_absence.Rtab
+              checksum: sha1$b88a707f89485ef55985190507615f8a2dee1681
+              size: 156
+              nameroot: struct_presence_absence
+              nameext: ".Rtab"
+            - class: File
+              basename: gene_presence_absence.csv
+              checksum: sha1$554ec8342c95538e2bd19a89892f1f3b6c3667d2
+              size: 120467
+              nameroot: gene_presence_absence
+              nameext: ".csv"
+            - class: File
+              basename: combined_DNA_CDS.fasta
+              checksum: sha1$c58f9ca1fdaf70832e715e5be2a0fa274443467e
+              size: 4469199
+              nameroot: combined_DNA_CDS
+              nameext: ".fasta"
+      - class: Directory
+        basename: cluster_2_1
+        listing:
+          basename: panaroo_output
+          nameroot: panaroo_output
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: final_graph.gml
+              checksum: sha1$52b18f41eb4772bab5ecff90eae08e9931722e1e
+              size: 3744069
+              nameroot: final_graph
+              nameext: ".gml"
+            - class: File
+              basename: combined_protein_cdhit_out.txt
+              checksum: sha1$07c8f76534ed5f6df1ab90f3742f24c5439473c7
+              size: 1012080
+              nameroot: combined_protein_cdhit_out
+              nameext: ".txt"
+            - class: File
+              basename: gene_presence_absence.Rtab
+              checksum: sha1$2615455c21116eb0f009b17b1966aea7684ab3e2
+              size: 20402
+              nameroot: gene_presence_absence
+              nameext: ".Rtab"
+            - class: File
+              basename: gene_presence_absence.csv
+              checksum: sha1$f4653e431a778145939b9d58e2f27243b5c3ad36
+              size: 115034
+              nameroot: gene_presence_absence
+              nameext: ".csv"
+            - class: File
+              basename: combined_protein_cdhit_out.txt.clstr
+              checksum: sha1$868027f4f45c0f222503041c31ef84c1e2b46439
+              size: 130091
+              nameroot: combined_protein_cdhit_out.txt
+              nameext: ".clstr"
+            - class: File
+              basename: gene_data.csv
+              checksum: sha1$4a3e5162c6c34b5a9f25277ec07018301fd5f2e9
+              size: 5662458
+              nameroot: gene_data
+              nameext: ".csv"
+            - class: File
+              basename: struct_presence_absence.Rtab
+              checksum: sha1$fe32d0f0bb37f481be449fea17ff8ea637d3e508
+              size: 108
+              nameroot: struct_presence_absence
+              nameext: ".Rtab"
+            - class: File
+              basename: pan_genome_reference.fa
+              checksum: sha1$016c022e768985da083e97d1ca0b153bcf750fc1
+              size: 1924003
+              nameroot: pan_genome_reference
+              nameext: ".fa"
+            - class: File
+              basename: gene_presence_absence_roary.csv
+              checksum: sha1$8448cc72d24d8023256606f344892e510c0593e1
+              size: 171513
+              nameroot: gene_presence_absence_roary
+              nameext: ".csv"
+            - class: File
+              basename: summary_statistics.txt
+              checksum: sha1$9adf0eef6baad521e87250b14b5b5afbdaf4c791
+              size: 197
+              nameroot: summary_statistics
+              nameext: ".txt"
+            - class: File
+              basename: pre_filt_graph.gml
+              checksum: sha1$9df3a4dc61974f621204132e97acc9ebf8fde627
+              size: 5379331
+              nameroot: pre_filt_graph
+              nameext: ".gml"
+            - class: File
+              basename: combined_protein_CDS.fasta
+              checksum: sha1$377753777bf0d3c550b4a83a023681e3c67746f9
+              size: 1371652
+              nameroot: combined_protein_CDS
+              nameext: ".fasta"
+            - class: File
+              basename: combined_DNA_CDS.fasta
+              checksum: sha1$d3cf0f7f7a5e95e80bcc67276965d7d7a25613fa
+              size: 4059430
+              nameroot: combined_DNA_CDS
+              nameext: ".fasta"
+    many_genomes_prokka:
+      -
+        - class: Directory
+          basename: cluster_1_1
+          listing:
+            basename: prokka_output
+            nameroot: prokka_output
+            nameext: ''
+            class: Directory
+            listing:
+              - class: File
+                basename: CAJLGA01.faa
+                checksum: sha1$3c817c0beac183f55b514cde0f5e68d0b2a1466d
+                size: 701336
+                nameroot: CAJLGA01
+                nameext: ".faa"
+              - class: File
+                basename: CAJLGA01.fna
+                checksum: sha1$71b796d6e6c19d6c4c407bdd173ef6572155bf23
+                size: 2282365
+                nameroot: CAJLGA01
+                nameext: ".fna"
+              - class: File
+                basename: CAJLGA01.tbl
+                checksum: sha1$29494c4e5ba42ab559cb83e1266640d325f2ef73
+                size: 327639
+                nameroot: CAJLGA01
+                nameext: ".tbl"
+              - class: File
+                basename: CAJLGA01.fsa
+                checksum: sha1$fc644aa25e1b524b5fdd1f920b7a5fe78982b996
+                size: 2286837
+                nameroot: CAJLGA01
+                nameext: ".fsa"
+              - class: File
+                basename: CAJLGA01.ffn
+                checksum: sha1$eae5e5fac82f3f3c484effdd93549304d921048f
+                size: 1959518
+                nameroot: CAJLGA01
+                nameext: ".ffn"
+              - class: File
+                basename: CAJLGA01.tsv
+                checksum: sha1$ba326e9e32c0635899ae543f071a5c11ec3c0d07
+                size: 109732
+                nameroot: CAJLGA01
+                nameext: ".tsv"
+              - class: File
+                basename: CAJLGA01.gbk
+                checksum: sha1$5cc26d5933eaba3a249cc948967ad8aac042fcef
+                size: 4463442
+                nameroot: CAJLGA01
+                nameext: ".gbk"
+              - class: File
+                basename: CAJLGA01.gff
+                checksum: sha1$839ef1047e9eceda28892f57c3a938e7f4bbc13f
+                size: 2724682
+                nameroot: CAJLGA01
+                nameext: ".gff"
+              - class: File
+                basename: CAJLGA01.err
+                checksum: sha1$6f86c7e89bc18ef160c063dc4f66693891c9f31a
+                size: 675625
+                nameroot: CAJLGA01
+                nameext: ".err"
+              - class: File
+                basename: CAJLGA01.txt
+                checksum: sha1$57c23aa3e0a12d292d8e8febe81bdbf3081d21cc
+                size: 87
+                nameroot: CAJLGA01
+                nameext: ".txt"
+              - class: File
+                basename: CAJLGA01.sqn
+                checksum: sha1$dc5853ee7076c13e807c01492f3c2ef6814933da
+                size: 6807067
+                nameroot: CAJLGA01
+                nameext: ".sqn"
+              - class: File
+                basename: CAJLGA01.log
+                checksum: sha1$5d71c7a44c6ed255dc30a3b5a12ed20129eada7f
+                size: 35262
+                nameroot: CAJLGA01
+                nameext: ".log"
+        - class: Directory
+          basename: cluster_1_1
+          listing:
+            basename: prokka_output
+            nameroot: prokka_output
+            nameext: ''
+            class: Directory
+            listing:
+              - class: File
+                basename: CAJKGB01.faa
+                checksum: sha1$21bb7c6f59f6322a84beb3dd5c5ec74ccbfff780
+                size: 521038
+                nameroot: CAJKGB01
+                nameext: ".faa"
+              - class: File
+                basename: CAJKGB01.fsa
+                checksum: sha1$8263eb3964aad2fb03b748a5702abf25245f8a3e
+                size: 1980172
+                nameroot: CAJKGB01
+                nameext: ".fsa"
+              - class: File
+                basename: CAJKGB01.gbk
+                checksum: sha1$c955b724083cccb5d8b013fd5d5ffc6eb51990f9
+                size: 4058496
+                nameroot: CAJKGB01
+                nameext: ".gbk"
+              - class: File
+                basename: CAJKGB01.sqn
+                checksum: sha1$38af2afc4c3ff559607ae587df9d8aaab2e51622
+                size: 6960026
+                nameroot: CAJKGB01
+                nameext: ".sqn"
+              - class: File
+                basename: CAJKGB01.log
+                checksum: sha1$9c70c46a8b53aa98e87f45bb0cd8bc869ac32ce9
+                size: 94322
+                nameroot: CAJKGB01
+                nameext: ".log"
+              - class: File
+                basename: CAJKGB01.err
+                checksum: sha1$8b19dea7e7d63ffa84f1f55cb37d1c7ae32be1b7
+                size: 1065572
+                nameroot: CAJKGB01
+                nameext: ".err"
+              - class: File
+                basename: CAJKGB01.tsv
+                checksum: sha1$15c0dd867cc81a9f72f2e2c57b33c2e06f5d5187
+                size: 97509
+                nameroot: CAJKGB01
+                nameext: ".tsv"
+              - class: File
+                basename: CAJKGB01.fna
+                checksum: sha1$5a08e6819c14aba2f3f47185c3d01fa2d0a50a5d
+                size: 1940860
+                nameroot: CAJKGB01
+                nameext: ".fna"
+              - class: File
+                basename: CAJKGB01.txt
+                checksum: sha1$c7f881aeb7363c47c2abc9fd0ed4f61ad47f1800
+                size: 88
+                nameroot: CAJKGB01
+                nameext: ".txt"
+              - class: File
+                basename: CAJKGB01.tbl
+                checksum: sha1$e266b1a499fb33145e8b4cc88945311c588ef0b5
+                size: 317264
+                nameroot: CAJKGB01
+                nameext: ".tbl"
+              - class: File
+                basename: CAJKGB01.gff
+                checksum: sha1$89f753e3158d882c58be26580f4ea69bd371211f
+                size: 2375336
+                nameroot: CAJKGB01
+                nameext: ".gff"
+              - class: File
+                basename: CAJKGB01.ffn
+                checksum: sha1$312e715a271490e1186e7e5063777cc4f88a257d
+                size: 1430795
+                nameroot: CAJKGB01
+                nameext: ".ffn"
+        - class: Directory
+          basename: cluster_1_1
+          listing:
+            basename: prokka_output
+            nameroot: prokka_output
+            nameext: ''
+            class: Directory
+            listing:
+              - class: File
+                basename: CAJJTO01.txt
+                checksum: sha1$be8693e47828177d25da4de4dd24c6a721e31802
+                size: 79
+                nameroot: CAJJTO01
+                nameext: ".txt"
+              - class: File
+                basename: CAJJTO01.tbl
+                checksum: sha1$4f9a72e42ad94e2134a0073d9684d6c93efdae89
+                size: 259197
+                nameroot: CAJJTO01
+                nameext: ".tbl"
+              - class: File
+                basename: CAJJTO01.gbk
+                checksum: sha1$ee5c99f02a3ab351ad8b6dd414e54a1fda9349ba
+                size: 3351226
+                nameroot: CAJJTO01
+                nameext: ".gbk"
+              - class: File
+                basename: CAJJTO01.ffn
+                checksum: sha1$d02a692e4d2cd85946fa427179487856f2e357b3
+                size: 1123030
+                nameroot: CAJJTO01
+                nameext: ".ffn"
+              - class: File
+                basename: CAJJTO01.fsa
+                checksum: sha1$8b0a3977170304a75b1e6632e73baa3b6cff936e
+                size: 1627212
+                nameroot: CAJJTO01
+                nameext: ".fsa"
+              - class: File
+                basename: CAJJTO01.faa
+                checksum: sha1$95a5ee8267b3917e0824ae835127c44e4e1ab171
+                size: 410329
+                nameroot: CAJJTO01
+                nameext: ".faa"
+              - class: File
+                basename: CAJJTO01.log
+                checksum: sha1$3117487f47bd5273f040875c0f97a31a341ecc60
+                size: 89310
+                nameroot: CAJJTO01
+                nameext: ".log"
+              - class: File
+                basename: CAJJTO01.err
+                checksum: sha1$fe6f20e3a8a2c6d416cc0086eed4df1cf0b05ec6
+                size: 952104
+                nameroot: CAJJTO01
+                nameext: ".err"
+              - class: File
+                basename: CAJJTO01.fna
+                checksum: sha1$c4c1cecaf285e71dae97222d900a648ad33059c1
+                size: 1588836
+                nameroot: CAJJTO01
+                nameext: ".fna"
+              - class: File
+                basename: CAJJTO01.sqn
+                checksum: sha1$7c5b1888b8b9e582de6977c90262793d7f36cef7
+                size: 5838054
+                nameroot: CAJJTO01
+                nameext: ".sqn"
+              - class: File
+                basename: CAJJTO01.gff
+                checksum: sha1$e43e7e7c7846a7962816a90acba9fcf7fa4d9771
+                size: 1946132
+                nameroot: CAJJTO01
+                nameext: ".gff"
+              - class: File
+                basename: CAJJTO01.tsv
+                checksum: sha1$a56dc3a8428d0dd56ae6ddfd5420f3a271572698
+                size: 78288
+                nameroot: CAJJTO01
+                nameext: ".tsv"
+      -
+        - class: Directory
+          basename: cluster_2_1
+          listing:
+            basename: prokka_output
+            nameroot: prokka_output
+            nameext: ''
+            class: Directory
+            listing:
+              - class: File
+                basename: CAJKRE01.gff
+                checksum: sha1$2f1a10c3ad2efd98eb0597a1b6c87c8dd0a85125
+                size: 2781757
+                nameroot: CAJKRE01
+                nameext: ".gff"
+              - class: File
+                basename: CAJKRE01.sqn
+                checksum: sha1$a848a208e66a0d6c58caf6d9c44be69727853be7
+                size: 7142362
+                nameroot: CAJKRE01
+                nameext: ".sqn"
+              - class: File
+                basename: CAJKRE01.err
+                checksum: sha1$505f8db0dfb42b7037da8ee20a465158485db45f
+                size: 706833
+                nameroot: CAJKRE01
+                nameext: ".err"
+              - class: File
+                basename: CAJKRE01.fna
+                checksum: sha1$ab9f2819271a2b1f2abc895f20fa581bb68fac1c
+                size: 2308825
+                nameroot: CAJKRE01
+                nameext: ".fna"
+              - class: File
+                basename: CAJKRE01.gbk
+                checksum: sha1$4876f466db4742de758ff23091f570196a3d5835
+                size: 4587354
+                nameroot: CAJKRE01
+                nameext: ".gbk"
+              - class: File
+                basename: CAJKRE01.faa
+                checksum: sha1$2137912d2d769bd9b90baf2298b114ecf41f2ef9
+                size: 748402
+                nameroot: CAJKRE01
+                nameext: ".faa"
+              - class: File
+                basename: CAJKRE01.ffn
+                checksum: sha1$858b505ade546f608d6631f4cf2608c474d1dd58
+                size: 2088456
+                nameroot: CAJKRE01
+                nameext: ".ffn"
+              - class: File
+                basename: CAJKRE01.tbl
+                checksum: sha1$d4fd176debd4f1451ea81f97d6cdd64b30c76fdf
+                size: 347669
+                nameroot: CAJKRE01
+                nameext: ".tbl"
+              - class: File
+                basename: CAJKRE01.log
+                checksum: sha1$55f09c16c30f904f30f7976fc0f5b49c01a78c82
+                size: 31608
+                nameroot: CAJKRE01
+                nameext: ".log"
+              - class: File
+                basename: CAJKRE01.txt
+                checksum: sha1$492686234a90eb2602636ae844c8e6a47a69e91e
+                size: 87
+                nameroot: CAJKRE01
+                nameext: ".txt"
+              - class: File
+                basename: CAJKRE01.fsa
+                checksum: sha1$8c4ed158158d0349c09adf23a248b854fcf5f479
+                size: 2311321
+                nameroot: CAJKRE01
+                nameext: ".fsa"
+              - class: File
+                basename: CAJKRE01.tsv
+                checksum: sha1$5f574ba8ef4161141d851846109dc2eee7a160c4
+                size: 117379
+                nameroot: CAJKRE01
+                nameext: ".tsv"
+        - class: Directory
+          basename: cluster_2_1
+          listing:
+            basename: prokka_output
+            nameroot: prokka_output
+            nameext: ''
+            class: Directory
+            listing:
+              - class: File
+                basename: CAJKXJ01.gff
+                checksum: sha1$c6cc25270eedeaea0051b375277b9e358e71aeca
+                size: 2794082
+                nameroot: CAJKXJ01
+                nameext: ".gff"
+              - class: File
+                basename: CAJKXJ01.fsa
+                checksum: sha1$f9f896a75dc66add720bdb9f36c7b92d2fd86f29
+                size: 2319162
+                nameroot: CAJKXJ01
+                nameext: ".fsa"
+              - class: File
+                basename: CAJKXJ01.ffn
+                checksum: sha1$0dafd70505e53e732d84c4966824c6c9e03a2e0b
+                size: 2113805
+                nameroot: CAJKXJ01
+                nameext: ".ffn"
+              - class: File
+                basename: CAJKXJ01.faa
+                checksum: sha1$45cb3a61811e3e1cdd2b0e73ca8f61df070bee94
+                size: 756508
+                nameroot: CAJKXJ01
+                nameext: ".faa"
+              - class: File
+                basename: CAJKXJ01.sqn
+                checksum: sha1$d23878c420636ece24068e7d86757992a1e2c3ca
+                size: 7093510
+                nameroot: CAJKXJ01
+                nameext: ".sqn"
+              - class: File
+                basename: CAJKXJ01.txt
+                checksum: sha1$22822a6b889ce993e1d33071799bb76fee077974
+                size: 97
+                nameroot: CAJKXJ01
+                nameext: ".txt"
+              - class: File
+                basename: CAJKXJ01.fna
+                checksum: sha1$bf97b8d50091f8f4615b33f3db9562f7c49e78eb
+                size: 2317862
+                nameroot: CAJKXJ01
+                nameext: ".fna"
+              - class: File
+                basename: CAJKXJ01.tsv
+                checksum: sha1$6981282f29922dc7135d35f78643081e81b90150
+                size: 118534
+                nameroot: CAJKXJ01
+                nameext: ".tsv"
+              - class: File
+                basename: CAJKXJ01.log
+                checksum: sha1$f8e2f6aa1a83339dd615bf986832cdbd39b69b17
+                size: 30794
+                nameroot: CAJKXJ01
+                nameext: ".log"
+              - class: File
+                basename: CAJKXJ01.gbk
+                checksum: sha1$741f9a858bc25e6bb0421f703939dd7ce6094312
+                size: 4605197
+                nameroot: CAJKXJ01
+                nameext: ".gbk"
+              - class: File
+                basename: CAJKXJ01.err
+                checksum: sha1$fa770522f5fe363b436259add6622e9c97a345fd
+                size: 683308
+                nameroot: CAJKXJ01
+                nameext: ".err"
+              - class: File
+                basename: CAJKXJ01.tbl
+                checksum: sha1$9759fb3b0392da65ed05cb58fb6ec4d4145c0a02
+                size: 354239
+                nameroot: CAJKXJ01
+                nameext: ".tbl"
+    mash_folder:
+      - class: Directory
+        basename: mash_trees
+        listing:
+          - basename: 1_1_mashtree.nwk
+            nameroot: 1_1_mashtree
+            nameext: ".nwk"
+            class: File
+            checksum: sha1$829b693c6cf72da5a7d415f571dee34b2d5216b7
+            size: 92
+          - basename: 2_1_mashtree.nwk
+            nameroot: 2_1_mashtree
+            nameext: ".nwk"
+            class: File
+            checksum: sha1$5aca5bdfbb01c78087ec43400a21dee8d1cc5e3f
+            size: 49
+      - class: Directory
+        basename: mash_trees
+        listing:
+          - basename: 1_1_mashtree.nwk
+            nameroot: 1_1_mashtree
+            nameext: ".nwk"
+            class: File
+            checksum: sha1$829b693c6cf72da5a7d415f571dee34b2d5216b7
+            size: 92
+          - basename: 2_1_mashtree.nwk
+            nameroot: 2_1_mashtree
+            nameext: ".nwk"
+            class: File
+            checksum: sha1$5aca5bdfbb01c78087ec43400a21dee8d1cc5e3f
+            size: 49
+    prokka_seqs:
+      - basename: CAJLGA01.faa
+        nameroot: CAJLGA01
+        nameext: ".faa"
+        class: File
+        checksum: sha1$3c817c0beac183f55b514cde0f5e68d0b2a1466d
+        size: 701336
+      - basename: CAJKGB01.faa
+        nameroot: CAJKGB01
+        nameext: ".faa"
+        class: File
+        checksum: sha1$21bb7c6f59f6322a84beb3dd5c5ec74ccbfff780
+        size: 521038
+      - basename: CAJJTO01.faa
+        nameroot: CAJJTO01
+        nameext: ".faa"
+        class: File
+        checksum: sha1$95a5ee8267b3917e0824ae835127c44e4e1ab171
+        size: 410329
+      - basename: CAJKRE01.faa
+        nameroot: CAJKRE01
+        nameext: ".faa"
+        class: File
+        checksum: sha1$2137912d2d769bd9b90baf2298b114ecf41f2ef9
+        size: 748402
+      - basename: CAJKXJ01.faa
+        nameroot: CAJKXJ01
+        nameext: ".faa"
+        class: File
+        checksum: sha1$45cb3a61811e3e1cdd2b0e73ca8f61df070bee94
+        size: 756508

@@ -1,2 +1,0 @@
-genome	n_genes_called	n_genes_mapped	n_contigs	taxonomic_level	proportion_genes_retained_in_major_clades	genes_retained_index	clade_separation_score	contamination_portion	n_effective_surplus_clades	mean_hit_identity	reference_representation_score	pass.GUNC
-CAJPIO01	821	727	9	phylum	0.92	0.81	0.04	0.09	0.19	0.65	0.53	True

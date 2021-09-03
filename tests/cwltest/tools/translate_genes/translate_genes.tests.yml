@@ -9,5 +9,3 @@
     converted_faa:
       basename: many_pan_genome_reference.faa
       class: File
-      size: 1744051
-      checksum: sha1$14e5586b5b53b190e265cb8158b3ae8733db5e2a

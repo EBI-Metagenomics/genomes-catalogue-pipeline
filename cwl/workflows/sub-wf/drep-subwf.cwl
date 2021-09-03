@@ -22,7 +22,7 @@ outputs:
 
   one_genome:  # pickValue will not work if both are NULL
     type: Directory[]?
-    outputSource: filter_nulls/out
+    outputSource: filter_nulls/out_dirs
 
   mash_folder:
     type: File[]?
@@ -91,10 +91,10 @@ steps:
   filter_nulls:
     run: ../../utils/filter_nulls.cwl
     in:
-      list:
+      list_dirs:
         source:
           - classify_clusters/one_genome
           - classify_dereplicated/one_genome
         linkMerge: merge_flattened
-    out: [ out ]
+    out: [ out_dirs ]
 

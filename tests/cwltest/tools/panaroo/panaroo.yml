@@ -1,8 +1,8 @@
 threads: 8
 gffs:
   - class: File
-    path: ../../../../input_example/test-many/prokka_GUT_GENOME000028/GUT_GENOME000028.gff
+    path: ../../../../input_example/small_set/results/prokka/CAJKRY01.gff
   - class: File
-    path: ../../../../input_example/test-many/prokka_GUT_GENOME000070/GUT_GENOME000070.gff
+    path: ../../../../input_example/small_set/results/prokka/CAJKRY01.gff
 
 panaroo_outfolder: panaroo-output

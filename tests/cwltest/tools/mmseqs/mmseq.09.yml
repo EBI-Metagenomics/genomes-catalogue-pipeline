@@ -1,0 +1,5 @@
+input_fasta:
+  class: File
+  path: test.faa
+limit_i: 0.9
+limit_c: 0.8

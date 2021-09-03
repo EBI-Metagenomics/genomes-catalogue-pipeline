@@ -1,0 +1,4 @@
+prokka_input:
+  class: File
+  path: ../../tools/prokka/test.faa
+outdirname: prokka-outdir

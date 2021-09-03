@@ -48,18 +48,21 @@ outputs:
     type: Directory[]?
     outputSource: process_many_genomes/many_genomes_genomes
 
-  one_genome_prokka:
+  one_genome:
     type: Directory[]?
-    outputSource: process_one_genome/cluster_folder_prokka
-  one_genome_genomes:
-    type: Directory[]?
-    outputSource: process_one_genome/cluster_folder_genome
+    outputSource: process_one_genome/cluster_folder
+  one_genome_genomes_gunc_output:
+    type: Directory?
+    outputSource: process_one_genome/gunc_decisions
 
   mmseqs_output:
-    type: Directory
+    type: Directory?
     outputSource: mmseqs/mmseqs_dir
+  mmseqs_output_annotation:
+    type: Directory?
+    outputSource: mmseqs/mmseqs_dir_annotation
   cluster_representatives:
-    type: File
+    type: File?
     outputSource: mmseqs/cluster_reps
 
 steps:
@@ -101,9 +104,8 @@ steps:
       data_dir_eggnog: data_dir_eggnog
     out:
       - prokka_faa-s
-      - cluster_folder_prokka
-      - cluster_folder_genome
-
+      - cluster_folder
+      - gunc_decisions
 
 # ----------- << mmseqs subwf>> -----------
 
@@ -115,5 +117,5 @@ steps:
       mmseqs_limit_i: mmseqs_limit_i
       mmseqs_limit_c: mmseqs_limit_c
       mmseq_limit_annotation: mmseq_limit_annotation
-    out: [ mmseqs_dir, cluster_reps ]
+    out: [ mmseqs_dir, mmseqs_dir_annotation, cluster_reps ]
 

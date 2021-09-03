@@ -2,6 +2,24 @@
 cwlVersion: v1.2
 class: Workflow
 
+doc: |
+   Subwf runs detection of rRNA using cmsearch (and cmseach models)
+   It creates folders with results for each input fasta-file
+   Output files: .out and .fasta
+   Final step wraps all out-folders to one folder and the same for fastas
+   Example of output:
+   --- rRNA_fastas
+      ----- MGYG...1_fasta-results
+      ------------ ...fasta
+      ------------ tRNA.fasta
+      ----- MGYG...M_fasta-results
+   --- rRNA_outs
+      ----- MGYG...1_out-results
+      ------------ ...out
+      ------------ tRNA.out
+      ----- MGYG...M_out-results
+
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
@@ -31,7 +49,7 @@ steps:
     out: [files]
 
   detect:
-    run: ../../tools/detect_rRNA/detect_rRNA.cwl
+    run: ../../tools/detect_rRNA/detect_rRna.cwl
     scatter: fasta
     in:
       fasta: get_files/files

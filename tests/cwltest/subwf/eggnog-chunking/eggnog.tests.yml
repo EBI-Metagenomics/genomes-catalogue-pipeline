@@ -1,0 +1,18 @@
+#cwltest
+
+- job: eggnog-chunking.test1.yml
+  tool: ../../../../cwl/workflows/sub-wf/chunking-subwf-eggnog.cwl
+  short_name: chunking-subwf-eggnog.cwl
+  doc: "chunking + eggnog + concatenate"
+  output:
+    annotations:
+      basename: mmseqs_0.9_cluster_rep.emapper.annotations
+      class: File
+      checksum: sha1$ee30c791fd662dd2a854ec0a3e92ecacee153dd2
+      size: 2847837
+      format: http://edamontology.org/format_3475
+    seed_orthologs:
+      basename: mmseqs_0.9_cluster_rep.emapper.seed_orthologs
+      class: File
+      checksum: sha1$d0c853b3fd4358b8936bfada97acece30082f010
+      size: 578502

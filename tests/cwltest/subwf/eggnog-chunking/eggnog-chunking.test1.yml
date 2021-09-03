@@ -1,0 +1,14 @@
+faa_file:
+  class: File
+  path: ../../../../input_example/small_set/results/mmseqs_0.9_cluster_rep.fa
+chunk_size: 5000
+db_diamond:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_proteins.dmnd
+db:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
+data_dir:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
+cpu: 8

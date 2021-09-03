@@ -1,6 +1,6 @@
 #cwltest
 
-- job: checkm-one.yml
+- job: checkm.test1.yml
   tool: ../../../../cwl/workflows/sub-wf/checkm-subwf.cwl
   short_name: checkm-subwf.cwl
   doc: "checkm step + convert checkm to csv"
@@ -8,5 +8,5 @@
     checkm_csv:
       basename: checkm_quality.csv
       class: File
-      checksum: sha1$a26ca22a7282795f28dac1dc2e22f349a3941497
-      size: 128
+      checksum: sha1$d6ec4dcaf1fe5d8181cbdc7b2d1054f8076170ce
+      size: 198

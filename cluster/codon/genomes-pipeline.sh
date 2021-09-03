@@ -12,12 +12,13 @@ export SINGULARITY_BINDPATH=$SINGULARITY_HOME/scratch
 
 export OUTDIR=result
 
-while getopts :o:y: option; do
+while getopts :o:y:c: option; do
 	case "${option}" in
 		o) OUTDIR=${OPTARG};;
 		y) YML=${OPTARG};;
+		c) CWL=${OPTARG};;
 	esac
 done
 
 
-cwltool --singularity --enable-dev --preserve-entire-environment --leave-container --outdir ${OUTDIR} ${CWL} ${YML}
+cwltool --singularity --preserve-entire-environment --leave-container --outdir ${OUTDIR} ${CWL} ${YML}

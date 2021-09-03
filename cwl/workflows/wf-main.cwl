@@ -63,16 +63,16 @@ outputs:
   weights:
     type: File?
     outputSource: drep_subwf/weights_file
-  dereplicated_genomes:
+  dereplicated_genomes:                             # remove
     type: Directory?
     outputSource: drep_subwf/dereplicated_genomes
-  mash_drep:
+  mash_drep:                                        # remove
     type: File[]?
     outputSource: drep_subwf/mash_folder
-  one_clusters:
+  one_clusters:                                     # remove
     type: Directory[]?
     outputSource: drep_subwf/one_genome
-  many_clusters:
+  many_clusters:                                    # remove
     type: Directory[]?
     outputSource: drep_subwf/many_genomes
 
@@ -99,19 +99,19 @@ outputs:
     type: Directory[]?
     outputSource: clusters_annotation/many_genomes_genomes
 
-  one_genome:
+  one_genome_final:
     type: Directory[]?
     outputSource: clusters_annotation/one_genome
-  one_genome_prokka:
-    type: Directory[]?
-    outputSource: clusters_annotation/one_genome_prokka
-  one_genome_genomes:
-    type: Directory[]?
-    outputSource: clusters_annotation/one_genome_genomes
+  one_genome_genomes_gunc:
+    type: Directory?
+    outputSource: clusters_annotation/one_genome_genomes_gunc_output
 
   mmseqs:
-    type: Directory
+    type: Directory?
     outputSource: clusters_annotation/mmseqs_output
+  mmseqs_annotation:
+    type: Directory?
+    outputSource: clusters_annotation/mmseqs_output_annotation
 
 # ------------ GTDB-Tk --------------
   gtdbtk:
@@ -120,14 +120,14 @@ outputs:
 
 # ------- functional annotation ----------
   IPS:
-    type: File
+    type: File?
     outputSource: functional_annotation/ips_result
 
   eggnog_annotations:
-    type: File
+    type: File?
     outputSource: functional_annotation/eggnog_annotations
   eggnog_seed_orthologs:
-    type: File
+    type: File?
     outputSource: functional_annotation/eggnog_seed_orthologs
 
 # ---------- rRNA -------------
@@ -219,9 +219,9 @@ steps:
       - many_genomes_prokka
       - many_genomes_genomes
       - one_genome
-      - one_genome_prokka
-      - one_genome_genomes
+      - one_genome_genomes_gunc_output
       - mmseqs_output
+      - mmseqs_output_annotation
       - cluster_representatives
 
 # ----------- << functional annotation >> ------

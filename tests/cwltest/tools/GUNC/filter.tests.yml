@@ -1,26 +1,51 @@
 #cwltest
 
-- job: filter.passed.yml
+- job: compteted_gunc_passed.yml
   tool: ../../../../cwl/tools/GUNC/filter_gunc.cwl
   short_name: filter_gunc.cwl
-  doc: "filter GUNC output. passed"
+  doc: "filter GUNC output"
   output:
     complete:
-      basename: "complete.txt"
+      basename: "test1_complete.txt"
+      class: File
+      size: 0
+      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+    empty: null
+
+- job: compteted_gunc_failed.yml
+  tool: ../../../../cwl/tools/GUNC/filter_gunc.cwl
+  short_name: filter_gunc.cwl
+  doc: "filter GUNC output"
+  output:
+    complete:
+      basename: "test2_complete.txt"
+      class: File
+      size: 0
+      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+    empty: null
+
+- job: notcompteted_gunc_passed.yml
+  tool: ../../../../cwl/tools/GUNC/filter_gunc.cwl
+  short_name: filter_gunc.cwl
+  doc: "filter GUNC output"
+  output:
+    complete:
+      basename: "test3_complete.txt"
       class: File
       size: 0
       checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
     empty: null
 
 
-- job: filter.CAJPIO01.yml
+- job: notcompteted_gunc_failed.yml
   tool: ../../../../cwl/tools/GUNC/filter_gunc.cwl
   short_name: filter_gunc.cwl
-  doc: "filter GUNC output. empty"
+  doc: "filter GUNC output"
   output:
-    empty:
-      basename: "empty.txt"
+    complete:
+      basename: "test4_empty.txt"
       class: File
       size: 0
       checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
-    complete: null
+    empty: null
+

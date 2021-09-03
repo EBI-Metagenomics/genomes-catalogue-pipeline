@@ -1,62 +1,34 @@
 # Tests
 
-## download
-### Fetch data
--- download from ENA [ 1 test ]
--- download from NCBI [ 1 test ]
+## SubWorkflows
 
-TODO: test for empty input
- 
-## wf-1
-### Part 1. Step 0: taxcheck subwf [ not in use ]
+- checkm (running only on NCBI input)
 
--- preparation [ no test ]
--- taxcheck [ no test ]
--- return directory [ no test ]
+- detect_rrna
 
-### Part 1. Step 1: checkM (only for NCBI) [ no test ]
+- drep
+
+- gunc \
+  *Test 1:* \
+  input: input_example/ENA/genomes/CAJPIO01.fa \
+  empty output (didn't pass filters) \
+
+  *Test 2:* \
+  input: 
+- mmseq
+
+- one-genome
+
+- process_clusters
+
+- prokka
+
+- fetch_data (not in use now) 
 
 
-### Part 1. Step 2: drep sub-wf [ 3 tests ]
-- one genome
-- many genomes
-- mixed (one and many) genomes
+- taxcheck (not in use now)
 
--- drep [ no test ]
--- split drep [no test ]
--- classify clusters [ 3 tests ]
 
-## wf-2
-### Step 1.1: Process many-genomes folders
 
--- wrapper 
 
--- sub-wf:
-
------ Step 1.1.1: return files list from directory
-
------ Step 1.1.2: prokka
-
------ Step 1.1.3: panaroo
-
------ Step 1.1.4: translate
-
------ Step 1.1.5.1: IPS
-
------ Step 1.1.5.2: EggNOG
-
-### Step 1.2: Process one-genome folders
-
--- wrapper 
-
--- sub-wf:
-
------ Step 1.1.1: return files list from directory
-
------ Step 1.1.2: prokka
-
------ Step 1.1.3.1: IPS
-
------ Step 1.1.3.2: EggNOG
-
-### Step 2: mmseqs
+        -- 

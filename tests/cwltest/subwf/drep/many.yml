@@ -1,7 +1,7 @@
 genomes_folder:
   class: Directory
-  path: ../../../../input_example/test-many/genomes
+  path: ../../../../input_example/small_set/cluster_genomes
 input_csv:
   class: File
-  path: ../../../../input_example/test-many/test-many.csv
+  path: ../../../../input_example/small_set/download.csv
 skip_flag: no

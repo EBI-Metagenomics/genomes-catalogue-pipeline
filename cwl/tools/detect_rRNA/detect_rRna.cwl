@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.detect_rrna:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.detect_rrna:v2"
 
 baseCommand: [ rna-detect.sh ]
 
@@ -31,9 +31,9 @@ outputs:
   out_counts:
     type: Directory
     outputBinding:
-      glob: out-results
+      glob: "*_out-results"
   fasta_seq:
     type: Directory
     outputBinding:
-      glob: fasta-results
+      glob: "*_fasta-results"
 

@@ -89,5 +89,7 @@ mmseqs result2repseq ${out}/mmseqs.db ${out}/mmseqs_cluster.db ${out}/mmseqs_clu
 echo "mmseqs result2flat ${out}/mmseqs.db ${out}/mmseqs.db ${out}/mmseqs_cluster_rep ${out}/mmseqs_cluster_rep.fa --use-fasta-header"
 mmseqs result2flat ${out}/mmseqs.db ${out}/mmseqs.db ${out}/mmseqs_cluster_rep ${out}/mmseqs_cluster_rep.fa --use-fasta-header
 
+# remove tmp
+rm -rf ${out}/mmseqs-tmp
 # remove symlinks
 for f in $(find -type l);do cp --remove-destination $(readlink $f) $f;done;

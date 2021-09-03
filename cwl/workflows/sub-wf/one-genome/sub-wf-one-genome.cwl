@@ -20,12 +20,13 @@ outputs:
     type: File?
     outputSource: prokka/faa
 
-  cluster_folder_prokka:
-    type: Directory?
-    outputSource: return_prokka_cluster_dir/pool_directory
-  cluster_folder_genome:
-    type: Directory?
-    outputSource: create_cluster_genomes/out
+  gunc_decision:
+    type: File
+    outputSource: gunc/flag
+
+  cluster_dir:
+    type: Directory
+    outputSource: return_cluster_dir/pool_directory
 
 steps:
   preparation:
@@ -45,37 +46,41 @@ steps:
     out: [flag]
 
   prokka:
-    when: $(inputs.flag == 'complete.txt')
-    run: ../../../tools/prokka/prokka.cwl
+    when: $(inputs.flag.basename.includes("complete.txt"))
+    run: ../prokka-subwf.cwl
     in:
       flag: gunc/flag
-      fa_file:
+      prokka_input:
         source: preparation/files
         valueFrom: $(self[0])
       outdirname: { default: prokka_output }
     out: [ faa, outdir ]
 
-  create_cluster_genomes:
-    when: $(inputs.flag == 'complete.txt')
+# -------- collect output ----------
+
+  create_folder_genomes:
+    doc: |
+       Create folder genome for processing cluster
+       That directory will have processing MGYG..fa genome inside
+    # when: $(inputs.flag.basename.includes("complete.txt"))
     run: ../../../utils/return_directory.cwl
     in:
       flag: gunc/flag
       list: preparation/files
-      dir_name:
-        source: cluster
-        valueFrom: cluster_$(self.basename)/genome
+      dir_name: {default: "genome"}
     out: [ out ]
 
-  return_prokka_cluster_dir:
-    when: $(inputs.flag == 'complete.txt')
+  return_cluster_dir:
     run: ../../../utils/return_dir_of_dir.cwl
     in:
-      flag: gunc/flag
       directory_array:
-        linkMerge: merge_nested
         source:
           - prokka/outdir
+          - create_folder_genomes/out
+        pickValue: all_non_null
       newname:
         source: cluster
         valueFrom: cluster_$(self.basename)
     out: [ pool_directory ]
+
+

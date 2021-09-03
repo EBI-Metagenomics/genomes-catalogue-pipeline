@@ -1,0 +1,3 @@
+inputfile:
+  class: File
+  path: ../tools/prokka/test.faa

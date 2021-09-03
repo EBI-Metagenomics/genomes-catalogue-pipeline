@@ -10,7 +10,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v2"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v4"
 
 baseCommand: [ "gunc", "run" ]
 arguments: ["-t", "4"]

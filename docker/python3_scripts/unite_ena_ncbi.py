@@ -32,6 +32,8 @@ def process_csv(csv, out_csv):
     with open(csv, 'r') as input_csv:
         for line in input_csv:
             if len(line.split('ompleteness')) == 1:
+                if not line.endswith('\n'):
+                    line += '\n'
                 out_csv.write(line)
     return out_csv
 

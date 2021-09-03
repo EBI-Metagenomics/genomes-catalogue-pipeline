@@ -1,5 +1,5 @@
 fa_file:
   class: File
-  path: ../../../../input_example/test-many/panaroo-output/pan_genome_reference.fa
+  path: ../../../../input_example/small_set/results/mmseqs_0.9_cluster_rep.fa
 
 faa_file: many_pan_genome_reference.faa

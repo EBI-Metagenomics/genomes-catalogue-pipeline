@@ -1,0 +1,4 @@
+input:
+  class: File
+  path: ../../../../input_example/panaroo/gene_presence_absence.Rtab
+output_filename: core_genes

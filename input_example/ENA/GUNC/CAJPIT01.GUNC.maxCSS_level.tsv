@@ -1,2 +1,0 @@
-genome	n_genes_called	n_genes_mapped	n_contigs	taxonomic_level	proportion_genes_retained_in_major_clades	genes_retained_index	clade_separation_score	contamination_portion	n_effective_surplus_clades	mean_hit_identity	reference_representation_score	pass.GUNC
-CAJPIT01	1845	1799	165	genus	0.94	0.91	0.1	0.54	1.72	0.86	0.79	True

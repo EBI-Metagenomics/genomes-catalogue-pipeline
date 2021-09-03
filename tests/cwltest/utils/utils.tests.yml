@@ -7,22 +7,19 @@
   doc: "Get a list of files from directory"
   output:
     files:
-      - basename: "GUT_GENOME001921.fa"
-        class: File
-        checksum: sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8
-        size: 2369043
-      - basename: "GUT_GENOME000465.fa"
-        class: File
-        checksum: sha1$90e3b84fe64029a3c556d90a8cebf3fb11e4bb01
-        size: 5484822
-      - basename: "test-one.csv"
-        checksum: sha1$ba148e7ed51c64157c72bc1253eaa9a9e226d170
-        class: File
-        size: 92
-      - basename: "checkm.out"
-        checksum: sha1$e924b1a72296c30f17b411d1c1d5c06813b18792
-        class: File
-        size: 164
+      - class: File
+        basename: CAJLGA01.fa
+        size: 2291990
+        checksum: sha1$cecbaf247c1b1862a88b77f93986cceae1e22a67
+      - class: File
+        basename: CAJKGB01.fa
+        size: 2025917
+        checksum: sha1$211e1b18013b8631df5c4e3290a2d08e05a99841
+      - class: File
+        basename: CAJJTO01.fa
+        size: 1672905
+        checksum: sha1$b2d063739a50fc031eb4eec94180f56988ae6eab
+
 
 # touch file
 - job: touch_file.yml
@@ -87,25 +84,14 @@
       class: Directory
       basename: one_dir
       listing:
-      - class: Directory
-        basename: test-one
-        listing:
-        - class: File
-          basename: checkm.out
-          size: 164
-          checksum: sha1$e924b1a72296c30f17b411d1c1d5c06813b18792
-        - class: File
-          basename: GUT_GENOME001921.fa
-          size: 2369043
-          checksum: sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8
-        - class: File
-          basename: test-one.csv
-          size: 92
-          checksum: sha1$ba148e7ed51c64157c72bc1253eaa9a9e226d170
-        - class: File
-          basename: GUT_GENOME000465.fa
-          size: 5484822
-          checksum: sha1$90e3b84fe64029a3c556d90a8cebf3fb11e4bb01
+        - class: Directory
+          basename: '3_0'
+          listing:
+            - class: File
+              basename: CAJKRY01.fa
+              checksum: sha1$bde22cdb8b3901e11630391a4f6ecf9d98dfac39
+              size: 1773038
+
 
 # wrap directory into another directory
 - job: return_dir_of_dir_many_dirs.yml
@@ -118,75 +104,23 @@
       basename: many_dirs
       listing:
         - class: Directory
-          basename: test-one
+          basename: '2_1'
           listing:
             - class: File
-              basename: checkm.out
-              size: 164
-              checksum: sha1$e924b1a72296c30f17b411d1c1d5c06813b18792
+              basename: CAJKXJ01.fa
+              checksum: sha1$9f18ca859df6408ccae0775ddcca5115598029d3
+              size: 2320626
             - class: File
-              basename: GUT_GENOME001921.fa
-              size: 2369043
-              checksum: sha1$a72ecc575ecacadf50d4081e073d20ee511bedb8
-            - class: File
-              basename: test-one.csv
-              size: 92
-              checksum: sha1$ba148e7ed51c64157c72bc1253eaa9a9e226d170
-            - class: File
-              basename: GUT_GENOME000465.fa
-              size: 5484822
-              checksum: sha1$90e3b84fe64029a3c556d90a8cebf3fb11e4bb01
+              basename: CAJKRE01.fa
+              checksum: sha1$5a18736b41c827f0de008a8c2da2ca570bb89843
+              size: 2314364
         - class: Directory
-          basename: test-many
+          basename: '3_0'
           listing:
             - class: File
-              basename: GUT_GENOME000132.fa
-              size: 3716226
-              checksum: sha1$090c2cdef1e6b9c8d4d4e9d1bf0218e5114870c5
-            - class: Directory
-              basename: prokka_GUT_GENOME000070
-              listing:
-                - class: File
-                  basename: GUT_GENOME000070.gff
-                  size: 6280522
-                  checksum: sha1$62c190eef8a2e3f7992642d387cd92aab6e2583f
-            - class: File
-              basename: GUT_GENOME000028.fa
-              size: 5417185
-              checksum: sha1$250f384bf6a4abccae12d49491af24412ec37290
-            - class: File
-              basename: test-many.csv
-              size: 148
-              checksum: sha1$ebaa8f33880a0dbbdbe588865c6373b9a70a4577
-            - class: Directory
-              basename: panaroo-output
-              listing:
-                - class: File
-                  basename: pan_genome_reference.fa
-                  size: 5149297
-                  checksum: sha1$15ac780608aa69d113eea1c0d7d035441b0f25ce
-            - class: Directory
-              basename: prokka_GUT_GENOME000028
-              listing:
-                - class: File
-                  basename: GUT_GENOME000028.gff
-                  size: 6485237
-                  checksum: sha1$97a8bf68b7922e77ebad02027b81ee507ac8106b
-            - class: File
-              basename: GUT_GENOME000263.fa
-              size: 3864067
-              checksum: sha1$b39eacc4125088a1c97e6ead54a59546cdfdce0c
-            - class: Directory
-              basename: translated
-              listing:
-                - class: File
-                  basename: many_pan_genome_reference.faa
-                  size: 1744051
-                  checksum: sha1$14e5586b5b53b190e265cb8158b3ae8733db5e2a
-            - class: File
-              basename: GUT_GENOME000070.fa
-              size: 5231862
-              checksum: sha1$eec6406eb11a5a2bdcca6347216c38b7519918f3
+              basename: CAJKRY01.fa
+              checksum: sha1$bde22cdb8b3901e11630391a4f6ecf9d98dfac39
+              size: 1773038
 
 # wrap files into directory
 - job: return_directory.yml
@@ -208,12 +142,12 @@
           checksum: sha1$630ec9c33bebf699eedafaf9e49cc7d98feb4a11
 
 # filter nulls files
-- job: filter_nulls_files.yml
+- job: filter_nulls_dirs.yml
   tool: ../../../cwl/utils/filter_nulls.cwl
   short_name: filter_nulls.cwl
-  doc: "filter nulls from input array"
+  doc: "filter nulls from input array of dirs"
   output:
-    out:
+    out_dirs:
     - class: Directory
       basename: help_scripts
       listing:
@@ -230,16 +164,28 @@
         size: 191
         checksum: sha1$74b9aeb38391009f7dc584bea29c3554b30200c7
     - class: Directory
-      basename: data_tables
+      basename: singletons
       listing:
       - class: File
-        basename: Mdb.csv
-        size: 2624
-        checksum: sha1$0aa29b7ca5a37f0698a473361724006d73e1dd18
+        basename: CAJKRY01.fa
       - class: File
-        basename: Cdb.csv
-        size: 564
-        checksum: sha1$2a2b4cbf2ba5511acf5f8524c9cd9b084fe6377f
+        basename: CAJKXZ01.fa
+
+# filter nulls files
+- job: filter_nulls_files.yml
+  tool: ../../../cwl/utils/filter_nulls.cwl
+  short_name: filter_nulls.cwl
+  doc: "filter nulls from input array of files"
+  output:
+    out_files:
+      - class: File
+        basename: concatenate.yml
+        size: 157
+        checksum: sha1$3109206378a26bce54dc8d860c2a1784be9d5a9d
+      - class: File
+        basename: cut_header.yml
+        size: 58
+        checksum: sha1$9d3a3e229a06e35f064a710859dccbb63f3deb64
 
 # filter nulls files
 - job: filter_nulls_empty.yml
@@ -247,4 +193,16 @@
   short_name: filter_nulls.cwl
   doc: "filter nulls from input array of nulls"
   output:
-    out: null
+    out_files: null
+
+# cut headers in fasta files (change - to space)
+- job: cut_header.yml
+  tool: ../../../cwl/utils/cut_header.cwl
+  short_name: cut_header.cwl
+  doc: "cut fasta headers"
+  output:
+    created_file:
+      basename: "test.faa"
+      class: File
+      size: 16270
+      checksum: sha1$b20c0352039e913ba5fd749ee327d26d0b03b041
