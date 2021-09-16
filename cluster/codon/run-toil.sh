@@ -15,15 +15,15 @@ YML=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/tests/cluste
 JOBSTORE="/hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test"
 OUTDIR="/hps/nobackup/rdf/metagenomics/test-folder/genomes-pipeline"
 OUTDIRNAME="test"
-export MEMORY=100G
+MEMORY=100G
 
 while getopts :n:y:c:m: option; do
-	case "${option}" in
-		n) OUTDIRNAME=${OPTARG};;
-		y) YML=${OPTARG};;
-		c) CWL=${OPTARG};;
-		m) MEMORY=${OPTARG};;
-	esac
+        case "${option}" in
+                n) OUTDIRNAME=${OPTARG};;
+                y) YML=${OPTARG};;
+                c) CWL=${OPTARG};;
+                m) MEMORY=${OPTARG};;
+        esac
 done
 
 export TMPDIR="/tmp"
@@ -39,6 +39,10 @@ mkdir -p ${RUN_OUTDIR} ${LOG_DIR}
 
 echo "Log-file ${LOG_DIR}/${OUTDIRNAME}.log"
 
+echo "Toil start:"; date;
+
+set -x
+
 toil-cwl-runner \
 --logWarning \
 --writeLogs "${LOG_DIR}" \
@@ -53,3 +57,5 @@ toil-cwl-runner \
 --retryCount 2 \
 --defaultMemory ${MEMORY} \
 ${CWL} ${YML}
+
+echo "Toil finish:"; date;
