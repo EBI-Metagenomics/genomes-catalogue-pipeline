@@ -17,7 +17,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v2"
 
 baseCommand: [ split_drep.py ]
 
@@ -26,10 +26,18 @@ inputs:
     type: Directory
     inputBinding:
       prefix: '-f'
-  drep_folder:
-    type: Directory
+  Cdb_csv:
+    type: File
     inputBinding:
-      prefix: '-d'
+      prefix: '--cdb'
+  Mdb_csv:
+    type: File
+    inputBinding:
+      prefix: '--mdb'
+  #drep_folder:
+  #  type: Directory
+  #  inputBinding:
+  #    prefix: '-d'
   split_outfolder:
     type: string
     inputBinding:

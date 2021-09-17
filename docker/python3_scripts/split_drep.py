@@ -5,9 +5,8 @@ import sys
 import argparse
 from shutil import copy
 
-def getClusters(drep_out):
+def getClusters(clst_file):
     clusters = {}
-    clst_file = "%s/data_tables/Cdb.csv" % (drep_out)
     with open(clst_file) as f:
         next(f)
         for line in f:
@@ -21,8 +20,7 @@ def getClusters(drep_out):
                 clusters[cluster].append(genome)
     return clusters
 
-def splitMash(drep_out, genlist, outdir, cluster_name):
-    mash_dist = "%s/data_tables/Mdb.csv" % (drep_out)
+def splitMash(mash_dist, genlist, outdir, cluster_name):
     outname = "%s/%s/%s_mash.tsv" % (outdir, cluster_name, cluster_name)
     with open(mash_dist, "r") as f, open(outname, "w") as fout:
         linen = 0
@@ -38,15 +36,17 @@ def splitMash(drep_out, genlist, outdir, cluster_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Split dRep results by species cluster")
-    parser.add_argument('-d', dest='drep_folder', help='dRep output folder [REQUIRED]', required=True)
+    #parser.add_argument('-d', dest='drep_folder', help='dRep output folder [REQUIRED]', required=True)
     parser.add_argument('-f', dest='fasta_folder', help='FASTA folder [REQUIRED]', required=True)
     parser.add_argument('-o', dest='output_folder', help='Output folder [REQUIRED]', required=True)
+    parser.add_argument('--cdb', dest='cdb', help='dRep output folder/data_tables/Cdb.csv', required=True)
+    parser.add_argument('--mdb', dest='mdb', help='dRep output folder/data_tables/Mdb.csv', required=True)
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
     else:
         args = parser.parse_args()
-        clusters = getClusters(args.drep_folder)
+        clusters = getClusters(clst_file=args.cdb)
         for c in clusters:
             genomes = clusters[c]
             cluster_output = "%s/%s" % (args.output_folder, c)
@@ -56,5 +56,5 @@ if __name__ == "__main__":
                 src = "%s/%s" % (os.path.abspath(args.fasta_folder), genome)
                 dst = "%s/%s" % (cluster_output, genome)
                 copy(src, dst)
-            splitMash(args.drep_folder, genomes, args.output_folder, c)
+            splitMash(mash_dist=args.mdb, genlist=genomes, outdir=args.output_folder, cluster_name=c)
                 

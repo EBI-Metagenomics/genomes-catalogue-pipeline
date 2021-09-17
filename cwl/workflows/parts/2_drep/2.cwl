@@ -76,7 +76,7 @@ steps:
       drep_outfolder: { default: 'drep_outfolder' }
       checkm_csv: csv
       extra_weights: generate_weights/file_with_weights
-    out: [ out_folder, dereplicated_genomes ]
+    out: [ Cdb_csv, Mdb_csv, dereplicated_genomes ]
 
   split_drep:
     when: $(inputs.flag != "skip")
@@ -84,7 +84,8 @@ steps:
     in:
       flag: skip_drep_step
       genomes_folder: genomes
-      drep_folder: drep/out_folder
+      Cdb_csv: drep/Cdb_csv
+      Mdb_csv: drep/Mdb_csv
       split_outfolder: { default: 'split_outfolder' }
     out: [ split_out ]
 
