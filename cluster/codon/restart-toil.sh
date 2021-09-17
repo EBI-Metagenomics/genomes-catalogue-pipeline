@@ -43,16 +43,14 @@ export RUN_OUTDIR=${OUTDIR}/${OUTDIRNAME}
 export LOG_DIR=${OUTDIR}/logs/${OUTDIRNAME}
 export RUN_JOBSTORE=${JOBSTORE}/${OUTDIRNAME}
 
-rm -rf "${RUN_JOBSTORE}" || true
-mkdir -p ${RUN_OUTDIR} ${LOG_DIR}
-
 echo "Log-file ${LOG_DIR}/${OUTDIRNAME}.log"
 
-echo "Toil start:"; date;
+echo "Toil restart start:"; date;
 
 set -x
 
 toil-cwl-runner \
+--restart \
 --logWarning \
 --writeLogs "${LOG_DIR}" \
 --maxLogFileSize 50000000 \
@@ -67,4 +65,4 @@ toil-cwl-runner \
 --defaultMemory ${MEMORY} \
 ${CWL} ${YML}
 
-echo "Toil finish:"; date;
+echo "Toil restart finish:"; date;
