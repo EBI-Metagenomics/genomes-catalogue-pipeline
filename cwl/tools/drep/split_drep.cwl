@@ -6,7 +6,7 @@ label: "split drep"
 
 requirements:
   ResourceRequirement:
-    ramMin: 1000
+    ramMin: 5000
     coresMin: 4
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
