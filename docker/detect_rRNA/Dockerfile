@@ -1,6 +1,6 @@
 FROM continuumio/miniconda3
 
-LABEL Maintainer="Ekaterina Sakharova <kates@ebi.ac.uk>"
+LABEL Maintainer="Microbiome Informatics Team www.ebi.ac.uk/metagenomics"
 ################################################################################
 # Dockerfile Version:   19.03.1
 # Software:             Detect rRNA with cmsearch

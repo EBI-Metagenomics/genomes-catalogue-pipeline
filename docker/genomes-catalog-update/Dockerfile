@@ -7,7 +7,7 @@ FROM python:3.7.9-slim-buster
 # Description:          scripts to fetch data
 ########################################################################
 
-LABEL maintainer="Ekaterina Sakharova <kates@ebi.ac.uk>"
+LABEL maintainer="Microbiome Informatics Team www.ebi.ac.uk/metagenomics"
 
 RUN apt-get update && rm -rf /var/lib/apt/lists/*
 

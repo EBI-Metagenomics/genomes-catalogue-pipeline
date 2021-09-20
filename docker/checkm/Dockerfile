@@ -1,6 +1,6 @@
 FROM continuumio/miniconda3
 
-LABEL maintainer="Ekaterina Sakharova <kates@ebi.ac.uk>"
+LABEL maintainer="Microbiome Informatics Team www.ebi.ac.uk/metagenomics"
 
 LABEL base_image="continuumio/miniconda3"
 LABEL version="1"

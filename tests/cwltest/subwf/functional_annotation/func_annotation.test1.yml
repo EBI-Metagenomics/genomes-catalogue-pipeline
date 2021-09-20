@@ -1,7 +1,7 @@
 input_faa:
   class: File
   path: ../../../../input_example/small_set/results/mmseqs_0.9_cluster_rep.fa
-InterProScan_databases:
+interproscan_databases:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
 chunk_size_IPS: 5000

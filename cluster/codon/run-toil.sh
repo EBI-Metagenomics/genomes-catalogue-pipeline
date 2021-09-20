@@ -9,6 +9,8 @@ mitload miniconda
 module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
 conda activate toil-5.4.0
 
+export PATH=$PATH:/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/python3_scripts/
+
 CWL=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/cwl/workflows/wf-main.cwl
 YML=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/tests/cluster/wf-main_ena_verysmall.yml
 
@@ -54,7 +56,7 @@ set -x
 
 toil-cwl-runner \
 --logWarning \
---loggingDebug \
+--logDebug \
 --writeLogs "${LOG_DIR}" \
 --maxLogFileSize 50000000 \
 --outdir "${RUN_OUTDIR}" \

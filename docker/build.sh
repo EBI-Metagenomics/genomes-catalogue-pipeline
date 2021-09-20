@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 export NAME=genomes-pipeline
 
 # checkm

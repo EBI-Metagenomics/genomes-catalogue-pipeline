@@ -15,7 +15,7 @@ inputs:
 
   faa: File
   chunk_size: int
-  InterProScan_databases: [string, Directory]
+  interproscan_databases: [string, Directory]
 
 outputs:
   ips_result:
@@ -36,9 +36,9 @@ steps:
     scatter: inputFile
     in:
       inputFile: split_seqs/chunks
-      databases: InterProScan_databases
+      databases: interproscan_databases
     out: [ annotations ]
-    run: ../../tools/IPS/InterProScan.cwl
+    run: ../../tools/ips/InterProScan.cwl
     label: "InterProScan: protein sequence classifier"
 
   combine_ips:

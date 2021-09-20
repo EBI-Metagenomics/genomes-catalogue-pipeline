@@ -32,8 +32,8 @@ inputs:
 
   gtdbtk_data: Directory?
 
-  InterProScan_databases: [string, Directory]
-  chunk_size_IPS: int
+  interproscan_databases: [string, Directory]
+  chunk_size_ips: int
   chunk_size_eggnog: int
   db_diamond_eggnog: [string?, File?]
   db_eggnog: [string?, File?]
@@ -119,7 +119,7 @@ outputs:
     outputSource: gtdbtk/gtdbtk_folder
 
 # ------- functional annotation ----------
-  IPS:
+  ips:
     type: File?
     outputSource: functional_annotation/ips_result
 
@@ -205,8 +205,8 @@ steps:
       mmseqs_limit_i: mmseqs_limit_i
       mmseq_limit_annotation: mmseq_limit_annotation
       gunc_db_path: gunc_db_path
-      InterProScan_databases: InterProScan_databases
-      chunk_size_IPS: chunk_size_IPS
+      interproscan_databases: interproscan_databases
+      chunk_size_ips: chunk_size_ips
       chunk_size_eggnog: chunk_size_eggnog
       db_diamond_eggnog: db_diamond_eggnog
       db_eggnog: db_eggnog
@@ -229,8 +229,8 @@ steps:
     run: sub-wf/functional_annotation.cwl
     in:
       input_faa: clusters_annotation/cluster_representatives
-      InterProScan_databases: InterProScan_databases
-      chunk_size_IPS: chunk_size_IPS
+      interproscan_databases: interproscan_databases
+      chunk_size_ips: chunk_size_ips
       chunk_size_eggnog: chunk_size_eggnog
       db_diamond_eggnog: db_diamond_eggnog
       db_eggnog: db_eggnog
