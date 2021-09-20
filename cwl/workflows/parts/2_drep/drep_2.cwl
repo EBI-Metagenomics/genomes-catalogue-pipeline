@@ -30,8 +30,8 @@ inputs:
 
   gtdbtk_data: Directory?
 
-  InterProScan_databases: [string, Directory]
-  chunk_size_IPS: int
+  interproscan_databases: [string, Directory]
+  chunk_size_ips: int
   chunk_size_eggnog: int
   db_diamond_eggnog: [string?, File?]
   db_eggnog: [string?, File?]

@@ -11,8 +11,8 @@ requirements:
 
 inputs:
   input_faa: File
-  InterProScan_databases: [string, Directory]
-  chunk_size_IPS: int
+  interproscan_databases: [string, Directory]
+  chunk_size_ips: int
   chunk_size_eggnog: int
   db_diamond_eggnog: [string?, File?]
   db_eggnog: [string?, File?]
@@ -21,7 +21,7 @@ inputs:
 outputs:
   ips_result:
     type: File
-    outputSource: IPS/ips_result
+    outputSource: ips/ips_result
 
   eggnog_annotations:
     type: File
@@ -33,7 +33,7 @@ outputs:
 
 steps:
 
-  IPS:
+  ips:
     doc: |
        Subwf will run IPS-chunking if input faa file is not null
        This subwf consists of
@@ -44,8 +44,8 @@ steps:
     run: chunking-subwf-IPS.cwl
     in:
       faa: input_faa
-      chunk_size: chunk_size_IPS
-      InterProScan_databases: InterProScan_databases
+      chunk_size: chunk_size_ips
+      interproscan_databases: interproscan_databases
     out: [ips_result]
 
   eggnog:
