@@ -11,7 +11,8 @@ requirements:
 
 inputs:
   # download params
-  download_from: string?  # ENA or NCBI
+  download_from_ena: boolean
+  download_from_ncbi: boolean
   infile: File?            # file containing a list of GenBank accessions, one accession per line
   directory_name: string?  # directory name to download files to
   unzip: boolean?
@@ -21,7 +22,7 @@ inputs:
   csv: File?
 
   # no gtdbtk
-  skip_gtdbtk_step: string
+  skip_gtdbtk_step: boolean
 
   # common input
   mmseqs_limit_c: float
@@ -55,10 +56,11 @@ outputs:
 steps:
 # ----------- << download data >> -----------
   download:
-    when: $(Boolean(inputs.download_from))
+    when: $(Boolean(inputs.download_from_ena) || Boolean(inputs.download_from_ncbi))
     run: ../sub-wf/fetch_data.cwl
     in:
-      download_from: download_from
+      download_from_ena: download_from_ena
+      download_from_ncbi: download_from_ncbi
       infile: infile
       directory_name: directory_name
       unzip: unzip

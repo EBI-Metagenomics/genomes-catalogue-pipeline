@@ -18,10 +18,10 @@ inputs:
   min_accession_mgyg: int
 
   # skip dRep step if MAGs were already dereplicated
-  skip_drep_step: string   # set "skip" for skipping
+  skip_drep_step: boolean
 
   # no gtdbtk
-  skip_gtdbtk_step: string   # set "skip" for skipping
+  skip_gtdbtk_step: boolean
 
   # common input
   mmseqs_limit_c: float
@@ -182,7 +182,7 @@ steps:
 # ---------- dRep + split -----------
 
   generate_weights:
-    when: $(inputs.flag != "skip")
+    when: $(!Boolean(inputs.flag))
     run: ../tools/generate_weight_table/generate_extra_weight_table.cwl
     in:
       flag: skip_drep_step
@@ -191,7 +191,7 @@ steps:
     out: [ file_with_weights ]
 
   drep:
-    when: $(inputs.flag != "skip")
+    when: $(!Boolean(inputs.flag))
     run: ../tools/drep/drep.cwl
     in:
       flag: skip_drep_step
@@ -202,7 +202,7 @@ steps:
     out: [ out_folder, dereplicated_genomes ]
 
   split_drep:
-    when: $(inputs.flag != "skip")
+    when: $(!Boolean(inputs.flag))
     run: ../tools/drep/split_drep.cwl
     in:
       flag: skip_drep_step
@@ -212,7 +212,7 @@ steps:
     out: [ split_out ]
 
   classify_clusters:
-    when: $(inputs.flag != "skip")
+    when: $(!Boolean(inputs.flag))
     run: ../tools/drep/classify_folders.cwl
     in:
       flag: skip_drep_step
@@ -225,7 +225,7 @@ steps:
       - stdout
 
   classify_dereplicated:
-    when: $(inputs.flag == "skip")
+    when: $(Boolean(inputs.flag))
     run: ../tools/drep/classify_dereplicated.cwl
     in:
       flag: skip_drep_step
@@ -305,7 +305,7 @@ steps:
 
 # ----------- << GTDB - Tk >> -----------
 #  gtdbtk:
-#    when: $(inputs.skip_flag !== 'skip')
+#    when: $(!Boolean(inputs.skip_flag))
 #    run: ../tools/gtdbtk/gtdbtk.cwl
 #    in:
 #      skip_flag: skip_gtdbtk_step

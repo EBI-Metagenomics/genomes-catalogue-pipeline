@@ -14,6 +14,9 @@ inputs:
   input_csv: File
   skip_flag: boolean  # skip dRep for set that was already dereplicated (skip_flag=True)
 
+  skip_gtdbtk_step: boolean
+  gtdbtk_data: Directory
+
 outputs:
 
   many_genomes:
@@ -100,3 +103,14 @@ steps:
         linkMerge: merge_flattened
         pickValue: all_non_null
     out: [ out_dirs ]
+
+  # ----------- << GTDB - Tk >> -----------
+  gtdbtk:
+    when: $(!Boolean(inputs.flag))
+    run: ../../tools/gtdbtk/gtdbtk.cwl
+    in:
+      skip_flag: skip_gtdbtk_step
+      drep_folder: drep/dereplicated_genomes
+      gtdb_outfolder: { default: 'gtdb-tk_output' }
+      refdata: gtdbtk_data
+    out: [ gtdbtk_folder ]

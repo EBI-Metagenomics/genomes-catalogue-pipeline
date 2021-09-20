@@ -18,10 +18,10 @@ inputs:
   min_accession_mgyg: int
 
   # skip dRep step if MAGs were already dereplicated
-  skip_drep_step: string   # set "skip" for skipping
+  skip_drep_step: boolean   # set True for skipping
 
   # no gtdbtk
-  skip_gtdbtk_step: string   # set "skip" for skipping
+  skip_gtdbtk_step: boolean   # set True for skipping
 
   # common input
   mmseqs_limit_c: float
@@ -242,7 +242,7 @@ steps:
 
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:
-    when: $(inputs.skip_flag !== 'skip')
+    when: $(!Boolean(inputs.skip_flag))
     run: ../tools/gtdbtk/gtdbtk.cwl
     in:
       skip_flag: skip_gtdbtk_step

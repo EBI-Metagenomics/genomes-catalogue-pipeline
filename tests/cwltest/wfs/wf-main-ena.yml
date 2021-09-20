@@ -6,8 +6,8 @@ directory_name: ENA_download
 unzip: true
 
 # no gtdbtk
-skip_gtdbtk_step: skip
-skip_drep_step: no
+skip_gtdbtk_step: True
+skip_drep_step: False
 
 # common input
 mmseqs_limit_i:
