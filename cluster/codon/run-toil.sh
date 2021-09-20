@@ -54,6 +54,7 @@ set -x
 
 toil-cwl-runner \
 --logWarning \
+--loggingDebug \
 --writeLogs "${LOG_DIR}" \
 --maxLogFileSize 50000000 \
 --outdir "${RUN_OUTDIR}" \
