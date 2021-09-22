@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
 
 baseCommand: [ translate_genes.py ]
 

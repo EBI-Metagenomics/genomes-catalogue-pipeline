@@ -38,5 +38,5 @@ cd panaroo && docker build -t microbiomeinformatics/${NAME}.panaroo:v1 .
 cd prokka && docker build -t microbiomeinformatics/${NAME}.prokka:v1 .
 
 # python3
-cd python3_scripts && docker build -t microbiomeinformatics/${NAME}.python3:v1 .
+cd python3_scripts && docker build -t microbiomeinformatics/${NAME}.python3:v3 .
 
