@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.2.0-dev2
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -12,7 +12,7 @@ requirements:
 inputs:
   genomes_folder: Directory
   input_csv: File
-  skip_flag: string
+  skip_flag: boolean  # skip dRep for set that was already dereplicated (skip_flag=True)
 
 outputs:
 
@@ -22,7 +22,7 @@ outputs:
 
   one_genome:  # pickValue will not work if both are NULL
     type: Directory[]?
-    outputSource: filter_nulls/out
+    outputSource: filter_nulls/out_dirs
 
   mash_folder:
     type: File[]?
@@ -37,7 +37,7 @@ outputs:
 
 steps:
   generate_weights:
-    when: $(inputs.flag != "skip")
+    when: $(!Boolean(inputs.flag))
     run: ../../tools/generate_weight_table/generate_extra_weight_table.cwl
     in:
       flag: skip_flag
@@ -46,7 +46,7 @@ steps:
     out: [ file_with_weights ]
 
   drep:
-    when: $(inputs.flag != "skip")
+    when: $(!Boolean(inputs.flag))
     run: ../../tools/drep/drep.cwl
     in:
       flag: skip_flag
@@ -54,20 +54,22 @@ steps:
       drep_outfolder: { default: 'drep_outfolder' }
       checkm_csv: input_csv
       extra_weights: generate_weights/file_with_weights
-    out: [ out_folder, dereplicated_genomes ]
+    out: [ Cdb_csv, Mdb_csv, dereplicated_genomes ]
 
   split_drep:
-    when: $(inputs.flag != "skip")
+    when: $(!Boolean(inputs.flag))
     run: ../../tools/drep/split_drep.cwl
     in:
       flag: skip_flag
       genomes_folder: genomes_folder
-      drep_folder: drep/out_folder
+      Cdb_csv: drep/Cdb_csv
+      Mdb_csv: drep/Mdb_csv
       split_outfolder: { default: 'split_outfolder' }
+      # drep_folder: drep/out_dir
     out: [ split_out ]
 
   classify_clusters:
-    when: $(inputs.flag != "skip")
+    when: $(!Boolean(inputs.flag))
     run: ../../tools/drep/classify_folders.cwl
     in:
       flag: skip_flag
@@ -80,7 +82,7 @@ steps:
       - stdout
 
   classify_dereplicated:
-    when: $(inputs.flag == "skip")
+    when: $(Boolean(inputs.flag))
     run: ../../tools/drep/classify_dereplicated.cwl
     in:
       flag: skip_flag
@@ -91,10 +93,10 @@ steps:
   filter_nulls:
     run: ../../utils/filter_nulls.cwl
     in:
-      list:
+      list_dirs:
         source:
           - classify_clusters/one_genome
           - classify_dereplicated/one_genome
         linkMerge: merge_flattened
-    out: [ out ]
-
+        pickValue: all_non_null
+    out: [ out_dirs ]

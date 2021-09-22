@@ -1,8 +1,8 @@
 genomes_folder:
   class: Directory
-  path: ../../../../input_example/test-one
+  path: ../../../../input_example/small_set/singletons
 input_csv:
   class: File
-  path: ../../../../input_example/test-one/test-one.csv
+  path: ../../../../input_example/small_set/download.csv
 
-skip_flag: no
+skip_flag: False

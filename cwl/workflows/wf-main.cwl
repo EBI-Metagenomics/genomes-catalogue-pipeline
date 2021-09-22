@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.2.0-dev2
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -18,34 +18,37 @@ inputs:
   min_accession_mgyg: int
 
   # skip dRep step if MAGs were already dereplicated
-  skip_drep_step: string   # set "skip" for skipping
+  skip_drep_step: boolean   # set True for skipping
 
   # no gtdbtk
-  skip_gtdbtk_step: string   # set "skip" for skipping
+  skip_gtdbtk_step: boolean   # set True for skipping
 
   # common input
   mmseqs_limit_c: float
   mmseqs_limit_i: float[]
+  mmseq_limit_annotation: float
 
   gunc_db_path: File
 
   gtdbtk_data: Directory?
 
-  InterProScan_databases: [string, Directory]
-  chunk_size_IPS: int
+  interproscan_databases: [string, Directory]
+  chunk_size_ips: int
   chunk_size_eggnog: int
   db_diamond_eggnog: [string?, File?]
   db_eggnog: [string?, File?]
   data_dir_eggnog: [string?, Directory?]
 
+  cm_models: Directory
+
 outputs:
 
-  # ------- unite_folders -------
+# ------- unite_folders -------
   output_csv:
     type: File
     outputSource: unite_folders/csv
 
-  # ------- assign_mgygs -------
+# ------- assign_mgygs -------
   renamed_csv:
     type: File
     outputSource: assign_mgygs/renamed_csv
@@ -56,24 +59,24 @@ outputs:
     type: Directory
     outputSource: assign_mgygs/renamed_genomes
 
-  # ------- drep -------
+# ------- drep -------
   weights:
     type: File?
     outputSource: drep_subwf/weights_file
-  dereplicated_genomes:
+  dereplicated_genomes:                             # remove
     type: Directory?
     outputSource: drep_subwf/dereplicated_genomes
-  mash_drep:
+  mash_drep:                                        # remove
     type: File[]?
     outputSource: drep_subwf/mash_folder
-  one_clusters:
+  one_clusters:                                     # remove
     type: Directory[]?
     outputSource: drep_subwf/one_genome
-  many_clusters:
+  many_clusters:                                    # remove
     type: Directory[]?
     outputSource: drep_subwf/many_genomes
 
-  # ------- clusters_annotation -------
+# ------- clusters_annotation -------
   mash_folder:
     type: Directory?
     outputSource: clusters_annotation/mash_folder
@@ -96,24 +99,45 @@ outputs:
     type: Directory[]?
     outputSource: clusters_annotation/many_genomes_genomes
 
-  one_genome:
+  one_genome_final:
     type: Directory[]?
     outputSource: clusters_annotation/one_genome
-  one_genome_prokka:
-    type: Directory[]?
-    outputSource: clusters_annotation/one_genome_prokka
-  one_genome_genomes:
-    type: Directory[]?
-    outputSource: clusters_annotation/one_genome_genomes
+  one_genome_genomes_gunc:
+    type: Directory?
+    outputSource: clusters_annotation/one_genome_genomes_gunc_output
 
   mmseqs:
-    type: Directory
+    type: Directory?
     outputSource: clusters_annotation/mmseqs_output
+  mmseqs_annotation:
+    type: Directory?
+    outputSource: clusters_annotation/mmseqs_output_annotation
 
-  # ------- GTDB-Tk -------
+# ------------ GTDB-Tk --------------
   gtdbtk:
     type: Directory?
     outputSource: gtdbtk/gtdbtk_folder
+
+# ------- functional annotation ----------
+  ips:
+    type: File?
+    outputSource: functional_annotation/ips_result
+
+  eggnog_annotations:
+    type: File?
+    outputSource: functional_annotation/eggnog_annotations
+  eggnog_seed_orthologs:
+    type: File?
+    outputSource: functional_annotation/eggnog_seed_orthologs
+
+# ---------- rRNA -------------
+  rrna_out:
+    type: Directory
+    outputSource: detect_rrna/rrna_outs
+
+  rrna_fasta:
+    type: Directory
+    outputSource: detect_rrna/rrna_fastas
 
 
 steps:
@@ -142,7 +166,7 @@ steps:
 
 # ----------- << assign MGYGs >> -----------
   assign_mgygs:
-    run: ../utils/rename_fasta.cwl
+    run: ../tools/rename_fasta/rename_fasta.cwl
     in:
       genomes: unite_folders/genomes
       prefix: { default: "MGYG"}
@@ -179,9 +203,10 @@ steps:
       one_genome: drep_subwf/one_genome
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
+      mmseq_limit_annotation: mmseq_limit_annotation
       gunc_db_path: gunc_db_path
-      InterProScan_databases: InterProScan_databases
-      chunk_size_IPS: chunk_size_IPS
+      interproscan_databases: interproscan_databases
+      chunk_size_ips: chunk_size_ips
       chunk_size_eggnog: chunk_size_eggnog
       db_diamond_eggnog: db_diamond_eggnog
       db_eggnog: db_eggnog
@@ -194,13 +219,30 @@ steps:
       - many_genomes_prokka
       - many_genomes_genomes
       - one_genome
-      - one_genome_prokka
-      - one_genome_genomes
+      - one_genome_genomes_gunc_output
       - mmseqs_output
+      - mmseqs_output_annotation
+      - cluster_representatives
+
+# ----------- << functional annotation >> ------
+  functional_annotation:
+    run: sub-wf/functional_annotation.cwl
+    in:
+      input_faa: clusters_annotation/cluster_representatives
+      interproscan_databases: interproscan_databases
+      chunk_size_ips: chunk_size_ips
+      chunk_size_eggnog: chunk_size_eggnog
+      db_diamond_eggnog: db_diamond_eggnog
+      db_eggnog: db_eggnog
+      data_dir_eggnog: data_dir_eggnog
+    out:
+      - ips_result
+      - eggnog_annotations
+      - eggnog_seed_orthologs
 
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:
-    when: $(inputs.skip_flag !== 'skip')
+    when: $(!Boolean(inputs.skip_flag))
     run: ../tools/gtdbtk/gtdbtk.cwl
     in:
       skip_flag: skip_gtdbtk_step
@@ -212,3 +254,15 @@ steps:
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
     out: [ gtdbtk_folder ]
+
+# ---------- << detect rRNA >> ---------
+  detect_rrna:
+    run: sub-wf/detect_rrna_subwf.cwl
+    in:
+      filtered_genomes:
+        source:
+          - drep_subwf/dereplicated_genomes
+          - assign_mgygs/renamed_genomes
+        pickValue: first_non_null
+      cm_models: cm_models
+    out: [rrna_outs, rrna_fastas]

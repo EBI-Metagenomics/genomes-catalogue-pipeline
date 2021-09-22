@@ -8,16 +8,5 @@
     gunc_tsv:
       basename: "GUNC.progenomes_2.1.maxCSS_level.tsv"
       class: File
-      checksum: sha1$5ca8da898dd14315c49902969e9d20b7e205f058
-      size: 325
-
-- job: gunc-CAJPIO01.yml
-  tool: ../../../../cwl/tools/GUNC/gunc.cwl
-  short_name: gunc.cwl
-  doc: "GUNC CAJPIO01"
-  output:
-    gunc_tsv:
-      basename: "GUNC.progenomes_2.1.maxCSS_level.tsv"
-      class: File
-      checksum: sha1$e6c5c71d48175ac412a9f2f3749297e678790c3a
-      size: 323
+      checksum: sha1$e9f69a2661da6e09b1a8196e471cd1929e46664f
+      size: 322

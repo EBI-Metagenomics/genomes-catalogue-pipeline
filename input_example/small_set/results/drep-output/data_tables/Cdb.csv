@@ -1,0 +1,8 @@
+genome,secondary_cluster,threshold,cluster_method,comparison_algorithm,primary_cluster
+CAJJTO01.fa,1_1,0.050000000000000044,average,ANImf,1
+CAJKGB01.fa,1_1,0.050000000000000044,average,ANImf,1
+CAJLGA01.fa,1_1,0.050000000000000044,average,ANImf,1
+CAJKRE01.fa,2_1,0.050000000000000044,average,ANImf,2
+CAJKXJ01.fa,2_1,0.050000000000000044,average,ANImf,2
+CAJKRY01.fa,3_0,0.050000000000000044,average,ANImf,3
+CAJKXZ01.fa,4_0,0.050000000000000044,average,ANImf,4

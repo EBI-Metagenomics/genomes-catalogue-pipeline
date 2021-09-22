@@ -1,0 +1,54 @@
+#cwltool
+
+# split protein fasta to chunks
+- job: protein_chunker.yml
+  tool: ../../../../cwl/tools/protein_chunker/protein_chunker.cwl
+  short_name: protein_chunker.cwl
+  doc: "split fasta to chunks"
+  output:
+    chunks:
+      - basename: 1001_2000.fa
+        class: File
+        checksum: sha1$32d2a59a9f0b5648d56519e7495e253eb0581a93
+        size: 388372
+        format: http://edamontology.org/format_1929
+      - basename: 1_1000.fa
+        class: File
+        checksum: sha1$480c032b9cc15ced8794626fc669885c8262d867
+        size: 384820
+        format: http://edamontology.org/format_1929
+      - basename: 2001_3000.fa
+        class: File
+        checksum: sha1$85092c84daa363484bee371ae5db7e3ab27c015a
+        size: 384339
+        format: http://edamontology.org/format_1929
+      - basename: 3001_4000.fa
+        class: File
+        checksum: sha1$ec21271828a0254e9f34953ef3da68c843b8df10
+        size: 371381
+        format: http://edamontology.org/format_1929
+      - basename: 4001_5000.fa
+        class: File
+        checksum: sha1$430f2ba508fb1ef3f56e83893efa1f72de9ce18a
+        size: 379025
+        format: http://edamontology.org/format_1929
+      - basename: 5001_6000.fa
+        class: File
+        checksum: sha1$bf364994800be24f4caa26cb7350377a8ada1ee6
+        size: 373789
+        format: http://edamontology.org/format_1929
+      - asename: 6001_7000.fa
+        class: File
+        checksum: sha1$1f724004cfc451823b5ee311c99431f5b4a48718
+        size: 369263
+        format: http://edamontology.org/format_1929
+      - basename: 7001_8000.fa
+        class: File
+        checksum: sha1$e929199aad0864c52cd5d307841ec2190526cb20
+        size: 375788
+        format: http://edamontology.org/format_1929
+      - basename: 8000_8244.fa
+        class: File
+        checksum: sha1$a3dc861fb708f6730f1e1f457190a61eb8de3941
+        size: 96597
+        format: http://edamontology.org/format_1929

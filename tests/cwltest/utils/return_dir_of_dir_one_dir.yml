@@ -1,5 +1,5 @@
 directory:
   class: Directory
-  path: ../../../input_example/test-one
+  path: ../../../input_example/small_set/results/clusters/3_0
 
 newname: one_dir

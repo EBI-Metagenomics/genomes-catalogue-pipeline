@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.0
+cwlVersion: v1.2
 class: CommandLineTool
 
 requirements:
@@ -11,7 +11,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.mmseqs:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.mmseqs:v2"
 
 baseCommand: [ mmseqs_wf.sh ]
 
@@ -36,8 +36,18 @@ inputs:
     inputBinding:
       prefix: -c
 
+stderr: stderr_mmseqs.txt
+stdout: stdout_mmseqs.txt
+
 outputs:
+  stderr: stderr
+  stdout: stdout
+
   outdir:
     type: Directory
     outputBinding:
       glob: mmseqs_$(inputs.limit_i)_outdir
+  faa:
+    type: File
+    outputBinding:
+      glob: mmseqs_$(inputs.limit_i)_outdir/mmseqs_cluster_rep.fa

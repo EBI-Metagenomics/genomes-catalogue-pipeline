@@ -1,0 +1,12 @@
+genomes_folder:
+  class: Directory
+  path: ../../../input_example/small_set/all_genomes
+input_csv:
+  class: File
+  path: ../../../input_example/small_set/download.csv
+skip_flag: True
+
+skip_gtdbtk_step: True
+gtdbtk_data:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202

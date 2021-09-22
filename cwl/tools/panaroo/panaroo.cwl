@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.0
+cwlVersion: v1.2
 class: CommandLineTool
 
 requirements:
@@ -59,3 +59,7 @@ outputs:
     type: Directory
     outputBinding:
       glob: $(inputs.panaroo_outfolder)
+  gene_presence_absence:
+    type: File
+    outputBinding:
+      glob: $(inputs.panaroo_outfolder)/gene_presence_absence.Rtab

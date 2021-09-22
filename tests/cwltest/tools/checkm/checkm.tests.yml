@@ -8,8 +8,6 @@
     csv:
       basename: "checkm_quality.csv"
       class: File
-      checksum: sha1$f1d237c8b689ecdf117e363aac9f5a3f1dab57e0
-      size: 92
 
 - job: checkm.yml
   tool: ../../../../cwl/tools/checkm/checkm.cwl
@@ -21,288 +19,293 @@
       class: Directory
       listing:
         - class: File
-          basename: checkm.log
-          checksum: sha1$3b7949e08f8e2fd5469e13f77d7434a6e0478273
-          size: 2528
-        - class: File
           basename: lineage.ms
-          checksum: sha1$73d259b2e620e4c3707557bb65590ec5680a8ed8
-          size: 278504
-        - class: Directory
-          basename: storage
-          listing:
-            - class: File
-              basename: marker_gene_stats.tsv
-              checksum: sha1$6ecf2f7f2aa7dc584a07a1e1a9edd104d15891e4
-              size: 33790
-            - class: Directory
-              basename: aai_qa
-              listing:
-                - class: Directory
-                  basename: GUT_GENOME001921
-                  listing:
-                    - class: File
-                      basename: PF01406.14.masked.faa
-                      checksum: sha1$6b73fe1536fba5d1852a6b7217c6c300e9f5fd35
-                      size: 687
-                    - class: File
-                      basename: PF00562.23.masked.faa
-                      checksum: sha1$24fbe081dbefedd55288e3d62051a7c4dfcbc2fe
-                      size: 858
-            - class: File
-              basename: checkm_hmm_info.pkl.gz
-              checksum: sha1$376664f78aae041d8e9c43672bd878ca0c163bbe
-              size: 178340
-            - class: File
-              basename: phylo_hmm_info.pkl.gz
-              checksum: sha1$1699527168f6dcd5bf0c8ddd8ea58ac05c0a9805
-              size: 1905
-            - class: Directory
-              basename: tree
-              listing:
-                - class: File
-                  basename: PF00164.20.masked.faa
-                  checksum: sha1$0c8e2aef180ea7b1c6cf80fc0b40fa1371bca081
-                  size: 329
-                - class: File
-                  basename: PF00297.17.masked.faa
-                  checksum: sha1$03bb94d989f94aca508b31cb3bd64c5ea55c1643
-                  size: 612
-                - class: File
-                  basename: PF00237.14.masked.faa
-                  checksum: sha1$52b9e9fff83251cd62a287e73000cef293cb9071
-                  size: 296
-                - class: File
-                  basename: PF00687.16.masked.faa
-                  checksum: sha1$e80dd5fe98972044861b6ffa01a3063e20a7fb1e
-                  size: 525
-                - class: File
-                  basename: PF11987.3.masked.faa
-                  checksum: sha1$0380c5080d548098e2088a2886c2da5fa4b2bd88
-                  size: 303
-                - class: File
-                  basename: PF00623.15.masked.faa
-                  checksum: sha1$7c51f85b6cf6c5c93317909ebf1d5d88715c2624
-                  size: 418
-                - class: File
-                  basename: PF00572.13.masked.faa
-                  checksum: sha1$00df815b5615109dfdd6d2d9d42bfa9e633a31cf
-                  size: 340
-                - class: File
-                  basename: PF03946.9.masked.faa
-                  checksum: sha1$26541f99b26e4db4deb49e6e7b1a7659ce378aae
-                  size: 205
-                - class: File
-                  basename: PF03947.13.masked.faa
-                  checksum: sha1$9271ed68bf88779f2b087b304849e4a6d75d4788
-                  size: 346
-                - class: File
-                  basename: PF00411.14.masked.faa
-                  checksum: sha1$774108c899fd35be14fd0c5c71b028c296a24c53
-                  size: 304
-                - class: File
-                  basename: PF00333.15.masked.faa
-                  checksum: sha1$c2401693de9f740e78727f6f64d7dc165822f3fa
-                  size: 220
-                - class: File
-                  basename: PF00562.23.masked.faa
-                  checksum: sha1$ab20384672c597a0dddd4bf34f1d7e3e32d0dd17
-                  size: 429
-                - class: File
-                  basename: PF00861.17.masked.faa
-                  checksum: sha1$8a1edf6b48e41786ed2a692934c5e4950aed377c
-                  size: 324
-                - class: File
-                  basename: PF00312.17.masked.faa
-                  checksum: sha1$50214eb81815374874e05fbfd75beeeefac39bd3
-                  size: 251
-                - class: File
-                  basename: TIGR00422.masked.faa
-                  checksum: sha1$3b0572850d207c374074395070c8891b11def582
-                  size: 906
-                - class: File
-                  basename: PF00573.17.masked.faa
-                  checksum: sha1$c68501295c1d0a95f8876ab352ed3536c4dd5e80
-                  size: 470
-                - class: File
-                  basename: PF01192.17.masked.faa
-                  checksum: sha1$33dc8d5664717ac88f8a803f53f1c0027196e2b1
-                  size: 100
-                - class: File
-                  basename: PF00189.15.masked.faa
-                  checksum: sha1$bcdafe834ac3d2d3a107ee609038857828f0a283
-                  size: 256
-                - class: File
-                  basename: PF00203.16.masked.faa
-                  checksum: sha1$98bb00fe612ee1033b4d3fd6c06ceb3675e80ad1
-                  size: 248
-                - class: File
-                  basename: PF00276.15.masked.faa
-                  checksum: sha1$046070e546d63c1f05eb98cdd77d8e6f4cd3b9b5
-                  size: 270
-                - class: File
-                  basename: PF00252.13.masked.faa
-                  checksum: sha1$ed0c856cbc4a25d77b502572fd6187b74065db2d
-                  size: 352
-                - class: File
-                  basename: PF01509.13.masked.faa
-                  checksum: sha1$684d00679a4027e4ceb3f0a7158a6edf459695c0
-                  size: 383
-                - class: File
-                  basename: PF03719.10.masked.faa
-                  checksum: sha1$82d16a09e9e07c52e0c73454085271bd8d892efb
-                  size: 234
-                - class: File
-                  basename: PF05000.12.masked.faa
-                  checksum: sha1$faaa457011ee34a7cf327b1ec7717be9159bf541
-                  size: 302
-                - class: File
-                  basename: PF02978.14.masked.faa
-                  checksum: sha1$c2078970553c7db58082911daa56ba1d4b46d1e0
-                  size: 293
-                - class: File
-                  basename: PF04563.10.masked.faa
-                  checksum: sha1$129e7e0186872f0f2451c1957bcc499c5519b845
-                  size: 492
-                - class: File
-                  basename: PF00177.16.masked.faa
-                  checksum: sha1$ce378512ff3430d720f0bf711adda09013cbae67
-                  size: 381
-                - class: File
-                  basename: PF00673.16.masked.faa
-                  checksum: sha1$04a6329511aa46529a4c3a134838f1d1217623e4
-                  size: 276
-                - class: File
-                  basename: concatenated.fasta
-                  checksum: sha1$f209f08eef681e34285b9991e81ed82991d49f00
-                  size: 14014
-                - class: File
-                  basename: PF00181.18.masked.faa
-                  checksum: sha1$0f76ab0efd373d91970a47392b4c04ac3087d5f2
-                  size: 240
-                - class: File
-                  basename: concatenated.pplacer.json
-                  checksum: sha1$229d8678c98097a7e240033dea809f12b1920176
-                  size: 333658
-                - class: File
-                  basename: PF00318.15.masked.faa
-                  checksum: sha1$3fb7246e35a1ea76f1f3c60bfd038ff77d068f45
-                  size: 507
-                - class: File
-                  basename: PF00410.14.masked.faa
-                  checksum: sha1$055fcdbb8023873fa96b888bab3649c1b7448f68
-                  size: 344
-                - class: File
-                  basename: PF04565.11.masked.faa
-                  checksum: sha1$5fd45d0dfe505c9345efd92b0d572aed5d3a7851
-                  size: 222
-                - class: File
-                  basename: TIGR00344.masked.faa
-                  checksum: sha1$d8009a675bd94ab4886f81f59079f11310ec012e
-                  size: 1778
-                - class: File
-                  basename: PF00380.14.masked.faa
-                  checksum: sha1$1db56f19f663d44b607a44dd22842c36930940c9
-                  size: 326
-                - class: File
-                  basename: PF00366.15.masked.faa
-                  checksum: sha1$cb87b634ff33a4482e753fadebe66208c452784c
-                  size: 224
-                - class: File
-                  basename: PF04561.9.masked.faa
-                  checksum: sha1$56209f461c59aa285902b8738b0dfd8a0521b504
-                  size: 466
-                - class: File
-                  basename: concatenated.tre
-                  checksum: sha1$54da27ae06077a3bcde2db73d7249f3739c85eda
-                  size: 270711
-                - class: File
-                  basename: PF00281.14.masked.faa
-                  checksum: sha1$5e74a14eaee89a49855ec7c930de40be98a0f7fe
-                  size: 198
-                - class: File
-                  basename: PF04997.7.masked.faa
-                  checksum: sha1$025db78b96841c8f0467e7774bda3b582dcafce5
-                  size: 760
-                - class: File
-                  basename: PF00466.15.masked.faa
-                  checksum: sha1$06873a431fb1df1817b151cb8ebe262cc74381a2
-                  size: 285
-                - class: File
-                  basename: PF04560.15.masked.faa
-                  checksum: sha1$ee188e3eeb5a301c8e455fc7d19ec3de8a73ec45
-                  size: 250
-                - class: File
-                  basename: PF00298.14.masked.faa
-                  checksum: sha1$00752ed90a3113dddc1b522d8981da18670c48d2
-                  size: 223
-                - class: File
-                  basename: pplacer.out
-                  checksum: sha1$6e30619955e3b9444bbb1619ae035b3f39499493
-                  size: 672
-                - class: File
-                  basename: PF00831.18.masked.faa
-                  checksum: sha1$7bd56a154bf27355ce2b6c57834a8153f84c9be9
-                  size: 202
-                - class: File
-                  basename: PF00238.14.masked.faa
-                  checksum: sha1$5567f7f785307d91fdb1f5ed9e43eb63f460e867
-                  size: 330
-            - class: File
-              basename: bin_stats.tree.tsv
-              checksum: sha1$e7ed4b05ccbca882507a5148080b4216390a8dfd
-              size: 869
-            - class: File
-              basename: bin_stats.analyze.tsv
-              checksum: sha1$e7ed4b05ccbca882507a5148080b4216390a8dfd
-              size: 869
-            - class: File
-              basename: bin_stats_ext.tsv
-              checksum: sha1$4bb35ab2cca3a21ce9b93bf07425e601ac324144
-              size: 9360
+          checksum: sha1$ae44793f0e61ca46ade1e6ef2dcc17288d48f569
+          size: 43996
         - class: Directory
           basename: bins
           listing:
             - class: Directory
-              basename: GUT_GENOME001921
+              basename: CAJKRY01
               listing:
                 - class: File
-                  basename: hmmer.analyze.txt
-                  checksum: sha1$b28e8f5abfe0b3616e87de1d757726149a6becb1
-                  size: 2465293
+                  basename: genes.faa
+                  checksum: sha1$6f30bb39e28bbc70089bccc6682bf80f5e6c2cd6
+                  size: 783140
                 - class: File
-                  basename: genes.gff
-                  checksum: sha1$a8a7753352e3c53448db58aca49fe7332a4e2f8d
-                  size: 526719
+                  basename: hmmer.analyze.txt
+                  checksum: sha1$98caa87215f0611fe9d12702fa4813a01b57bd5a
+                  size: 2247210
                 - class: File
                   basename: hmmer.tree.txt
-                  checksum: sha1$608dbcc60cf8150cdee3bd1b52805d84a74c7a9c
-                  size: 21091
+                  checksum: sha1$4426dcbb53b9a87179b1fd78a03e656d1713a824
+                  size: 20865
                 - class: File
-                  basename: genes.faa
-                  checksum: sha1$78d7b841ad1362bd06c1d4f0d831b37dd8e7a698
-                  size: 925271
+                  basename: genes.gff
+                  checksum: sha1$b00a1b065b438e3d8bcfba82c8feb275f26f2d3d
+                  size: 447588
             - class: Directory
-              basename: GUT_GENOME000465
+              basename: CAJKXZ01
               listing:
                 - class: File
-                  basename: hmmer.analyze.txt
-                  checksum: sha1$ee9331a9253769d7227bed8170e446db71ed893b
-                  size: 5299954
+                  basename: genes.faa
+                  checksum: sha1$892d48bd7b445349a74effc40cd55b92ebb46686
+                  size: 711193
                 - class: File
-                  basename: genes.gff
-                  checksum: sha1$8dd04a5ac53c3e3f9c173ae33d2a7aaae2a7cc31
-                  size: 1099729
+                  basename: hmmer.analyze.txt
+                  checksum: sha1$57af02529865f56183429f3060d89b68a44232ae
+                  size: 2157371
                 - class: File
                   basename: hmmer.tree.txt
-                  checksum: sha1$e63a6d4efb98578a0191a50b5aca0ded74d11dcd
-                  size: 21375
+                  checksum: sha1$5fddee38826cbc51753641b140e86bad7bb1ced3
+                  size: 20164
                 - class: File
-                  basename: genes.faa
-                  checksum: sha1$8a73ab3fcc2426dbff1b509fddcb7a7521b41d84
-                  size: 2241949
+                  basename: genes.gff
+                  checksum: sha1$88ecb7b783a75b4979e4f0e71c3eccc1986df97b
+                  size: 395513
+        - class: Directory
+          basename: storage
+          listing:
+            - class: Directory
+              basename: tree
+              listing:
+                - class: File
+                  basename: PF04560.15.masked.faa
+                  checksum: sha1$2ed87c315c24beb72d7db1912276a8c4aeb582a2
+                  size: 271
+                - class: File
+                  basename: pplacer.out
+                  checksum: sha1$3835b0d6565f4c1fe8d52f7b9faf7002b9f9d1bb
+                  size: 656
+                - class: File
+                  basename: PF00573.17.masked.faa
+                  checksum: sha1$e5a36684559cbb4ff34e1b149d5bdf5d4b5784e2
+                  size: 492
+                - class: File
+                  basename: PF00318.15.masked.faa
+                  checksum: sha1$59100c9dade6ed97487d59400fee58a5a8b9ea3c
+                  size: 528
+                - class: File
+                  basename: PF04997.7.masked.faa
+                  checksum: sha1$2fbbacb69b18be4e0455fe10e913168a9a663951
+                  size: 781
+                - class: File
+                  basename: PF00466.15.masked.faa
+                  checksum: sha1$acc7a93fe7da70ae7cddcfabb7719f4f4727baef
+                  size: 306
+                - class: File
+                  basename: PF04563.10.masked.faa
+                  checksum: sha1$935440b049ce8c5fd6d5e3e44120b534c89f7b28
+                  size: 513
+                - class: File
+                  basename: PF00366.15.masked.faa
+                  checksum: sha1$d803812dfdd5f8a4412cb12d46c8e64b572468cb
+                  size: 245
+                - class: File
+                  basename: PF05000.12.masked.faa
+                  checksum: sha1$5f967058b9ef0a16b8888112c300595f8c1a28d8
+                  size: 323
+                - class: File
+                  basename: PF00252.13.masked.faa
+                  checksum: sha1$371eda51aa0f4b1675c0be980a801f4f335b0202
+                  size: 374
+                - class: File
+                  basename: PF04561.9.masked.faa
+                  checksum: sha1$4522c218109ac761e1974239b64ced66e6ab5974
+                  size: 487
+                - class: File
+                  basename: PF00687.16.masked.faa
+                  checksum: sha1$f235ca123702179c3eefb477938eb83cabded08b
+                  size: 546
+                - class: File
+                  basename: PF03946.9.masked.faa
+                  checksum: sha1$2e16b8162d68cd61507e0d981e2b6a42d6eb2ddc
+                  size: 226
+                - class: File
+                  basename: TIGR00422.masked.faa
+                  checksum: sha1$7d478acedc1ec387da4fa8fcd63250f337c2fefb
+                  size: 915
+                - class: File
+                  basename: PF00572.13.masked.faa
+                  checksum: sha1$ae9b335b639e239db511499554b87ef6ba2070e2
+                  size: 362
+                - class: File
+                  basename: PF00203.16.masked.faa
+                  checksum: sha1$0616154f270fc3980234e68291c12acb7a11620c
+                  size: 270
+                - class: File
+                  basename: PF00281.14.masked.faa
+                  checksum: sha1$f1d3ef755c5a9817764ecbc500939540e647318d
+                  size: 219
+                - class: File
+                  basename: PF00673.16.masked.faa
+                  checksum: sha1$83ec1201e6d088c8872574148f47881ec0cabbac
+                  size: 297
+                - class: File
+                  basename: PF03947.13.masked.faa
+                  checksum: sha1$7d6081e3136bca51880a485bf3bbc6f22a7d8977
+                  size: 368
+                - class: File
+                  basename: concatenated.fasta
+                  checksum: sha1$7ccfe44df1e0c466d9a78b8ea57be3c6f2974edd
+                  size: 13998
+                - class: File
+                  basename: PF03719.10.masked.faa
+                  checksum: sha1$220533de0b64db0efb49655feaf0a2cc1cb78c21
+                  size: 255
+                - class: File
+                  basename: PF00861.17.masked.faa
+                  checksum: sha1$a0007c6cc9addfd6ae87887d200f09ef4cf1f8cb
+                  size: 345
+                - class: File
+                  basename: PF00411.14.masked.faa
+                  checksum: sha1$8f0b0fa9f89046f30db94052190045de96df866a
+                  size: 326
+                - class: File
+                  basename: PF01509.13.masked.faa
+                  checksum: sha1$ecb08fca4e5a0b5a42fba937132cc97aacf9cdcb
+                  size: 405
+                - class: File
+                  basename: PF02978.14.masked.faa
+                  checksum: sha1$cf6e890f10bc059c27acf4922bc4c5ed1a3b5ede
+                  size: 314
+                - class: File
+                  basename: TIGR00344.masked.faa
+                  checksum: sha1$e5f790a081ed14bc5a5f3e3eef733f1b357a7f06
+                  size: 1800
+                - class: File
+                  basename: PF00238.14.masked.faa
+                  checksum: sha1$ee10e9c8fcc296a31a656ddcc0caa69503628a0e
+                  size: 351
+                - class: File
+                  basename: PF00276.15.masked.faa
+                  checksum: sha1$4cce1886321f4c1f816aaf10ee7a106f741c9e4b
+                  size: 292
+                - class: File
+                  basename: PF00410.14.masked.faa
+                  checksum: sha1$f6272d4cf447e5ed4356ee9e6f1c3f7744ce153c
+                  size: 365
+                - class: File
+                  basename: PF00562.23.masked.faa
+                  checksum: sha1$e9151a28bd9e217421ce5d6d2c8d5e83aa33c0bb
+                  size: 879
+                - class: File
+                  basename: PF00189.15.masked.faa
+                  checksum: sha1$b15cead84e10279a7adf434ac0c8576a1bb394d5
+                  size: 278
+                - class: File
+                  basename: PF00831.18.masked.faa
+                  checksum: sha1$0602e2b58114fc85c7f6c05212cbabdc5b52d43f
+                  size: 223
+                - class: File
+                  basename: PF00181.18.masked.faa
+                  checksum: sha1$6f445e0898bf7bc1b7d09a12f9ec87704e49577b
+                  size: 262
+                - class: File
+                  basename: PF00164.20.masked.faa
+                  checksum: sha1$f41c13792865c4c43c13ffd48694a9f49c8aa0bc
+                  size: 351
+                - class: File
+                  basename: concatenated.tre
+                  checksum: sha1$942e7d2ea7d9fa6f882576c1c22e34eb2786dc4a
+                  size: 270686
+                - class: File
+                  basename: PF04565.11.masked.faa
+                  checksum: sha1$313a722ef8838d6439b270d44746199b4413b05d
+                  size: 243
+                - class: File
+                  basename: PF00237.14.masked.faa
+                  checksum: sha1$7d8daf0925e9ee40d6992c0f7964f18a9547ac55
+                  size: 318
+                - class: File
+                  basename: PF00380.14.masked.faa
+                  checksum: sha1$800bbe1243ed4d2097b078bbb8834bde476f88d2
+                  size: 348
+                - class: File
+                  basename: PF00297.17.masked.faa
+                  checksum: sha1$caae6e51606b3f5c25243ac6de7e8541c96cbd72
+                  size: 634
+                - class: File
+                  basename: PF11987.3.masked.faa
+                  checksum: sha1$fec46325d5fcf05c6e47d3e4f6b73158bfd4cfda
+                  size: 324
+                - class: File
+                  basename: PF00312.17.masked.faa
+                  checksum: sha1$193b03a30a376117632e24f609273b2c53f284f5
+                  size: 272
+                - class: File
+                  basename: PF01192.17.masked.faa
+                  checksum: sha1$c3bca65964a60123244b5c9bc7eb44c5be1dc35a
+                  size: 220
+                - class: File
+                  basename: PF00333.15.masked.faa
+                  checksum: sha1$753acbaf635a50331ec2f8e1e6707a6d5269313d
+                  size: 241
+                - class: File
+                  basename: PF00298.14.masked.faa
+                  checksum: sha1$17253adb85ddcdf422c379f332bb0add0a3333c8
+                  size: 244
+                - class: File
+                  basename: PF00177.16.masked.faa
+                  checksum: sha1$1afee09553f82351c9c6f633e757d8bf3b49a083
+                  size: 403
+                - class: File
+                  basename: PF00623.15.masked.faa
+                  checksum: sha1$859b7edeb38fc7fc33c3c3b1b2bd5ce12f45d2f7
+                  size: 439
+                - class: File
+                  basename: concatenated.pplacer.json
+                  checksum: sha1$c806147f4685dff578c154992b5e47c40677455e
+                  size: 333508
+            - class: File
+              basename: bin_stats.analyze.tsv
+              checksum: sha1$f55aa4c68230e13d18f69240d9d3a5df42c447b0
+              size: 865
+            - class: Directory
+              basename: aai_qa
+              listing:
+                - class: Directory
+                  basename: CAJKXZ01
+                  listing:
+                    - class: File
+                      basename: PF01981.11.masked.faa
+                      checksum: sha1$60830ec7c5e0d5318d0150ff34bc7e5912f3dc42
+                      size: 338
+                    - class: File
+                      basename: PF00958.17.masked.faa
+                      checksum: sha1$927fc765426a6b456308c73cd5b1b04dffa03779
+                      size: 291
+            - class: File
+              basename: bin_stats.tree.tsv
+              checksum: sha1$f55aa4c68230e13d18f69240d9d3a5df42c447b0
+              size: 865
+            - class: File
+              basename: checkm_hmm_info.pkl.gz
+              checksum: sha1$de026f3660fb5a9a1087def9b7bb8f2d4b4e1824
+              size: 125073
+            - class: File
+              basename: bin_stats_ext.tsv
+              checksum: sha1$6ebde846d8a715cee81b127f9e24fd4414beb509
+              size: 5746
+            - class: File
+              basename: marker_gene_stats.tsv
+              checksum: sha1$fd15c2baf1e0cbfcc9ec88ed14766b5bdd0c60ff
+              size: 24373
+            - class: File
+              basename: phylo_hmm_info.pkl.gz
+              checksum: sha1$c286e68ba4fbfbf542391069069c5546f51be4a0
+              size: 1898
+        - class: File
+          basename: checkm.log
+          checksum: sha1$184f88e542ff090ecff1075eb6d7b4984e9c8b74
+          size: 2530
+    stderr:
+      basename: checkm.err
+      class: File
+      checksum: sha1$b41bd7701108adf525908d03b55419f4d44100fe
+      size: 5870
     stdout:
       basename: checkm.out
       class: File
-      checksum: sha1$3d660573647565eb7f1e99ac95d75e7245b5cf1b
-      size: 2818
+      checksum: sha1$394901c93a3f9a1380b775948bace06932eb420f
+      size: 2797

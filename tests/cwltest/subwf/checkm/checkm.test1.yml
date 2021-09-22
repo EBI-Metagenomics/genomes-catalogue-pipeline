@@ -1,0 +1,3 @@
+genomes_folder:
+  class: Directory
+  path: ../../../../input_example/small_set/cluster_genomes

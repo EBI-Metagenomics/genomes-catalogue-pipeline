@@ -1,4 +1,4 @@
 output: weights.tsv
 input_directory:
   class: Directory
-  path: ../../../../input_example/ENA/genomes
+  path: ../../../../input_example/small_set/all_genomes

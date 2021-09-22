@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.2.0-dev2
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -15,12 +15,16 @@ inputs:
   gunc_db_path: File
 
 outputs:
+  tsv:
+    type: File
+    outputSource: gunc/gunc_tsv
   flag:
     type: File
     outputSource:
       - filter/complete
       - filter/empty
     pickValue: first_non_null
+
 
 steps:
   gunc:
@@ -35,7 +39,11 @@ steps:
     in:
       csv: input_csv
       gunc: gunc/gunc_tsv
+      name:
+        source: input_fasta
+        valueFrom: $(self.nameroot)
     out:
       - complete
       - empty
+
 

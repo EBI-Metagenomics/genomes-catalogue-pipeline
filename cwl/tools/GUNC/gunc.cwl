@@ -1,5 +1,5 @@
 class: CommandLineTool
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 requirements:
   ResourceRequirement:
@@ -10,7 +10,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v2"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v4"
 
 baseCommand: [ "gunc", "run" ]
 arguments: ["-t", "4"]

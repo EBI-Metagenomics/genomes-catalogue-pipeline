@@ -1,5 +1,5 @@
 input_folder:
   class: Directory
-  path: ../../../../input_example/test-one
+  path: ../../../../input_example/small_set/singletons
 
 checkm_outfolder: checkm_outfolder_test

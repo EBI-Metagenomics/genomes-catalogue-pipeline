@@ -1,0 +1,10 @@
+input_clusters:
+  - class: Directory
+    path: ../../../../input_example/small_set/results/clusters/1_1
+  - class: Directory
+    path: ../../../../input_example/small_set/results/clusters/2_1
+mash_folder:
+  - class: File
+    path: ../../../../input_example/small_set/results/1_1_mash.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/2_1_mash.tsv

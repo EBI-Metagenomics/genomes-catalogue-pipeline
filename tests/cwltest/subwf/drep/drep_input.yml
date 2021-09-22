@@ -1,7 +1,0 @@
-genomes_folder:
-  class: Directory
-  path: ../../../../input_example/ENA/genomes
-skip_flag: skip
-input_csv:
-  class: File
-  path: ../../../../input_example/ENA/genome_stats.txt

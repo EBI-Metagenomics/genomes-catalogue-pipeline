@@ -1,7 +1,7 @@
 directory_array:
   - class: Directory
-    path: ../../../input_example/test-one
+    path: ../../../input_example/small_set/results/clusters/2_1
   - class: Directory
-    path: ../../../input_example/test-many/genomes
+    path: ../../../input_example/small_set/results/clusters/3_0
 
 newname: many_dirs

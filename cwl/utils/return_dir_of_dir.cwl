@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 class: ExpressionTool
 label: Returns a directory named after inputs.newname, containing all input files and directories.
 

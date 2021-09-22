@@ -1,216 +1,69 @@
 #cwltest
 
-- job: prokka-CAJPIO01.yml
+- job: prokka-CAJJTO01.yml
   tool: ../../../../cwl/tools/prokka/prokka.cwl
   short_name: prokka.cwl
-  doc: prokka CAJPIO01 (one-genome cluster)
+  doc: prokka
   output:
     faa:
-      basename: CAJPIO01.faa
+      basename: CAJJTO01.faa
       class: File
-      checksum: sha1$ba6efd4a04910fbcf3c1991a8695c4806a080244
-      size: 290641
+      checksum: sha1$95a5ee8267b3917e0824ae835127c44e4e1ab171
+      size: 410329
     gff:
-      basename: CAJPIO01.gff
+      basename: CAJJTO01.gff
       class: File
-      checksum: sha1$214fb08eca78952e0ae1f459c8e7fa2925ecdfbd
-      size: 1050664
+      checksum: sha1$e43e7e7c7846a7962816a90acba9fcf7fa4d9771
+      size: 1946132
     outdir:
-      basename: prokka_CAJPIO01
-      class: Directory
-      listing:
-        - 
-          basename: CAJPIO01.log
-          class: File
-        - 
-          basename: CAJPIO01.ffn
-          checksum: sha1$bf4749c869269357f12ea07b978b6033fee19230
-          class: File
-          size: 808706
-        - 
-          basename: CAJPIO01.sqn
-          checksum: sha1$499a5454d96a3feedb456c822b4359e3572c2b39
-          class: File
-          size: 2904038
-        - 
-          basename: CAJPIO01.gbk
-          checksum: sha1$9ffdd4fd6d71598a0ea73ffbd5a167782dd09f68
-          class: File
-          size: 1742304
-        - 
-          basename: CAJPIO01.err
-          checksum: sha1$a145c6b6f1436f65dd2a508fa99cc2726b832dae
-          class: File
-          size: 309359
-        - 
-          basename: CAJPIO01.fsa
-          checksum: sha1$a9c0a076f676ec88c852bd50ee3223bd3fb3dd23
-          class: File
-          size: 845914
-        - 
-          basename: CAJPIO01.tsv
-          checksum: sha1$21155da3839fedcca0890646d76ba0ae5a74038e
-          class: File
-          size: 50138
-        - 
-          basename: CAJPIO01.tbl
-          checksum: sha1$ac116635b7a116b634d27a0b19529632aac1e774
-          class: File
-          size: 148788
-        - 
-          basename: CAJPIO01.txt
-          checksum: sha1$bbd6651d7bfba925fabca55b5787cdf72fe33d0b
-          class: File
-          size: 75
-        - 
-          basename: CAJPIO01.fna
-          checksum: sha1$30cb080ac14de8aaf170f3878141e4f5c3622d54
-          class: File
-          size: 845446
-        - 
-          basename: CAJPIO01.gff
-          checksum: sha1$214fb08eca78952e0ae1f459c8e7fa2925ecdfbd
-          class: File
-          size: 1050664
-        - 
-          basename: CAJPIO01.faa
-          checksum: sha1$ba6efd4a04910fbcf3c1991a8695c4806a080244
-          class: File
-          size: 290641
-
-- job: prokka-GUT_GENOME000028.yml
-  tool: ../../../../cwl/tools/prokka/prokka.cwl
-  short_name: prokka.cwl
-  doc: prokka GUT_GENOME000028 (many-genome cluster)
-  output:
-    faa:
-      basename: GUT_GENOME000028.faa
-      class: File
-      checksum: sha1$7a0613d1ea11778fe64443236e157f673f267655
-      size: 1856983
-    gff:
-      basename: GUT_GENOME000028.gff
-      class: File
-      checksum: sha1$97a8bf68b7922e77ebad02027b81ee507ac8106b
-      size: 6485237
-    outdir:
-      basename: prokka_GUT_GENOME000028
+      basename: prokka_CAJJTO01
       class: Directory
       listing:
         - class: File
-          basename: GUT_GENOME000028.sqn
-          checksum: sha1$6a73a0e57cc9b15931b535fd84e7d8b8b2df3015
-          size: 14765021
+          basename: CAJJTO01.fsa
+          checksum: sha1$8b0a3977170304a75b1e6632e73baa3b6cff936e
+          size: 1627212
         - class: File
-          basename: GUT_GENOME000028.txt
-          checksum: sha1$aafa51ad8356f35db35632816353fbcd522bcc98
-          size: 87
+          basename: CAJJTO01.faa
+          checksum: sha1$95a5ee8267b3917e0824ae835127c44e4e1ab171
+          size: 410329
         - class: File
-          basename: GUT_GENOME000028.gbk
-          checksum: sha1$9e9b9b539cda70cccbf65246fb771b7cd67ad1b6
-          size: 10811094
+          basename: CAJJTO01.ffn
+          checksum: sha1$d02a692e4d2cd85946fa427179487856f2e357b3
+          size: 1123030
         - class: File
-          basename: GUT_GENOME000028.tbl
-          checksum: sha1$9eb96a5514e06ab6248fddaa3386081fd2abadc9
-          size: 815621
+          basename: CAJJTO01.log
+          checksum: sha1$23830fbe918482face33204417a37a59ba1ebd8f
+          size: 89462
         - class: File
-          basename: GUT_GENOME000028.err
-          checksum: sha1$7a06ea9eb3df04d07f2610a0a3aefcc1a9b3a4e7
-          size: 1701706
+          basename: CAJJTO01.gbk
+          checksum: sha1$312814fb66efb263062420eca5ed300f7394a953
+          size: 3351226
         - class: File
-          basename: GUT_GENOME000028.fna
-          checksum: sha1$875d9b1eb2e3c8402fbbb8c0bbb212312295dc74
-          size: 5416384
+          basename: CAJJTO01.sqn
+          checksum: sha1$2ef112e1d6b2bdb4d759038db2dae56a92b45f8b
+          size: 5839530
         - class: File
-          basename: GUT_GENOME000028.ffn
-          checksum: sha1$80108ef5134c18e132aaccdce220311ee37e389c
-          size: 5128588
+          basename: CAJJTO01.tbl
+          checksum: sha1$4f9a72e42ad94e2134a0073d9684d6c93efdae89
+          size: 259197
         - class: File
-          basename: GUT_GENOME000028.faa
-          checksum: sha1$7a0613d1ea11778fe64443236e157f673f267655
-          size: 1856983
+          basename: CAJJTO01.gff
+          checksum: sha1$e43e7e7c7846a7962816a90acba9fcf7fa4d9771
+          size: 1946132
         - class: File
-          basename: GUT_GENOME000028.log
-          #checksum: sha1$25eea9b2356c1f7e04e47ba89f15e56d85d77df9
-          #size: 41034
+          basename: CAJJTO01.err
+          checksum: sha1$8e47bd7dc0e38594d76428ed4c258739124cc495
+          size: 972064
         - class: File
-          basename: GUT_GENOME000028.fsa
-          checksum: sha1$b9f93485708b52f311361538535a2f892f0f2698
-          size: 5419192
+          basename: CAJJTO01.tsv
+          checksum: sha1$a56dc3a8428d0dd56ae6ddfd5420f3a271572698
+          size: 78288
         - class: File
-          basename: GUT_GENOME000028.gff
-          checksum: sha1$97a8bf68b7922e77ebad02027b81ee507ac8106b
-          size: 6485237
+          basename: CAJJTO01.fna
+          checksum: sha1$c4c1cecaf285e71dae97222d900a648ad33059c1
+          size: 1588836
         - class: File
-          basename: GUT_GENOME000028.tsv
-          checksum: sha1$ae72b28f9f5dc2656ebb3f10a67c446cdb46cc33
-          size: 304999
-
-- job: prokka-GUT_GENOME000070.yml
-  tool: ../../../../cwl/tools/prokka/prokka.cwl
-  short_name: prokka.cwl
-  doc: prokka GUT_GENOME000070 (many-genome cluster)
-  output:
-    faa:
-      basename: GUT_GENOME000070.faa
-      class: File
-      checksum: sha1$f7dc0ddf6e260e8d76c4cb30418ecb353761f583
-      size: 1791382
-    gff:
-      basename: GUT_GENOME000070.gff
-      class: File
-      checksum: sha1$62c190eef8a2e3f7992642d387cd92aab6e2583f
-      size: 6280522
-    outdir:
-      basename: prokka_GUT_GENOME000070
-      class: Directory
-      listing:
-      - class: File
-        basename: GUT_GENOME000070.fsa
-        checksum: sha1$fcde7a4362f8dfde8a3ea0279599b6d9d25eb9ac
-        size: 5233758
-      - class: File
-        basename: GUT_GENOME000070.sqn
-        checksum: sha1$5006330212521272026d0483dfe91319062e20f2
-        size: 14315653
-      - class: File
-        basename: GUT_GENOME000070.faa
-        checksum: sha1$f7dc0ddf6e260e8d76c4cb30418ecb353761f583
-        size: 1791382
-      - class: File
-        basename: GUT_GENOME000070.tsv
-        checksum: sha1$5057d1d0c8b7fd6712e204f9f9b8bf0fe103c724
-        size: 299643
-      - class: File
-        basename: GUT_GENOME000070.tbl
-        checksum: sha1$fd75f814c607fcfb52d05bb7419620a311966927
-        size: 803064
-      - class: File
-        basename: GUT_GENOME000070.gff
-        checksum: sha1$62c190eef8a2e3f7992642d387cd92aab6e2583f
-        size: 6280522
-      - class: File
-        basename: GUT_GENOME000070.ffn
-        checksum: sha1$84051a295e87706f8ae666c4e7a9ce1b378a774d
-        size: 4941340
-      - class: File
-        basename: GUT_GENOME000070.log
-        #checksum: sha1$497a95104057b1595739aec2d1fd0ae9f08b63b8
-        #size: 42065
-      - class: File
-        basename: GUT_GENOME000070.fna
-        checksum: sha1$d1fc68a3c60abfa6f329979b9db4f1135b4a8126
-        size: 5231106
-      - class: File
-        basename: GUT_GENOME000070.err
-        checksum: sha1$a4fc4318c9290a9fd4b8fc445ad7c578bc6b1fc8
-        size: 1658826
-      - class: File
-        basename: GUT_GENOME000070.txt
-        checksum: sha1$3218bb98851290c08f50eb0fdca3504699a2ae83
-        size: 97
-      - class: File
-        basename: GUT_GENOME000070.gbk
-        checksum: sha1$fa77b11c176910405fa2fff901f4112ae1d64501
-        size: 10464569
-
+          basename: CAJJTO01.txt
+          checksum: sha1$be8693e47828177d25da4de4dd24c6a721e31802
+          size: 79

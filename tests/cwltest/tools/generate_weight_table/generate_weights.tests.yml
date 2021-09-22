@@ -8,4 +8,4 @@
     file_with_weights:
       basename: "weights.tsv"
       class: File
-      size: 126
+      size: 98

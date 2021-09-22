@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 class: Workflow
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 requirements:
   ResourceRequirement:
@@ -15,7 +15,7 @@ inputs:
 
   faa: File
   chunk_size: int
-  InterProScan_databases: [string, Directory]
+  interproscan_databases: [string, Directory]
 
 outputs:
   ips_result:
@@ -29,16 +29,16 @@ steps:
       seqs: faa
       chunk_size: chunk_size
     out: [ chunks ]
-    run: ../../utils/protein_chunker.cwl
+    run: ../../tools/protein_chunker/protein_chunker.cwl
 
   # << InterProScan >>
   interproscan:
     scatter: inputFile
     in:
       inputFile: split_seqs/chunks
-      databases: InterProScan_databases
+      databases: interproscan_databases
     out: [ annotations ]
-    run: ../../tools/IPS/InterProScan.cwl
+    run: ../../tools/ips/InterProScan.cwl
     label: "InterProScan: protein sequence classifier"
 
   combine_ips:

@@ -1,5 +1,5 @@
 class: CommandLineTool
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 baseCommand: [ cat ]
 
@@ -8,13 +8,12 @@ hints:
     dockerPull: debian:stable-slim
 
 inputs:
-  - id: files
-    type: 'File[]'
+  files:
+    type: File[]?
     inputBinding:
       position: 1
     streamable: true
-  - id: outputFileName
-    type: string
+  outputFileName: string
 
 stdout: $(inputs.outputFileName)
 

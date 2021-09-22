@@ -9,16 +9,16 @@ min_accession_mgyg: 290000
 max_accession_mgyg: 295588
 
 # no gtdbtk
-skip_gtdbtk_step: skip
-skip_drep_step: no
+skip_gtdbtk_step: True
+skip_drep_step: False
 
 # common input
 mmseqs_limit_i:
   - 1.0
   - 0.95
-  - 0.90
   - 0.50
 mmseqs_limit_c: 0.8
+mmseq_limit_annotation: 0.9
 
 # GUNC
 gunc_db_path:
@@ -26,10 +26,10 @@ gunc_db_path:
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
 
 # IPS
-InterProScan_databases:
+interproscan_databases:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
-chunk_size_IPS: 10000
+chunk_size_ips: 10000
 
 # EggNOG
 chunk_size_eggnog: 100000
@@ -48,3 +48,7 @@ gtdbtk_data:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202
 
+# rRNA
+cm_models:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/rfams_cms

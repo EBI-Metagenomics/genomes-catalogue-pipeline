@@ -1,4 +1,0 @@
-fa_file:
-  class: File
-  path: ../../../../input_example/ENA/genomes/CAJPIO01.fa
-outdirname: prokka_CAJPIO01

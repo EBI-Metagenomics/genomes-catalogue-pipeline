@@ -1,5 +1,5 @@
 class: CommandLineTool
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 requirements:
   ResourceRequirement:
@@ -10,7 +10,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v2"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v4"
 
 baseCommand: [ "filter.sh" ]
 
@@ -23,14 +23,21 @@ inputs:
     type: File
     inputBinding:
       prefix: -g
+  name:
+    type: string
+    inputBinding:
+      prefix: -n
+
+stderr: stderr.filter.txt
+stdout: stdout.filter.txt
 
 outputs:
   complete:
     type: File?
     outputBinding:
-      glob: "complete.txt"
+      glob: $(inputs.name)_complete.txt
 
   empty:
     type: File?
     outputBinding:
-      glob: "empty.txt"
+      glob: $(inputs.name)_empty.txt

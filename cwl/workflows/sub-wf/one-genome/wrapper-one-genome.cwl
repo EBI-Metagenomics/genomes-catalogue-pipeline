@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.0
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -14,29 +14,19 @@ inputs:
   csv: File
   gunc_db_path: File
 
-  InterProScan_databases: [string, Directory]
-  chunk_size_IPS: int
-
-  chunk_size_eggnog: int
-  db_diamond_eggnog: [string?, File?]
-  db_eggnog: [string?, File?]
-  data_dir_eggnog: [string?, Directory?]
-
 outputs:
 
   prokka_faa-s:
-    type: File[]
-    outputSource: process_one_genome/prokka_faa-s
+    type: File[]?
+    outputSource: filter_nulls_prokka/out_files    # 'null', File[]
 
   cluster_folder:
     type: Directory[]
-    outputSource: process_one_genome/cluster_folder
-  cluster_folder_prokka:
-    type: Directory[]
-    outputSource: process_one_genome/cluster_folder_prokka
-  cluster_folder_genome:
-    type: Directory[]
-    outputSource: process_one_genome/cluster_folder_genome
+    outputSource: process_one_genome/cluster_dir
+
+  gunc_decisions:
+    type: Directory
+    outputSource: create_gunc_folder/out
 
 steps:
   process_one_genome:
@@ -46,14 +36,22 @@ steps:
       cluster: input_cluster
       csv: csv
       gunc_db_path: gunc_db_path
-      InterProScan_databases: InterProScan_databases
-      chunk_size_IPS: chunk_size_IPS
-      chunk_size_eggnog: chunk_size_eggnog
-      db_diamond_eggnog: db_diamond_eggnog
-      db_eggnog: db_eggnog
-      data_dir_eggnog: data_dir_eggnog
     out:
       - prokka_faa-s  # File
-      - cluster_folder  # Dir
-      - cluster_folder_prokka  # Dir
-      - cluster_folder_genome  # Dir
+      - cluster_dir  # Dir
+      - gunc_decision # File
+
+  create_gunc_folder:
+    run: ../../../utils/return_directory.cwl
+    in:
+      list: process_one_genome/gunc_decision
+      dir_name: {default: "gunc_output"}
+    out: [out]
+
+
+  filter_nulls_prokka:
+    run: ../../../utils/filter_nulls.cwl
+    in:
+      list_files: process_one_genome/prokka_faa-s
+    out: [ out_files ]
+

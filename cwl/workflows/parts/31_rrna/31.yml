@@ -1,0 +1,7 @@
+filtered_genomes:
+  class: Directory
+  path:
+
+cm_models:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/rfams_cms

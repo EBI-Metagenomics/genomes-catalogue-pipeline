@@ -11,3 +11,6 @@ wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/interprosca
 
 # GTDB-Tk Database
 wget https://data.gtdb.ecogenomic.org/releases/latest/auxillary_files/gtdbtk_data.tar.gz && tar -zxvf gtdbtk_data.tar.gz
+
+# GTDB-Tk Database
+mkdir rfams_cms && wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfams_cms/* -P rfams_cms

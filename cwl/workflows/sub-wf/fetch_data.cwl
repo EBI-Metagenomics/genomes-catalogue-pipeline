@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-cwlVersion: v1.2.0-dev2
+cwlVersion: v1.2
 class: Workflow
 
 requirements:
@@ -10,9 +10,12 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  download_from: string   # ENA or NCBI
+  download_from_ena: boolean    # True for ENA,  False otherwise
+  download_from_ncbi: boolean   # True for NCBI, False otherwise
+
   infile: File            # file containing a list of GenBank accessions, one accession per line
   directory_name: string  # directory name to download files to
+
   unzip: boolean?
 
 outputs:
@@ -36,9 +39,9 @@ steps:
 
   download_from_ena:
     run: ../../tools/fetch_data/fetch_ena.cwl
-    when: $(inputs.type == 'ENA')
+    when: $(Boolean(inputs.type))
     in:
-      type: download_from
+      type: download_from_ena
       infile: infile
       directory: directory_name
       unzip: unzip
@@ -48,9 +51,9 @@ steps:
 
   download_from_ncbi:
     run: ../../tools/fetch_data/fetch_ncbi.cwl
-    when: $(inputs.type == 'NCBI')
+    when: $(Boolean(inputs.type))
     in:
-      type: download_from
+      type: download_from_ncbi
       infile: infile
       directory: directory_name
       unzip: unzip

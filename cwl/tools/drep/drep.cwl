@@ -67,11 +67,22 @@ inputs:
 
 outputs:
 
-  out_folder:
-    type: Directory
-    outputBinding:
-      glob: $(inputs.drep_outfolder)
+  #out_folder:
+  #  type: Directory
+  #  outputBinding:
+  #    glob: $(inputs.drep_outfolder)
+
   dereplicated_genomes:
     type: Directory
     outputBinding:
       glob: $(inputs.drep_outfolder)/dereplicated_genomes
+
+  Cdb_csv:
+    type: File
+    outputBinding:
+      glob: $(inputs.drep_outfolder)/data_tables/Cdb.csv
+
+  Mdb_csv:
+    type: File
+    outputBinding:
+      glob: $(inputs.drep_outfolder)/data_tables/Mdb.csv

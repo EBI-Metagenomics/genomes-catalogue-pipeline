@@ -1,0 +1,69 @@
+#cwltest
+
+- job: prokka-subwf.yml
+  tool: ../../../../cwl/workflows/sub-wf/prokka-subwf.cwl
+  short_name: prokka-subwf.cwl
+  doc: "prokka subwf"
+  output:
+    faa:
+      basename: test.faa
+      class: File
+      checksum: sha1$005dad86263e3d8607a505f479a8cc865c70c81e
+      size: 5027
+    gff:
+      basename: test.gff
+      class: File
+      checksum: sha1$8cff384c81c4a6af0caca9a81dae9f3c27dfcd82
+      size: 19568
+    outdir:
+      basename: prokka-outdir
+      class: Directory
+      listing:
+        - class: File
+          basename: test.fsa
+          checksum: sha1$54a67157048424fe5ee0e0e0d6a551675fe104ad
+          size: 16295
+        - class: File
+          basename: test.faa
+          checksum: sha1$005dad86263e3d8607a505f479a8cc865c70c81e
+          size: 5027
+        - class: File
+          basename: test.log
+          checksum: sha1$6376818882e8762da7c6fb6a0d66f1d6776c48c9
+          size: 9058
+        - class: File
+          basename: test.ffn
+          checksum: sha1$212afaf90a457fa5875c735ea1ccc265555cd3e2
+          size: 14595
+        - class: File
+          basename: test.gbk
+          checksum: sha1$dd91611b726456cbb11fcf9232450c3bb6e3ee82
+          size: 32688
+        - class: File
+          basename: test.gff
+          checksum: sha1$8cff384c81c4a6af0caca9a81dae9f3c27dfcd82
+          size: 19568
+        - class: File
+          basename: test.sqn
+          checksum: sha1$6255dd32aa6c22aa9a0a872d8e524e8af2d92fb2
+          size: 51448
+        - class: File
+          basename: test.tbl
+          checksum: sha1$12b7e8a69a44e744a11e086c5b1a3d5c117eaf64
+          size: 2606
+        - class: File
+          basename: test.tsv
+          checksum: sha1$6a9a27c9515ba96b7b9e06b3d686b8db345083ce
+          size: 937
+        - class: File
+          basename: test.fna
+          checksum: sha1$9a36e1435beb2f5f764eb56b57d4f94db90d32cc
+          size: 16243
+        - class: File
+          basename: test.err
+          checksum: sha1$c6ac126063920bacce025151b6336a4f84b67b71
+          size: 6812
+        - class: File
+          basename: test.txt
+          checksum: sha1$64794851e8cce3428a58123a900348262d49cc90
+          size: 72

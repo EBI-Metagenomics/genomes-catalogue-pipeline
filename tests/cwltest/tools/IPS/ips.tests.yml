@@ -6,7 +6,7 @@
   doc: InterProScan
   output:
     annotations:
-      basename: many_pan_genome_reference.IPS.tsv
+      basename: mmseqs_0.9_cluster_rep.IPS.tsv
       class: File
-      checksum: sha1$7ab156e05b849597ad096f3b0e5711c64dfe22d7
-      size: 98988118
+      checksum: sha1$8f8210efb6ece1e87b272ef4ee0d111835e434a7
+      size: 222070495

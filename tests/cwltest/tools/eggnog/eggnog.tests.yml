@@ -5,10 +5,12 @@
   short_name: eggnog.cwl
   doc: eggnog test
   output:
-    annotations:
-      basename: test-eggnog.emapper.annotations
+    output_annotations:
+      basename: eggnog-output.emapper.annotations
       class: File
-    seed_orthologs:
-      basename: test-eggnog.emapper.seed_orthologs
+      size: 2848193
+    output_orthologs:
+      basename: eggnog-output.emapper.seed_orthologs
       class: File
+      size: 579251
       

@@ -1,7 +1,7 @@
 input_fasta:
   class: File
-  path: ../../../../input_example/ENA/genomes/CAJPIT01.fa
+  path: ../../../../input_example/small_set/all_genomes/CAJJTO01.fa
 db_path:
-  path: /home/ubuntu/db/gunc_db_2.0.4.dmnd
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
   class: File
 

@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-LABEL Maintainer="Ekaterina Sakharova <kates@ebi.ac.uk>"
+LABEL Maintainer="Microbiome Informatics Team www.ebi.ac.uk/metagenomics"
 LABEL software="eggNOG"
 LABEL software.version="2.1.3"
 LABEL description="EggNOG-mapper is a tool for fast functional annotation of novel sequences."

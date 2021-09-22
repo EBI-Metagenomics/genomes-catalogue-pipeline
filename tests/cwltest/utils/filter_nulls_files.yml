@@ -1,7 +1,7 @@
-list:
-  - class: Directory
-    path: ../help_scripts
+list_files:
+  - class: File
+    path: concatenate.yml
   - null
   - null
-  - class: Directory
-    path: ../../../input_example/ENA/drep-output-small/data_tables
+  - class: File
+    path: cut_header.yml
