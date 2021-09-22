@@ -73,7 +73,7 @@ if [ "${SINGULARUTY_ON}" == "True" ]; then
         --jobStore ${RUN_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        ${CWL} ${YML}
+        ${CWL} ${YML} > "${LOG_DIR}/${OUTDIRNAME}.json"
 else
     toil-cwl-runner \
         --logWarning \
@@ -90,7 +90,7 @@ else
         --jobStore ${RUN_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        ${CWL} ${YML}
+        ${CWL} ${YML} > "${LOG_DIR}/${OUTDIRNAME}.json"
 fi
 
 echo "Toil finish:"; date;

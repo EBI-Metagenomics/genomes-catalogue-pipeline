@@ -28,6 +28,10 @@ outputs:
     type: File[]?
     outputSource: split_drep/split_out_mash
 
+  split_text:
+    type: File
+    outputSource: split_drep/split_text
+
   weights_file:
     type: File?
     outputSource: generate_weights/file_with_weights

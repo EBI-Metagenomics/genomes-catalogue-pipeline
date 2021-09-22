@@ -23,32 +23,24 @@ from shutil import copy
 
 def getClusters(clst_file):
     clusters = {}
-    with open(clst_file) as f:
+    with open(clst_file, 'r') as f:
         next(f)
         for line in f:
-            line = line.rstrip()
-            cols = line.split(",")
-            cluster = cols[1]
-            genome = cols[0]
-            if cluster not in clusters:
-                clusters[cluster] = [genome]
-            else:
-                clusters[cluster].append(genome)
+            args = line.rstrip().split(",")
+            clusters.setdefault(args[1], []).append(args[0])
     return clusters
 
 
 def parse_mashfile(mash_dist, outname, genlist):
+    header = "genome1,genome2,dist,similarity"
     with open(mash_dist, "r") as f, open(outname, "w") as fout:
-        linen = 0
+        fout.write("%s\n" % (header))
+        next(f)
         for line in f:
-            linen += 1
             line = line.rstrip()
-            if linen == 1:
+            cols = line.split(',')
+            if cols[0] in genlist and cols[1] in genlist:
                 fout.write("%s\n" % (line))
-            else:
-                cols = line.split(",")
-                if cols[0] in genlist and cols[1] in genlist:
-                    fout.write("%s\n" % (line))
 
 
 def splitMash(mash_dist, genlist, outdir, cluster_name):
@@ -58,10 +50,7 @@ def splitMash(mash_dist, genlist, outdir, cluster_name):
     parse_mashfile(mash_dist, outname, genlist)
 
 
-def generate_mash_folder(mash_dist, out_folder, cluster_name, genlist):
-    out_mash_folder = os.path.join(out_folder, "mash_folder")
-    if not os.path.exists(out_mash_folder):
-        os.makedirs(out_mash_folder)
+def generate_mash_folder(mash_dist, out_mash_folder, cluster_name, genlist):
     outname = os.path.join(out_mash_folder, cluster_name + '_mash.tsv')
     parse_mashfile(mash_dist, outname, genlist)
 
@@ -95,17 +84,26 @@ if __name__ == "__main__":
             print('--create-clusters option requires -f argument presented')
             exit(1)
         clusters = getClusters(clst_file=args.cdb)
+
         if not os.path.isdir(args.output_folder):
             os.makedirs(args.output_folder)
+
         with open(os.path.join(args.output_folder, 'clusters_split.txt'), 'w') as split_file:
-            for c in clusters:
-                genomes = clusters[c]
-                if args.create_clusters and args.fasta_folder:
+            if args.create_clusters and args.fasta_folder:
+                for c in clusters:
+                    genomes = clusters[c]
                     create_cluster_folders(out_folder=args.output_folder, cluster=c, genomes=genomes,
                                            fasta_folder=args.fasta_folder)
                     splitMash(mash_dist=args.mdb, genlist=genomes, outdir=args.output_folder, cluster_name=c)
-                else:
+                    split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(genomes) + '\n')
+            else:
+                out_mash_folder = os.path.join(args.output_folder, "mash_folder")
+                if not os.path.exists(out_mash_folder):
+                    os.makedirs(out_mash_folder)
+                for c in clusters:
+                    genomes = clusters[c]
+                    split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(genomes) + '\n')
                     if len(genomes) > 1:
-                        generate_mash_folder(mash_dist=args.mdb, out_folder=args.output_folder, cluster_name=c,
+                        generate_mash_folder(mash_dist=args.mdb, out_mash_folder=out_mash_folder, cluster_name=c,
                                          genlist=genomes)
-                split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(genomes) + '\n')
+
