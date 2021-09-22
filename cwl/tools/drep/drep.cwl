@@ -53,7 +53,7 @@ inputs:
     inputBinding:
       position: 2
 
-  checkm_csv:
+  csv:
     type: File
     inputBinding:
       position: 8
@@ -72,10 +72,10 @@ outputs:
   #  outputBinding:
   #    glob: $(inputs.drep_outfolder)
 
-  dereplicated_genomes:
-    type: Directory
-    outputBinding:
-      glob: $(inputs.drep_outfolder)/dereplicated_genomes
+  #dereplicated_genomes:
+  #  type: Directory
+  #  outputBinding:
+  #    glob: $(inputs.drep_outfolder)/dereplicated_genomes
 
   Cdb_csv:
     type: File
@@ -86,3 +86,8 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.drep_outfolder)/data_tables/Mdb.csv
+
+  Sdb_csv:
+    type: File
+    outputBinding:
+      glob: $(inputs.drep_outfolder)/data_tables/Sdb.csv

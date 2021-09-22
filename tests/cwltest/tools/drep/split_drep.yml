@@ -1,7 +1,7 @@
-genomes_folder:
-  class: Directory
-  path: ../../../../input_example/small_set/all_genomes
-drep_folder:
-  class: Directory
-  path: ../../../../input_example/small_set/results/drep-output
+Cdb_csv:
+  class: File
+  path: ../../../../input_example/small_set/results/drep-output/data_tables/Cdb.csv
+Mdb_csv:
+  class: File
+  path: ../../../../input_example/small_set/results/drep-output/data_tables/Mdb.csv
 split_outfolder: split-drep-output

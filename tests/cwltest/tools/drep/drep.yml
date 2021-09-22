@@ -3,7 +3,7 @@ genomes:
   path: ../../../../input_example/small_set/all_genomes
 drep_outfolder: drep-output
 
-checkm_csv:
+csv:
   class: File
   path: ../../../../input_example/small_set/download.csv
 

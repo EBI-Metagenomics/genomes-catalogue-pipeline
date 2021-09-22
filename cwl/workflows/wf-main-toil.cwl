@@ -207,7 +207,8 @@ steps:
     in:
       flag: skip_drep_step
       genomes_folder: assign_mgygs/renamed_genomes
-      drep_folder: drep/out_folder
+      Cdb_csv: drep/Cdb_csv
+      Mdb_csv: drep/Mdb_csv
       split_outfolder: { default: 'split_outfolder' }
     out: [ split_out ]
 

@@ -5,62 +5,18 @@
   short_name: split_drep.cwl
   doc: "split dRep results into folders"
   output:
-    split_out:
-      basename: split-drep-output
-      class: Directory
-      listing:
-        - class: Directory
-          basename: '1_1'
-          listing:
-            - class: File
-              basename: 1_1_mash.tsv
-              checksum: sha1$bd89d319ae9d84a79eaa31ac7439fb9c16271943
-              size: 402
-            - class: File
-              basename: CAJLGA01.fa
-              checksum: sha1$cecbaf247c1b1862a88b77f93986cceae1e22a67
-              size: 2291990
-            - class: File
-              basename: CAJKGB01.fa
-              checksum: sha1$211e1b18013b8631df5c4e3290a2d08e05a99841
-              size: 2025917
-            - class: File
-              basename: CAJJTO01.fa
-              checksum: sha1$b2d063739a50fc031eb4eec94180f56988ae6eab
-              size: 1672905
-        - class: Directory
-          basename: '2_1'
-          listing:
-            - class: File
-              basename: CAJKXJ01.fa
-              checksum: sha1$9f18ca859df6408ccae0775ddcca5115598029d3
-              size: 2320626
-            - class: File
-              basename: CAJKRE01.fa
-              checksum: sha1$5a18736b41c827f0de008a8c2da2ca570bb89843
-              size: 2314364
-            - class: File
-              basename: 2_1_mash.tsv
-              checksum: sha1$a9546bb1b6236f7a601399c250e59462852ab30d
-              size: 186
-        - class: Directory
-          basename: '3_0'
-          listing:
-            - class: File
-              basename: 3_0_mash.tsv
-              checksum: sha1$25cf2cf5bdf20108f8a6301aeabde3db08ca0dd9
-              size: 64
-            - class: File
-              basename: CAJKRY01.fa
-              checksum: sha1$bde22cdb8b3901e11630391a4f6ecf9d98dfac39
-              size: 1773038
-        - class: Directory
-          basename: '4_0'
-          listing:
-            - class: File
-              basename: 4_0_mash.tsv
-              checksum: sha1$57688feb9165c045893cdd217776720495c32a46
-            - class: File
-              basename: CAJKXZ01.fa
-              checksum: sha1$571f523f65e98442e6f7c4a5fcf2457d289c561b
-              size: 1602434
+    split_out_clusters: null
+    split_out_mash:
+      - basename: 1_1_mash.tsv
+        class: File
+        checksum: sha1$bd89d319ae9d84a79eaa31ac7439fb9c16271943
+        size: 402
+      - basename: 2_1_mash.tsv
+        class: File
+        checksum: sha1$a9546bb1b6236f7a601399c250e59462852ab30d
+        size: 186
+    split_text:
+      basename: clusters_split.txt
+      class: File
+      checksum: sha1$ba0222888f19cdf744c86325453bd860f26e813d
+      size: 148

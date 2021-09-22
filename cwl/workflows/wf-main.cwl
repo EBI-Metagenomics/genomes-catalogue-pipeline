@@ -63,12 +63,12 @@ outputs:
   weights:
     type: File?
     outputSource: drep_subwf/weights_file
-  dereplicated_genomes:                             # remove
-    type: Directory?
-    outputSource: drep_subwf/dereplicated_genomes
+  best_cluster_reps_drep:                           # remove
+    type: File?
+    outputSource: drep_subwf/best_cluster_reps
   mash_drep:                                        # remove
     type: File[]?
-    outputSource: drep_subwf/mash_folder
+    outputSource: drep_subwf/mash_files
   one_clusters:                                     # remove
     type: Directory[]?
     outputSource: drep_subwf/one_genome
@@ -190,16 +190,16 @@ steps:
     out:
       - many_genomes
       - one_genome
-      - mash_folder           # only for non dereplicated mags
-      - dereplicated_genomes  # only for non dereplicated mags
-      - weights_file          # only for non dereplicated mags
+      - mash_files
+      - best_cluster_reps
+      - weights_file
 
 # ---------- annotation
   clusters_annotation:
     run: sub-wf/subwf-process_clusters.cwl
     in:
       many_genomes: drep_subwf/many_genomes
-      mash_folder: drep_subwf/mash_folder
+      mash_folder: drep_subwf/mash_files
       one_genome: drep_subwf/one_genome
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
@@ -249,7 +249,7 @@ steps:
       drep_folder:
         source:
           - drep_subwf/dereplicated_genomes
-          - assign_mgygs/renamed_genomes
+          - assign_mgygs/renamed_genomes    # for already dereplicated genomes
         pickValue: first_non_null
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
