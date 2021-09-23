@@ -10,7 +10,11 @@ module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
 conda activate toil-5.4.0
 
 export PATH=$PATH:/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/python3_scripts/
+export PATH=$PATH:/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/genomes-catalog-update/scripts/
+
 chmod a+x /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/python3_scripts/*
+chmod a+x /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/genomes-catalog-update/scripts/*
+
 
 CWL=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/cwl/workflows/wf-main.cwl
 YML=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/tests/cluster/wf-main_ena_verysmall.yml

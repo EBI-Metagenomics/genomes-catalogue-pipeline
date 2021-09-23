@@ -3,6 +3,6 @@ genomes_folder:
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/mgyg_genomes
 input_csv:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/renamed_stats.txt
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/renamed_genome_stats.txt
 
 skip_flag: False
