@@ -75,6 +75,9 @@ outputs:
   many_clusters:                                    # remove
     type: Directory[]?
     outputSource: drep_subwf/many_genomes
+  split_test_helper:                                # remove
+    type: File?
+    outputSource: drep_subwf/split_text
 
 # ------- clusters_annotation -------
   mash_folder:
@@ -154,6 +157,7 @@ steps:
 # ----------- << unite NCBI and ENA >> -----------
   unite_folders:
     run: ../tools/unite_ena_ncbi/unite.cwl
+    when: $(Boolean(inputs.ncbi_folder) && Boolean(inputs.ena_folder))
     in:
       ena_folder: genomes_ena
       ncbi_folder: genomes_ncbi
@@ -166,15 +170,25 @@ steps:
 
 # ----------- << assign MGYGs >> -----------
   assign_mgygs:
-    run: ../tools/rename_fasta/rename_fasta.cwl
+    run: ../../../tools/rename_fasta/rename_fasta.cwl
     in:
-      genomes: unite_folders/genomes
+      genomes:
+        source:
+          - unite_folders/genomes
+          - genomes_ena
+          - genomes_ncbi
+        pickValue: first_non_null
       prefix: { default: "MGYG"}
       start_number: min_accession_mgyg
       max_number: max_accession_mgyg
       output_filename: { default: "names.tsv"}
       output_dirname: { default: "mgyg_genomes" }
-      csv: unite_folders/csv
+      csv:
+        source:
+          - unite_folders/csv
+          - ena_csv
+          - checkm_subwf/checkm_csv
+        pickValue: first_non_null
     out:
       - naming_table
       - renamed_genomes
@@ -193,6 +207,7 @@ steps:
       - mash_files
       - best_cluster_reps
       - weights_file
+      - split_text
 
 # ---------- annotation
   clusters_annotation:

@@ -1,7 +1,0 @@
-input_clusters:
-  - class: Directory
-    path:
-
-mash_folder:
-  - class: File
-    path
