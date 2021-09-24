@@ -15,8 +15,7 @@ def main(ips, eggnog, rep_list, outdir):
     with open(rep_list, 'r') as rep_in:
         genome_list = [line.strip().replace('.fa', '') for line in rep_in]
     # initialize results dictionaries
-    results_ips = {genome:list() for genome in genome_list}
-    results_eggnog = {genome: list() for genome in genome_list}
+    results_ips, results_eggnog = [{genome: list() for genome in genome_list} for _ in range(2)]
     # separate annotations by genome and load into dictionaries
     header_ips = load_annotations(ips, results_ips)
     header_eggnog = load_annotations(eggnog, results_eggnog)
@@ -44,7 +43,7 @@ def load_annotations(ann_file, ann_result):
             else:
                 genome = line.split('_')[0]
                 if genome not in ann_result:
-                    logging.error('Genome {} is in the annotation file but not present in the representative genome '
+                    logging.info('Genome {} is in the annotation file but not present in the representative genome '
                                  'list'.format(genome))
                 else:
                     ann_result[genome].append(line)
