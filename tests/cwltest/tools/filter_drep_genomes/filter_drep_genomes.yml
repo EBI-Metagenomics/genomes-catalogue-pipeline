@@ -1,0 +1,13 @@
+genomes:
+  class: Directory
+  path: ../../../../input_example/small_set/all_genomes
+sdb:
+  class: File
+  path: ../../../../input_example/small_set/results/drep-output/data_tables/Sdb.csv
+clusters:
+  class: File
+  path: ../../../../input_example/small_set/results/drep-output/clusters_split.txt
+gunc_passed:
+  class: File
+  path: ../../../../input_example/small_set/results/drep-output/gunc-passed.txt
+outdirname: drep-filt

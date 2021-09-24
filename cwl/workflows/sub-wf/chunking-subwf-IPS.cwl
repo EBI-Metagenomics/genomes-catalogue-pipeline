@@ -38,7 +38,7 @@ steps:
       inputFile: split_seqs/chunks
       databases: interproscan_databases
     out: [ annotations ]
-    run: ../../tools/ips/InterProScan.cwl
+    run: ../../tools/IPS/InterProScan.cwl
     label: "InterProScan: protein sequence classifier"
 
   combine_ips:

@@ -1,0 +1,7 @@
+input:
+  - class: File
+    path: test-files/genome1_complete.txt
+  - class: File
+    path: test-files/genome2_complete.txt
+  - class: File
+    path: test-files/genome3_empty.txt

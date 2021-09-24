@@ -51,9 +51,12 @@ outputs:
   one_genome:
     type: Directory[]?
     outputSource: process_one_genome/cluster_folder
-  one_genome_genomes_gunc_output:
-    type: Directory?
-    outputSource: process_one_genome/gunc_decisions
+  one_genome_genomes_gunc_completed:
+    type: File
+    outputSource: process_one_genome/gunc_completed
+  one_genome_genomes_gunc_failed:
+    type: File
+    outputSource: process_one_genome/gunc_failed
 
   mmseqs_output:
     type: Directory?
@@ -105,7 +108,8 @@ steps:
     out:
       - prokka_faa-s
       - cluster_folder
-      - gunc_decisions
+      - gunc_completed
+      - gunc_failed
 
 # ----------- << mmseqs subwf>> -----------
 

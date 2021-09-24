@@ -106,8 +106,8 @@ outputs:
     type: Directory[]?
     outputSource: clusters_annotation/one_genome
   one_genome_genomes_gunc:
-    type: Directory?
-    outputSource: clusters_annotation/one_genome_genomes_gunc_output
+    type: File
+    outputSource: clusters_annotation/one_genome_genomes_gunc_completed
 
   mmseqs:
     type: Directory?
@@ -115,6 +115,11 @@ outputs:
   mmseqs_annotation:
     type: Directory?
     outputSource: clusters_annotation/mmseqs_output_annotation
+
+# ------------ drep-filt --------------
+  drep_filt_genomes:
+    type: File
+    outputSource: filter_genomes/list_drep_filtered
 
 # ------------ GTDB-Tk --------------
   gtdbtk:
@@ -170,7 +175,7 @@ steps:
 
 # ----------- << assign MGYGs >> -----------
   assign_mgygs:
-    run: ../../../tools/rename_fasta/rename_fasta.cwl
+    run: ../tools/rename_fasta/rename_fasta.cwl
     in:
       genomes:
         source:
@@ -234,7 +239,8 @@ steps:
       - many_genomes_prokka
       - many_genomes_genomes
       - one_genome
-      - one_genome_genomes_gunc_output
+      - one_genome_genomes_gunc_completed
+      - one_genome_genomes_gunc_failed
       - mmseqs_output
       - mmseqs_output_annotation
       - cluster_representatives
@@ -255,17 +261,26 @@ steps:
       - eggnog_annotations
       - eggnog_seed_orthologs
 
+# ----------- << get genomes dereplicated genomes and GUNC-passed >> ------
+  filter_genomes:
+    run: ../tools/filter_drep_genomes/filter_drep_genomes.cwl
+    in:
+      genomes: assign_mgygs/renamed_genomes
+      sdb: drep_subwf/best_cluster_reps
+      clusters: drep_subwf/split_text
+      gunc_passed: clusters_annotation/one_genome_genomes_gunc_completed
+      outdirname: {default: deperlicated_genomes}
+    out:
+      - drep_filtered_genomes
+      - list_drep_filtered
+
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:
     when: $(!Boolean(inputs.skip_flag))
     run: ../tools/gtdbtk/gtdbtk.cwl
     in:
       skip_flag: skip_gtdbtk_step
-      drep_folder:
-        source:
-          - drep_subwf/dereplicated_genomes
-          - assign_mgygs/renamed_genomes    # for already dereplicated genomes
-        pickValue: first_non_null
+      drep_folder: filter_genomes/drep_filtered_genomes
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
     out: [ gtdbtk_folder ]
@@ -274,10 +289,6 @@ steps:
   detect_rrna:
     run: sub-wf/detect_rrna_subwf.cwl
     in:
-      filtered_genomes:
-        source:
-          - drep_subwf/dereplicated_genomes
-          - assign_mgygs/renamed_genomes
-        pickValue: first_non_null
+      filtered_genomes: filter_genomes/drep_filtered_genomes
       cm_models: cm_models
     out: [rrna_outs, rrna_fastas]

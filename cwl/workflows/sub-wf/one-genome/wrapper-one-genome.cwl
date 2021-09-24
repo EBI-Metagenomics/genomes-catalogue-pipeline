@@ -24,9 +24,12 @@ outputs:
     type: Directory[]
     outputSource: process_one_genome/cluster_dir
 
-  gunc_decisions:
-    type: Directory
-    outputSource: create_gunc_folder/out
+  gunc_completed:
+    type: File
+    outputSource: create_gunc_reports/report_completed
+  gunc_failed:
+    type: File
+    outputSource: create_gunc_reports/report_failed
 
 steps:
   process_one_genome:
@@ -41,13 +44,13 @@ steps:
       - cluster_dir  # Dir
       - gunc_decision # File
 
-  create_gunc_folder:
-    run: ../../../utils/return_directory.cwl
+  create_gunc_reports:
+    run: ../../../tools/GUNC/generate_report.cwl
     in:
-      list: process_one_genome/gunc_decision
-      dir_name: {default: "gunc_output"}
-    out: [out]
-
+      input: process_one_genome/gunc_decision
+    out:
+      - report_completed
+      - report_failed
 
   filter_nulls_prokka:
     run: ../../../utils/filter_nulls.cwl

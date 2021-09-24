@@ -12,6 +12,8 @@ RUN pip install -r /requirements.txt
 COPY checkm2csv.py \
      classify_folders.py \
      classify_dereplicated.py \
+     generate_gunc_report.py \
+     filter_drep_genomes.py \
      split_drep.py \
      translate_genes.py \
      split_to_chunks.py \
