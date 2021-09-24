@@ -50,6 +50,8 @@ echo "Toil restart start:"; date;
 set -x
 
 toil-cwl-runner \
+--stats \
+--logDebug \
 --restart \
 --logWarning \
 --writeLogs "${LOG_DIR}" \

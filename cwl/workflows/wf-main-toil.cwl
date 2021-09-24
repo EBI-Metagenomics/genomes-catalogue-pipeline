@@ -122,9 +122,9 @@ outputs:
     outputSource: filter_genomes/list_drep_filtered
 
 # ------------ GTDB-Tk --------------
-  gtdbtk:
-    type: Directory?
-    outputSource: gtdbtk/gtdbtk_folder
+#  gtdbtk:
+#    type: Directory?
+#    outputSource: gtdbtk/gtdbtk_folder
 
 # ------- functional annotation ----------
   ips:
@@ -328,15 +328,15 @@ steps:
       - list_drep_filtered
 
 # ----------- << GTDB - Tk >> -----------
-  gtdbtk:
-    when: $(!Boolean(inputs.skip_flag))
-    run: ../tools/gtdbtk/gtdbtk.cwl
-    in:
-      skip_flag: skip_gtdbtk_step
-      drep_folder: filter_genomes/drep_filtered_genomes
-      gtdb_outfolder: { default: 'gtdb-tk_output' }
-      refdata: gtdbtk_data
-    out: [ gtdbtk_folder ]
+#  gtdbtk:
+#    when: $(!Boolean(inputs.skip_flag))
+#    run: ../tools/gtdbtk/gtdbtk.cwl
+#    in:
+#      skip_flag: skip_gtdbtk_step
+#      drep_folder: filter_genomes/drep_filtered_genomes
+#      gtdb_outfolder: { default: 'gtdb-tk_output' }
+#      refdata: gtdbtk_data
+#    out: [ gtdbtk_folder ]
 
 # ---------- << detect rRNA >> ---------
   detect_rrna:
