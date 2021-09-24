@@ -13,7 +13,7 @@ def main(ips, eggnog, rep_list, outdir):
         os.makedirs(outdir)
     # load representative accessions
     with open(rep_list, 'r') as rep_in:
-        genome_list = [line.strip() for line in rep_in]
+        genome_list = [line.strip().replace('.fa', '') for line in rep_in]
     # initialize results dictionaries
     results_ips = {genome:list() for genome in genome_list}
     results_eggnog = {genome: list() for genome in genome_list}
