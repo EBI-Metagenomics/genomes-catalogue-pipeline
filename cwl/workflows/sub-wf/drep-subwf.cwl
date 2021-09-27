@@ -38,7 +38,7 @@ outputs:
 steps:
   generate_weights:
     when: $(!Boolean(inputs.flag))
-    run: ../../tools/generate_weight_table/generate_extra_weight_table.cwl
+    run: ../../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
     in:
       flag: skip_flag
       input_directory: genomes_folder

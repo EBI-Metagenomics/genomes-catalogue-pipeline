@@ -165,7 +165,7 @@ steps:
 
 # ----------- << assign MGYGs >> -----------
   assign_mgygs:
-    run: ../tools/rename_fasta/rename_fasta.cwl
+    run: ../tools/genomes-catalog-update/rename_fasta/rename_fasta.cwl
     in:
       genomes: unite_folders/genomes
       prefix: { default: "MGYG"}
@@ -183,7 +183,7 @@ steps:
 
   generate_weights:
     when: $(!Boolean(inputs.flag))
-    run: ../tools/generate_weight_table/generate_extra_weight_table.cwl
+    run: ../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
     in:
       flag: skip_drep_step
       input_directory: assign_mgygs/renamed_genomes
