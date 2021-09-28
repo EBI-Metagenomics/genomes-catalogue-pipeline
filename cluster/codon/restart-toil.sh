@@ -9,6 +9,12 @@ mitload miniconda
 module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
 conda activate toil-5.4.0
 
+export PATH=$PATH:/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/python3_scripts/
+export PATH=$PATH:/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/genomes-catalog-update/scripts/
+
+chmod a+x /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/python3_scripts/*
+chmod a+x /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/genomes-catalog-update/scripts/*
+
 CWL=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/cwl/workflows/wf-main.cwl
 YML=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/tests/cluster/wf-main_ena_verysmall.yml
 
@@ -20,7 +26,7 @@ QUEUE="production"
 BIG_MEM="False"
 
 
-while getopts :n:y:c:m:q:b: option; do
+while getopts :n:y:c:m:q:b:s: option; do
         case "${option}" in
                 n) OUTDIRNAME=${OPTARG};;
                 y) YML=${OPTARG};;
@@ -28,6 +34,7 @@ while getopts :n:y:c:m:q:b: option; do
                 m) MEMORY=${OPTARG};;
                 q) QUEUE=${OPTARG};;
                 b) BIG_MEM=${OPTARG};;
+                s) SINGULARUTY_ON=${OPTARG};;
         esac
 done
 
@@ -49,22 +56,42 @@ echo "Toil restart start:"; date;
 
 set -x
 
-toil-cwl-runner \
---stats \
---logDebug \
---restart \
---logWarning \
---writeLogs "${LOG_DIR}" \
---maxLogFileSize 50000000 \
---outdir "${RUN_OUTDIR}" \
---logFile "${LOG_DIR}/${OUTDIRNAME}.log" \
---rotatingLogging \
---singularity \
---batchSystem lsf \
---disableCaching \
---jobStore ${RUN_JOBSTORE} \
---retryCount 2 \
---defaultMemory ${MEMORY} \
-${CWL} ${YML}
+if [ "${SINGULARUTY_ON}" == "True" ]; then
+    toil-cwl-runner \
+        --stats \
+        --logDebug \
+        --restart \
+        --logWarning \
+        --writeLogs "${LOG_DIR}" \
+        --maxLogFileSize 50000000 \
+        --outdir "${RUN_OUTDIR}" \
+        --logFile "${LOG_DIR}/${OUTDIRNAME}.log" \
+        --rotatingLogging \
+        --singularity \
+        --batchSystem lsf \
+        --disableCaching \
+        --jobStore ${RUN_JOBSTORE} \
+        --retryCount 2 \
+        --defaultMemory ${MEMORY} \
+        ${CWL} ${YML}
+else
+    toil-cwl-runner \
+        --stats \
+        --logDebug \
+        --restart \
+        --logWarning \
+        --writeLogs "${LOG_DIR}" \
+        --maxLogFileSize 50000000 \
+        --outdir "${RUN_OUTDIR}" \
+        --logFile "${LOG_DIR}/${OUTDIRNAME}.log" \
+        --rotatingLogging \
+        --no-container --preserve-entire-environment \
+        --batchSystem lsf \
+        --disableCaching \
+        --jobStore ${RUN_JOBSTORE} \
+        --retryCount 2 \
+        --defaultMemory ${MEMORY} \
+        ${CWL} ${YML}
+fi
 
 echo "Toil restart finish:"; date;
