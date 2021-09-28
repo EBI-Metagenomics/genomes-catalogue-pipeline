@@ -19,11 +19,8 @@ outputs:
     type: File
     outputSource: gunc/gunc_tsv
   flag:
-    type: File
-    outputSource:
-      - filter/complete
-      - filter/empty
-    pickValue: first_non_null
+    type: string
+    outputSource: return_name/name
 
 
 steps:
@@ -46,4 +43,12 @@ steps:
       - complete
       - empty
 
-
+  return_name:
+    run: ../../../tools/GUNC/return_name.cwl
+    in:
+      input:
+        source:
+          - filter/complete
+          - filter/empty
+        pickValue: first_non_null
+    out: [name]

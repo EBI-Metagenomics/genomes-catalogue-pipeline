@@ -11,15 +11,15 @@ requirements:
       - class: File
         location: ../../../docker/python3_scripts/generate_gunc_report.py
 
-#hints:
-#  DockerRequirement:
-#    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
+hints:
+  DockerRequirement:
+    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
 
 baseCommand: [ generate_gunc_report.py ]
 
 inputs:
   input:
-    type: File[]
+    type: string[]
     inputBinding:
       position: 1
       prefix: -i

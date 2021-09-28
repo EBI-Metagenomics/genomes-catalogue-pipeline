@@ -21,7 +21,7 @@ outputs:
     outputSource: prokka/faa
 
   gunc_decision:
-    type: File
+    type: string
     outputSource: gunc/flag
 
   cluster_dir:
@@ -46,7 +46,7 @@ steps:
     out: [flag]
 
   prokka:
-    when: $(inputs.flag.basename.includes("complete.txt"))
+    when: $(inputs.flag.includes("complete.txt"))
     run: ../prokka-subwf.cwl
     in:
       flag: gunc/flag
