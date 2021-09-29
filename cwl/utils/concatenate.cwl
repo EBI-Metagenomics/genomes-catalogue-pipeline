@@ -3,9 +3,9 @@ cwlVersion: v1.2
 
 baseCommand: [ cat ]
 
-hints:
-  - class: DockerRequirement
-    dockerPull: debian:stable-slim
+#hints:
+#  - class: DockerRequirement
+#    dockerPull: debian:stable-slim
 
 inputs:
   files:
