@@ -14,6 +14,8 @@ import argparse
 10_0
 100_0
 1000_1
+    -i for mmseq
+
 ...
 python3 generate_paths.py \
     -t one \
@@ -25,7 +27,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script")
     parser.add_argument("-i", "--input", dest="input")
     parser.add_argument("-p", "--path", dest="path")
-    parser.add_argument("-t", "--type", dest="type", choices=["one", "many"])
+    parser.add_argument("-t", "--type", dest="type", choices=["one", "many", "mmseq"])
+    parser.add_argument("--mmseq-one", dest="mmseq_one", required=False)
+    parser.add_argument("--mmseq-many", dest="mmseq_many", required=False)
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -56,4 +60,34 @@ if __name__ == "__main__":
                     fields = line.split('_')
                     name = '_'.join(fields[:2])
                     line = common_pattern.format("Directory", args.path+name)
+                    file_out.write(line)
+        if args.type == "mmseq":
+            one, many = [], []
+            if args.mmseq_one:
+                with open(args.mmseq_one, 'r') as file_in:
+                    for line in file_in:
+                        one.append(line.strip())
+            if args.mmseq_many:
+                with open(args.mmseq_many, 'r') as file_in:
+                    for line in file_in:
+                        many.append(line.strip())
+            all = []
+            with open(args.input, 'r') as file_in:
+                for line in file_in:
+                    all.append(line.strip())
+            if args.mmseq_one:
+                included_one = one
+                included_many = list(set(all).difference(set(one)))
+                print(len(included_one), len(included_many))
+            if args.mmseq_many:
+                included_many = many
+                included_one = list(set(all).difference(set(many)))
+                print(len(included_one), len(included_many))
+            with open('out_one.yml', 'w') as file_out:
+                for i in included_one:
+                    line = common_pattern.format("File", args.path + i)
+                    file_out.write(line)
+            with open('out_many.yml', 'w') as file_out:
+                for i in included_many:
+                    line = common_pattern.format("File", args.path + i)
                     file_out.write(line)

@@ -1,0 +1,3021 @@
+mmseqs_limit_i:
+  - 1.0
+  - 0.95
+  - 0.50
+mmseq_limit_annotation: 0.9
+mmseqs_limit_c: 0.8
+
+
+prokka_many:
+  -
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296406.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297437.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297080.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297168.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296495.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296745.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296971.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297487.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296379.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296783.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296271.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296933.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296129.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296470.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296688.faa
+    - class: File
+      path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296735.faa
+
+
+prokka_one:
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296913.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296515.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297387.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296666.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297159.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297394.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297397.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297039.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297478.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297297.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297367.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296079.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296744.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297346.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296393.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296751.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297429.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296471.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297436.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296105.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296342.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297285.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297059.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296995.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297157.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296743.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296584.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296923.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296999.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296227.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296091.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296667.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297319.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296593.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297210.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297331.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296094.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296851.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296145.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296457.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297087.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296915.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297259.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297037.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297291.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296257.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296710.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297321.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297282.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297471.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297493.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297400.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297023.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296950.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296025.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296650.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297012.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296187.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296704.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296892.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297328.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296638.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296135.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296924.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297355.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297444.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296139.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296172.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296292.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296176.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296876.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296804.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296453.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296264.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297469.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296077.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296299.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296125.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297242.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297393.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297096.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296251.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297338.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297461.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296718.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297169.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296252.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296241.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297108.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296840.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297473.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296072.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296476.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297230.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296253.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296685.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296618.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296869.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296289.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296404.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296073.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296268.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296249.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297302.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296060.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296499.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296161.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297192.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296233.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296167.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296659.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296039.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296184.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296237.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297378.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296377.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296235.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296937.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296371.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296546.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297448.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296014.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296029.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296786.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296468.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297253.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297028.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296719.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297038.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296622.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296033.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297421.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297371.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296316.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297029.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296297.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296519.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296605.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296305.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297343.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296390.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296607.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296750.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296202.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297417.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296102.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297047.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296939.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297100.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296347.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296182.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297433.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297380.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297195.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297494.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296075.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296635.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297213.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296491.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297489.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296644.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296326.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296903.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297334.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297419.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297497.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296579.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297284.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297372.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296017.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297125.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297035.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296389.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296863.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296981.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296425.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296806.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296050.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296532.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297279.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297011.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297398.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296248.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296891.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296707.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296658.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296860.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296353.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297174.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297249.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296423.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296391.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296035.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296465.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296675.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297266.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296949.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296834.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296534.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297263.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296001.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296780.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297026.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296047.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296592.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296907.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296482.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296262.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296226.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296671.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297356.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296436.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297199.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297460.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296573.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297206.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296706.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296998.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296287.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296585.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296955.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296868.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297477.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296858.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297092.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296104.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297427.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297275.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296420.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296784.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296449.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297116.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297200.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297238.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297335.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296677.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296713.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296430.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296656.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296045.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296603.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296156.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297293.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297070.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297078.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297008.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296388.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297239.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296166.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296989.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297021.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297254.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296663.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296339.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296588.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296152.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297050.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296147.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296019.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296037.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296417.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297458.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296374.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297455.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296459.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296464.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297262.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297375.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296731.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296815.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296606.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296157.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296748.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296170.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296291.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296657.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297130.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296009.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297149.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296317.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297250.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297197.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296881.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296909.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296709.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296586.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297312.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296987.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297086.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296422.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297217.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296276.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296111.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297274.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296625.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297101.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296003.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296853.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296849.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296146.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296493.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297177.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296010.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297349.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297307.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296007.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296728.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297311.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297327.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296601.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297264.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296537.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296822.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296337.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297391.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297057.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296484.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296619.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297018.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296320.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296329.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296807.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296789.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296799.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296614.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296286.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296362.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297229.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297365.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296219.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296298.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296874.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296005.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296059.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297315.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296628.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296920.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297502.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297162.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296975.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296791.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296216.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297404.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296002.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296697.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297296.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296845.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297215.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297030.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297462.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296636.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296912.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296222.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296097.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296794.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296946.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297207.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296833.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297231.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296024.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296159.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296931.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296013.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297205.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296321.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296018.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296088.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297313.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296435.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296479.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296069.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296576.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296964.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296775.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296694.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296206.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296536.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296819.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296977.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296199.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296919.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296194.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296177.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296839.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296483.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296212.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296174.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296204.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296859.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296497.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296867.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297495.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296832.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296664.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296451.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297098.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296439.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296898.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296500.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297304.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297485.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296304.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297381.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296318.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297117.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297183.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296054.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296716.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296578.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296239.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296611.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296885.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297126.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296734.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297074.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296848.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297384.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297161.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297289.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296879.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296341.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296402.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297094.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297325.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296418.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296160.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296835.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296214.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297020.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297498.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296972.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296475.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296764.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297062.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297067.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296099.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296274.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296168.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297166.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297187.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296381.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296207.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296294.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296855.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296905.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296258.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297317.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296106.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296173.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296749.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296026.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297136.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296773.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297261.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297237.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296281.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296084.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296440.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296048.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296911.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297151.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296142.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297396.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296787.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296254.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296242.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296132.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296732.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296265.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297084.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297163.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297208.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296793.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296119.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296918.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296978.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296512.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296624.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296730.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297041.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296969.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296419.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296797.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296448.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296800.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297306.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297413.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296648.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296736.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296392.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296331.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296225.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296113.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296046.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296661.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296825.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296180.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297308.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296150.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296200.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297148.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297292.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297390.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296540.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297420.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296958.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297256.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296090.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297236.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296016.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296369.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296444.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296416.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296432.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296837.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296890.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296720.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296361.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296877.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296310.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296580.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296158.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296218.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296210.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296757.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297451.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296986.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296485.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297016.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296498.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297186.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296829.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296965.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296056.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296267.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297105.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297046.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296526.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297470.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297434.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297189.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297053.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296524.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297188.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296232.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297025.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296594.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296591.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296990.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297459.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297099.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296583.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296302.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296887.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296550.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296518.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296533.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296071.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296953.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297089.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297401.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297176.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296985.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296929.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296813.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296055.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296455.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297388.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296854.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296984.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297164.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297211.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296438.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296123.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296701.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296808.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296726.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296717.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297036.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296063.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296195.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296151.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297403.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296004.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297405.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297260.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296506.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296467.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296633.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296548.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297422.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296759.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296779.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296196.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296935.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296426.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297013.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297152.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296208.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297120.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296921.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296552.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297184.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297351.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296711.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297071.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297271.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296365.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297309.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296179.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296081.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296303.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297423.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296149.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297232.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296621.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296961.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297031.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297452.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296683.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297320.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296244.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297111.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297223.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297411.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296380.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296872.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296756.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296620.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296472.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297134.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297379.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296126.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296746.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296662.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296979.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296696.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296632.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297158.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297500.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296647.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297333.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296820.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296185.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297345.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296411.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296041.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296577.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296857.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297488.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297219.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296502.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296821.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296755.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297043.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296400.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296798.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296236.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296295.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296245.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297385.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296693.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297443.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296243.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297439.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296700.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296758.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296130.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296544.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297290.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297048.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296452.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296228.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297305.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296008.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296447.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296753.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297446.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297140.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297252.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296754.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296850.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296083.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296087.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296324.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296040.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296272.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296323.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296354.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296992.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296738.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296752.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296776.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296637.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297141.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296642.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296772.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297185.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297248.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296062.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296155.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296223.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297058.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296570.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297314.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296774.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297224.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296340.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296925.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296634.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296368.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296230.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296415.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296266.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296927.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296260.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296397.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297154.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296873.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297173.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297435.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296948.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296945.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297060.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296278.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296824.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296044.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296556.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296878.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296523.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297112.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296359.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296630.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297300.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296141.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297364.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296555.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297145.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296288.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296640.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297051.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297303.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297301.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297137.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296023.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297049.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296454.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297294.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296190.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296124.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297044.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297450.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296906.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296384.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297410.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296011.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296137.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296117.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296189.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296847.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297374.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297042.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297340.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296396.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297369.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297124.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296412.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296053.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296604.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297476.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296501.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296021.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296309.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296563.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296714.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297019.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296057.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297464.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296569.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296882.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296496.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297298.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296668.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296383.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297440.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297287.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297243.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296356.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296917.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296408.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296856.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297052.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296450.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297336.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296466.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297202.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297360.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297481.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297456.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296708.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296980.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296763.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296723.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296531.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296812.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296283.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296514.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297102.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297277.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296826.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296143.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296038.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296676.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296300.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296093.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297142.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297135.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296096.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296229.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297466.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297165.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297024.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297093.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296240.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296427.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296841.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297368.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297204.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296357.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296997.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296030.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296602.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297143.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296460.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296687.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296441.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296612.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296201.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296311.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297288.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297010.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296148.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297234.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297153.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296646.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297104.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296600.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296376.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296481.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297064.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297324.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297268.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296474.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296737.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297090.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297222.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297454.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297468.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296338.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297258.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296279.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296220.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297003.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297001.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296103.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296866.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296951.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296765.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297342.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297132.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297330.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296098.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297318.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296581.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296572.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296560.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297341.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297499.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296118.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296699.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296355.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296599.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297352.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296080.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296186.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296610.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297007.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296654.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296136.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296407.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297370.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296864.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296285.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296956.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296399.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297160.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296669.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296557.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297178.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297447.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296508.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296539.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297055.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297428.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296785.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297373.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296655.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296074.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296144.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296164.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297017.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297415.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296684.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296617.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296330.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297063.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296414.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297392.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296963.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296301.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296066.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296976.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296431.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297492.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297002.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296217.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296092.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296698.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296761.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297054.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296089.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297283.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296762.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296549.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296405.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296469.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297146.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297467.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296421.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296589.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297326.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297144.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297490.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296504.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296627.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296940.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296810.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297072.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296893.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296705.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296413.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296076.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296527.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296336.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297310.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296626.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297412.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296494.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296831.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297496.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296896.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296446.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297463.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296280.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297225.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296306.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296107.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296275.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296345.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296525.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296729.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297235.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297014.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297113.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296477.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297389.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296043.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296888.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297280.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296314.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297441.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296983.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296110.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297201.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296458.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296442.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296944.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297323.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296349.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297491.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296695.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296838.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296922.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296133.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296908.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296215.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297418.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296994.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296162.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297246.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296082.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296522.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297424.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296660.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296724.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297276.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296721.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297482.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296631.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296814.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296128.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296727.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296828.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297004.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296403.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296521.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297179.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296615.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296191.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296433.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297359.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296358.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297097.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296052.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296370.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297106.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297366.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297316.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296209.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296270.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296322.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296140.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297281.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297150.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296846.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297376.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297015.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296895.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296795.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296211.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296993.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296181.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296639.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297474.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297129.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296070.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296769.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296183.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297353.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296028.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297212.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296282.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296022.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296109.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296350.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296653.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296127.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296910.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297425.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296165.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296870.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297214.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296554.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296273.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296596.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296351.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297322.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296205.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296827.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296487.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296680.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296865.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296852.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296542.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297198.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297329.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296269.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296862.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297033.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297453.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296327.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297156.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296006.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296178.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296538.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297147.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296712.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296942.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297395.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296809.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297209.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297073.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297081.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296842.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296153.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296015.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296681.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297009.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296742.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297408.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297244.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296545.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296897.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296673.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296678.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296120.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297240.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296138.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297118.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297083.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296163.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296012.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296692.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296409.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296609.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296782.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296816.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297040.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297377.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297269.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296250.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296817.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296461.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296203.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296613.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296679.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297445.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296509.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296823.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296571.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296116.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296608.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296261.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296702.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296777.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296095.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296437.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296689.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296598.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296900.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297172.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297465.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296788.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296343.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296567.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296410.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296259.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296068.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297472.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296516.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296957.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297402.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296904.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297483.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296568.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296805.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296503.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297484.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297337.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296027.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296000.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296796.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296507.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296725.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296768.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296690.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296916.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296733.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296547.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296836.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297216.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296366.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297175.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296861.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296932.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296488.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296456.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296558.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296325.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297155.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296781.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296952.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297079.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296670.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296394.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296480.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296198.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296880.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296443.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296623.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296739.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297382.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297045.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297119.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297226.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297139.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296966.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296031.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297114.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297122.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296375.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296372.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297272.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296582.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296401.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296263.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297066.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297068.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296307.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296112.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296941.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297131.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296587.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297247.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296715.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297299.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297170.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296510.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297357.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297180.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296373.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296691.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296386.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296884.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296238.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297032.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296934.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296445.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296973.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296543.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296256.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296914.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296193.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297267.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297442.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297196.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296319.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297127.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296790.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297190.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296766.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296490.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297270.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297501.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296042.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297251.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297399.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296247.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296818.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297406.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297273.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296348.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296034.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297075.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296428.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296883.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296770.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296513.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296032.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297138.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296643.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297265.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297193.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297383.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296960.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296535.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296741.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296511.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296530.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296649.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296771.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296171.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297000.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296967.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296296.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296378.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296051.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297475.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297295.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296049.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297386.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296974.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296792.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296036.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296385.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297278.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297430.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297181.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297233.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296651.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297479.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296645.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296954.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296492.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297088.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297354.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297076.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297123.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296844.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296590.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297182.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297344.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297082.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296255.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297077.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297255.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297065.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296595.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297171.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296489.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296061.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297109.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296947.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297480.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296108.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297407.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296541.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297194.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297218.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296505.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296367.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296778.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297034.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297257.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296803.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296574.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296928.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296843.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296234.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297414.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296387.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297227.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296889.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297438.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296561.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296686.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296520.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296811.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296894.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296114.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296101.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296875.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297091.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297085.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296346.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296652.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296246.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297432.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296360.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296364.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296991.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296197.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297358.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296313.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296982.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296564.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296901.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296192.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296970.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297103.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297095.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297347.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296308.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297361.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296616.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297449.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296938.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296565.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296064.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297245.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297332.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296085.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297133.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296747.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297362.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296020.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296333.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297431.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296335.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296968.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297005.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296277.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296962.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296629.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296996.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297286.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296562.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296363.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296115.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296486.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296566.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297416.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296328.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296290.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297191.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297069.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296175.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296760.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297241.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296988.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297061.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296597.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296674.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297221.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296830.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296553.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296213.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296312.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296943.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296886.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297027.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296121.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297426.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296434.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297115.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297110.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296665.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296478.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296575.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296188.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296398.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296529.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296871.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297228.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296473.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297409.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296930.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296936.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297107.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297203.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297121.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296682.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296078.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296086.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296551.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296134.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296801.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296463.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296767.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296231.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297348.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296332.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296100.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297363.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296641.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296067.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296065.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296424.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296672.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296959.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296224.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296122.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296429.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296169.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296352.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296462.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296284.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296703.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297503.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296293.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296559.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297220.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296131.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296517.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297128.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296395.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296334.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297339.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296154.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297022.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297006.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296344.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297350.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296528.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296722.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296740.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296058.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296221.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297056.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296802.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297457.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296902.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297486.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000297167.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296315.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296382.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296899.faa
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/FAAs/MGYG000296926.faa
