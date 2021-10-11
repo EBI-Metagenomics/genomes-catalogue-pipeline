@@ -80,7 +80,7 @@ def load_annotations(ann_file, clusters):
     with open(ann_file, 'r') as file_in:
         for line in file_in:
             line = line.strip()
-            if line.startswith('#'):
+            if line.startswith('#query'):
                 header = line
             else:
                 genome = line.split('_')[0]
