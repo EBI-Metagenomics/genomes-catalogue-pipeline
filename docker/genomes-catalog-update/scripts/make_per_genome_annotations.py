@@ -3,6 +3,7 @@
 
 import argparse
 import logging
+import multiprocessing as mp
 import os
 
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +16,13 @@ def main(ips, eggnog, rep_list, outdir, mmseqs_tsv, cores):
     with open(rep_list, 'r') as rep_in:
         genome_list = [line.strip().replace('.fa', '') for line in rep_in]
     # load cluster information
-    clusters = load_clusters(genome_list, mmseqs_tsv)
+    pool = mp.Pool(cores)
+    global clusters
+    clusters = dict()
+    for chunk_start, chunk_size in make_tsv_chunks(mmseqs_tsv):
+        pool.apply_async(process_chunk, (chunk_start, chunk_size, genome_list, mmseqs_tsv), callback=append_values)
+    pool.close()
+    pool.join()
     # initialize results dictionaries
     results_ips, results_eggnog = [{genome: list() for genome in genome_list} for _ in range(2)]
     # separate annotations by genome and load into dictionaries
@@ -26,14 +33,36 @@ def main(ips, eggnog, rep_list, outdir, mmseqs_tsv, cores):
     print_results(results_eggnog, header_eggnog, outdir, 'eggNOG')
 
 
-def load_clusters(genome_list, mmseqs_tsv):
-    clusters = dict()
-    with open(mmseqs_tsv, 'r') as tsv_in:
-        for line in tsv_in:
+def make_tsv_chunks(file, size=1024*1024):
+    file_end = os.path.getsize(file)
+    with open(file, 'rb') as f:
+        chunk_end = f.tell()
+        while True:
+            chunk_start = chunk_end
+            f.seek(size, 1)
+            f.readline()
+            chunk_end = f.tell()
+            yield chunk_start, chunk_end - chunk_start
+            if chunk_end > file_end:
+                break
+
+
+def process_chunk(chunk_start, chunk_size, genome_list, tsv_file):
+    result = list()
+    with open(tsv_file) as f:
+        f.seek(chunk_start)
+        lines = f.read(chunk_size).splitlines()
+        for line in lines:
             rep, member = line.strip().split('\t')
             if member.split('_')[0] in genome_list:
-                clusters.setdefault(rep, set()).add(member)
-    return clusters
+                result.append([rep, member])
+    return result
+
+
+def append_values(returned_values):
+    if returned_values:
+        for pair in returned_values:
+            clusters.setdefault(pair[0], set()).add(pair[1])
 
 
 def print_results(result_dict, header, outdir, tool):
