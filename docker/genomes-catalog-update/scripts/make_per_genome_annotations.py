@@ -15,6 +15,7 @@ def main(ips, eggnog, rep_list, outdir, mmseqs_tsv, cores):
     # load representative accessions
     with open(rep_list, 'r') as rep_in:
         genome_list = [line.strip().replace('.fa', '') for line in rep_in]
+    logging.info('Loaded the representative accessions.')
     # load cluster information
     pool = mp.Pool(cores)
     global clusters
@@ -23,12 +24,15 @@ def main(ips, eggnog, rep_list, outdir, mmseqs_tsv, cores):
         pool.apply_async(process_chunk, (chunk_start, chunk_size, genome_list, mmseqs_tsv), callback=append_values)
     pool.close()
     pool.join()
-    # separate annotations by genome and load into dictionaries
+    logging.info('Loaded cluster information.')
+    # separate annotations by genome, load into dictionaries and generate result files
     header_ips, results_ips = load_annotations(ips, clusters)
-    header_eggnog, results_eggnog = load_annotations(eggnog, clusters)
-    # generate result files
     print_results(results_ips, header_ips, outdir, 'InterProScan')
+    del results_ips
+    logging.info('Generated IPS output.')
+    header_eggnog, results_eggnog = load_annotations(eggnog, clusters)
     print_results(results_eggnog, header_eggnog, outdir, 'eggNOG')
+    logging.info('Generated eggNOG output.')
 
 
 def make_tsv_chunks(file, size=1024*1024):
