@@ -23,8 +23,6 @@ def main(ips, eggnog, rep_list, outdir, mmseqs_tsv, cores):
         pool.apply_async(process_chunk, (chunk_start, chunk_size, genome_list, mmseqs_tsv), callback=append_values)
     pool.close()
     pool.join()
-    # initialize results dictionaries
-    results_ips, results_eggnog = [{genome: list() for genome in genome_list} for _ in range(2)]
     # separate annotations by genome and load into dictionaries
     header_ips, results_ips = load_annotations(ips, clusters)
     header_eggnog, results_eggnog = load_annotations(eggnog, clusters)
@@ -83,9 +81,11 @@ def load_annotations(ann_file, clusters):
             if line.startswith('#query'):
                 header = line
             else:
-                genome = line.split('_')[0]
-                if genome in clusters.keys():
-                    ann_result.setdefault(genome, list()).append(line)
+                rep_protein = line.split('\t')[0]
+                if rep_protein in clusters.keys():
+                    for member_protein in clusters[rep_protein]:
+                        genome = member_protein.split('_')[0]
+                        ann_result.setdefault(genome, list()).append(line.replace(rep_protein, member_protein))
     return header, ann_result
 
 
