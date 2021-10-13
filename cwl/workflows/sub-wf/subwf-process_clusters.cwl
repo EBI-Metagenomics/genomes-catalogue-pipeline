@@ -28,7 +28,7 @@ inputs:
 outputs:
   mash_folder:
     type: Directory?
-    outputSource: process_many_genomes/mash_folder
+    outputSource: return_mash_dir/out
 
   many_genomes:
     type: Directory[]?
@@ -90,6 +90,21 @@ steps:
       - many_genomes_prokka
       - prokka_seqs
       - many_genomes_genomes
+
+# ----------- << mash trees >> -----------
+  process_mash:
+    scatter: input_mash
+    run: ../../tools/mash2nwk/mash2nwk.cwl
+    in:
+      input_mash: mash_folder
+    out: [mash_tree]
+
+  return_mash_dir:
+    run: ../../utils/return_directory.cwl
+    in:
+      list: process_mash/mash_tree
+      dir_name: { default: 'mash_trees' }
+    out: [ out ]
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:

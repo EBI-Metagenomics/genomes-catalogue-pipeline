@@ -51,10 +51,6 @@ outputs:
     type: Directory
     outputSource: return_cluster_genomes/dir_of_dir
 
-  mash_folder:
-    type: Directory
-    outputSource: return_mash_dir/out
-
 
 steps:
   preparation:
@@ -160,17 +156,3 @@ steps:
         valueFrom: cluster_$(self.basename)
     out: [ pool_directory ]
 
-# ----------- << mash trees >> -----------
-  process_mash:
-    scatter: input_mash
-    run: ../../../tools/mash2nwk/mash2nwk.cwl
-    in:
-      input_mash: mash_files
-    out: [mash_tree]
-
-  return_mash_dir:
-    run: ../../../utils/return_directory.cwl
-    in:
-      list: process_mash/mash_tree
-      dir_name: { default: 'mash_trees' }
-    out: [ out ]

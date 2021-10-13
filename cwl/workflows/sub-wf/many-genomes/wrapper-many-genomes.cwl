@@ -14,9 +14,6 @@ inputs:
   mash_folder: File[]
 
 outputs:
-  mash_folder:
-    type: Directory[]
-    outputSource: process_many_genomes/mash_folder
 
   many_genomes:
     type: Directory[]
@@ -57,5 +54,4 @@ steps:
       - panaroo_folder  # Dir
       - prokka_folder  # Dir[]
       - genomes_folder  # Dir
-      - mash_folder  # Dir
 
