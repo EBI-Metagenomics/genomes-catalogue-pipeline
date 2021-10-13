@@ -1,6 +1,0 @@
-filtered_genomes:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/marine-filt-drep/deperlicated_genomes
-cm_models:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/rfams_cms

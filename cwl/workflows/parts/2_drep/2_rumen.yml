@@ -1,8 +1,0 @@
-genomes_folder:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/rumen/mgyg_genomes
-input_csv:
-  class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/rumen/renamed_stats.txt
-
-skip_flag: False
