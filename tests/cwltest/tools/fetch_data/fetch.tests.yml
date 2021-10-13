@@ -1,7 +1,7 @@
 #cwltest
 
 - job: fetch_ena.yml
-  tool: ../../../../cwl/tools/fetch_data/fetch_ena.cwl
+  tool: ../../../../cwl/tools/genomes-catalog-update/fetch_data/fetch_ena.cwl
   short_name: fetch_ena.cwl
   doc: "fetch ENA"
   output:
@@ -56,7 +56,7 @@
       size: 234
 
 - job: fetch_ncbi.yml
-  tool: ../../../../cwl/tools/fetch_data/fetch_ncbi.cwl
+  tool: ../../../../cwl/tools/genomes-catalog-update/fetch_data/fetch_ncbi.cwl
   short_name: fetch_ncbi.cwl
   doc: "fetch NCBI"
   output:

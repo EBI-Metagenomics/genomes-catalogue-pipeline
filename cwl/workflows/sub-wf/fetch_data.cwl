@@ -38,7 +38,7 @@ outputs:
 steps:
 
   download_from_ena:
-    run: ../../tools/fetch_data/fetch_ena.cwl
+    run: ../../tools/genomes-catalog-update/fetch_data/fetch_ena.cwl
     when: $(Boolean(inputs.type))
     in:
       type: download_from_ena
@@ -50,7 +50,7 @@ steps:
      - stats_file
 
   download_from_ncbi:
-    run: ../../tools/fetch_data/fetch_ncbi.cwl
+    run: ../../tools/genomes-catalog-update/fetch_data/fetch_ncbi.cwl
     when: $(Boolean(inputs.type))
     in:
       type: download_from_ncbi

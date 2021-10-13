@@ -59,7 +59,7 @@ steps:
 
 # ----------- << assign MGYGs >> -----------
   assign_mgygs:
-    run: ../../../tools/rename_fasta/rename_fasta.cwl
+    run: ../../../tools/genomes-catalog-update/rename_fasta/rename_fasta.cwl
     in:
       genomes: genomes_ena
       prefix: { default: "MGYG"}

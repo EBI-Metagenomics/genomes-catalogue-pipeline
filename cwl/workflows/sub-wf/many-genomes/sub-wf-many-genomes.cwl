@@ -80,7 +80,7 @@ steps:
     out: [ pan_genome_reference-fa, panaroo_dir, gene_presence_absence ]
 
   get_core_genes:
-    run: ../../../tools/get_core_genes/get_core_genes.cwl
+    run: ../../../tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl
     in:
       input: panaroo/gene_presence_absence
       output_filename: {default: "core_genes.txt"}
