@@ -1,0 +1,20 @@
+input_faa:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/rumen/rumen-mmseq/mmseqs_cluster_rep.fa
+
+interproscan_databases:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
+chunk_size_ips: 50000
+
+# EggNOG
+chunk_size_eggnog: 300000
+db_diamond_eggnog:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_proteins.dmnd
+db_eggnog:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
+data_dir_eggnog:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
