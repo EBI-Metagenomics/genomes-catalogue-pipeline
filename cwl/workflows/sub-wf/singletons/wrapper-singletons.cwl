@@ -33,7 +33,7 @@ outputs:
 
 steps:
   process_one_genome:
-    run: sub-wf-one-genome.cwl
+    run: sub-wf-singleton.cwl
     scatter: cluster
     in:
       cluster: input_cluster
@@ -41,7 +41,7 @@ steps:
       gunc_db_path: gunc_db_path
     out:
       - prokka_faa-s  # File
-      - cluster_dir  # Dir
+      - cluster_dir   # Dir
       - gunc_decision # File
 
   create_gunc_reports:

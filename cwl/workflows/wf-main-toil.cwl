@@ -80,34 +80,17 @@ outputs:
     outputSource: split_drep/split_text
 
 # ------- clusters_annotation -------
-  mash_folder:
-    type: Directory?
-    outputSource: clusters_annotation/mash_folder
 
-  many_genomes:
+  pan-genomes:
     type: Directory[]?
-    outputSource: clusters_annotation/many_genomes
-  many_genomes_panaroo:
-    type: Directory[]?
-    outputSource: clusters_annotation/many_genomes_panaroo
-  many_genomes_prokka:
-    type:
-      - 'null'
-      - type: array
-        items:
-          type: array
-          items: Directory
-    outputSource: clusters_annotation/many_genomes_prokka
-  many_genomes_genomes:
-    type: Directory[]?
-    outputSource: clusters_annotation/many_genomes_genomes
+    outputSource: clusters_annotation/pangenomes
 
-  one_genome_final:
+  singletons:
     type: Directory[]?
-    outputSource: clusters_annotation/one_genome
-  one_genome_genomes_gunc:
+    outputSource: clusters_annotation/singletons
+  gunc:
     type: File
-    outputSource: clusters_annotation/one_genome_genomes_gunc_completed
+    outputSource: clusters_annotation/singletons_gunc_completed
 
   mmseqs:
     type: Directory?
@@ -271,9 +254,9 @@ steps:
   clusters_annotation:
     run: sub-wf/subwf-process_clusters.cwl
     in:
-      many_genomes: classify_clusters/many_genomes
-      mash_folder: split_drep/split_out_mash
-      one_genome: filter_nulls/out_dirs
+      many_genomes: drep_subwf/many_genomes
+      mash_folder: drep_subwf/mash_files
+      one_genome: drep_subwf/one_genome
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
       mmseq_limit_annotation: mmseq_limit_annotation
@@ -286,14 +269,10 @@ steps:
       data_dir_eggnog: data_dir_eggnog
       csv: assign_mgygs/renamed_csv
     out:
-      - mash_folder
-      - many_genomes
-      - many_genomes_panaroo
-      - many_genomes_prokka
-      - many_genomes_genomes
-      - one_genome
-      - one_genome_genomes_gunc_completed
-      - one_genome_genomes_gunc_failed
+      - pangenomes
+      - singletons
+      - singletons_gunc_completed
+      - singletons_gunc_failed
       - mmseqs_output
       - mmseqs_output_annotation
       - cluster_representatives
@@ -321,7 +300,7 @@ steps:
       genomes: assign_mgygs/renamed_genomes
       sdb: drep/Sdb_csv
       clusters: split_drep/split_text
-      gunc_passed: clusters_annotation/one_genome_genomes_gunc_completed
+      gunc_passed: clusters_annotation/singletons_gunc_completed
       outdirname: {default: deperlicated_genomes}
     out:
       - drep_filtered_genomes

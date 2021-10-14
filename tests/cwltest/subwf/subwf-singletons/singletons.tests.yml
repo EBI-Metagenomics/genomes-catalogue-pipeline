@@ -1,9 +1,9 @@
 #cwltest
 
-- job: one-genome-subwf.test2.yml
-  tool: ../../../../cwl/workflows/sub-wf/one-genome/sub-wf-one-genome.cwl
-  short_name: sub-wf-one-genome.cwl
-  doc: "one-genome bad gunc"
+- job: singletons-subwf.test2.yml
+  tool: ../../../../cwl/workflows/sub-wf/singletons/sub-wf-singletons.cwl
+  short_name: sub-wf-singletons.cwl
+  doc: "singletons bad gunc"
   output:
     prokka_faa-s: null
     gunc_decision:
@@ -22,10 +22,10 @@
               size: 6155
               checksum: sha1$f62d84bca25dd09ddc54374918c3186da350bb41
 
-- job: one-genome-subwf.test1.yml
-  tool: ../../../../cwl/workflows/sub-wf/one-genome/sub-wf-one-genome.cwl
-  short_name: sub-wf-one-genome.cwl
-  doc: "one-genome good gunc"
+- job: singletons-subwf.test1.yml
+  tool: ../../../../cwl/workflows/sub-wf/singletons/sub-wf-singletons.cwl
+  short_name: sub-wf-singletons.cwl
+  doc: "singletons good gunc"
   output:
     cluster_dir:
       class: Directory

@@ -50,7 +50,7 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.outdirname)/$(inputs.fa_file.nameroot).faa
-  outdir:
-    type: Directory
-    outputBinding:
-      glob: $(inputs.outdirname)
+  #outdir:
+  #  type: Directory
+  #  outputBinding:
+  #    glob: $(inputs.outdirname)

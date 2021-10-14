@@ -2,6 +2,13 @@
 cwlVersion: v1.2
 class: Workflow
 
+doc: |
+  Output structure:
+    cluster
+         --- genome
+              --- fna
+              --- gff
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
@@ -26,14 +33,14 @@ outputs:
 
   cluster_dir:
     type: Directory
-    outputSource: return_cluster_dir/pool_directory
+    outputSource: return_cluster_dir/dir_of_dir
 
 steps:
   preparation:
     run: ../../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
-    out: [files]
+    out: [ files ]
 
   gunc:
     run: gunc-subwf.cwl
@@ -43,7 +50,7 @@ steps:
         valueFrom: $(self[0])
       input_csv: csv
       gunc_db_path: gunc_db_path
-    out: [flag]
+    out: [ flag ]
 
   prokka:
     when: $(inputs.flag.includes("complete.txt"))
@@ -54,33 +61,37 @@ steps:
         source: preparation/files
         valueFrom: $(self[0])
       outdirname: { default: prokka_output }
-    out: [ faa, outdir ]
+    out:
+      - faa
+      - gff
 
 # -------- collect output ----------
 
-  create_folder_genomes:
+  create_genomes_folder:
     doc: |
-       Create folder genome for processing cluster
-       That directory will have processing MGYG..fa genome inside
-    # when: $(inputs.flag.basename.includes("complete.txt"))
+       genome
+         --- initial fasta
+         --- gff
+    when: $(inputs.flag.basename.includes("complete.txt"))
     run: ../../../utils/return_directory.cwl
     in:
       flag: gunc/flag
-      list: preparation/files
+      list:
+        source:
+          - preparation/files  # File[]
+          - prokka/gff         # File
+        linkMerge: merge_flattened
       dir_name: {default: "genome"}
     out: [ out ]
 
   return_cluster_dir:
+    when: $(inputs.flag.basename.includes("complete.txt"))
     run: ../../../utils/return_dir_of_dir.cwl
     in:
-      directory_array:
-        source:
-          - prokka/outdir
-          - create_folder_genomes/out
-        pickValue: all_non_null
+      directory: create_genomes_folder/out
       newname:
         source: cluster
         valueFrom: cluster_$(self.basename)
-    out: [ pool_directory ]
+    out: [ dir_of_dir ]
 
 

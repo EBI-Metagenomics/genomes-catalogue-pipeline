@@ -15,19 +15,10 @@ inputs:
 
 outputs:
 
-  many_genomes:
+  pangenome_clusters:
     type: Directory[]
     outputSource: process_many_genomes/cluster_folder
-  many_genomes_panaroo:
-    type: Directory[]
-    outputSource: process_many_genomes/panaroo_folder
-  many_genomes_prokka:
-    type:
-      type: array
-      items:
-        type: array
-        items: Directory
-    outputSource: process_many_genomes/prokka_folder
+
   prokka_seqs:
     type:
       type: array
@@ -35,15 +26,13 @@ outputs:
         type: array
         items: File
     outputSource: process_many_genomes/prokka_faa-s
-  many_genomes_genomes:
-    type: Directory[]
-    outputSource: process_many_genomes/genomes_folder
+
 
 steps:
 
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
-    run: sub-wf-many-genomes.cwl
+    run: sub-wf-pan-genomes.cwl
     scatter: cluster
     in:
       cluster: input_clusters
@@ -51,7 +40,4 @@ steps:
     out:
       - prokka_faa-s  # File[]
       - cluster_folder  # Dir
-      - panaroo_folder  # Dir
-      - prokka_folder  # Dir[]
-      - genomes_folder  # Dir
 

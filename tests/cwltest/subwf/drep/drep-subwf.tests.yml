@@ -86,7 +86,7 @@
 - job: one.yml
   tool: ../../../../cwl/workflows/sub-wf/drep-subwf.cwl
   short_name: drep-subwf.cwl
-  doc: "dRep subwf on folder with one-genome clusters"
+  doc: "dRep subwf on folder with singletons clusters"
   output:
     dereplicated_genomes:
       basename: dereplicated_genomes
