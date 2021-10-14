@@ -18,5 +18,5 @@
     split_text:
       basename: clusters_split.txt
       class: File
-      checksum: sha1$ba0222888f19cdf744c86325453bd860f26e813d
+      checksum: sha1$5bf18ca656e3989847c4eeb80cc791becbf50484
       size: 148

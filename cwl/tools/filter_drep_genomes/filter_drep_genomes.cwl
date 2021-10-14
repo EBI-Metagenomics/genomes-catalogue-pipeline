@@ -25,11 +25,6 @@ inputs:
     inputBinding:
       prefix: '-g'
       position: 1
-  sdb:
-    type: File
-    inputBinding:
-      prefix: '--sdb'
-      position: 2
   clusters:
     type: File
     inputBinding:
