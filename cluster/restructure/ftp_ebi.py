@@ -31,16 +31,16 @@ uhgg_catalogue
                         ----- kegg_classes.tsv
                         ----- kegg_modules.tsv
                         ----- MGYG-HGUT-00001_eggNOG.tsv
-                        ----- MGYG-HGUT-00001.faa
+                        ----- MGYG-HGUT-00001_InterProScan.tsv
+                        ----- MGYG-HGUT-00001.faa          ( prokka )
+                        ----- MGYG-HGUT-00001.gff          ( prokka - make a file with link)
                         ----- MGYG-HGUT-00001.fna
                         ----- MGYG-HGUT-00001.fna.fai
-                        ----- MGYG-HGUT-00001.gff          ( make a file wit link)
-                        ----- MGYG-HGUT-00001_InterProScan.tsv
                 ----- pan-genome
                         ----- core_genes.faa               ( ready - core_genes.txt )
-                        ----- genes_presence-absence.tsv   ( ready - gene_presence_absence.Rtab )
+                        ----- genes_presence-absence.tsv   ( ready - panaroo - gene_presence_absence.Rtab )
                         ----- mashtree.nwk                 ( ready )
-                        ----- pan-genome.fna               ( ready - initial fasta )
+                        ----- pan-genome.fna               ( ready - panaroo - pan_genome_reference.fa)
 
 uhgp_catalogue  (mmseqs)
     --- mmseqs_1.0_outdir.tar.gz                           ( was uhgp-100.tar.gz)

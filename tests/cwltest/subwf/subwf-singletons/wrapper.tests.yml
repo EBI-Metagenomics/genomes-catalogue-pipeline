@@ -1,9 +1,9 @@
 #cwltest
 
 - job: wrapper.test1.yml
-  tool: ../../../../cwl/workflows/sub-wf/one-genome/wrapper-one-genome.cwl
-  short_name: wrapper-one-genome.cwl
-  doc: "scatter run one-genome wf"
+  tool: ../../../../cwl/workflows/sub-wf/singletons/wrapper-singletons.cwl
+  short_name: wrapper-singletons.cwl
+  doc: "scatter run singletons wf"
   output:
     cluster_folder:
         - class: Directory

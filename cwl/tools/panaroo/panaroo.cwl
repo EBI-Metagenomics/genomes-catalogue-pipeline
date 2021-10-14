@@ -55,11 +55,11 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.panaroo_outfolder)/pan_genome_reference.fa
-  panaroo_dir:
-    type: Directory
-    outputBinding:
-      glob: $(inputs.panaroo_outfolder)
   gene_presence_absence:
     type: File
     outputBinding:
       glob: $(inputs.panaroo_outfolder)/gene_presence_absence.Rtab
+  #panaroo_dir:
+  #  type: Directory
+  #  outputBinding:
+  #    glob: $(inputs.panaroo_outfolder)

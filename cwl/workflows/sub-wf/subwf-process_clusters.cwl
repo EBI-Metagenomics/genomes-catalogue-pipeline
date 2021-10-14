@@ -26,35 +26,18 @@ inputs:
   data_dir_eggnog: [string?, Directory?]
 
 outputs:
-  mash_folder:
-    type: Directory?
-    outputSource: return_mash_dir/out
 
-  many_genomes:
+  pangenomes:
     type: Directory[]?
-    outputSource: process_many_genomes/many_genomes
-  many_genomes_panaroo:
-    type: Directory[]?
-    outputSource: process_many_genomes/many_genomes_panaroo
-  many_genomes_prokka:
-    type:
-      - 'null'
-      - type: array
-        items:
-          type: array
-          items: Directory
-    outputSource: process_many_genomes/many_genomes_prokka
-  many_genomes_genomes:
-    type: Directory[]?
-    outputSource: process_many_genomes/many_genomes_genomes
+    outputSource: process_many_genomes/pangenomes_cluster
 
-  one_genome:
+  singletons:
     type: Directory[]?
     outputSource: process_one_genome/cluster_folder
-  one_genome_genomes_gunc_completed:
+  singletons_gunc_completed:
     type: File
     outputSource: process_one_genome/gunc_completed
-  one_genome_genomes_gunc_failed:
+  singletons_gunc_failed:
     type: File
     outputSource: process_one_genome/gunc_failed
 
@@ -70,13 +53,21 @@ outputs:
 
 steps:
 
+# ----------- << mash trees >> -----------
+  process_mash:
+    scatter: input_mash
+    run: ../../tools/mash2nwk/mash2nwk.cwl
+    in:
+      input_mash: mash_folder
+    out: [mash_tree]  # File[]
+
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
     when: $(Boolean(inputs.input_clusters))
-    run: many-genomes/wrapper-many-genomes.cwl
+    run: pan-genomes/wrapper-pan-genomes.cwl
     in:
       input_clusters: many_genomes
-      mash_folder: mash_folder
+      mash_folder: process_mash/mash_tree
       interproscan_databases: interproscan_databases
       chunk_size_ips: chunk_size_ips
       chunk_size_eggnog: chunk_size_eggnog
@@ -84,32 +75,13 @@ steps:
       db_eggnog: db_eggnog
       data_dir_eggnog: data_dir_eggnog
     out:
-      - mash_folder
-      - many_genomes
-      - many_genomes_panaroo
-      - many_genomes_prokka
       - prokka_seqs
-      - many_genomes_genomes
-
-# ----------- << mash trees >> -----------
-  process_mash:
-    scatter: input_mash
-    run: ../../tools/mash2nwk/mash2nwk.cwl
-    in:
-      input_mash: mash_folder
-    out: [mash_tree]
-
-  return_mash_dir:
-    run: ../../utils/return_directory.cwl
-    in:
-      list: process_mash/mash_tree
-      dir_name: { default: 'mash_trees' }
-    out: [ out ]
+      - pangenome_clusters
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
     when: $(Boolean(inputs.input_cluster))
-    run: one-genome/wrapper-one-genome.cwl
+    run: singletons/wrapper-singletons.cwl
     in:
       input_cluster: one_genome
       csv: csv
