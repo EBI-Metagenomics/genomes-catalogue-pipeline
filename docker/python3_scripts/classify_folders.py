@@ -64,7 +64,7 @@ def classify_by_file(split_text, genomes_folder):
         for line in file_in:
             main_folder, cluster, genomes_str = line.strip().split(':')
             genomes = genomes_str.split(',')
-            cluster_name = genomes[0]  # cluster
+            cluster_name = genomes[0].split('.')[0]  # cluster
             path_cluster = os.path.join(main_folder, cluster_name)
             if not os.path.exists(path_cluster):
                 os.mkdir(path_cluster)
