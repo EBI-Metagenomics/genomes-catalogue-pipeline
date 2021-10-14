@@ -18,8 +18,8 @@ doc: |
               --- pan_genome_reference-fa
               --- gene_presence_absence
          --- genome
-              --- faa
-              --- gff
+              --- faa-s
+              --- gff-s
 
 requirements:
   SubworkflowFeatureRequirement: {}
@@ -115,8 +115,10 @@ steps:
     run: ../../../utils/return_directory.cwl
     in:
       list:
-        - prokka/faa
-        - prokka/gff
+        source:
+          - prokka/faa
+          - prokka/gff
+        linkMerge: merge_flattened
       dir_name: { default: 'genome'}
     out: [ out ]
 
