@@ -1,0 +1,11 @@
+#cwltest
+
+- job: index_fasta.yml
+  tool: ../../../../cwl/tools/index_fasta/index_fasta.cwl
+  short_name: index_fasta.cwl
+  doc: "index fasta file (get fai)"
+  output:
+    fasta_index:
+      basename: "CAJJTO01.fa.fai"
+      class: File
+      size: 41742

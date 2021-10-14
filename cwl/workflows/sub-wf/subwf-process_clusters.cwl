@@ -29,7 +29,7 @@ outputs:
 
   pangenomes:
     type: Directory[]?
-    outputSource: process_many_genomes/pangenomes_cluster
+    outputSource: process_many_genomes/pangenome_clusters
 
   singletons:
     type: Directory[]?

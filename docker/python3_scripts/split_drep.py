@@ -111,8 +111,9 @@ if __name__ == "__main__":
                                            fasta_folder=args.fasta_folder)
                     splitMash(mash_dist=args.mdb, genlist=genomes, outdir=args.output_folder, cluster_name=c)
 
-                    genome_scores = sorted([float(scores[genome]) for genome in genomes], reverse=True)
-                    sorted_genomes = [x for _, x in sorted(zip(genome_scores, genomes), key=lambda pair: pair[0])]
+                    genome_scores = [float(scores[genome]) for genome in genomes]
+                    sorted_genomes = [x for _, x in sorted(zip(genome_scores, genomes), reverse=True,
+                                                           key=lambda pair: pair[0])]
                     split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(sorted_genomes) + '\n')
             else:
                 out_mash_folder = os.path.join(args.output_folder, "mash_folder")
@@ -120,8 +121,9 @@ if __name__ == "__main__":
                     os.makedirs(out_mash_folder)
                 for c in clusters:
                     genomes = clusters[c]
-                    genome_scores = sorted([float(scores[genome]) for genome in genomes], reverse=True)
-                    sorted_genomes = [x for _, x in sorted(zip(genome_scores, genomes), key=lambda pair: pair[0])]
+                    genome_scores = [float(scores[genome]) for genome in genomes]
+                    sorted_genomes = [x for _, x in sorted(zip(genome_scores, genomes), reverse=True,
+                                                           key=lambda pair: pair[0])]
                     split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(sorted_genomes) + '\n')
                     if len(genomes) > 1:
                         generate_mash_folder(mash_dist=args.mdb, out_mash_folder=out_mash_folder, cluster_name=c,
