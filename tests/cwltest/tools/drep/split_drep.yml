@@ -4,4 +4,7 @@ Cdb_csv:
 Mdb_csv:
   class: File
   path: ../../../../input_example/small_set/results/drep-output/data_tables/Mdb.csv
+Sdb_csv:
+  class: File
+  path: ../../../../input_example/small_set/results/drep-output/data_tables/Sdb.csv
 split_outfolder: split-drep-output

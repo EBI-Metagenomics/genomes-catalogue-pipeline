@@ -266,7 +266,6 @@ steps:
     run: ../tools/filter_drep_genomes/filter_drep_genomes.cwl
     in:
       genomes: assign_mgygs/renamed_genomes
-      sdb: drep_subwf/best_cluster_reps
       clusters: drep_subwf/split_text
       gunc_passed: clusters_annotation/one_genome_genomes_gunc_completed
       outdirname: {default: deperlicated_genomes}

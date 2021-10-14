@@ -21,25 +21,15 @@ import sys
 from shutil import copy
 import os
 
-def get_scores(sdb):
-    scores = {}
-    with open(sdb, 'r') as file_in:
-        next(file_in)
-        for line in file_in:
-            values = line.strip().split(',')
-            scores.setdefault(values[0], values[1])
-    return scores
-
 
 def get_drep_genomes(clusters):
+    # genomes sorted by score (from big to small)
     drep_genomes = []
     with open(clusters, 'r') as file_in:
         for line in file_in:
             if "many_genomes" in line:
                 genomes = line.strip().split(':')[2].split(',')
-                genome_scores = [scores[genome] for genome in genomes]
-                index = genome_scores.index(min(genome_scores))
-                best_genome = genomes[index]
+                best_genome = genomes[0]
                 drep_genomes.append(best_genome)
     return drep_genomes
 
@@ -47,7 +37,6 @@ def get_drep_genomes(clusters):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Get drep genomes and gunc-passed")
     parser.add_argument("-g", "--genomes", dest="genomes", help="All input genomes folder", required=True)
-    parser.add_argument("--sdb", dest="sdb", help="dRep Sdb.csv", required=True)
     parser.add_argument("--clusters", dest="clusters", help="Split clusters report", required=True)
     parser.add_argument("--gunc", dest="gunc", help="gunc completed report", required=True)
     parser.add_argument("--output", dest="output", help="output name", required=True)
@@ -56,8 +45,6 @@ if __name__ == "__main__":
         parser.print_help()
     else:
         args = parser.parse_args()
-        # get scores for genomes
-        scores = get_scores(sdb=args.sdb)
 
         # get many-genomes clusters
         drep_genomes = get_drep_genomes(clusters=args.clusters)

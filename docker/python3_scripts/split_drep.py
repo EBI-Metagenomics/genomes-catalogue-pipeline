@@ -21,6 +21,16 @@ import sys
 import argparse
 from shutil import copy
 
+def get_scores(sdb):
+    scores = {}
+    with open(sdb, 'r') as file_in:
+        next(file_in)
+        for line in file_in:
+            values = line.strip().split(',')
+            scores.setdefault(values[0], values[1])
+    return scores
+
+
 def getClusters(clst_file):
     clusters = {}
     with open(clst_file, 'r') as f:
@@ -67,10 +77,11 @@ def create_cluster_folders(out_folder, cluster, genomes, fasta_folder):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Split dRep results by species cluster")
-    parser.add_argument('-f', dest='fasta_folder', help='FASTA folder [REQUIRED]', required=False)
+    parser.add_argument('-f', dest='fasta_folder', help='FASTA folder', required=False)
     parser.add_argument('-o', dest='output_folder', help='Output folder [REQUIRED]', required=True)
     parser.add_argument('--cdb', dest='cdb', help='dRep output folder/data_tables/Cdb.csv', required=True)
     parser.add_argument('--mdb', dest='mdb', help='dRep output folder/data_tables/Mdb.csv', required=True)
+    parser.add_argument("--sdb", dest="sdb", help="dRep Sdb.csv", required=True)
     parser.add_argument('--create-clusters', action='store_true',
                         help='Set this flag to generate folders with genomes and mash-files inside for each cluster')
 
@@ -79,6 +90,10 @@ if __name__ == "__main__":
         sys.exit(1)
     else:
         args = parser.parse_args()
+
+        # get scores for genomes
+        scores = get_scores(sdb=args.sdb)
+
         names = {True: "one_genome", False: "many_genomes"}
         if args.create_clusters and not args.fasta_folder:
             print('--create-clusters option requires -f argument presented')
@@ -95,14 +110,19 @@ if __name__ == "__main__":
                     create_cluster_folders(out_folder=args.output_folder, cluster=c, genomes=genomes,
                                            fasta_folder=args.fasta_folder)
                     splitMash(mash_dist=args.mdb, genlist=genomes, outdir=args.output_folder, cluster_name=c)
-                    split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(genomes) + '\n')
+
+                    genome_scores = sorted([float(scores[genome]) for genome in genomes], reverse=True)
+                    sorted_genomes = [x for _, x in sorted(zip(genome_scores, genomes), key=lambda pair: pair[0])]
+                    split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(sorted_genomes) + '\n')
             else:
                 out_mash_folder = os.path.join(args.output_folder, "mash_folder")
                 if not os.path.exists(out_mash_folder):
                     os.makedirs(out_mash_folder)
                 for c in clusters:
                     genomes = clusters[c]
-                    split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(genomes) + '\n')
+                    genome_scores = sorted([float(scores[genome]) for genome in genomes], reverse=True)
+                    sorted_genomes = [x for _, x in sorted(zip(genome_scores, genomes), key=lambda pair: pair[0])]
+                    split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(sorted_genomes) + '\n')
                     if len(genomes) > 1:
                         generate_mash_folder(mash_dist=args.mdb, out_mash_folder=out_mash_folder, cluster_name=c,
                                          genlist=genomes)

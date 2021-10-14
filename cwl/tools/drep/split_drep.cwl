@@ -68,6 +68,10 @@ inputs:
     type: File
     inputBinding:
       prefix: '--mdb'
+  Sdb_csv:
+    type: File
+    inputBinding:
+      prefix: '--sdb'
   split_outfolder:
     type: string
     inputBinding:

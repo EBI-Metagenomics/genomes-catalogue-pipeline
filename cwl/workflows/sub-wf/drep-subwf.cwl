@@ -72,6 +72,7 @@ steps:
       flag: skip_flag
       Cdb_csv: drep/Cdb_csv
       Mdb_csv: drep/Mdb_csv
+      Sdb_csv: drep/Sdb_csv
       split_outfolder: { default: 'split_outfolder' }
     out:
       - split_out_mash
