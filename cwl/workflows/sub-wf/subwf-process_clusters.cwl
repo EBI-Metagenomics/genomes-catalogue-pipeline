@@ -41,6 +41,10 @@ outputs:
     type: File
     outputSource: process_one_genome/gunc_failed
 
+  gffs_folder:
+    type: Directory
+    outputSource: create_folder_gffs/out
+
   mmseqs_output:
     type: Directory?
     outputSource: mmseqs/mmseqs_dir
@@ -77,6 +81,7 @@ steps:
     out:
       - prokka_seqs
       - pangenome_clusters
+      - prokka_gffs
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
@@ -94,9 +99,23 @@ steps:
       data_dir_eggnog: data_dir_eggnog
     out:
       - prokka_faa-s
+      - prokka_gff-s
       - cluster_folder
       - gunc_completed
       - gunc_failed
+
+
+# ----------- << gffs folder >> -----------
+  create_folder_gffs:
+    run: ../../utils/return_directory.cwl
+    in:
+      list:
+        source:
+          - process_many_genomes/prokka_gffs
+          - process_one_genome/prokka_gff-s
+        linkMerge: merge_flattened
+      dir_name: { default: 'GFFs'}
+    out: [ out ]
 
 # ----------- << mmseqs subwf>> -----------
 

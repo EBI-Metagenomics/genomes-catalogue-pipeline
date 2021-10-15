@@ -19,6 +19,9 @@ outputs:
   prokka_faa-s:
     type: File[]?
     outputSource: filter_nulls_prokka/out_files    # 'null', File[]
+  prokka_gff-s:
+    type: File[]?
+    outputSource: filter_nulls_prokka_gff/out_files    # 'null', File[]
 
   cluster_folder:
     type: Directory[]
@@ -41,6 +44,7 @@ steps:
       gunc_db_path: gunc_db_path
     out:
       - prokka_faa-s  # File
+      - prokka_gff-s
       - cluster_dir   # Dir
       - gunc_decision # File
 
@@ -58,3 +62,8 @@ steps:
       list_files: process_one_genome/prokka_faa-s
     out: [ out_files ]
 
+  filter_nulls_prokka_gff:
+    run: ../../../utils/filter_nulls.cwl
+    in:
+      list_files: process_one_genome/prokka_gff-s
+    out: [ out_files ]

@@ -36,7 +36,9 @@ outputs:
   prokka_faa-s:
     type: File[]
     outputSource: prokka/faa
-
+  prokka_gff-s:
+    type: File[]
+    outputSource: prokka/gff
   cluster_folder:
     type: Directory
     outputSource: create_cluster_directory/pool_directory

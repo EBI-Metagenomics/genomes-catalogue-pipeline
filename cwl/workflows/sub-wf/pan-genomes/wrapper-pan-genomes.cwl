@@ -27,6 +27,14 @@ outputs:
         items: File
     outputSource: process_many_genomes/prokka_faa-s
 
+  prokka_gffs:
+    type:
+      type: array
+      items:
+        type: array
+        items: File
+    outputSource: process_many_genomes/prokka_gff-s
+
 
 steps:
 
@@ -39,5 +47,6 @@ steps:
       mash_files: mash_folder
     out:
       - prokka_faa-s  # File[]
+      - prokka_gff-s
       - cluster_folder  # Dir
 
