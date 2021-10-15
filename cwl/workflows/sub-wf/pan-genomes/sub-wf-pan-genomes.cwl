@@ -133,6 +133,6 @@ steps:
         - create_genome_folder/out
       newname:
         source: cluster
-        valueFrom: cluster_$(self.basename)
+        valueFrom: $(self.basename)
     out: [pool_directory]
 

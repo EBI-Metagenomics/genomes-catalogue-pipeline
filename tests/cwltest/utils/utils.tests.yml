@@ -20,6 +20,16 @@
         size: 1672905
         checksum: sha1$b2d063739a50fc031eb4eec94180f56988ae6eab
 
+# get_files_from_dir
+- job: get_files_from_dir.yml
+  tool: ../../../cwl/utils/get_files_from_dir_one.cwl
+  short_name: get_files_from_dir.cwl
+  doc: "Get a list of files from directory (dir of 1 file)"
+  output:
+    file:
+      class: File
+      basename: "CAJKRY01.fa"
+      size: 1773038
 
 # touch file
 - job: touch_file.yml
