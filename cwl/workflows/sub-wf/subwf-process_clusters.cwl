@@ -18,12 +18,6 @@ inputs:
   mmseq_limit_annotation: float
   csv: File
   gunc_db_path: File
-  interproscan_databases: [string, Directory]
-  chunk_size_ips: int
-  chunk_size_eggnog: int
-  db_diamond_eggnog: [string?, File?]
-  db_eggnog: [string?, File?]
-  data_dir_eggnog: [string?, Directory?]
 
 outputs:
 
@@ -48,9 +42,6 @@ outputs:
   mmseqs_output:
     type: Directory?
     outputSource: mmseqs/mmseqs_dir
-  mmseqs_output_annotation:
-    type: Directory?
-    outputSource: mmseqs/mmseqs_dir_annotation
   cluster_representatives:
     type: File?
     outputSource: mmseqs/cluster_reps
@@ -72,12 +63,6 @@ steps:
     in:
       input_clusters: many_genomes
       mash_folder: process_mash/mash_tree
-      interproscan_databases: interproscan_databases
-      chunk_size_ips: chunk_size_ips
-      chunk_size_eggnog: chunk_size_eggnog
-      db_diamond_eggnog: db_diamond_eggnog
-      db_eggnog: db_eggnog
-      data_dir_eggnog: data_dir_eggnog
     out:
       - prokka_seqs
       - pangenome_clusters
@@ -91,12 +76,6 @@ steps:
       input_cluster: one_genome
       csv: csv
       gunc_db_path: gunc_db_path
-      interproscan_databases: interproscan_databases
-      chunk_size_ips: chunk_size_ips
-      chunk_size_eggnog: chunk_size_eggnog
-      db_diamond_eggnog: db_diamond_eggnog
-      db_eggnog: db_eggnog
-      data_dir_eggnog: data_dir_eggnog
     out:
       - prokka_faa-s
       - prokka_gff-s
@@ -127,5 +106,5 @@ steps:
       mmseqs_limit_i: mmseqs_limit_i
       mmseqs_limit_c: mmseqs_limit_c
       mmseq_limit_annotation: mmseq_limit_annotation
-    out: [ mmseqs_dir, mmseqs_dir_annotation, cluster_reps ]
+    out: [ mmseqs_dir, cluster_reps ]
 

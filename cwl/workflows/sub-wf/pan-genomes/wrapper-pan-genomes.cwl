@@ -28,12 +28,8 @@ outputs:
     outputSource: process_many_genomes/prokka_faa-s
 
   prokka_gffs:
-    type:
-      type: array
-      items:
-        type: array
-        items: File
-    outputSource: process_many_genomes/prokka_gff-s
+    type: File[]
+    outputSource: flatten_gffs/array1d
 
 
 steps:
@@ -49,4 +45,10 @@ steps:
       - prokka_faa-s  # File[]
       - prokka_gff-s
       - cluster_folder  # Dir
+
+  flatten_gffs:
+    run: ../../../utils/flatten_array.cwl
+    in:
+      arrayTwoDim: process_many_genomes/prokka_gff-s
+    out: [ array1d ]
 

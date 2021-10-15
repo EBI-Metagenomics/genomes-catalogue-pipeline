@@ -52,107 +52,69 @@ outputs:
 
   pan-genomes:
     type: Directory[]?
-    outputSource: clusters_annotation/pangenomes
+    outputSource: annotation/pan-genomes
 
   singletons:
     type: Directory[]?
-    outputSource: clusters_annotation/singletons
+    outputSource: annotation/singletons
 
   mmseqs:
     type: Directory?
-    outputSource: clusters_annotation/mmseqs_output
-  mmseqs_annotation:
-    type: Directory?
-    outputSource: clusters_annotation/mmseqs_output_annotation
+    outputSource: annotation/mmseqs
 
   gffs:
     type: Directory
-    outputSource: clusters_annotation/gffs_folder
+    outputSource: annotation/gffs
+
+# ------- functional annotation ----------
+  ips:
+    type: File?
+    outputSource: annotation/ips
+
+  eggnog_annotations:
+    type: File?
+    outputSource: annotation/eggnog_annotations
+  eggnog_seed_orthologs:
+    type: File?
+    outputSource: annotation/eggnog_seed_orthologs
+
+# ---------- rRNA -------------
+  rrna_out:
+    type: Directory
+    outputSource: annotation/rrna_out
+
+  rrna_fasta:
+    type: Directory
+    outputSource: annotation/rrna_fasta
 
 # ------------ GTDB-Tk --------------
   gtdbtk:
     type: Directory?
     outputSource: gtdbtk/gtdbtk_folder
 
-# ------- functional annotation ----------
-  ips:
-    type: File?
-    outputSource: functional_annotation/ips_result
-
-  eggnog_annotations:
-    type: File?
-    outputSource: functional_annotation/eggnog_annotations
-  eggnog_seed_orthologs:
-    type: File?
-    outputSource: functional_annotation/eggnog_seed_orthologs
-
-# ---------- rRNA -------------
-  rrna_out:
-    type: Directory
-    outputSource: detect_rrna/rrna_outs
-
-  rrna_fasta:
-    type: Directory
-    outputSource: detect_rrna/rrna_fastas
-
-
 steps:
 
-# ----------- << checkm for NCBI >> -----------
-  checkm_subwf:
-    run: sub-wf/checkm-subwf.cwl
-    when: $(Boolean(inputs.genomes_folder))
+# ----------- << checkM + assign MGYG >> -----------
+  preparation:
+    run: wf-preparation.cwl
     in:
-      genomes_folder: genomes_ncbi
-    out:
-      - checkm_csv
-
-# ----------- << unite NCBI and ENA >> -----------
-  unite_folders:
-    run: ../tools/unite_ena_ncbi/unite.cwl
-    when: $(Boolean(inputs.ncbi_folder) && Boolean(inputs.ena_folder))
-    in:
-      ena_folder: genomes_ena
-      ncbi_folder: genomes_ncbi
+      genomes_ena: genomes_ena
       ena_csv: ena_csv
-      ncbi_csv: checkm_subwf/checkm_csv
-      outputname: { default: "genomes"}
+      genomes_ncbi: genomes_ncbi
+      max_accession_mgyg: max_accession_mgyg
+      min_accession_mgyg: min_accession_mgyg
     out:
-      - genomes
-      - csv
-
-# ----------- << assign MGYGs >> -----------
-  assign_mgygs:
-    run: ../tools/genomes-catalog-update/rename_fasta/rename_fasta.cwl
-    in:
-      genomes:
-        source:
-          - unite_folders/genomes
-          - genomes_ena
-          - genomes_ncbi
-        pickValue: first_non_null
-      prefix: { default: "MGYG"}
-      start_number: min_accession_mgyg
-      max_number: max_accession_mgyg
-      output_filename: { default: "names.tsv"}
-      output_dirname: { default: "mgyg_genomes" }
-      csv:
-        source:
-          - unite_folders/csv
-          - ena_csv
-          - checkm_subwf/checkm_csv
-        pickValue: first_non_null
-    out:
-      - naming_table
-      - renamed_genomes
-      - renamed_csv
+      - unite_folders_csv
+      - assign_mgygs_renamed_genomes
+      - assign_mgygs_renamed_csv
+      - assign_mgygs_naming_table
 
 # ---------- dRep + split -----------
   drep_subwf:
     run: sub-wf/drep-subwf.cwl
     in:
-      genomes_folder: assign_mgygs/renamed_genomes
-      input_csv: assign_mgygs/renamed_csv
+      genomes_folder: preparation/assign_mgygs_renamed_genomes
+      input_csv: preparation/assign_mgygs_renamed_csv
       skip_flag: skip_drep_step
     out:
       - many_genomes
@@ -162,61 +124,47 @@ steps:
       - weights_file
       - split_text
 
-# ---------- annotation
-  clusters_annotation:
-    run: sub-wf/subwf-process_clusters.cwl
+
+# ----------- << annotations + IPS, eggnog + filter drep + rRNA >> ------
+  annotation:
+    run: wf-annotation.cwl
     in:
-      many_genomes: drep_subwf/many_genomes
-      mash_folder: drep_subwf/mash_files
-      one_genome: drep_subwf/one_genome
+      assign_mgygs_renamed_csv: preparation/assign_mgygs_renamed_csv
+      assign_mgygs_renamed_genomes: preparation/assign_mgygs_renamed_genomes
+
+      drep_subwf_many_genomes: drep_subwf/many_genomes
+      drep_subwf_mash_files: drep_subwf/mash_files
+      drep_subwf_one_genome: drep_subwf/one_genome
+      drep_subwf_split_text: drep_subwf/split_text
+
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
       mmseq_limit_annotation: mmseq_limit_annotation
-      gunc_db_path: gunc_db_path
-      interproscan_databases: interproscan_databases
-      chunk_size_ips: chunk_size_ips
-      chunk_size_eggnog: chunk_size_eggnog
-      db_diamond_eggnog: db_diamond_eggnog
-      db_eggnog: db_eggnog
-      data_dir_eggnog: data_dir_eggnog
-      csv: assign_mgygs/renamed_csv
-    out:
-      - pangenomes
-      - singletons
-      - singletons_gunc_completed
-      - singletons_gunc_failed
-      - mmseqs_output
-      - mmseqs_output_annotation
-      - cluster_representatives
-      - gffs_folder
 
-# ----------- << functional annotation >> ------
-  functional_annotation:
-    run: sub-wf/functional_annotation.cwl
-    in:
-      input_faa: clusters_annotation/cluster_representatives
+      gunc_db_path: gunc_db_path
+
       interproscan_databases: interproscan_databases
       chunk_size_ips: chunk_size_ips
       chunk_size_eggnog: chunk_size_eggnog
       db_diamond_eggnog: db_diamond_eggnog
       db_eggnog: db_eggnog
       data_dir_eggnog: data_dir_eggnog
+
+      cm_models: cm_models
+
     out:
-      - ips_result
+      - pan-genomes
+      - singletons
+      - mmseqs
+      - gffs
+      - ips
       - eggnog_annotations
       - eggnog_seed_orthologs
-
-# ----------- << get genomes dereplicated genomes and GUNC-passed >> ------
-  filter_genomes:
-    run: ../tools/filter_drep_genomes/filter_drep_genomes.cwl
-    in:
-      genomes: assign_mgygs/renamed_genomes
-      clusters: drep_subwf/split_text
-      gunc_passed: clusters_annotation/singletons_gunc_completed
-      outdirname: {default: deperlicated_genomes}
-    out:
-      - drep_filtered_genomes
-      - list_drep_filtered
+      - rrna_out
+      - rrna_fasta
+      - clusters_annotation_singletons_gunc_completed
+      - filter_genomes_list_drep_filtered
+      - filter_genomes_drep_filtered_genomes
 
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:
@@ -224,19 +172,10 @@ steps:
     run: ../tools/gtdbtk/gtdbtk.cwl
     in:
       skip_flag: skip_gtdbtk_step
-      drep_folder: filter_genomes/drep_filtered_genomes
+      drep_folder: annotation/filter_genomes_drep_filtered_genomes
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
     out: [ gtdbtk_folder ]
-
-# ---------- << detect rRNA >> ---------
-  detect_rrna:
-    run: sub-wf/detect_rrna_subwf.cwl
-    in:
-      filtered_genomes: filter_genomes/drep_filtered_genomes
-      cm_models: cm_models
-    out: [rrna_outs, rrna_fastas]
-
 
 # ---------- << return folder with intermediate files >> ----------
   folder_with_intermediate_files:
@@ -244,14 +183,14 @@ steps:
     in:
       list:
         source:
-          - unite_folders/csv                               # initail csv
-          - assign_mgygs/renamed_csv                        # MGYG csv
-          - assign_mgygs/naming_table                       # mapping initial names to MGYGs
-          - drep_subwf/weights_file                         # weights drep
-          - drep_subwf/best_cluster_reps                    # Sdb.csv
-          - drep_subwf/split_text                           # split by clusters file
-          - clusters_annotation/singletons_gunc_completed   # gunc passed genomes list
-          - filter_genomes/list_drep_filtered               # list of dereplicated genomes
-      dir_name: {'intermediate_files'}
+          - preparation/unite_folders_csv                               # initail csv
+          - preparation/assign_mgygs_renamed_csv                        # MGYG csv
+          - preparation/assign_mgygs_naming_table                       # mapping initial names to MGYGs
+          - drep_subwf/weights_file                                     # weights drep
+          - drep_subwf/best_cluster_reps                                # Sdb.csv
+          - drep_subwf/split_text                                       # split by clusters file
+          - annotation/clusters_annotation_singletons_gunc_completed    # gunc passed genomes list
+          - annotation/filter_genomes_list_drep_filtered                # list of dereplicated genomes
+      dir_name: {default: 'intermediate_files'}
     out: [ out ]
 

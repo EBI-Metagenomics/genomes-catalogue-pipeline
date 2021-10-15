@@ -31,10 +31,8 @@ outputs:
 
   mmseqs_dir:
     type: Directory?
-    outputSource: return_mmseq_dir/pool_directory
-  mmseqs_dir_annotation:
-    type: Directory?
-    outputSource: add_mmseq/dir_of_dir
+    outputSource: create_mmseqs_dir/out
+
   cluster_reps:
     type: File?
     outputSource: mmseqs_annotations/faa
@@ -92,15 +90,6 @@ steps:
       limit_c: mmseqs_limit_c
     out: [ outdir ]
 
-  return_mmseq_dir:
-    when: $(Boolean(inputs.files))
-    run: ../../utils/return_dir_of_dir.cwl
-    in:
-      files: filter_nulls/out_files
-      directory_array: mmseqs/outdir
-      newname: { default: "mmseqs_output" }
-    out: [ pool_directory ]
-
 # ------ mmseq for functional annotation ------
 
   mmseqs_annotations:
@@ -119,14 +108,26 @@ steps:
       limit_c: mmseqs_limit_c
     out: [ outdir, faa ]
 
-  add_mmseq:
-    doc: |
-       This step adds additional "annotation folder"
-       to common output folder of mmseq
-    when: $(Boolean(inputs.files))
-    run: ../../utils/return_dir_of_dir.cwl
+
+# ----- tar.gz all mmseqs folders -----
+  create_tars:
+    run: ../../utils/tar.cwl
+    when: $(Boolean(inputs.folder))
+    scatter: folder
     in:
-      files: filter_nulls/out_files
-      directory: mmseqs_annotations/outdir
-      newname: { default: "mmseqs_output" }
-    out: [ dir_of_dir ]
+      folder:
+        source:
+          - mmseqs_annotations/outdir  # Dir
+          - mmseqs/outdir              # Dir[]
+        linkMerge: merge_flattened
+    out: [ folder_tar ]
+
+  create_mmseqs_dir:
+    when: $(Boolean(inputs.list))
+    run: ../../utils/return_directory.cwl
+    in:
+      list:
+        source: create_tars/folder_tar
+        pickValue: all_non_null
+      dir_name: { default: "mmseqs_output" }
+    out: [ out ]
