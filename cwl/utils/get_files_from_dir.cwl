@@ -11,6 +11,20 @@ requirements:
 
 inputs:
   dir: Directory
-expression: '${return {"files": inputs.dir.listing};}'
+
+expression: |
+  ${
+    var input_array = inputs.dir.listing
+    if (input_array.length > 1)
+    {
+      return {"files": input_array}
+    }
+    else
+    {
+      return {"file": input_array[0]}
+    }
+  }
+
 outputs:
-  files: File[]
+  files: File[]?
+  file: File?

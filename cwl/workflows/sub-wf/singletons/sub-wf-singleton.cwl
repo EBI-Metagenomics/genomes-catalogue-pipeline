@@ -7,7 +7,9 @@ doc: |
     cluster
          --- genome
               --- fna
+              --- fna.fai
               --- gff
+              --- faa
 
 requirements:
   SubworkflowFeatureRequirement: {}
@@ -43,14 +45,12 @@ steps:
     run: ../../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
-    out: [ files ]
+    out: [ file ]
 
   gunc:
     run: gunc-subwf.cwl
     in:
-      input_fasta:
-        source: preparation/files
-        valueFrom: $(self[0])
+      input_fasta: preparation/file
       input_csv: csv
       gunc_db_path: gunc_db_path
     out: [ flag ]
@@ -60,13 +60,19 @@ steps:
     run: ../prokka-subwf.cwl
     in:
       flag: gunc/flag
-      prokka_input:
-        source: preparation/files
-        valueFrom: $(self[0])
+      prokka_input: preparation/file
       outdirname: { default: prokka_output }
     out:
       - faa
       - gff
+
+  index_fasta:
+    when: $(inputs.flag.includes("complete.txt"))
+    run: ../../../tools/index_fasta/index_fasta.cwl
+    in:
+      flag: gunc/flag
+      fasta: preparation/file
+    out: [ fasta_index ]
 
 # -------- collect output ----------
 
@@ -74,16 +80,19 @@ steps:
     doc: |
        genome
          --- initial fasta
+         --- initial fasta fai
          --- gff
+         --- faa
     when: $(inputs.flag.includes("complete.txt"))
     run: ../../../utils/return_directory.cwl
     in:
       flag: gunc/flag
       list:
         source:
-          - preparation/files  # File[]
+          - preparation/file  # File
           - prokka/gff         # File
-        linkMerge: merge_flattened
+          - prokka/faa         # File
+          - index_fasta/fasta_index  # File
       dir_name: {default: "genome"}
     out: [ out ]
 
@@ -95,7 +104,7 @@ steps:
       directory: create_genomes_folder/out
       newname:
         source: cluster
-        valueFrom: cluster_$(self.basename)
+        valueFrom: $(self.basename)
     out: [ dir_of_dir ]
 
 
