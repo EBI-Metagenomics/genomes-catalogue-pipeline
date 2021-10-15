@@ -72,7 +72,7 @@ steps:
        genome
          --- initial fasta
          --- gff
-    when: $(inputs.flag.basename.includes("complete.txt"))
+    when: $(inputs.flag.includes("complete.txt"))
     run: ../../../utils/return_directory.cwl
     in:
       flag: gunc/flag
@@ -85,9 +85,10 @@ steps:
     out: [ out ]
 
   return_cluster_dir:
-    when: $(inputs.flag.basename.includes("complete.txt"))
+    when: $(inputs.flag.includes("complete.txt"))
     run: ../../../utils/return_dir_of_dir.cwl
     in:
+      flag: gunc/flag
       directory: create_genomes_folder/out
       newname:
         source: cluster
