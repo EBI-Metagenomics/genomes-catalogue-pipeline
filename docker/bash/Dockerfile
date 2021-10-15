@@ -17,7 +17,7 @@ RUN mkdir /samtools && \
 FROM alpine:3.7
 
 RUN apk add --no-cache pigz nodejs coreutils bash zlib bzip2 ncurses  \
-    ncurses-dev bzip2-dev xz-dev zlib-dev && \
+    ncurses-dev bzip2-dev xz-dev zlib-dev tar && \
     mkdir /tools && mkdir /samtools
 
 COPY --from=build /samtools /samtools

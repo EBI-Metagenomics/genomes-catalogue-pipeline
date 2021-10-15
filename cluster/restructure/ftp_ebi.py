@@ -49,4 +49,3 @@ uhgp_catalogue  (mmseqs)
     --- mmseqs_0.95_outdir.tar.gz
 """
 
-# gffs from prokka -> gzip

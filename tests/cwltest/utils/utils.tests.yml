@@ -216,3 +216,14 @@
       class: File
       size: 16270
       checksum: sha1$b20c0352039e913ba5fd749ee327d26d0b03b041
+
+# tar.gz folder
+- job: tar.yml
+  tool: ../../../cwl/utils/tar.cwl
+  short_name: tar.cwl
+  doc: "tar gz folder"
+  output:
+    folder_tar:
+      basename: "1_1.tar.gz"
+      class: File
+      size: 1781197
