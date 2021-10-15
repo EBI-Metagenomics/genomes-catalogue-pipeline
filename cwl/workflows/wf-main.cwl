@@ -43,41 +43,10 @@ inputs:
 
 outputs:
 
-# ------- unite_folders -------
-  output_csv:
-    type: File
-    outputSource: unite_folders/csv
-
-# ------- assign_mgygs -------
-  renamed_csv:
-    type: File
-    outputSource: assign_mgygs/renamed_csv
-  naming_table:
-    type: File
-    outputSource: assign_mgygs/naming_table
-  renamed_genomes:
+# ------- intermediate files -------
+  intermediate_files:
     type: Directory
-    outputSource: assign_mgygs/renamed_genomes
-
-# ------- drep -------
-  weights:
-    type: File?
-    outputSource: drep_subwf/weights_file
-  best_cluster_reps_drep:                           # remove
-    type: File?
-    outputSource: drep_subwf/best_cluster_reps
-  mash_drep:                                        # remove
-    type: File[]?
-    outputSource: drep_subwf/mash_files
-  one_clusters:                                     # remove
-    type: Directory[]?
-    outputSource: drep_subwf/one_genome
-  many_clusters:                                    # remove
-    type: Directory[]?
-    outputSource: drep_subwf/many_genomes
-  split_test_helper:                                # remove
-    type: File?
-    outputSource: drep_subwf/split_text
+    outputSource: folder_with_intermediate_files/out
 
 # ------- clusters_annotation -------
 
@@ -88,9 +57,6 @@ outputs:
   singletons:
     type: Directory[]?
     outputSource: clusters_annotation/singletons
-  gunc:
-    type: File
-    outputSource: clusters_annotation/singletons_gunc_completed
 
   mmseqs:
     type: Directory?
@@ -99,10 +65,9 @@ outputs:
     type: Directory?
     outputSource: clusters_annotation/mmseqs_output_annotation
 
-# ------------ drep-filt --------------
-  drep_filt_genomes:
-    type: File
-    outputSource: filter_genomes/list_drep_filtered
+  gffs:
+    type: Directory
+    outputSource: clusters_annotation/gffs_folder
 
 # ------------ GTDB-Tk --------------
   gtdbtk:
@@ -223,6 +188,7 @@ steps:
       - mmseqs_output
       - mmseqs_output_annotation
       - cluster_representatives
+      - gffs_folder
 
 # ----------- << functional annotation >> ------
   functional_annotation:
@@ -270,3 +236,22 @@ steps:
       filtered_genomes: filter_genomes/drep_filtered_genomes
       cm_models: cm_models
     out: [rrna_outs, rrna_fastas]
+
+
+# ---------- << return folder with intermediate files >> ----------
+  folder_with_intermediate_files:
+    run: ../utils/return_directory.cwl
+    in:
+      list:
+        source:
+          - unite_folders/csv                               # initail csv
+          - assign_mgygs/renamed_csv                        # MGYG csv
+          - assign_mgygs/naming_table                       # mapping initial names to MGYGs
+          - drep_subwf/weights_file                         # weights drep
+          - drep_subwf/best_cluster_reps                    # Sdb.csv
+          - drep_subwf/split_text                           # split by clusters file
+          - clusters_annotation/singletons_gunc_completed   # gunc passed genomes list
+          - filter_genomes/list_drep_filtered               # list of dereplicated genomes
+      dir_name: {'intermediate_files'}
+    out: [ out ]
+

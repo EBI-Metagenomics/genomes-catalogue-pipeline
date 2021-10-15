@@ -26,6 +26,9 @@ outputs:
   prokka_faa-s:
     type: File?
     outputSource: prokka/faa
+  prokka_gff-s:
+    type: File?
+    outputSource: prokka/gff
 
   gunc_decision:
     type: string
