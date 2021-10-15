@@ -43,7 +43,7 @@ outputs:
 
   gffs_folder:
     type: Directory
-    outputSource: create_folder_gffs/out
+    outputSource: create_folder_gffs/gffs_folder
 
   mmseqs_output:
     type: Directory?
@@ -107,15 +107,15 @@ steps:
 
 # ----------- << gffs folder >> -----------
   create_folder_gffs:
-    run: ../../utils/return_directory.cwl
+    run: create_gffs_folder.cwl
     in:
-      list:
+      gffs:
         source:
           - process_many_genomes/prokka_gffs
           - process_one_genome/prokka_gff-s
         linkMerge: merge_flattened
-      dir_name: { default: 'GFFs'}
-    out: [ out ]
+      folder_name: { default: 'GFFs'}
+    out: [ gffs_folder ]
 
 # ----------- << mmseqs subwf>> -----------
 
