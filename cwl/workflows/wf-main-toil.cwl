@@ -220,6 +220,7 @@ steps:
       - clusters_annotation_singletons_gunc_completed
       - filter_genomes_list_drep_filtered
       - filter_genomes_drep_filtered_genomes
+      - mmseqs_clusters_tsv
 
 # ---------- << return folder with intermediate files >> ----------
   folder_with_intermediate_files:

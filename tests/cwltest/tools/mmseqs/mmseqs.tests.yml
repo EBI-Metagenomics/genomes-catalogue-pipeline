@@ -18,6 +18,9 @@
       checksum: sha1$174752e0879990e37e133920002bed12deb4393b
       class: File
       size: 3169
+    mmseq_cluster_tsv:
+      basename: mmseqs_cluster.tsv
+      class: File
     outdir:
       basename: mmseqs_1.0_outdir
       class: Directory

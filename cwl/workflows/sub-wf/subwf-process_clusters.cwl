@@ -45,6 +45,9 @@ outputs:
   cluster_representatives:
     type: File?
     outputSource: mmseqs/cluster_reps
+  cluster_tsv:
+    type: File?
+    outputSource: mmseqs/cluster_tsv
 
 steps:
 
@@ -106,5 +109,8 @@ steps:
       mmseqs_limit_i: mmseqs_limit_i
       mmseqs_limit_c: mmseqs_limit_c
       mmseq_limit_annotation: mmseq_limit_annotation
-    out: [ mmseqs_dir, cluster_reps ]
+    out:
+      - mmseqs_dir
+      - cluster_reps
+      - cluster_tsv
 
