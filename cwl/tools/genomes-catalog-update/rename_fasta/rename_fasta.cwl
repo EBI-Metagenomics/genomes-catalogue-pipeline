@@ -9,7 +9,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/genomes-catalog-update/scripts/rename_fasta.py
+        location: ../../../../docker/genomes-catalog-update/scripts/rename_fasta.py
 
 hints:
   DockerRequirement:

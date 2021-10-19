@@ -86,7 +86,7 @@ def load_annotations(ann_file, clusters):
                 header = line
             else:
                 rep_protein = line.split('\t')[0]
-                if rep_protein in clusters.keys():
+                if rep_protein in clusters:
                     for member_protein in clusters[rep_protein]:
                         genome = member_protein.split('_')[0]
                         ann_result.setdefault(genome, list()).append(line.replace(rep_protein, member_protein))
