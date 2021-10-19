@@ -62,6 +62,9 @@ outputs:
     type: Directory
     outputSource: clusters_annotation/gffs_folder
 
+  mmseqs_clusters_tsv:
+    type: File?
+    outputSource: clusters_annotation/cluster_tsv
 
 # ------- functional annotation ----------
   ips:
@@ -109,6 +112,7 @@ steps:
       - singletons_gunc_failed
       - mmseqs_output
       - cluster_representatives
+      - cluster_tsv
       - gffs_folder
 
 # ----------- << functional annotation >> ------

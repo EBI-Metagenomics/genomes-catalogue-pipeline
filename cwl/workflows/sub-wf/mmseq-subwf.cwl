@@ -36,7 +36,9 @@ outputs:
   cluster_reps:
     type: File?
     outputSource: mmseqs_annotations/faa
-
+  cluster_tsv:
+    type: File?
+    outputSource: mmseqs_annotations/mmseq_cluster_tsv
 
 steps:
 
@@ -106,7 +108,10 @@ steps:
       input_fasta: concatenate/result
       limit_i: mmseq_limit_annotation
       limit_c: mmseqs_limit_c
-    out: [ outdir, faa ]
+    out:
+      - outdir
+      - faa
+      - mmseq_cluster_tsv
 
 
 # ----- tar.gz all mmseqs folders -----
