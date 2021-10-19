@@ -22,9 +22,6 @@ arguments:
   - prefix: -p
     valueFrom: '16'
     position: 1
-  - prefix: '-g'
-    valueFrom: $(inputs.genomes.listing)
-    position: 3
   - prefix: '-pa'
     position: 4
     valueFrom: '0.9'
@@ -46,7 +43,10 @@ arguments:
 
 inputs:
   genomes:
-    type: Directory
+    type: File[]
+    inputBinding:
+      position: 3
+      prefix: '-g'
 
   drep_outfolder:
     type: string
