@@ -61,6 +61,9 @@ outputs:
   gffs:
     type: Directory
     outputSource: clusters_annotation/gffs_folder
+  panaroo_folder:
+    type: Directory
+    outputSource: clusters_annotation/panaroo_folder
 
   mmseqs_clusters_tsv:
     type: File?
@@ -114,6 +117,7 @@ steps:
       - cluster_representatives
       - cluster_tsv
       - gffs_folder
+      - panaroo_folder
 
 # ----------- << functional annotation >> ------
   functional_annotation:

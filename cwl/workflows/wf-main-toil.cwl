@@ -65,6 +65,9 @@ outputs:
   gffs:
     type: Directory
     outputSource: annotation/gffs
+  panaroo:
+    type: Directory
+    outputSource: annotation/panaroo_folder
 
 # ------- functional annotation ----------
   ips:
@@ -221,6 +224,7 @@ steps:
       - filter_genomes_list_drep_filtered
       - filter_genomes_drep_filtered_genomes
       - mmseqs_clusters_tsv
+      - panaroo_folder
 
 # ---------- << return folder with intermediate files >> ----------
   folder_with_intermediate_files:
