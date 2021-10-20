@@ -13,9 +13,9 @@ requirements:
       - class: File
         location: ../../../docker/python3_scripts/classify_folders.py
 
-hints:
-  DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
 
 baseCommand: [ classify_folders.py ]
 

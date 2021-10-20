@@ -13,9 +13,9 @@ requirements:
       - class: File
         location: ../../../../docker/genomes-catalog-update/scripts/generate_extra_weight_table.py
 
-hints:
-  DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
 
 baseCommand: [ generate_extra_weight_table.py ]
 
