@@ -42,6 +42,9 @@ outputs:
   cluster_folder:
     type: Directory
     outputSource: create_cluster_directory/pool_directory
+  panaroo_tar:
+    type: File
+    outputSource: tar_gz_panaroo_folder/folder_tar
 
 steps:
   preparation:
@@ -64,11 +67,14 @@ steps:
     run: ../../../tools/panaroo/panaroo.cwl
     in:
       gffs: prokka/gff
-      panaroo_outfolder: {default: panaroo_output }
+      panaroo_outfolder:
+        source: cluster
+        valueFrom: $(self.basename)_panaroo
       threads: {default: 8 }
     out:
       - pan_genome_reference-fa
       - gene_presence_absence
+      - panaroo_dir
 
   get_core_genes:
     run: ../../../tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl
@@ -136,3 +142,8 @@ steps:
         valueFrom: $(self.basename)
     out: [pool_directory]
 
+  tar_gz_panaroo_folder:
+    run: ../../../utils/tar.cwl
+    in:
+      folder: panaroo/panaroo_dir
+    out: [ folder_tar ]

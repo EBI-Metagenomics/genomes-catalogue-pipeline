@@ -38,6 +38,9 @@ outputs:
   gffs_folder:
     type: Directory
     outputSource: create_folder_gffs/gffs_folder
+  panaroo_folder:
+    type: Directory
+    outputSource: process_many_genomes/panaroo_output
 
   mmseqs_output:
     type: Directory?
@@ -70,6 +73,7 @@ steps:
       - prokka_seqs
       - pangenome_clusters
       - prokka_gffs
+      - panaroo_output  # Dir
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
