@@ -127,7 +127,7 @@ steps:
 
   get_genomes_list:
     when: $(!Boolean(inputs.flag))
-    run: ../../utils/get_files_from_dir.cwl
+    run: ../utils/get_files_from_dir.cwl
     in:
       flag: skip_drep_step
       dir: preparation/assign_mgygs_renamed_genomes
@@ -135,7 +135,7 @@ steps:
 
   drep:
     when: $(!Boolean(inputs.flag))
-    run: ../../tools/drep/drep.cwl
+    run: ../tools/drep/drep.cwl
     in:
       flag: skip_drep_step
       genomes: get_genomes_list/files
