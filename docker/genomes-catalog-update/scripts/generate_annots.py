@@ -129,7 +129,7 @@ if __name__ == '__main__':
         eggnog_data = parse_eggnog(eggnog_results)
         ipr_hits = parse_ipr(ipr_results)
         eggnog_hits = eggnog_data[5]
-        with open(args.in_folder+"/annotation_coverage.tsv", "w") as summ_out:
+        with open("{}/annotation_coverage.tsv".format(args.in_folder), "w") as summ_out:
             missing = set()
             proteins = get_proteins(fasta_in)
             total_proteins = float(len(proteins))
@@ -137,28 +137,33 @@ if __name__ == '__main__':
                 if p not in ipr_hits and p not in eggnog_hits:
                     missing.add(p)
             summ_out.write("Genome\tAnnotation\tCounts\tCoverage\n")
-            summ_out.write("%s\tInterProScan\t%i\t%.2f\n" % (args.species_name, len(ipr_hits), len(ipr_hits)/total_proteins*100))
-            summ_out.write("%s\teggNOG\t%i\t%.2f\n" % (args.species_name, len(eggnog_hits), len(eggnog_hits)/total_proteins*100))
-            summ_out.write("%s\tCOG\t%i\t%.2f\n" % (args.species_name, eggnog_data[4], eggnog_data[4]/total_proteins*100))
-            summ_out.write("%s\tKEGG\t%i\t%.2f\n" % (args.species_name, eggnog_data[3], eggnog_data[3]/total_proteins*100))
-            summ_out.write("%s\tMissing\t%i\t%.2f\n" % (args.species_name, len(missing), len(missing)/total_proteins*100))
+            summ_out.write("{}\tInterProScan\t{}\t{:.2f}\n".format(
+                args.species_name, len(ipr_hits), len(ipr_hits)/total_proteins*100))
+            summ_out.write("{}\teggNOG\t{}\t{:.2f}\n".format(
+                args.species_name, len(eggnog_hits), len(eggnog_hits)/total_proteins*100))
+            summ_out.write("{}\tCOG\t{}\t{:.2f}\n".format(
+                args.species_name, eggnog_data[4], eggnog_data[4]/total_proteins*100))
+            summ_out.write("{}\tKEGG\t{}\t{:.2f}\n".format(
+                args.species_name, eggnog_data[3], eggnog_data[3]/total_proteins*100))
+            summ_out.write("{}\tMissing\t{}\t{:.2f}\n".format(
+                args.species_name, len(missing), len(missing)/total_proteins*100))
         kegg_classes = eggnog_data[0]
-        with open(args.in_folder+"/kegg_classes.tsv", "w") as kegg_out:
+        with open("{}/kegg_classes.tsv".format(args.in_folder), "w") as kegg_out:
             kegg_out.write("Genome\tKEGG_class\tCounts\n")
             for kegg in kegg_classes:
-                kegg_out.write("%s\t%s\t%i\n" % (args.species_name, kegg, kegg_classes[kegg]))
+                kegg_out.write("{}\t{}\t{}\n".format(args.species_name, kegg, kegg_classes[kegg]))
         kegg_modules = eggnog_data[1]
-        with open(args.in_folder+"/kegg_modules.tsv", "w") as kegg_out:
+        with open("{}/kegg_modules.tsv".format(args.in_folder), "w") as kegg_out:
             kegg_out.write("Genome\tKEGG_module\tCounts\n")
             for kegg in kegg_modules:
-                kegg_out.write("%s\t%s\t%i\n" % (args.species_name, kegg, kegg_modules[kegg]))
+                kegg_out.write("{}\t{}\t{}\n".format(args.species_name, kegg, kegg_modules[kegg]))
         cog_summary = eggnog_data[2]
-        with open(args.in_folder+"/cog_summary.tsv", "w") as cog_out:
+        with open("{}/cog_summary.tsv".format(args.in_folder), "w") as cog_out:
             cog_out.write("Genome\tCOG_category\tCounts\n")
             for cog in cog_summary:
-                cog_out.write("%s\t%s\t%i\n" % (args.species_name, cog, cog_summary[cog]))
+                cog_out.write("{}\t{}\t{}\n".format(args.species_name, cog, cog_summary[cog]))
         cazy_summary = eggnog_data[-1]
-        with open(args.in_folder+"/cazy_summary.tsv", "w") as cazy_out:
+        with open("{}/cazy_summary.tsv".format(args.in_folder), "w") as cazy_out:
             cazy_out.write("Genome\tCAZy_category\tCounts\n")
             for cazy in cazy_summary:
-                cazy_out.write("%s\t%s\t%i\n" % (args.species_name, cazy, cazy_summary[cazy]))
+                cazy_out.write("{}\t{}\t{}\n".format(args.species_name, cazy, cazy_summary[cazy]))
