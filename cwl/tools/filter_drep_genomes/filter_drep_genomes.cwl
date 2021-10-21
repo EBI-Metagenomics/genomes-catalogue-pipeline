@@ -13,9 +13,9 @@ requirements:
       - class: File
         location: ../../../docker/python3_scripts/filter_drep_genomes.py
 
-hints:
-  DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
 
 baseCommand: [ filter_drep_genomes.py ]
 
