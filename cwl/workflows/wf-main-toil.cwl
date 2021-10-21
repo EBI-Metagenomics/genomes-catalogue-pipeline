@@ -125,12 +125,20 @@ steps:
       output: { default: "extra_weight_table.txt" }
     out: [ file_with_weights ]
 
+  get_genomes_list:
+    when: $(!Boolean(inputs.flag))
+    run: ../utils/get_files_from_dir.cwl
+    in:
+      flag: skip_drep_step
+      dir: preparation/assign_mgygs_renamed_genomes
+    out: [ files ]
+
   drep:
     when: $(!Boolean(inputs.flag))
     run: ../tools/drep/drep.cwl
     in:
       flag: skip_drep_step
-      genomes: preparation/assign_mgygs_renamed_genomes
+      genomes: get_genomes_list/files
       drep_outfolder: { default: 'drep_outfolder' }
       csv: preparation/assign_mgygs_renamed_csv
       extra_weights: generate_weights/file_with_weights
