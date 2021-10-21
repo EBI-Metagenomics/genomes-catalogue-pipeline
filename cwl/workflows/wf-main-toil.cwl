@@ -129,7 +129,7 @@ steps:
     when: $(!Boolean(inputs.flag))
     run: ../../utils/get_files_from_dir.cwl
     in:
-      flag: skip_flag
+      flag: skip_drep_step
       dir: preparation/assign_mgygs_renamed_genomes
     out: [ files ]
 
@@ -137,7 +137,7 @@ steps:
     when: $(!Boolean(inputs.flag))
     run: ../../tools/drep/drep.cwl
     in:
-      flag: skip_flag
+      flag: skip_drep_step
       genomes: get_genomes_list/files
       drep_outfolder: { default: 'drep_outfolder' }
       csv: preparation/assign_mgygs_renamed_csv
