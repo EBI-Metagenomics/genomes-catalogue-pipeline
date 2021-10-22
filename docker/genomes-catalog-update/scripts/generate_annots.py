@@ -42,16 +42,18 @@ def parse_eggnog(eggnog_results):
     eggnog_hits = set()
     with open(eggnog_results, "r") as f:
         for line in f:
-            if line[0] != "#":
+            if line.startswith('#'):
+                eggnog_fields = get_eggnog_fields(line)
+            else:
                 cols = line.strip("\n").split("\t")
                 eggnog_hits.add(cols[0])
-                ko = cols[8].split(",")
-                ko_mod = cols[10].split(",")
+                ko = cols[eggnog_fields["KEGG_ko"]].split(",")
+                ko_mod = cols[eggnog_fields["KEGG_Module"]].split(",")
                 try:
-                    cog_func = cols[20]
+                    cog_func = cols[eggnog_fields["cog_func"]]
                 except:
                     cog_func = ""
-                cazy = cols[15].split(",")
+                cazy = cols[eggnog_fields["CAZy"]].split(",")
                 if cazy[0] not in ("", "-"):
                     for c in cazy:
                         gene = c[:2]
@@ -68,25 +70,30 @@ def parse_eggnog(eggnog_results):
                         try:
                             k = k.split(":")[-1]
                             for subcat in kegg_cats[k]:
-                                if subcat not in kegg_counts.keys():
-                                    kegg_counts[subcat] = 1
-                                else:
-                                    kegg_counts[subcat] += 1
+                                kegg_counts.setdefault(subcat, 0)
+                                kegg_counts[subcat] += 1
                         except:
                             continue
                 for k in ko_mod:
                     if "M0" in k:
-                        if k not in keggM_counts.keys():
-                            keggM_counts[k] = 1
-                        else:
-                            keggM_counts[k] += 1
+                        keggM_counts.setdefault(k, 0)
+                        keggM_counts[k] += 1
                 for subcat in cog_func:
                     if subcat != "":
-                        if subcat not in cog_counts.keys():
-                            cog_counts[subcat] = 1
-                        else:
-                            cog_counts[subcat] += 1
+                        cog_counts.setdefault(subcat, 0)
+                        cog_counts[subcat] += 1
         return kegg_counts, keggM_counts, cog_counts, kegg_coverage, cog_coverage, eggnog_hits, cazy_counts
+
+
+def get_eggnog_fields(line):
+    cols = line.strip().split("\t")
+    if cols[8] == "KEGG_ko" and cols[15] == "CAZy":
+        eggnog_fields = {"KEGG_ko": 8, "KEGG_Module": 10, "CAZy": 15, "cog_func": 20}
+    elif cols[11] == "KEGG_ko" and cols[18] == "CAZy":
+        eggnog_fields = {"KEGG_ko": 11, "KEGG_Module": 13, "CAZy": 18, "cog_func": 6}
+    else:
+        sys.exit("Cannot parse eggNOG - unexpected field order or naming")
+    return eggnog_fields
 
 
 def parse_ipr(ipr_results):
