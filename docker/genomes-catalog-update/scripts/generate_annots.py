@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import glob
 from argparse import RawTextHelpFormatter
 
 
@@ -103,9 +102,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='''
     Generate function summary stats
         
-    Input/Output folder must contain:
-    - *eggNOG.tsv: eggNOG results
-    - *InterProScan.tsv: IPRScan results
+    Input folder must contain:
+    - {accession}_eggNOG.tsv: eggNOG results
+    - {accession}_InterProScan.tsv: IPRScan results
 
     Output files created:
     - annotation_coverage.tsv
@@ -113,8 +112,8 @@ if __name__ == '__main__':
     - kegg_modules.tsv
     - cazy_summary.tsv
     - cog_summary.tsv''', formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-i', dest='in_folder', help='Input/Output folder [REQUIRED]', required=True)
-    parser.add_argument('-s', dest='species_name', help='Species accession [REQUIRED]', required=True)
+    parser.add_argument('-i', dest='in_folder', help='Input folder [REQUIRED]', required=True)
+    parser.add_argument('-o', dest='out_folder', help='Output folder [REQUIRED]', required=True)
     parser.add_argument('-f', dest='fasta', help='Protein FASTA file [REQUIRED]', required=True)
     parser.add_argument('-k', dest='kegg_classes', help='KEGG orthology classes DB [REQUIRED]', required=True)
     if len(sys.argv) == 1:
@@ -122,14 +121,17 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         args = parser.parse_args()
-        eggnog_results = glob.glob(os.path.join(args.in_folder, "*eggNOG.tsv"))[0]
-        ipr_results = glob.glob(os.path.join(args.in_folder, "*InterProScan.tsv"))[0]
+        if not os.path.exists(args.out_folder):
+            os.makedirs(args.out_folder)
         fasta_in = args.fasta
+        species_name = fasta_in.split("/")[-1].split(".")[0]
+        eggnog_results = os.path.join(args.in_folder, "{}_eggNOG.tsv".format(species_name))
+        ipr_results = os.path.join(args.in_folder, "{}_InterProScan.tsv".format(species_name))
         kegg_classes = args.kegg_classes
         eggnog_data = parse_eggnog(eggnog_results)
         ipr_hits = parse_ipr(ipr_results)
         eggnog_hits = eggnog_data[5]
-        with open("{}/annotation_coverage.tsv".format(args.in_folder), "w") as summ_out:
+        with open("{}/{}_annotation_coverage.tsv".format(args.out_folder, species_name), "w") as summ_out:
             missing = set()
             proteins = get_proteins(fasta_in)
             total_proteins = float(len(proteins))
@@ -138,32 +140,32 @@ if __name__ == '__main__':
                     missing.add(p)
             summ_out.write("Genome\tAnnotation\tCounts\tCoverage\n")
             summ_out.write("{}\tInterProScan\t{}\t{:.2f}\n".format(
-                args.species_name, len(ipr_hits), len(ipr_hits)/total_proteins*100))
+                species_name, len(ipr_hits), len(ipr_hits)/total_proteins*100))
             summ_out.write("{}\teggNOG\t{}\t{:.2f}\n".format(
-                args.species_name, len(eggnog_hits), len(eggnog_hits)/total_proteins*100))
+                species_name, len(eggnog_hits), len(eggnog_hits)/total_proteins*100))
             summ_out.write("{}\tCOG\t{}\t{:.2f}\n".format(
-                args.species_name, eggnog_data[4], eggnog_data[4]/total_proteins*100))
+                species_name, eggnog_data[4], eggnog_data[4]/total_proteins*100))
             summ_out.write("{}\tKEGG\t{}\t{:.2f}\n".format(
-                args.species_name, eggnog_data[3], eggnog_data[3]/total_proteins*100))
+                species_name, eggnog_data[3], eggnog_data[3]/total_proteins*100))
             summ_out.write("{}\tMissing\t{}\t{:.2f}\n".format(
-                args.species_name, len(missing), len(missing)/total_proteins*100))
+                species_name, len(missing), len(missing)/total_proteins*100))
         kegg_classes = eggnog_data[0]
-        with open("{}/kegg_classes.tsv".format(args.in_folder), "w") as kegg_out:
+        with open("{}/{}_kegg_classes.tsv".format(args.out_folder, species_name), "w") as kegg_out:
             kegg_out.write("Genome\tKEGG_class\tCounts\n")
             for kegg in kegg_classes:
-                kegg_out.write("{}\t{}\t{}\n".format(args.species_name, kegg, kegg_classes[kegg]))
+                kegg_out.write("{}\t{}\t{}\n".format(species_name, kegg, kegg_classes[kegg]))
         kegg_modules = eggnog_data[1]
-        with open("{}/kegg_modules.tsv".format(args.in_folder), "w") as kegg_out:
+        with open("{}/{}_kegg_modules.tsv".format(args.out_folder, species_name), "w") as kegg_out:
             kegg_out.write("Genome\tKEGG_module\tCounts\n")
             for kegg in kegg_modules:
-                kegg_out.write("{}\t{}\t{}\n".format(args.species_name, kegg, kegg_modules[kegg]))
+                kegg_out.write("{}\t{}\t{}\n".format(species_name, kegg, kegg_modules[kegg]))
         cog_summary = eggnog_data[2]
-        with open("{}/cog_summary.tsv".format(args.in_folder), "w") as cog_out:
+        with open("{}/{}_cog_summary.tsv".format(args.out_folder, species_name), "w") as cog_out:
             cog_out.write("Genome\tCOG_category\tCounts\n")
             for cog in cog_summary:
-                cog_out.write("{}\t{}\t{}\n".format(args.species_name, cog, cog_summary[cog]))
+                cog_out.write("{}\t{}\t{}\n".format(species_name, cog, cog_summary[cog]))
         cazy_summary = eggnog_data[-1]
-        with open("{}/cazy_summary.tsv".format(args.in_folder), "w") as cazy_out:
+        with open("{}/{}_cazy_summary.tsv".format(args.out_folder, species_name), "w") as cazy_out:
             cazy_out.write("Genome\tCAZy_category\tCounts\n")
             for cazy in cazy_summary:
-                cazy_out.write("{}\t{}\t{}\n".format(args.species_name, cazy, cazy_summary[cazy]))
+                cazy_out.write("{}\t{}\t{}\n".format(species_name, cazy, cazy_summary[cazy]))
