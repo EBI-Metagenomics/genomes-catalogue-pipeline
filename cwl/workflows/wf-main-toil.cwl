@@ -248,6 +248,7 @@ steps:
           - split_drep/split_text                                       # split by clusters file
           - annotation/clusters_annotation_singletons_gunc_completed    # gunc passed genomes list
           - annotation/filter_genomes_list_drep_filtered                # list of dereplicated genomes
+        pickValue: all_non_null
       dir_name: { default: 'intermediate_files'}
     out: [ out ]
 
