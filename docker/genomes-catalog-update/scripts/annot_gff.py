@@ -61,7 +61,7 @@ def add_gff(in_gff, eggnog_file, ipr_file):
     eggnogs = get_eggnog(eggnog_file)
     iprs = get_iprs(ipr_file)
     added_annot = {}
-    outGff = []
+    out_gff = []
     with open(in_gff, "r") as f:
         for line in f:
             line = line.strip()
@@ -104,8 +104,8 @@ def add_gff(in_gff, eggnog_file, ipr_file):
                             value = ",".join(value)
                         cols[8] = "{};{}={}".format(cols[8], a, value)
                     line = "\t".join(cols)
-            outGff.append(line)
-    return outGff
+            out_gff.append(line)
+    return out_gff
 
 
 if __name__ == "__main__":
