@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-import os
 import argparse
 from argparse import RawTextHelpFormatter
 import sys
 
 
-def getIPRs(IPRannot):
+def get_iprs(ipr_annot):
     iprs = {}
-    with open(IPRannot, "r") as f:
+    with open(ipr_annot, "r") as f:
         for line in f:
             line = line.rstrip()
             cols = line.split("\t")
@@ -24,9 +23,9 @@ def getIPRs(IPRannot):
     return iprs
 
 
-def getEggNog(eggNOGannot):
+def get_eggnog(eggnot_annot):
     eggnogs = {}
-    with open(eggNOGannot, "r") as f:
+    with open(eggnot_annot, "r") as f:
         for line in f:
             line = line.rstrip()
             cols = line.split("\t")
@@ -45,12 +44,12 @@ def getEggNog(eggNOGannot):
     return eggnogs
 
 
-def addGff(inGff, eggNOGfile, IPRfile):
-    eggnogs = getEggNog(eggNOGfile)
-    iprs = getIPRs(IPRfile)
+def add_gff(in_gff, eggnog_file, ipr_file):
+    eggnogs = get_eggnog(eggnog_file)
+    iprs = get_iprs(ipr_file)
     added_annot = {}
     outGff = []
-    with open(inGff, "r") as f:
+    with open(in_gff, "r") as f:
         for line in f:
             line = line.strip()
             if line[0] != "#":
@@ -107,7 +106,7 @@ if __name__ == "__main__":
         sys.exit(1)
     else:
         args = parser.parse_args()
-        res = addGff(args.gff, args.eggnog, args.interpro)
+        res = add_gff(args.gff, args.eggnog, args.interpro)
         outName = args.gff.split(".gff")[0]+"_annotated.gff"
         with open(outName, "w") as fout:
             fout.write("\n".join(res))
