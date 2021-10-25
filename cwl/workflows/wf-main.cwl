@@ -40,6 +40,7 @@ inputs:
   data_dir_eggnog: [string?, Directory?]
 
   cm_models: Directory
+  kegg_db: File
 
 outputs:
 
