@@ -108,10 +108,6 @@ def parse_ipr(ipr_results):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='''
     Generate function summary stats
-        
-    Input folder must contain:
-    - {accession}_eggNOG.tsv: eggNOG results
-    - {accession}_InterProScan.tsv: IPRScan results
 
     Output files created:
     - annotation_coverage.tsv
@@ -119,7 +115,8 @@ if __name__ == '__main__':
     - kegg_modules.tsv
     - cazy_summary.tsv
     - cog_summary.tsv''', formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-i', dest='in_folder', help='Input folder [REQUIRED]', required=True)
+    parser.add_argument('-e', dest='eggnog_results', help='EggNOG results file [REQUIRED]', required=True)
+    parser.add_argument('-i', dest='ipr_results', help='InterProScan results file [REQUIRED]', required=True)
     parser.add_argument('-o', dest='out_folder', help='Output folder [REQUIRED]', required=True)
     parser.add_argument('-f', dest='fasta', help='Protein FASTA file [REQUIRED]', required=True)
     parser.add_argument('-k', dest='kegg_classes', help='KEGG orthology classes DB [REQUIRED]', required=True)
@@ -132,8 +129,8 @@ if __name__ == '__main__':
             os.makedirs(args.out_folder)
         fasta_in = args.fasta
         species_name = fasta_in.split("/")[-1].split(".")[0]
-        eggnog_results = os.path.join(args.in_folder, "{}_eggNOG.tsv".format(species_name))
-        ipr_results = os.path.join(args.in_folder, "{}_InterProScan.tsv".format(species_name))
+        eggnog_results = args.eggnog_results
+        ipr_results = args.ipr_results
         kegg_classes = args.kegg_classes
         eggnog_data = parse_eggnog(eggnog_results)
         ipr_hits = parse_ipr(ipr_results)
