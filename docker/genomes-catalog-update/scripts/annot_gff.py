@@ -101,12 +101,16 @@ if __name__ == "__main__":
     parser.add_argument('-g', dest='gff', help='Input GFF file [REQUIRED]', required=True)
     parser.add_argument('-e', dest='eggnog', help='eggNOG TSV file [REQUIRED]', required=True)
     parser.add_argument('-i', dest='interpro', help='InterProScan TSV file [REQUIRED]', required=True)
+    parser.add_argument('-o', dest='outfile', help='Outfile name')
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
     else:
         args = parser.parse_args()
         res = add_gff(args.gff, args.eggnog, args.interpro)
-        outName = args.gff.split(".gff")[0]+"_annotated.gff"
-        with open(outName, "w") as fout:
+        if not args.outfile:
+            outfile = args.gff.split(".gff")[0]+"_annotated.gff"
+        else:
+            outfile = args.outfile
+        with open(outfile, "w") as fout:
             fout.write("\n".join(res))
