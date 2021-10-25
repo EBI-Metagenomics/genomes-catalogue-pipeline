@@ -29,19 +29,32 @@ def get_eggnog(eggnot_annot):
         for line in f:
             line = line.rstrip()
             cols = line.split("\t")
-            if line[0] != "#":
+            if line.startswith("#"):
+                eggnog_fields = get_eggnog_fields(line)
+            else:
                 protein = cols[0]
                 eggnog = [cols[1]]
                 try:
-                    cog = cols[20]
+                    cog = cols[eggnog_fields["cog_func"]]
                     cog = cog.split()
                     if len(cog) > 1:
                         cog = ["R"]
                 except:
                     cog = ["NA"]
-                kegg = cols[8].split(",")
+                kegg = cols[eggnog_fields["KEGG_ko"]].split(",")
                 eggnogs[protein] = [eggnog, cog, kegg]
     return eggnogs
+
+
+def get_eggnog_fields(line):
+    cols = line.strip().split("\t")
+    if cols[8] == "KEGG_ko" and cols[15] == "CAZy":
+        eggnog_fields = {"KEGG_ko": 8, "cog_func": 20}
+    elif cols[11] == "KEGG_ko" and cols[18] == "CAZy":
+        eggnog_fields = {"KEGG_ko": 11, "cog_func": 6}
+    else:
+        sys.exit("Cannot parse eggNOG - unexpected field order or naming")
+    return eggnog_fields
 
 
 def add_gff(in_gff, eggnog_file, ipr_file):
