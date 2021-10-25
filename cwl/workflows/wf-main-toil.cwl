@@ -40,6 +40,7 @@ inputs:
   data_dir_eggnog: [string?, Directory?]
 
   cm_models: Directory
+  kegg_db: File
 
 outputs:
 
@@ -233,6 +234,18 @@ steps:
       - filter_genomes_drep_filtered_genomes
       - mmseqs_clusters_tsv
       - panaroo_folder
+
+# ---------- << post-processing >> ----------
+  post_processing:
+    run: wf-post-processing.cwl
+    in:
+      ips: annotation/ips
+      eggnog: annotation/eggnog_annotations
+      kegg: kegg_db
+      species_representatives: annotation/filter_genomes_list_drep_filtered
+
+    out:
+
 
 # ---------- << return folder with intermediate files >> ----------
   folder_with_intermediate_files:

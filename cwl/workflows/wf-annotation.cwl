@@ -2,6 +2,13 @@
 cwlVersion: v1.2
 class: Workflow
 
+doc: |
+  - process singleton and pan-genome clusters
+  - IPS + eggnog
+  - filter drep genomes + filtered by GUNC
+  - detect rRNA
+
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}

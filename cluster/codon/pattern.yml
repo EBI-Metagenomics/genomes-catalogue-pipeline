@@ -44,3 +44,7 @@ gtdbtk_data:
 cm_models:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/rfams_cms
+
+kegg_db:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv

@@ -2,6 +2,12 @@
 cwlVersion: v1.2
 class: Workflow
 
+doc: |
+   - checkM (for NCBI) + generate csv
+   - unite ENA and NCBI genenomes into one folder and cat csv-s (skip if only one presented)
+   - assign MGYGs to genomes
+
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
