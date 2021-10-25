@@ -89,7 +89,7 @@ def add_gff(in_gff, eggnog_file, ipr_file):
                         value = added_annot[protein][a]
                         if type(value) is list:
                             value = ",".join(value)
-                        cols[8] = "%s;%s=%s" % (cols[8], a, value)
+                        cols[8] = "{};{}={}".format(cols[8], a, value)
                     line = "\t".join(cols)
             outGff.append(line)
     return outGff
