@@ -3,8 +3,8 @@ cwlVersion: v1.2
 
 requirements:
   ResourceRequirement:
-    ramMin: 1000
-    coresMax: 1
+    ramMin: 50000
+    coresMax: 16
   InlineJavascriptRequirement: {}
   InitialWorkDirRequirement:
     listing:
@@ -34,6 +34,16 @@ inputs:
     inputBinding:
       position: 3
       prefix: --rep-list
+  mmseqs:
+    type: File
+    inputBinding:
+      position: 3
+      prefix: --mmseqs-tsv
+  cores:
+    type: int
+    inputBinding:
+      position: 3
+      prefix: -c
   outdirname:
     type: string
     inputBinding:
