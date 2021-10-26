@@ -115,6 +115,24 @@ steps:
       dir_name: { default: 'pan-genome'}
     out: [ out ]
 
+  choose_main_rep_gff:
+    run: ../../../get_file_pattern.cwl
+    in:
+      list_files: prokka/gff
+      pattern:
+        source: cluster
+        valueFrom: $(self.basename)
+    out: [ file_pattern ]
+
+  choose_main_rep_faa:
+    run: ../../../get_file_pattern.cwl
+    in:
+      list_files: prokka/faa
+      pattern:
+        source: cluster
+        valueFrom: $(self.basename)
+    out: [ file_pattern ]
+
   create_genome_folder:
     doc: |
        Add:
@@ -123,13 +141,10 @@ steps:
     run: ../../../utils/return_directory.cwl
     in:
       list:
-        source:
-          - prokka/faa
-          - prokka/gff
-        linkMerge: merge_flattened
+        - choose_main_rep_gff/file_pattern
+        - choose_main_rep_faa/file_pattern
       dir_name: { default: 'genome'}
     out: [ out ]
-
 
   create_cluster_directory:
     run: ../../../utils/return_dir_of_dir.cwl

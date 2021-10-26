@@ -16,6 +16,7 @@ requirements:
 inputs:
   kegg: File
   species_representatives: File
+  mmseqs_tsv: File
   ips: File
   eggnog: File
 ???   protein_fasta: File
@@ -35,7 +36,8 @@ steps:
       ips: ips
       eggnog: eggnog
       species_representatives: species_representatives
-
+      mmseqs: mmseqs_tsv
+      cores: { default: 16 }
       outdirname: {default: per-genome-annotations }
     out: [ per_genome_annotations ]
 
@@ -47,4 +49,10 @@ steps:
       output: { default: func_summary }
       protein_fasta:
       kegg_db: kegg
+    out:
+      - annotation_coverage
+      - kegg_classes
+      - kegg_modules
+      - cazy_summary
+      - cog_summary
 
