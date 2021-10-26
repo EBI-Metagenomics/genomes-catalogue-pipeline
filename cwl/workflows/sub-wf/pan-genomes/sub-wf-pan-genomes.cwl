@@ -116,7 +116,7 @@ steps:
     out: [ out ]
 
   choose_main_rep_gff:
-    run: ../../../get_file_pattern.cwl
+    run: ../../../utils/get_file_pattern.cwl
     in:
       list_files: prokka/gff
       pattern:
@@ -125,7 +125,7 @@ steps:
     out: [ file_pattern ]
 
   choose_main_rep_faa:
-    run: ../../../get_file_pattern.cwl
+    run: ../../../utils/get_file_pattern.cwl
     in:
       list_files: prokka/faa
       pattern:
