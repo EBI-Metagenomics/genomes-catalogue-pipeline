@@ -51,3 +51,6 @@ gtdbtk_data:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202
 
+kegg_db:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv
