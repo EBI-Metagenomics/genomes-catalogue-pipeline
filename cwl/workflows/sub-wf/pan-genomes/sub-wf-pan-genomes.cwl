@@ -98,6 +98,7 @@ steps:
     out: [ file_pattern ]
 
 # --------------------------------------- result folders -----------------------------------------
+# ------------------------ pan-genome folder
   create_pangenome_folder:
     doc: |
        Add:
@@ -115,6 +116,7 @@ steps:
       dir_name: { default: 'pan-genome'}
     out: [ out ]
 
+# ------------------------ genome folder
   choose_main_rep_gff:
     run: ../../../utils/get_file_pattern.cwl
     in:
@@ -133,19 +135,39 @@ steps:
         valueFrom: $(self.basename)
     out: [ file_pattern ]
 
+  choose_main_rep_fa:
+    run: ../../../utils/get_file_pattern.cwl
+    in:
+      list_files: preparation/files
+      pattern:
+        source: cluster
+        valueFrom: $(self.basename)
+    out: [ file_pattern ]
+
+  index_fasta:
+    run: ../../../tools/index_fasta/index_fasta.cwl
+    in:
+      fasta: choose_main_rep_fa/file_pattern
+    out: [ fasta_index ]
+
   create_genome_folder:
     doc: |
        Add:
          - faa (prokka)
          - gff (prokka)
+         - fa
+         - fa.fai
     run: ../../../utils/return_directory.cwl
     in:
       list:
         - choose_main_rep_gff/file_pattern
         - choose_main_rep_faa/file_pattern
+        - choose_main_rep_fa/file_pattern
+        - index_fasta/fasta_index
       dir_name: { default: 'genome'}
     out: [ out ]
 
+# ------------------------ cluster folder
   create_cluster_directory:
     run: ../../../utils/return_dir_of_dir.cwl
     in:
