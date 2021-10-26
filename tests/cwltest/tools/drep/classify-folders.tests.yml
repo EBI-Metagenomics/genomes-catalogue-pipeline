@@ -127,3 +127,44 @@
       class: File
       checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
       size: 0
+
+- job: classify/classify-mixed-2.yml
+  tool: ../../../../cwl/tools/drep/classify_folders.cwl
+  short_name: classify_folders.cwl
+  doc: "Classify folders by text file"
+  output:
+    many_genomes:
+      - basename: "CAJKXJ01"
+        class: Directory
+        listing:
+          - class: File
+            basename: "CAJKXJ01.fa"
+          - class: File
+            basename: "CAJKRE01.fa"
+      - basename: "CAJLGA01"
+        class: Directory
+        listing:
+          - class: File
+            basename: "CAJLGA01.fa"
+          - class: File
+            basename: "CAJKGB01.fa"
+          - class: File
+            basename: "CAJJTO01.fa"
+    mash_folder: null
+    one_genome:
+      - basename: "CAJKRY01"
+        class: Directory
+        listing:
+          - class: File
+            basename: "CAJKRY01.fa"
+      - basename: "CAJKXZ01"
+        class: Directory
+        listing:
+          - class: File
+            basename: "CAJKXZ01.fa"
+    stderr:
+      class: File
+      basename: "stderr.txt"
+    stdout:
+      class: File
+      basename: "stdout.txt"

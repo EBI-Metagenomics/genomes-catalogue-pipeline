@@ -236,15 +236,16 @@ steps:
       - panaroo_folder
 
 # ---------- << post-processing >> ----------
-  post_processing:
-    run: wf-post-processing.cwl
-    in:
-      ips: annotation/ips
-      eggnog: annotation/eggnog_annotations
-      kegg: kegg_db
-      species_representatives: annotation/filter_genomes_list_drep_filtered
-
-    out:
+#  post_processing:
+#    run: wf-post-processing.cwl
+#    in:
+#      ips: annotation/ips
+#      eggnog: annotation/eggnog_annotations
+#      species_representatives: annotation/filter_genomes_list_drep_filtered
+#      mmseqs_tsv: annotation/mmseqs_clusters_tsv
+#
+#      kegg: kegg_db
+#    out:
 
 
 # ---------- << return folder with intermediate files >> ----------

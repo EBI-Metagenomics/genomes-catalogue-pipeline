@@ -47,7 +47,23 @@ inputs:
       position: 5
 
 outputs:
-  :
+  annotation_coverage:
     type: File
     outputBinding:
-      glob: $(inputs.output)
+      glob: $(inputs.output)/annotation_coverage.tsv
+  kegg_classes:
+    type: File
+    outputBinding:
+      glob: $(inputs.output)/kegg_classes.tsv
+  kegg_modules:
+    type: File
+    outputBinding:
+      glob: $(inputs.output)/kegg_modules.tsv
+  cazy_summary:
+    type: File
+    outputBinding:
+      glob: $(inputs.output)/cazy_summary.tsv
+  cog_summary:
+    type: File
+    outputBinding:
+      glob: $(inputs.output)/cog_summary.tsv
