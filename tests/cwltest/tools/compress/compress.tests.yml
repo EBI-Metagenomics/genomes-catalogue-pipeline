@@ -1,0 +1,11 @@
+#cwltest
+
+- job: pigz.yml
+  tool: ../../../../cwl/tools/compress/pigz.cwl
+  short_name: pigz.cwl
+  doc: "compress file with pigz"
+  output:
+    compressed_file:
+      basename: "CAJJTO01.fa.gz"
+      class: File
+      size: 499378

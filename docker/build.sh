@@ -22,6 +22,9 @@ cd GUNC && docker build -t microbiomeinformatics/${NAME}.gunc:v2 .
 # GTDB-Tk
 cd gtdb-tk && docker build -t microbiomeinformatics/${NAME}.gtdb-tk:v1 .
 
+# index fasta and pigz
+cd bash && docker build -t microbiomeinformatics/${NAME}.bash:v1 .
+
 # IPS
 cd IPS && docker build -t microbiomeinformatics/${NAME}.interproscan:v1 .
 

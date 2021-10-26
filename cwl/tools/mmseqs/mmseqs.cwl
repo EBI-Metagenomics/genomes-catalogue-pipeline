@@ -51,3 +51,8 @@ outputs:
     type: File
     outputBinding:
       glob: mmseqs_$(inputs.limit_i)_outdir/mmseqs_cluster_rep.fa
+
+  mmseq_cluster_tsv:
+    type: File
+    outputBinding:
+      glob: mmseqs_$(inputs.limit_i)_outdir/mmseqs_cluster.tsv

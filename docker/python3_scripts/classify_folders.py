@@ -62,11 +62,13 @@ def classify_splitted_folders(input_folder):
 def classify_by_file(split_text, genomes_folder):
     with open(split_text, 'r') as file_in:
         for line in file_in:
-            main_folder, cluster, genomes = line.strip().split(':')
-            path_cluster = os.path.join(main_folder, cluster)
+            main_folder, cluster, genomes_str = line.strip().split(':')
+            genomes = genomes_str.split(',')
+            cluster_name = genomes[0].split('.')[0]  # cluster
+            path_cluster = os.path.join(main_folder, cluster_name)
             if not os.path.exists(path_cluster):
                 os.mkdir(path_cluster)
-            for genome in genomes.split(','):
+            for genome in genomes:
                 old_path = os.path.join(genomes_folder, genome)
                 new_path = os.path.join(path_cluster, genome)
                 shutil.copy(old_path, new_path)

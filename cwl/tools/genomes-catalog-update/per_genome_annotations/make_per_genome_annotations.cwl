@@ -3,13 +3,13 @@ cwlVersion: v1.2
 
 requirements:
   ResourceRequirement:
-    ramMin: 1000
-    coresMax: 1
+    ramMin: 50000
+    coresMax: 16
   InlineJavascriptRequirement: {}
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/genomes-catalog-update/scripts/make_per_genome_annotations.py
+        location: ../../../../docker/genomes-catalog-update/scripts/make_per_genome_annotations.py
 
 hints:
   DockerRequirement:
@@ -34,6 +34,16 @@ inputs:
     inputBinding:
       position: 3
       prefix: --rep-list
+  mmseqs:
+    type: File
+    inputBinding:
+      position: 3
+      prefix: --mmseqs-tsv
+  cores:
+    type: int
+    inputBinding:
+      position: 3
+      prefix: -c
   outdirname:
     type: string
     inputBinding:

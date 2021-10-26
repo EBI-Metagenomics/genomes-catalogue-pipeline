@@ -46,7 +46,7 @@ if __name__ == "__main__":
     else:
         args = parser.parse_args()
 
-        # get many-genomes clusters
+        # get pan-genomes clusters
         drep_genomes = get_drep_genomes(clusters=args.clusters)
 
         # get list of gunc-passed genomes

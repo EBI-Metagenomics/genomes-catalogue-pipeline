@@ -18,98 +18,90 @@ inputs:
   mmseq_limit_annotation: float
   csv: File
   gunc_db_path: File
-  interproscan_databases: [string, Directory]
-  chunk_size_ips: int
-  chunk_size_eggnog: int
-  db_diamond_eggnog: [string?, File?]
-  db_eggnog: [string?, File?]
-  data_dir_eggnog: [string?, Directory?]
 
 outputs:
-  mash_folder:
-    type: Directory?
-    outputSource: process_many_genomes/mash_folder
 
-  many_genomes:
+  pangenomes:
     type: Directory[]?
-    outputSource: process_many_genomes/many_genomes
-  many_genomes_panaroo:
-    type: Directory[]?
-    outputSource: process_many_genomes/many_genomes_panaroo
-  many_genomes_prokka:
-    type:
-      - 'null'
-      - type: array
-        items:
-          type: array
-          items: Directory
-    outputSource: process_many_genomes/many_genomes_prokka
-  many_genomes_genomes:
-    type: Directory[]?
-    outputSource: process_many_genomes/many_genomes_genomes
+    outputSource: process_many_genomes/pangenome_clusters
 
-  one_genome:
+  singletons:
     type: Directory[]?
     outputSource: process_one_genome/cluster_folder
-  one_genome_genomes_gunc_completed:
+  singletons_gunc_completed:
     type: File
     outputSource: process_one_genome/gunc_completed
-  one_genome_genomes_gunc_failed:
+  singletons_gunc_failed:
     type: File
     outputSource: process_one_genome/gunc_failed
+
+  gffs_folder:
+    type: Directory
+    outputSource: create_folder_gffs/gffs_folder
+  panaroo_folder:
+    type: Directory
+    outputSource: process_many_genomes/panaroo_output
 
   mmseqs_output:
     type: Directory?
     outputSource: mmseqs/mmseqs_dir
-  mmseqs_output_annotation:
-    type: Directory?
-    outputSource: mmseqs/mmseqs_dir_annotation
   cluster_representatives:
     type: File?
     outputSource: mmseqs/cluster_reps
+  cluster_tsv:
+    type: File?
+    outputSource: mmseqs/cluster_tsv
 
 steps:
+
+# ----------- << mash trees >> -----------
+  process_mash:
+    scatter: input_mash
+    run: ../../tools/mash2nwk/mash2nwk.cwl
+    in:
+      input_mash: mash_folder
+    out: [mash_tree]  # File[]
 
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
     when: $(Boolean(inputs.input_clusters))
-    run: many-genomes/wrapper-many-genomes.cwl
+    run: pan-genomes/wrapper-pan-genomes.cwl
     in:
       input_clusters: many_genomes
-      mash_folder: mash_folder
-      interproscan_databases: interproscan_databases
-      chunk_size_ips: chunk_size_ips
-      chunk_size_eggnog: chunk_size_eggnog
-      db_diamond_eggnog: db_diamond_eggnog
-      db_eggnog: db_eggnog
-      data_dir_eggnog: data_dir_eggnog
+      mash_folder: process_mash/mash_tree
     out:
-      - mash_folder
-      - many_genomes
-      - many_genomes_panaroo
-      - many_genomes_prokka
       - prokka_seqs
-      - many_genomes_genomes
+      - pangenome_clusters
+      - prokka_gffs
+      - panaroo_output  # Dir
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
     when: $(Boolean(inputs.input_cluster))
-    run: one-genome/wrapper-one-genome.cwl
+    run: singletons/wrapper-singletons.cwl
     in:
       input_cluster: one_genome
       csv: csv
       gunc_db_path: gunc_db_path
-      interproscan_databases: interproscan_databases
-      chunk_size_ips: chunk_size_ips
-      chunk_size_eggnog: chunk_size_eggnog
-      db_diamond_eggnog: db_diamond_eggnog
-      db_eggnog: db_eggnog
-      data_dir_eggnog: data_dir_eggnog
     out:
       - prokka_faa-s
+      - prokka_gff-s
       - cluster_folder
       - gunc_completed
       - gunc_failed
+
+
+# ----------- << gffs folder >> -----------
+  create_folder_gffs:
+    run: create_gffs_folder.cwl
+    in:
+      gffs:
+        source:
+          - process_many_genomes/prokka_gffs
+          - process_one_genome/prokka_gff-s
+        linkMerge: merge_flattened
+      folder_name: { default: 'GFFs'}
+    out: [ gffs_folder ]
 
 # ----------- << mmseqs subwf>> -----------
 
@@ -121,5 +113,8 @@ steps:
       mmseqs_limit_i: mmseqs_limit_i
       mmseqs_limit_c: mmseqs_limit_c
       mmseq_limit_annotation: mmseq_limit_annotation
-    out: [ mmseqs_dir, mmseqs_dir_annotation, cluster_reps ]
+    out:
+      - mmseqs_dir
+      - cluster_reps
+      - cluster_tsv
 

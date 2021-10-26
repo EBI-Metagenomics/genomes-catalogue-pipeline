@@ -9,14 +9,7 @@ mitload miniconda
 module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
 conda activate toil-5.4.0
 
-export PATH=$PATH:/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/python3_scripts/
-export PATH=$PATH:/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/genomes-catalog-update/scripts/
-
-chmod a+x /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/python3_scripts/*
-chmod a+x /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/docker/genomes-catalog-update/scripts/*
-
-CWL=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/cwl/workflows/wf-main.cwl
-YML=/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/tests/cluster/wf-main_ena_verysmall.yml
+MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
 
 JOBSTORE="/hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test"
 OUTDIR="/hps/nobackup/rdf/metagenomics/test-folder/genomes-pipeline"
@@ -26,7 +19,7 @@ QUEUE="production"
 BIG_MEM="False"
 
 
-while getopts :n:y:c:m:q:b:s: option; do
+while getopts :n:y:c:m:q:b:s:p: option; do
         case "${option}" in
                 n) OUTDIRNAME=${OPTARG};;
                 y) YML=${OPTARG};;
@@ -35,8 +28,20 @@ while getopts :n:y:c:m:q:b:s: option; do
                 q) QUEUE=${OPTARG};;
                 b) BIG_MEM=${OPTARG};;
                 s) SINGULARUTY_ON=${OPTARG};;
+                p) MAIN_PATH=${OPTARG};;
         esac
 done
+
+
+export PATH=$PATH:${MAIN_PATH}/docker/python3_scripts/
+export PATH=$PATH:${MAIN_PATH}/docker/genomes-catalog-update/scripts/
+
+chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
+chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
+
+CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
+YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
+
 
 export TMPDIR="/tmp"
 

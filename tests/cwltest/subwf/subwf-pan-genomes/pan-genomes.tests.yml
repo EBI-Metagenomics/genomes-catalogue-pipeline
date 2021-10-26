@@ -1,9 +1,9 @@
 #cwltest
 
-- job: many-genomes-subwf.test1.yml
-  tool: ../../../../cwl/workflows/sub-wf/many-genomes/sub-wf-many-genomes.cwl
-  short_name: sub-wf-many-genomes.cwl
-  doc: "many-genomes"
+- job: pan-genomes-subwf.test1.yml
+  tool: ../../../../cwl/workflows/sub-wf/pan-genomes/sub-wf-pan-genomes.cwl
+  short_name: sub-wf-pan-genomes.cwl
+  doc: "pan-genomes"
   output:
     cluster_folder:
       class: Directory
