@@ -12,6 +12,9 @@ conda activate toil-5.4.0
 
 MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
 
+CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
+YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
+
 JOBSTORE="/hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test"
 OUTDIR="/hps/nobackup/rdf/metagenomics/test-folder/genomes-pipeline"
 OUTDIRNAME="test"
@@ -34,16 +37,11 @@ while getopts :n:y:c:m:q:b:s:p: option; do
         esac
 done
 
-
 export PATH=$PATH:${MAIN_PATH}/docker/python3_scripts/
 export PATH=$PATH:${MAIN_PATH}/docker/genomes-catalog-update/scripts/
 
 chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
 chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
-
-CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
-YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
-
 
 export TMPDIR="/tmp"
 
