@@ -19,13 +19,12 @@ inputs:
   mmseqs_tsv: File
   ips: File
   eggnog: File
-???   protein_fasta: File
+  # protein_fasta: File
 
 outputs:
-  :
-    type: File
-    outputSource: unite_folders/csv
-
+  per_genome_annotations_dir:
+    type: Directory
+    outputSource: generate_per_genome_annotations/per_genome_annotations
 
 steps:
 
@@ -41,18 +40,18 @@ steps:
       outdirname: {default: per-genome-annotations }
     out: [ per_genome_annotations ]
 
-  function_summary_stats:
-    run: ../tools/genomes-catalog-update/function_summary_stats/generate_annots.cwl
-    in:
-      ips: ips
-      eggnog: eggnog
-      output: { default: func_summary }
-      protein_fasta:
-      kegg_db: kegg
-    out:
-      - annotation_coverage
-      - kegg_classes
-      - kegg_modules
-      - cazy_summary
-      - cog_summary
+  #function_summary_stats:
+  #  run: ../tools/genomes-catalog-update/function_summary_stats/generate_annots.cwl
+  #  in:
+  #    ips: ips
+  #    eggnog: eggnog
+  #    output: { default: func_summary }
+  #    protein_fasta:
+  #    kegg_db: kegg
+  #  out:
+  #    - annotation_coverage
+  #    - kegg_classes
+  #    - kegg_modules
+  #    - cazy_summary
+  #    - cog_summary
 

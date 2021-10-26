@@ -96,7 +96,15 @@ outputs:
 #    type: Directory?
 #    outputSource: gtdbtk/gtdbtk_folder
 
+# for gtdbtk and post-processing
+  drep_genomes:
+    type: Directory
+    outputSource: annotation/filter_genomes_drep_filtered_genomes
 
+# ------------ per-genome annotations --------------
+  per_genome_annotations:
+    type: Directory
+    outputSource: post_processing/per_genome_annotations_dir
 
 steps:
 
@@ -236,16 +244,16 @@ steps:
       - panaroo_folder
 
 # ---------- << post-processing >> ----------
-#  post_processing:
-#    run: wf-post-processing.cwl
-#    in:
-#      ips: annotation/ips
-#      eggnog: annotation/eggnog_annotations
-#      species_representatives: annotation/filter_genomes_list_drep_filtered
-#      mmseqs_tsv: annotation/mmseqs_clusters_tsv
-#
-#      kegg: kegg_db
-#    out:
+  post_processing:
+    run: wf-post-processing.cwl
+    in:
+      ips: annotation/ips
+      eggnog: annotation/eggnog_annotations
+      species_representatives: annotation/filter_genomes_list_drep_filtered
+      mmseqs_tsv: annotation/mmseqs_clusters_tsv
+      kegg: kegg_db
+    out:
+      - per_genome_annotations_dir
 
 
 # ---------- << return folder with intermediate files >> ----------
@@ -262,6 +270,7 @@ steps:
           - split_drep/split_text                                       # split by clusters file
           - annotation/clusters_annotation_singletons_gunc_completed    # gunc passed genomes list
           - annotation/filter_genomes_list_drep_filtered                # list of dereplicated genomes
+          - annotation/mmseqs_clusters_tsv                              # mmseqs 0.9 tsv
         pickValue: all_non_null
       dir_name: { default: 'intermediate_files'}
     out: [ out ]
