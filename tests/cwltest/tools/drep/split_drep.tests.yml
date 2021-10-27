@@ -7,11 +7,11 @@
   output:
     split_out_clusters: null
     split_out_mash:
-      - basename: 1_1_mash.tsv
+      - basename: CAJLGA01_mash.tsv
         class: File
         checksum: sha1$bd89d319ae9d84a79eaa31ac7439fb9c16271943
         size: 402
-      - basename: 2_1_mash.tsv
+      - basename: CAJKXJ01_mash.tsv
         class: File
         checksum: sha1$a9546bb1b6236f7a601399c250e59462852ab30d
         size: 186
