@@ -26,6 +26,7 @@ inputs:
     type: File
     inputBinding:
       position: 1
+      prefix: '-i'
 
 stdout: checkm_quality.csv
 
