@@ -240,6 +240,8 @@ steps:
       - filter_genomes_drep_filtered_genomes
       - mmseqs_clusters_tsv
       - panaroo_folder
+      - main_reps_faa
+      - main_reps_gff
 
 # ---------- << post-processing >> ----------
   post_processing:
@@ -250,6 +252,8 @@ steps:
       species_representatives: annotation/filter_genomes_list_drep_filtered
       mmseqs_tsv: annotation/mmseqs_clusters_tsv
       kegg: kegg_db
+      gffs: annotation/main_reps_gff
+      faas: annotation/main_reps_faa
     out:
       - per_genome_annotations_dir
 

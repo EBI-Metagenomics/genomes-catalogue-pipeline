@@ -52,9 +52,9 @@ inputs:
 
 outputs:
   per_genome_annotations:
-    type: Directory
+    type: File[]
     outputBinding:
-      glob: $(inputs.outdirname)
+      glob: $(inputs.outdirname)/*
 
 $namespaces:
  s: http://schema.org/

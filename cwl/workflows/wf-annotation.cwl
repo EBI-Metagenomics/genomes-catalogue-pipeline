@@ -76,17 +76,28 @@ outputs:
     type: File?
     outputSource: clusters_annotation/cluster_tsv
 
-# ------- functional annotation ----------
-  ips:
-    type: File?
-    outputSource: functional_annotation/ips_result
+  main_reps_faa:
+    type: File[]
+    outputSource: clusters_annotation/all_main_reps_faa
+  main_reps_gff:
+    type: File[]
+    outputSource: clusters_annotation/all_main_reps_gff
 
-  eggnog_annotations:
-    type: File?
-    outputSource: functional_annotation/eggnog_annotations
-  eggnog_seed_orthologs:
-    type: File?
-    outputSource: functional_annotation/eggnog_seed_orthologs
+# ------- functional annotation ----------
+  ips_eggnog_annotations:
+    type: File[]
+    outputSource: functional_annotation/per_genome_annotations
+
+#  ips:
+#    type: File?
+#    outputSource: functional_annotation/ips_result
+
+#  eggnog_annotations:
+#    type: File?
+#    outputSource: functional_annotation/eggnog_annotations
+#  eggnog_seed_orthologs:
+#    type: File?
+#    outputSource: functional_annotation/eggnog_seed_orthologs
 
 # ---------- rRNA -------------
   rrna_out:
@@ -105,7 +116,7 @@ steps:
 
 # ---------- annotation
   clusters_annotation:
-    run: sub-wf/subwf-process_clusters.cwl
+    run: sub-wf/annotation/subwf-process_clusters.cwl
     in:
       many_genomes: drep_subwf_many_genomes
       mash_folder: drep_subwf_mash_files
@@ -127,22 +138,8 @@ steps:
       - cluster_tsv
       - gffs_folder
       - panaroo_folder
-
-# ----------- << functional annotation >> ------
-  functional_annotation:
-    run: sub-wf/functional_annotation.cwl
-    in:
-      input_faa: clusters_annotation/cluster_representatives
-      interproscan_databases: interproscan_databases
-      chunk_size_ips: chunk_size_ips
-      chunk_size_eggnog: chunk_size_eggnog
-      db_diamond_eggnog: db_diamond_eggnog
-      db_eggnog: db_eggnog
-      data_dir_eggnog: data_dir_eggnog
-    out:
-      - ips_result
-      - eggnog_annotations
-      - eggnog_seed_orthologs
+      - all_main_reps_faa
+      - all_main_reps_gff
 
 # ----------- << get genomes dereplicated genomes and GUNC-passed >> ------
   filter_genomes:
@@ -156,10 +153,25 @@ steps:
       - drep_filtered_genomes
       - list_drep_filtered
 
+# ----------- << functional annotation >> ------
+  functional_annotation:
+    run: sub-wf/annotation/functional_annotation.cwl
+    in:
+      input_faa: clusters_annotation/cluster_representatives
+      interproscan_databases: interproscan_databases
+      chunk_size_ips: chunk_size_ips
+      chunk_size_eggnog: chunk_size_eggnog
+      db_diamond_eggnog: db_diamond_eggnog
+      db_eggnog: db_eggnog
+      data_dir_eggnog: data_dir_eggnog
+      species_representatives: filter_genomes/list_drep_filtered
+      mmseqs_tsv: clusters_annotation/cluster_tsv
+    out:
+      - per_genome_annotations
 
 # ---------- << detect rRNA >> ---------
   detect_rrna:
-    run: sub-wf/detect_rrna_subwf.cwl
+    run: sub-wf/annotation/detect_rrna_subwf.cwl
     in:
       filtered_genomes:
         source:

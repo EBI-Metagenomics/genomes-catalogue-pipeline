@@ -1,0 +1,84 @@
+#cwltest
+
+- job: test1.yml
+  tool: ../../../../cwl/tools/choose_files/choose_files.cwl
+  short_name: choose_files.cwl
+  doc: "choose IPS, eggnog, gff and faa"
+  output:
+    cluster_folders:
+        - basename: MGYG000000004
+          class: Directory
+          listing:
+            - class: File
+              basename: MGYG000000004_eggNOG.tsv
+              checksum: sha1$0f0f9d90285edc0d64861c8fb7801ace40abbe31
+              size: 601060
+            - class: File
+              basename: MGYG000000004.gff
+              checksum: sha1$35b6f9a5b710b3e88c906e6f86bed74118f311a4
+              size: 2167181
+            - class: File
+              basename: MGYG000000004_InterProScan.tsv
+              checksum: sha1$4789f037d1800d7eea0d79b5fb019b16546aac14
+              size: 47211489
+            - class: File
+              basename: MGYG000000004.faa
+              checksum: sha1$c79c44a7f2ba6b410d1121eeba360c61226992b6
+              size: 601739
+          - basename: MGYG000000005
+            class: Directory
+            listing:
+              - class: File
+                basename: MGYG000000005_InterProScan.tsv
+                checksum: sha1$a0ac39f3ab2588831d38f1ed843b56d27975f535
+                size: 61602617
+              - class: File
+                basename: MGYG000000005.gff
+                checksum: sha1$8b3ba604be1d046190a96bdf7124a745b78b1ea8
+                size: 2770480
+              - class: File
+                basename: MGYG000000005_eggNOG.tsv
+                checksum: sha1$df9af5703c509e95e84aea27c352b695c79d06e4
+                size: 769803
+              - class: File
+                basename: MGYG000000005.faa
+                checksum: sha1$21564829c7b2aeafaab70687da4ffdeb9bc017e9
+                size: 765818
+          - basename: MGYG000000006
+            class: Directory
+            listing:
+              - class: File
+                basename: MGYG000000006_eggNOG.tsv
+                checksum: sha1$106e904b9666532418dffbf56dacf6152ec53961
+                size: 549750
+              - class: File
+                basename: MGYG000000006.gff
+                checksum: sha1$1a076de5a99c108506b14f919753470f8c6b75c1
+                size: 1952781
+              - class: File
+                basename: MGYG000000006_InterProScan.tsv
+                checksum: sha1$967645433844374f6c0f25ff1964076e6b3fdc92
+                size: 43214990
+              - class: File
+                basename: MGYG000000006.faa
+                checksum: sha1$af78806e604419705711fb8994034d7472d00f64
+                size: 552248
+          - basename: MGYG000000007
+            class: Directory
+            listing:
+              - class: File
+                basename: MGYG000000007.gff
+                checksum: sha1$0729f09c361025eee9ea8d46e5abbc600a0266bc
+                size: 2700746
+              - class: File
+                basename: MGYG000000007_InterProScan.tsv
+                checksum: sha1$9283e9b53a8d790e2c0ce89e451450c662ec8709
+                size: 52945471
+              - class: File
+                basename: MGYG000000007.faa
+                checksum: sha1$b4eef91c630bcec7b2025c4da0e800fba48d22d1
+                size: 710006
+              - class: File
+                basename: MGYG000000007_eggNOG.tsv
+                checksum: sha1$722739138c629826cf78c5ed24777975080d16fe
+                size: 734343

@@ -15,43 +15,33 @@ requirements:
 
 inputs:
   kegg: File
-  species_representatives: File
-  mmseqs_tsv: File
-  ips: File
-  eggnog: File
-  # protein_fasta: File
+  annotations: File[]
+  faas: File[]
+  gffs: File[]
+  clusters: File
 
 outputs:
-  per_genome_annotations_dir:
-    type: Directory
-    outputSource: generate_per_genome_annotations/per_genome_annotations
+  annotations_dir:
+    type: Directory[]
+    outputSource: process_folders/annotations
 
 steps:
 
-# ----------- << per genome annotation >> -----------
-  generate_per_genome_annotations:
-    run: ../tools/genomes-catalog-update/per_genome_annotations/make_per_genome_annotations.cwl
+  choose_files:
+    run: ../tools/choose_files/choose_files.cwl
     in:
-      ips: ips
-      eggnog: eggnog
-      species_representatives: species_representatives
-      mmseqs: mmseqs_tsv
-      cores: { default: 16 }
-      outdirname: {default: per-genome-annotations }
-    out: [ per_genome_annotations ]
+      annotations: annotations
+      faas: faas
+      gffs: gffs
+      clusters: clusters
+      outdir: { default: 'out-genomes'}
+    out: [ cluster_folders ]
 
-  #function_summary_stats:
-  #  run: ../tools/genomes-catalog-update/function_summary_stats/generate_annots.cwl
-  #  in:
-  #    ips: ips
-  #    eggnog: eggnog
-  #    output: { default: func_summary }
-  #    protein_fasta:
-  #    kegg_db: kegg
-  #  out:
-  #    - annotation_coverage
-  #    - kegg_classes
-  #    - kegg_modules
-  #    - cazy_summary
-  #    - cog_summary
-
+  process_folders:
+    run: sub-wf/post-processing/genome-post-processing.cwl
+    scatter: files
+    in:
+      kegg: kegg
+      files: choose_files/cluster_folders
+    out:
+      - annotations  # Dir
