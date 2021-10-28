@@ -55,6 +55,7 @@ def parse_mashfile(mash_dist, outname, genlist):
 
 def splitMash(mash_dist, genlist, outdir, cluster_name):
     outname = "%s/%s/%s_mash.tsv" % (outdir, cluster_name, cluster_name)
+    print(outname)
     if not os.path.isdir(os.path.join(outdir, cluster_name)):
         os.makedirs(os.path.join(outdir, cluster_name))
     parse_mashfile(mash_dist, outname, genlist)
@@ -109,12 +110,13 @@ if __name__ == "__main__":
                     genomes = clusters[c]
                     create_cluster_folders(out_folder=args.output_folder, cluster=c, genomes=genomes,
                                            fasta_folder=args.fasta_folder)
-                    splitMash(mash_dist=args.mdb, genlist=genomes, outdir=args.output_folder, cluster_name=c)
 
                     genome_scores = [float(scores[genome]) for genome in genomes]
                     sorted_genomes = [x for _, x in sorted(zip(genome_scores, genomes), reverse=True,
                                                            key=lambda pair: pair[0])]
                     split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(sorted_genomes) + '\n')
+                    main_rep_name = sorted_genomes[0].split('.')[0]
+                    splitMash(mash_dist=args.mdb, genlist=genomes, outdir=args.output_folder, cluster_name=main_rep_name)
             else:
                 out_mash_folder = os.path.join(args.output_folder, "mash_folder")
                 if not os.path.exists(out_mash_folder):
@@ -125,7 +127,8 @@ if __name__ == "__main__":
                     sorted_genomes = [x for _, x in sorted(zip(genome_scores, genomes), reverse=True,
                                                            key=lambda pair: pair[0])]
                     split_file.write(names[len(genomes) == 1] + ':' + c + ':' + ','.join(sorted_genomes) + '\n')
+                    main_rep_name = sorted_genomes[0].split('.')[0]
                     if len(genomes) > 1:
-                        generate_mash_folder(mash_dist=args.mdb, out_mash_folder=out_mash_folder, cluster_name=c,
-                                         genlist=genomes)
+                        generate_mash_folder(mash_dist=args.mdb, out_mash_folder=out_mash_folder,
+                                             cluster_name=main_rep_name, genlist=genomes)
 
