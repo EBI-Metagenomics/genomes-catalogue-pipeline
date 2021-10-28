@@ -25,7 +25,7 @@ steps:
     in:
       input_folder: genomes_folder
       checkm_outfolder: { default: 'checkm_outfolder' }
-    out: [ stdout, out_folder ]
+    out: [ stdout ]
 
   checkm2csv:
     run: ../../tools/checkm2csv/checkm2csv.cwl
