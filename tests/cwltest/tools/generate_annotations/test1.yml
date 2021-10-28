@@ -1,0 +1,7 @@
+input_dir:
+  class: Directory
+  path: ../../../../input_example/small_set/results/MGYGs/test
+output: func_summary
+kegg_db:
+  class: File
+  path: ../../../../input_example/kegg_classes.tsv

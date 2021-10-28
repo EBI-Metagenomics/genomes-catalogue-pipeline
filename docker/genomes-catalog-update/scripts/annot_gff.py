@@ -3,6 +3,7 @@
 import argparse
 from argparse import RawTextHelpFormatter
 import sys
+import os
 
 
 def get_iprs(ipr_annot):
@@ -111,19 +112,25 @@ def add_gff(in_gff, eggnog_file, ipr_file):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='''
     Add functional annotation to GFF file''', formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-g', dest='gff', help='Input GFF file [REQUIRED]', required=True)
-    parser.add_argument('-e', dest='eggnog', help='eggNOG TSV file [REQUIRED]', required=True)
-    parser.add_argument('-i', dest='interpro', help='InterProScan TSV file [REQUIRED]', required=True)
-    parser.add_argument('-o', dest='outfile', help='Outfile name')
+    parser.add_argument('-i', dest='input_dir', help='Directory with eggnog, ips, gff', required=True)
+    parser.add_argument('-o', dest='outfile', help='Outfile name', required=False)
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
     else:
         args = parser.parse_args()
-        res = add_gff(args.gff, args.eggnog, args.interpro)
+        input_files = os.listdir(args.input_dir)
+        ips = [cur_file for cur_file in input_files if cur_file.endswith('InterProScan.tsv')][0]
+        eggnog = [cur_file for cur_file in input_files if cur_file.endswith('eggNOG.tsv')][0]
+        gff = [cur_file for cur_file in input_files if cur_file.endswith('.gff')][0]
+        print(ips, eggnog, gff)
+        res = add_gff(in_gff=os.path.join(args.input_dir, gff),
+                      eggnog_file=os.path.join(args.input_dir, eggnog),
+                      ipr_file=os.path.join(args.input_dir, ips))
         if not args.outfile:
-            outfile = args.gff.split(".gff")[0]+"_annotated.gff"
+            outfile = gff.split(".gff")[0]+"_annotated.gff"
         else:
             outfile = args.outfile
+        print(outfile)
         with open(outfile, "w") as fout:
             fout.write("\n".join(res))

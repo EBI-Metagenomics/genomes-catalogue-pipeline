@@ -45,6 +45,9 @@ steps:
     run: ../../../tools/genomes-catalog-update/annotate_gff/annotate_gff.cwl
     in:
       input_dir: files
+      outfile:
+        source: files
+        valueFrom: "annotated_$(self.basename).gff"
     out: [ annotated_gff ]
 
   wrap_directory:
@@ -59,5 +62,5 @@ steps:
         - annotate_gff/annotated_gff
       dir_name:
         source: files
-        valueFrom: $(self.files.basename)
+        valueFrom: $(self.basename)
     out: [out]
