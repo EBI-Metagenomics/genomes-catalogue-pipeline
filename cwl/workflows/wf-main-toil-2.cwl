@@ -136,7 +136,7 @@ steps:
 
   drep:
     when: $(!Boolean(inputs.flag))
-    run: ../tools/drep/drep.cwl
+    run: ../tools/drep/drep-genomes-folder.cwl
     in:
       flag: skip_drep_step
       genomes: preparation/assign_mgygs_renamed_genomes
