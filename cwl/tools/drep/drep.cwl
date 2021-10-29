@@ -65,6 +65,10 @@ inputs:
       position: 11
       prefix: '-extraW'
 
+stderr: stderr_drep.txt
+stdout: stdout_drep.txt
+
+
 outputs:
 
   #out_folder:
@@ -91,3 +95,8 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.drep_outfolder)/data_tables/Sdb.csv
+
+  stdout:
+    type: stdout
+  stderr:
+    type: stderr
