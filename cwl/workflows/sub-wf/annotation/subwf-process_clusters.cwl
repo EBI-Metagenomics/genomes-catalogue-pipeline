@@ -43,15 +43,17 @@ outputs:
     outputSource: process_one_genome/filtered_initial_fa-s
 
 
-  gffs_list:
-    type: File[]
-    outputSource:
-      source:
-        - process_many_genomes/prokka_gffs
-        - process_one_genome/prokka_gff-s
   panaroo_folder:
     type: Directory
     outputSource: process_many_genomes/panaroo_output
+
+#  gffs_list:
+#    type: File[]
+#    outputSource:
+#      source:
+#        - process_many_genomes/prokka_gffs  # File[]
+#        - process_one_genome/prokka_gff-s   # File[]
+#      linkMerge: merge_flatten
 
   mmseqs_output:
     type: Directory?
@@ -63,28 +65,32 @@ outputs:
     type: File?
     outputSource: mmseqs/cluster_tsv
 
-  all_main_reps_faa:
-    type: File[]
-    outputSource:
-      source:
-        - process_many_genomes/main_rep_faa
-        - process_one_genome/prokka_faa-s
-      linkMerge: merge_flattened
+  all_main_reps_faa_pangenomes:
+    type: File[]?
+    outputSource: process_many_genomes/main_reps_faa
 
-  all_main_reps_gff:
+  all_main_reps_gff_pangenomes:
+    type: File[]?
+    outputSource: process_many_genomes/main_reps_gff
+
+  all_gffs_pangenomes:
     type: File[]
-    outputSource:
-      source:
-        - process_many_genomes/main_rep_gff
-        - process_one_genome/prokka_gff-s
-      linkMerge: merge_flattened
+    outputSource: process_many_genomes/prokka_gffs
+
+  all_main_reps_faa_singletons:
+    type: File[]?
+    outputSource: process_one_genome/prokka_faa-s
+
+  all_main_reps_gff_singletons:
+    type: File[]?
+    outputSource: process_one_genome/prokka_gff-s
 
 steps:
 
 # ----------- << mash trees >> -----------
   process_mash:
     scatter: input_mash
-    run: ../../tools/mash2nwk/mash2nwk.cwl
+    run: ../../../tools/mash2nwk/mash2nwk.cwl
     in:
       input_mash: mash_folder
     out: [mash_tree]  # File[]
@@ -92,7 +98,7 @@ steps:
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
     when: $(Boolean(inputs.input_clusters))
-    run: pan-genomes/wrapper-pan-genomes.cwl
+    run: ../pan-genomes/wrapper-pan-genomes.cwl
     in:
       input_clusters: many_genomes
       mash_folder: process_mash/mash_tree
@@ -108,7 +114,7 @@ steps:
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
     when: $(Boolean(inputs.input_cluster))
-    run: singletons/wrapper-singletons.cwl
+    run: ../singletons/wrapper-singletons.cwl
     in:
       input_cluster: one_genome
       csv: csv
@@ -122,12 +128,17 @@ steps:
       - filtered_initial_fa-s  # File[]?
 
 # ----------- << mmseqs subwf>> -----------
+#  filter_nulls_prokka_singletones:
+#    run: ../../../utils/filter_nulls.cwl
+#    in:
+#      list_files: process_one_genome/prokka_faa-s
+#    out: [ out_files ]
 
   mmseqs:
     run: mmseq-subwf.cwl
     in:
       prokka_many: process_many_genomes/prokka_seqs
-      prokka_one: process_one_genome/prokka_faa-s
+      prokka_one: process_one_genome/prokka_faa-s  #filter_nulls_prokka_singletones/out_files
       mmseqs_limit_i: mmseqs_limit_i
       mmseqs_limit_c: mmseqs_limit_c
       mmseq_limit_annotation: mmseq_limit_annotation

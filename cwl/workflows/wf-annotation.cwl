@@ -65,9 +65,6 @@ outputs:
     type: Directory?
     outputSource: clusters_annotation/mmseqs_output
 
-  gffs:
-    type: File[]
-    outputSource: clusters_annotation/gffs_list
   panaroo_folder:
     type: Directory
     outputSource: clusters_annotation/panaroo_folder
@@ -76,12 +73,32 @@ outputs:
     type: File?
     outputSource: clusters_annotation/cluster_tsv
 
-  main_reps_faa:
+#  main_reps_faa:
+#    type: File[]
+#    outputSource: clusters_annotation/all_main_reps_faa
+#  main_reps_gff:
+#    type: File[]
+#    outputSource: clusters_annotation/all_main_reps_gff
+  main_reps_faa_pangenomes:
     type: File[]
-    outputSource: clusters_annotation/all_main_reps_faa
-  main_reps_gff:
+    outputSource: clusters_annotation/all_main_reps_faa_pangenomes
+
+  main_reps_gff_pangenomes:
     type: File[]
-    outputSource: clusters_annotation/all_main_reps_gff
+    outputSource: clusters_annotation/all_main_reps_gff_pangenomes
+
+  main_reps_faa_singletons:
+    type: File[]?
+    outputSource: clusters_annotation/all_main_reps_faa_singletons
+
+  main_reps_gff_singletons:
+    type: File[]?
+    outputSource: clusters_annotation/all_main_reps_gff_singletons
+
+  gffs_pangenomes:
+    type: File[]
+    outputSource: clusters_annotation/all_gffs_pangenomes  #clusters_annotation/gffs_list
+
 
 # ------- functional annotation ----------
   ips_eggnog_annotations:
@@ -125,10 +142,12 @@ steps:
       - mmseqs_output
       - cluster_representatives
       - cluster_tsv
-      - gffs_list  # File[]
       - panaroo_folder
-      - all_main_reps_faa
-      - all_main_reps_gff
+      - all_main_reps_gff_pangenomes
+      - all_main_reps_faa_pangenomes
+      - all_main_reps_gff_singletons
+      - all_main_reps_faa_singletons
+      - all_gffs_pangenomes  # gffs_list  # File[]
 
 # ----------- << get genomes dereplicated genomes and GUNC-passed >> ------
   filter_genomes:
