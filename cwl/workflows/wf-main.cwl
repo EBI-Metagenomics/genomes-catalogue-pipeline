@@ -17,8 +17,11 @@ inputs:
   max_accession_mgyg: int
   min_accession_mgyg: int
 
-  # skip dRep step if MAGs were already dereplicated
+  # skip dRep step if MAGs were already dereplicated and provide Sdb.csv, Mdb.csv and Cdb.csv
   skip_drep_step: boolean   # set True for skipping
+  sdb_dereplicated: File?
+  cdb_dereplicated: File?
+  mdb_dereplicated: File?
 
   # no gtdbtk
   skip_gtdbtk_step: boolean   # set True for skipping
@@ -118,7 +121,11 @@ steps:
     in:
       genomes_folder: preparation/assign_mgygs_renamed_genomes
       input_csv: preparation/assign_mgygs_renamed_csv
+      # for dereplicated set
       skip_flag: skip_drep_step
+      sdb_dereplicated: sdb_dereplicated
+      cdb_dereplicated: cdb_dereplicated
+      mdb_dereplicated: mdb_dereplicated
     out:
       - many_genomes
       - one_genome

@@ -157,47 +157,41 @@ steps:
       - Sdb_csv
 
   split_drep:
-    when: $(!Boolean(inputs.flag))
-    run: ../tools/drep/split_drep.cwl
+    run: ../../tools/drep/split_drep.cwl
     in:
-      flag: skip_drep_step
-      Cdb_csv: drep/Cdb_csv
-      Mdb_csv: drep/Mdb_csv
-      Sdb_csv: drep/Sdb_csv
+      Cdb_csv:
+        source:
+          - drep/Cdb_csv
+          - cdb_dereplicated
+        pickValue: first_non_null
+      Mdb_csv:
+        source:
+          - drep/Mdb_csv
+          - mdb_dereplicated
+        pickValue: first_non_null
+      Sdb_csv:
+        source:
+          - drep/Sdb_csv
+          - sdb_dereplicated
+        pickValue: first_non_null
       split_outfolder: { default: 'split_outfolder' }
     out:
       - split_out_mash
       - split_text
 
   classify_clusters:
-    when: $(!Boolean(inputs.flag))
     run: ../tools/drep/classify_folders.cwl
     in:
-      flag: skip_drep_step
       genomes: preparation/assign_mgygs_renamed_genomes
       text_file: split_drep/split_text
     out:
       - many_genomes
       - one_genome
 
-  classify_dereplicated:
-    when: $(Boolean(inputs.flag))
-    run: ../tools/drep/classify_dereplicated.cwl
-    in:
-      flag: skip_drep_step
-      clusters: preparation/assign_mgygs_renamed_genomes
-    out:
-      - one_genome
-
   filter_nulls:
     run: ../utils/filter_nulls.cwl
     in:
-      list_dirs:
-        source:
-          - classify_clusters/one_genome
-          - classify_dereplicated/one_genome
-        linkMerge: merge_flattened
-        pickValue: all_non_null
+      list_dirs: classify_clusters/one_genome
     out: [ out_dirs ]
 
 # ----------- << annotations + IPS, eggnog + filter drep + rRNA >> ------
