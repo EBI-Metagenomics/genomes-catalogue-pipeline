@@ -1,0 +1,27 @@
+kegg:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv
+annotations:
+  - class: File
+    path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-gok1m658/file-860054a5d5934c9894c41b360b74813b/MGYG000000002_InterProScan.tsv
+  - class: File
+    path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-w090s_w7/file-a582c21bb02847e4aa48974c62ff313f/MGYG000000002_eggNOG.tsv
+  - class: File
+    path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-gok1m658/file-889f84a6911b4f4e804e75c59efd069c/MGYG000000003_InterProScan.tsv
+  - class: File
+    path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-gok1m658/file-b3e30afac05c42b7a23665acfafca197/MGYG000000003_eggNOG.tsv
+
+faas:
+  - class: File
+    path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-8cemy6mt/file-93ab65e6832247bba16831263b7c8aff/MGYG000000002.faa
+  - class: File
+    path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-3x2lkbe9/file-744ef0ab1ea14a92891874528eb86f1d/MGYG000000003.faa
+
+gffs:
+  - class: File
+    path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-miq_kbcm/file-bbf54c619ffb4385bcd3bf83942589b8/MGYG000000002.gff
+  - class: File
+    path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-ea708kjd/file-5479a6d649ed402999365513483b46e7/MGYG000000003.gff
+clusters:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test/test-post-pros/files/for-job/kind-CWLJob/instance-s27b4qdv/file-879f9fceabda4ec5be268be7a132274c/drep-filt-list.txt
