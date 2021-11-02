@@ -2,6 +2,8 @@ import numpy as np
 from itertools import groupby
 import sys
 
+# modified from https://github.com/MikeTrizna/assembly_stats/blob/master/assembly_stats/assembly_stats.py
+
 
 def run_assembly_stats(infilename):
     contig_lens, gc_cont = read_genome(infilename)
