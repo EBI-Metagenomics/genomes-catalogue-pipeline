@@ -136,8 +136,7 @@ def add_species_rep(df, clusters_file):
                 if not line.strip() == '':
                     logging.error('Unknown clusters file format: {}'.format(line))
                     sys.exit()
-    for col_name in ['Species_rep', 'MGnify_accession']:
-        df[col_name] = df['Genome'].map(reps)
+    df['Species_rep'] = df['Genome'].map(reps)
     return df, reps
 
 
