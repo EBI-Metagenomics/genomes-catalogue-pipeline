@@ -20,6 +20,9 @@ inputs:
   # skip dRep step if MAGs were already dereplicated
   skip_assigning: boolean   # skip all steps before drep
   skip_drep_step: boolean   # set True for skipping
+  sdb_dereplicated: File?
+  cdb_dereplicated: File?
+  mdb_dereplicated: File?
 
   # no gtdbtk
   skip_gtdbtk_step: boolean   # set True for skipping
