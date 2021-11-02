@@ -222,12 +222,12 @@ steps:
           - preparation/unite_folders_csv                               # initail csv
           - preparation/assign_mgygs_renamed_csv                        # MGYG csv
           - preparation/assign_mgygs_naming_table                       # mapping initial names to MGYGs
-          - drep_subwf/weights_file                                     # weights drep
-          - drep_subwf/best_cluster_reps                                # Sdb.csv
-          - drep_subwf/split_text                                       # split by clusters file
+          - generate_weights/file_with_weights                          # weights drep
+          - drep/Sdb_csv                                                # Sdb.csv
+          - split_drep/split_text                                       # split by clusters file
           - annotation/clusters_annotation_singletons_gunc_completed    # gunc passed genomes list
           - annotation/filter_genomes_list_drep_filtered                # list of dereplicated genomes
+          - annotation/mmseqs_clusters_tsv                              # mmseqs 0.9 tsv
         pickValue: all_non_null
-      dir_name: {default: 'intermediate_files'}
+      dir_name: { default: 'intermediate_files'}
     out: [ out ]
-
