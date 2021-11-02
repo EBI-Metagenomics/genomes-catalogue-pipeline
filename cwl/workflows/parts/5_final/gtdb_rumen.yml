@@ -1,0 +1,7 @@
+drep_folder:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/rumen/rumen-filt-drep/deperlicated_genomes
+gtdb_outfolder: 'gtdb-tk_output'
+refdata:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202

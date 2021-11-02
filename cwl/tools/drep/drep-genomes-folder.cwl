@@ -19,6 +19,9 @@ hints:
 baseCommand: ["dRep", "dereplicate"]
 
 arguments:
+  - prefix: '-g'
+    valueFrom: $(inputs.genomes.listing)
+    position: 3
   - prefix: -p
     valueFrom: '16'
     position: 1
@@ -42,11 +45,7 @@ arguments:
     valueFrom: '5'
 
 inputs:
-  genomes:
-    type: File[]
-    inputBinding:
-      position: 3
-      prefix: '-g'
+  genomes: Directory
 
   drep_outfolder:
     type: string
