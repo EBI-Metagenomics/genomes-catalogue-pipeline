@@ -161,7 +161,7 @@ steps:
       - Sdb_csv
 
   split_drep:
-    run: ../../tools/drep/split_drep.cwl
+    run: ../tools/drep/split_drep.cwl
     in:
       Cdb_csv:
         source:
