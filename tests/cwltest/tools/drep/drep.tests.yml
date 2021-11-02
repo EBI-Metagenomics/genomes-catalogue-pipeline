@@ -1,8 +1,8 @@
 #cwltest
 
 - job: drep.yml
-  tool: ../../../../cwl/tools/drep/drep.cwl
-  short_name: drep.cwl
+  tool: ../../../../cwl/tools/drep/drep-genomes-list.cwl
+  short_name: drep-genomes-list.cwl
   doc: "dRep"
   output:
     Cdb_csv:

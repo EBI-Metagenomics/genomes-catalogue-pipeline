@@ -1,7 +1,7 @@
 #cwltest
 - job: mixed.yml
-  tool: ../../../../cwl/workflows/sub-wf/drep-subwf.cwl
-  short_name: drep-subwf.cwl
+  tool: ../../../../cwl/workflows/sub-wf/drep-subwf-genomes-list.cwl
+  short_name: drep-subwf-genomes-list.cwl
   doc: "dRep subwf on folder with mixed-genome clusters"
   output:
     dereplicated_genomes:
@@ -84,8 +84,8 @@
 
 
 - job: one.yml
-  tool: ../../../../cwl/workflows/sub-wf/drep-subwf.cwl
-  short_name: drep-subwf.cwl
+  tool: ../../../../cwl/workflows/sub-wf/drep-subwf-genomes-list.cwl
+  short_name: drep-subwf-genomes-list.cwl
   doc: "dRep subwf on folder with singletons clusters"
   output:
     dereplicated_genomes:
@@ -124,8 +124,8 @@
       size: 28
 
 - job: many.yml
-  tool: ../../../../cwl/workflows/sub-wf/drep-subwf.cwl
-  short_name: drep-subwf.cwl
+  tool: ../../../../cwl/workflows/sub-wf/drep-subwf-genomes-list.cwl
+  short_name: drep-subwf-genomes-list.cwl
   doc: "dRep subwf on folder with many-genome clusters"
   output:
     dereplicated_genomes:

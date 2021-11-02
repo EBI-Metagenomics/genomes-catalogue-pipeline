@@ -117,7 +117,7 @@ steps:
 
 # ---------- dRep + split -----------
   drep_subwf:
-    run: sub-wf/drep-subwf.cwl
+    run: sub-wf/drep/drep-subwf.cwl
     in:
       genomes_folder: preparation/assign_mgygs_renamed_genomes
       input_csv: preparation/assign_mgygs_renamed_csv

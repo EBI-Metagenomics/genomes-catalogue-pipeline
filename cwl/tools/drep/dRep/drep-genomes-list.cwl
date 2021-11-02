@@ -19,9 +19,6 @@ hints:
 baseCommand: ["dRep", "dereplicate"]
 
 arguments:
-  - prefix: '-g'
-    valueFrom: $(inputs.genomes.listing)
-    position: 3
   - prefix: -p
     valueFrom: '16'
     position: 1
@@ -45,7 +42,11 @@ arguments:
     valueFrom: '5'
 
 inputs:
-  genomes: Directory
+  genomes:
+    type: File[]
+    inputBinding:
+      position: 3
+      prefix: '-g'
 
   drep_outfolder:
     type: string
@@ -64,8 +65,6 @@ inputs:
       position: 11
       prefix: '-extraW'
 
-stderr: stderr_drep.txt
-stdout: stdout_drep.txt
 
 
 outputs:
@@ -94,8 +93,3 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.drep_outfolder)/data_tables/Sdb.csv
-
-  stdout:
-    type: stdout
-  stderr:
-    type: stderr

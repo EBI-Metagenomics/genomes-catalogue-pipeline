@@ -145,7 +145,7 @@ steps:
 
   drep:
     when: $(!Boolean(inputs.flag))
-    run: ../tools/drep/drep.cwl
+    run: ../tools/drep/dRep/drep-genomes-list.cwl
     in:
       flag: skip_drep_step
       genomes: get_genomes_list/files

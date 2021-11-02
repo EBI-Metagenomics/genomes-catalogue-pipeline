@@ -42,57 +42,48 @@ outputs:
 
   best_cluster_reps:
     type: File?
-    outputSource: drep/Sdb_csv
+    outputSource: drep/sdb
 
 
 steps:
   generate_weights:
     when: $(!Boolean(inputs.flag))
-    run: ../../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
+    run: ../../../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
     in:
       flag: skip_flag
       input_directory: genomes_folder
       output: { default: "extra_weight_table.txt" }
     out: [ file_with_weights ]
 
-  get_genomes_list:
-    when: $(!Boolean(inputs.flag))
-    run: ../../utils/get_files_from_dir.cwl
-    in:
-      flag: skip_flag
-      dir: genomes_folder
-    out: [ files ]
-
   drep:
     when: $(!Boolean(inputs.flag))
-    run: ../../tools/drep/drep.cwl
+    run: drep-subwf-tar.cwl
     in:
       flag: skip_flag
-      genomes: get_genomes_list/files
-      drep_outfolder: { default: 'drep_outfolder' }
-      csv: input_csv
+      genomes_folder: genomes_folder
+      input_csv: input_csv
       extra_weights: generate_weights/file_with_weights
     out:
-      - Cdb_csv
-      - Mdb_csv
-      - Sdb_csv
+      - cdb
+      - mdb
+      - sdb
 
   split_drep:
-    run: ../../tools/drep/split_drep.cwl
+    run: ../../../tools/drep/split_drep.cwl
     in:
       Cdb_csv:
         source:
-          - drep/Cdb_csv
+          - drep/cdb
           - cdb_dereplicated
         pickValue: first_non_null
       Mdb_csv:
         source:
-          - drep/Mdb_csv
+          - drep/mdb
           - mdb_dereplicated
         pickValue: first_non_null
       Sdb_csv:
         source:
-          - drep/Sdb_csv
+          - drep/sdb
           - sdb_dereplicated
         pickValue: first_non_null
       split_outfolder: { default: 'split_outfolder' }
@@ -101,7 +92,7 @@ steps:
       - split_text
 
   classify_clusters:
-    run: ../../tools/drep/classify_folders.cwl
+    run: ../../../tools/drep/classify_folders.cwl
     in:
       genomes: genomes_folder
       text_file: split_drep/split_text
@@ -110,7 +101,7 @@ steps:
       - one_genome
 
   filter_nulls:
-    run: ../../utils/filter_nulls.cwl
+    run: ../../../utils/filter_nulls.cwl
     in:
       list_dirs: classify_clusters/one_genome
     out: [ out_dirs ]
