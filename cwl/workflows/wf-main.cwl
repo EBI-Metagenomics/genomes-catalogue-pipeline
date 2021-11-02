@@ -98,6 +98,17 @@ outputs:
     type: Directory?
     outputSource: gtdbtk/gtdbtk_folder
 
+# for gtdbtk and post-processing
+  drep_genomes:
+    type: Directory
+    outputSource: annotation/filter_genomes_drep_filtered_genomes
+
+# ------------ per-genome annotations --------------
+  per_genome_annotations:
+    type: Directory
+    outputSource: post_processing/per_genome_annotations_dir
+
+
 steps:
 
 # ----------- << checkM + assign MGYG >> -----------
@@ -117,7 +128,7 @@ steps:
 
 # ---------- dRep + split -----------
   drep_subwf:
-    run: sub-wf/drep/drep-subwf.cwl
+    run: sub-wf/drep/drep-main.cwl
     in:
       genomes_folder: preparation/assign_mgygs_renamed_genomes
       input_csv: preparation/assign_mgygs_renamed_csv
@@ -177,6 +188,19 @@ steps:
       - filter_genomes_drep_filtered_genomes
       - mmseqs_clusters_tsv
       - panaroo_folder
+
+# ---------- << post-processing >> ----------
+  post_processing:
+    run: wf-post-processing.cwl
+    in:
+      ips: annotation/ips
+      eggnog: annotation/eggnog_annotations
+      species_representatives: annotation/filter_genomes_list_drep_filtered
+      mmseqs_tsv: annotation/mmseqs_clusters_tsv
+      kegg: kegg_db
+    out:
+      - per_genome_annotations_dir
+
 
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:

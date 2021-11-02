@@ -43,6 +43,9 @@ steps:
       drep_outfolder: { default: 'drep_outfolder' }
       csv: input_csv
       extra_weights: extra_weights
+      name:
+        source: genomes_folder
+        valueFrom: $(self.basename)
     out:
       - Cdb_csv
       - Mdb_csv

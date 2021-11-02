@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v2"
 
 
 baseCommand: ["drep-wrapper.sh"]
@@ -39,6 +39,10 @@ inputs:
     inputBinding:
       prefix: '-w'
 
+  name:
+    type: string
+    inputBinding:
+      prefix: '-n'
 
 outputs:
 

@@ -14,11 +14,12 @@ OPTIONS:
    -o      Name of output folder [REQUIRED]
    -c      Input csv file with completeness and contamination [REQUIRED]
    -w      Input file with extra weights [REQUIRED]
+   -n      Name of input folder without .tar.gz [REQUIRED]
 EOF
 }
 
 
-while getopts "g:o:c:w:" OPTION
+while getopts "g:o:c:w:n:" OPTION
 do
      case ${OPTION} in
          g)
@@ -33,6 +34,9 @@ do
          w)
              WEIGHTS=${OPTARG}
              ;;
+         n)
+             NAME=${OPTARG}
+             ;;
          ?)
              usage
              exit
@@ -40,9 +44,16 @@ do
      esac
 done
 
+echo "--> make dir genomes"
+mkdir -p genomes
 
-tar -xvzf ${GENOMES_TAR} -C genomes
+echo "--> untar"
+tar -xvzf ${GENOMES_TAR} -C genomes/
 
+GENOMES=$(find -name ${NAME})
+echo "${GENOMES}"
+
+echo "--> dRep"
 dRep dereplicate \
   -p 16 \
   ${OUTPUT} \
@@ -52,6 +63,6 @@ dRep dereplicate \
   -cm larger \
   -comp 50 \
   -con 5 \
-  -g genomes \
+  -g ${GENOMES}/* \
   --genomeInfo ${CSV} \
   -extraW ${WEIGHTS}
