@@ -99,7 +99,6 @@ outputs:
     type: Directory
     outputSource: annotation/filter_genomes_drep_filtered_genomes
 
-
 steps:
 
 # ----------- << checkM + assign MGYG >> -----------
@@ -222,6 +221,19 @@ steps:
     out: [ gffs_folder ]
 
 
+# ---------- << post-processing >> ----------
+  post_processing:
+    run: wf-post-processing.cwl
+    in:
+      ips: annotation/ips
+      eggnog: annotation/eggnog_annotations
+      species_representatives: annotation/filter_genomes_list_drep_filtered
+      mmseqs_tsv: annotation/mmseqs_clusters_tsv
+      kegg: kegg_db
+    out:
+      - per_genome_annotations_dir
+
+
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:
     when: $(!Boolean(inputs.skip_flag))
@@ -251,4 +263,3 @@ steps:
         pickValue: all_non_null
       dir_name: { default: 'intermediate_files'}
     out: [ out ]
-

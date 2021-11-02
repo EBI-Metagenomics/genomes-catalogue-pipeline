@@ -6,9 +6,7 @@ usage()
 {
 cat << EOF
 usage: $0 options
-
 Drep tar.gz folder of genomes
-
 OPTIONS:
    -g      Input genomes.tar.gz folder with genomes to dereplicate [REQUIRED]
    -o      Name of output folder [REQUIRED]
