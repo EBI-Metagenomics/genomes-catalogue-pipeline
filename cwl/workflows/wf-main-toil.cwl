@@ -14,10 +14,11 @@ inputs:
   ena_csv: File?
   genomes_ncbi: Directory?
 
-  max_accession_mgyg: int
-  min_accession_mgyg: int
+  max_accession_mgyg: int?
+  min_accession_mgyg: int?
 
   # skip dRep step if MAGs were already dereplicated
+  skip_assigning: boolean   # skip all steps before drep
   skip_drep_step: boolean   # set True for skipping
 
   # no gtdbtk
