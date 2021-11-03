@@ -1,0 +1,7 @@
+drep_folder:
+  class: Directory
+  path: /hps/nobackup/rdf/metagenomics/test-folder/genomes-pipeline/human-oral-10/deperlicated_genomes
+gtdb_outfolder: gtdb-output
+refdata:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202
