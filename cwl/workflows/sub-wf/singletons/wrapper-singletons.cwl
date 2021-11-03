@@ -34,6 +34,10 @@ outputs:
     type: File
     outputSource: create_gunc_reports/report_failed
 
+  filtered_initial_fa-s:
+    type: File[]?
+    outputSource: filter_nulls_fa-s/out_files
+
 steps:
   process_one_genome:
     run: sub-wf-singleton.cwl
@@ -43,10 +47,11 @@ steps:
       csv: csv
       gunc_db_path: gunc_db_path
     out:
-      - prokka_faa-s  # File
+      - prokka_faa-s  # File?
       - prokka_gff-s
       - cluster_dir   # Dir
       - gunc_decision # File
+      - initial_fa  # File?
 
   create_gunc_reports:
     run: ../../../tools/GUNC/generate_report.cwl
@@ -66,4 +71,10 @@ steps:
     run: ../../../utils/filter_nulls.cwl
     in:
       list_files: process_one_genome/prokka_gff-s
+    out: [ out_files ]
+
+  filter_nulls_fa-s:
+    run: ../../../utils/filter_nulls.cwl
+    in:
+      list_files: process_one_genome/initial_fa
     out: [ out_files ]

@@ -40,6 +40,10 @@ outputs:
     type: Directory
     outputSource: return_cluster_dir/dir_of_dir
 
+  initial_fa:
+    type: File?
+    outputSource: get_filtered_fa/file
+
 steps:
   preparation:
     run: ../../../utils/get_files_from_dir.cwl
@@ -73,6 +77,14 @@ steps:
       flag: gunc/flag
       fasta: preparation/file
     out: [ fasta_index ]
+
+  get_filtered_fa:
+    when: $(inputs.flag.includes("complete.txt"))
+    run: ../../../utils/get_files_from_dir.cwl
+    in:
+      flag: gunc/flag
+      dir: cluster
+    out: [ file ]
 
 # -------- collect output ----------
 

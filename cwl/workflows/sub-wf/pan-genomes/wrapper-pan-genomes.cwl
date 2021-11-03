@@ -35,6 +35,9 @@ outputs:
     type: Directory
     outputSource: panaroo_final_folder/out
 
+  initial_genomes_fa-s:
+    type: File[]
+    outputSource: flatten_fa-s/array1d
 
 steps:
 
@@ -50,11 +53,18 @@ steps:
       - prokka_gff-s
       - cluster_folder  # Dir
       - panaroo_tar     # File[]
+      - initial_genomes_fa  # File[]
 
   flatten_gffs:
     run: ../../../utils/flatten_array.cwl
     in:
       arrayTwoDim: process_many_genomes/prokka_gff-s
+    out: [ array1d ]
+
+  flatten_fa-s:
+    run: ../../../utils/flatten_array.cwl
+    in:
+      arrayTwoDim: process_many_genomes/initial_genomes_fa
     out: [ array1d ]
 
   panaroo_final_folder:

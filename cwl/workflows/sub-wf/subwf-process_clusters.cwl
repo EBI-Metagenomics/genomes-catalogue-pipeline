@@ -24,6 +24,10 @@ outputs:
   pangenomes:
     type: Directory[]?
     outputSource: process_many_genomes/pangenome_clusters
+  pangenomes_initial_fa:
+    type: File[]
+    outputSource: process_many_genomes/initial_genomes_fa-s
+
 
   singletons:
     type: Directory[]?
@@ -34,6 +38,10 @@ outputs:
   singletons_gunc_failed:
     type: File
     outputSource: process_one_genome/gunc_failed
+  singletons_filtered_initial_fa:
+    type: File[]?
+    outputSource: process_one_genome/filtered_initial_fa-s
+
 
   gffs_folder:
     type: Directory
@@ -74,6 +82,7 @@ steps:
       - pangenome_clusters
       - prokka_gffs
       - panaroo_output  # Dir
+      - initial_genomes_fa-s  # File[]
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
@@ -89,7 +98,7 @@ steps:
       - cluster_folder
       - gunc_completed
       - gunc_failed
-
+      - filtered_initial_fa-s  # File[]?
 
 # ----------- << gffs folder >> -----------
   create_folder_gffs:

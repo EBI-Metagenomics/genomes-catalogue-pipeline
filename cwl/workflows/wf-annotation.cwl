@@ -117,9 +117,11 @@ steps:
       csv: assign_mgygs_renamed_csv
     out:
       - pangenomes
+      - pangenomes_initial_fa
       - singletons
       - singletons_gunc_completed
       - singletons_gunc_failed
+      - singletons_filtered_initial_fa
       - mmseqs_output
       - cluster_representatives
       - cluster_tsv
@@ -159,7 +161,12 @@ steps:
   detect_rrna:
     run: sub-wf/detect_rrna_subwf.cwl
     in:
-      filtered_genomes: filter_genomes/drep_filtered_genomes
+      filtered_genomes:
+        source:
+          - clusters_annotation/pangenomes_initial_fa           # all genomes from pangenomes
+          - clusters_annotation/singletons_filtered_initial_fa  # all passed GUNC singletons
+        linkMerge: merge_flattened
+        pickValue: all_non_null
       cm_models: cm_models
     out: [rrna_outs, rrna_fastas]
 

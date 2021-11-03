@@ -20,6 +20,8 @@ doc: |
          --- genome
               --- faa-s
               --- gff-s
+              --- fa
+              --- fa.fai
 
 requirements:
   SubworkflowFeatureRequirement: {}
@@ -45,6 +47,9 @@ outputs:
   panaroo_tar:
     type: File
     outputSource: tar_gz_panaroo_folder/folder_tar
+  initial_genomes_fa:
+    type: File[]
+    outputSource: preparation/files
 
 steps:
   preparation:
