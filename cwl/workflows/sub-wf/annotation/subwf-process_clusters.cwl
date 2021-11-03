@@ -108,8 +108,8 @@ steps:
       - prokka_gffs
       - panaroo_output  # Dir
       - initial_genomes_fa-s  # File[]
-      - main_rep_gff
-      - main_rep_faa
+      - main_reps_gff
+      - main_reps_faa
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
