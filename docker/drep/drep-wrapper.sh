@@ -51,7 +51,16 @@ echo "--> untar"
 tar -xvzf ${GENOMES_TAR} -C genomes/
 
 GENOMES=$(find -name ${NAME})
-echo "${GENOMES}"
+echo "Path to folder: ${GENOMES}"
+
+LIST_GENOMES=$(ls ${GENOMES} | tr ' ' '\n')
+
+for i in ${LIST_GENOMES}; do
+    echo "${GENOMES}/${i}" >> list_files.txt;
+done
+
+echo "--> list of genomes:"
+less list_files.txt
 
 echo "--> dRep"
 dRep dereplicate \
@@ -63,6 +72,6 @@ dRep dereplicate \
   -cm larger \
   -comp 50 \
   -con 5 \
-  -g ${GENOMES}/* \
+  -g list_files.txt \
   --genomeInfo ${CSV} \
   -extraW ${WEIGHTS}
