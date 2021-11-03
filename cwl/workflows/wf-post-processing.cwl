@@ -21,9 +21,13 @@ inputs:
   clusters: File
 
 outputs:
-  annotations_dir:
+  annotations_cluster_dir:
     type: Directory[]
     outputSource: process_folders/annotations
+
+  annotated_gff:
+    type: File[]
+    outputSource: process_folders/annotated_gff
 
 steps:
 
@@ -45,3 +49,4 @@ steps:
       files: choose_files/cluster_folders
     out:
       - annotations  # Dir
+      - annotated_gff # File

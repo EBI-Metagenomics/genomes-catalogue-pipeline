@@ -43,9 +43,12 @@ outputs:
     outputSource: process_one_genome/filtered_initial_fa-s
 
 
-  gffs_folder:
-    type: Directory
-    outputSource: create_folder_gffs/gffs_folder
+  gffs_list:
+    type: File[]
+    outputSource:
+      source:
+        - process_many_genomes/prokka_gffs
+        - process_one_genome/prokka_gff-s
   panaroo_folder:
     type: Directory
     outputSource: process_many_genomes/panaroo_output
@@ -117,18 +120,6 @@ steps:
       - gunc_completed
       - gunc_failed
       - filtered_initial_fa-s  # File[]?
-
-# ----------- << gffs folder >> -----------
-  create_folder_gffs:
-    run: create_gffs_folder.cwl
-    in:
-      gffs:
-        source:
-          - process_many_genomes/prokka_gffs
-          - process_one_genome/prokka_gff-s
-        linkMerge: merge_flattened
-      folder_name: { default: 'GFFs'}
-    out: [ gffs_folder ]
 
 # ----------- << mmseqs subwf>> -----------
 

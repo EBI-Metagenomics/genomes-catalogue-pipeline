@@ -6,6 +6,12 @@ doc: |
   - kegg, cog, cazy annotations
   - annotate gff
 
+  output directory:
+    MGYG...
+       ----- genome
+               ----- kegg, cog, cazy,...
+               ----- annotated GFF
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
@@ -20,7 +26,11 @@ inputs:
 outputs:
   annotations:
     type: Directory
-    outputSource: wrap_directory/out
+    outputSource: create_cluster_directory/dir_of_dir
+
+  annotated_gff:
+    type: File
+    outputSource: annotate_gff/annotated_gff
 
 steps:
 
@@ -50,7 +60,9 @@ steps:
         valueFrom: "annotated_$(self.basename).gff"
     out: [ annotated_gff ]
 
-  wrap_directory:
+# --------- create genome folder ----------
+
+  wrap_directory_genomes:
     run: ../../../utils/return_directory.cwl
     in:
       list:
@@ -60,7 +72,17 @@ steps:
         - function_summary_stats/cazy_summary
         - function_summary_stats/cog_summary
         - annotate_gff/annotated_gff
-      dir_name:
+      dir_name: { default: 'genome'}
+    out: [ out ]
+
+# --------- create cluster folder ----------
+
+  create_cluster_directory:
+    run: ../../../utils/return_dir_of_dir.cwl
+    in:
+      directory: wrap_directory_genomes/out
+      newname:
         source: files
         valueFrom: $(self.basename)
-    out: [out]
+    out: [ dir_of_dir ]
+

@@ -66,8 +66,8 @@ outputs:
     outputSource: clusters_annotation/mmseqs_output
 
   gffs:
-    type: Directory
-    outputSource: clusters_annotation/gffs_folder
+    type: File[]
+    outputSource: clusters_annotation/gffs_list
   panaroo_folder:
     type: Directory
     outputSource: clusters_annotation/panaroo_folder
@@ -87,17 +87,6 @@ outputs:
   ips_eggnog_annotations:
     type: File[]
     outputSource: functional_annotation/per_genome_annotations
-
-#  ips:
-#    type: File?
-#    outputSource: functional_annotation/ips_result
-
-#  eggnog_annotations:
-#    type: File?
-#    outputSource: functional_annotation/eggnog_annotations
-#  eggnog_seed_orthologs:
-#    type: File?
-#    outputSource: functional_annotation/eggnog_seed_orthologs
 
 # ---------- rRNA -------------
   rrna_out:
@@ -136,7 +125,7 @@ steps:
       - mmseqs_output
       - cluster_representatives
       - cluster_tsv
-      - gffs_folder
+      - gffs_list  # File[]
       - panaroo_folder
       - all_main_reps_faa
       - all_main_reps_gff
