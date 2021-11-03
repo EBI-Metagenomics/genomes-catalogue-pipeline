@@ -13,6 +13,10 @@ inputs:
   genomes_folder: Directory
   input_csv: File
   skip_flag: boolean  # skip dRep for set that was already dereplicated (skip_flag=True)
+  # for already dereplicated set
+  sdb_dereplicated: File?
+  cdb_dereplicated: File?
+  mdb_dereplicated: File?
 
 outputs:
 
@@ -37,82 +41,67 @@ outputs:
     outputSource: generate_weights/file_with_weights
 
   best_cluster_reps:
-    type: File
-    outputSource: drep/Sdb_csv
+    type: File?
+    outputSource: drep/sdb
 
 
 steps:
   generate_weights:
     when: $(!Boolean(inputs.flag))
-    run: ../../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
+    run: ../../../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
     in:
       flag: skip_flag
       input_directory: genomes_folder
       output: { default: "extra_weight_table.txt" }
     out: [ file_with_weights ]
 
-  get_genomes_list:
-    when: $(!Boolean(inputs.flag))
-    run: ../../utils/get_files_from_dir.cwl
-    in:
-      flag: skip_flag
-      dir: genomes_folder
-    out: [ files ]
-
   drep:
     when: $(!Boolean(inputs.flag))
-    run: ../../tools/drep/drep.cwl
+    run: drep-subwf-tar.cwl
     in:
       flag: skip_flag
-      genomes: get_genomes_list/files
-      drep_outfolder: { default: 'drep_outfolder' }
-      csv: input_csv
+      genomes_folder: genomes_folder
+      input_csv: input_csv
       extra_weights: generate_weights/file_with_weights
     out:
-      - Cdb_csv
-      - Mdb_csv
-      - Sdb_csv
+      - cdb
+      - mdb
+      - sdb
 
   split_drep:
-    when: $(!Boolean(inputs.flag))
-    run: ../../tools/drep/split_drep.cwl
+    run: ../../../tools/drep/split_drep.cwl
     in:
-      flag: skip_flag
-      Cdb_csv: drep/Cdb_csv
-      Mdb_csv: drep/Mdb_csv
-      Sdb_csv: drep/Sdb_csv
+      Cdb_csv:
+        source:
+          - drep/cdb
+          - cdb_dereplicated
+        pickValue: first_non_null
+      Mdb_csv:
+        source:
+          - drep/mdb
+          - mdb_dereplicated
+        pickValue: first_non_null
+      Sdb_csv:
+        source:
+          - drep/sdb
+          - sdb_dereplicated
+        pickValue: first_non_null
       split_outfolder: { default: 'split_outfolder' }
     out:
       - split_out_mash
       - split_text
 
   classify_clusters:
-    when: $(!Boolean(inputs.flag))
-    run: ../../tools/drep/classify_folders.cwl
+    run: ../../../tools/drep/classify_folders.cwl
     in:
-      flag: skip_flag
       genomes: genomes_folder
       text_file: split_drep/split_text
     out:
       - many_genomes
       - one_genome
 
-  classify_dereplicated:
-    when: $(Boolean(inputs.flag))
-    run: ../../tools/drep/classify_dereplicated.cwl
-    in:
-      flag: skip_flag
-      clusters: genomes_folder
-    out:
-      - one_genome
-
   filter_nulls:
-    run: ../../utils/filter_nulls.cwl
+    run: ../../../utils/filter_nulls.cwl
     in:
-      list_dirs:
-        source:
-          - classify_clusters/one_genome
-          - classify_dereplicated/one_genome
-        linkMerge: merge_flattened
-        pickValue: all_non_null
+      list_dirs: classify_clusters/one_genome
     out: [ out_dirs ]

@@ -11,9 +11,9 @@ requirements:
       - class: File
         location: ../../../../docker/genomes-catalog-update/scripts/rename_fasta.py
 
-hints:
-  DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
 
 baseCommand: [ rename_fasta.py ]
 

@@ -1,9 +1,7 @@
-genomes:
+genomes_folder:
   class: Directory
   path: ../../../../input_example/small_set/all_genomes
-drep_outfolder: drep-output
-
-csv:
+input_csv:
   class: File
   path: ../../../../input_example/small_set/download.csv
 

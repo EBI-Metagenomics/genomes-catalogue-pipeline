@@ -13,57 +13,36 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v1"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v2"
 
 
-baseCommand: ["dRep", "dereplicate"]
-
-arguments:
-  - prefix: -p
-    valueFrom: '16'
-    position: 1
-  - prefix: '-pa'
-    position: 4
-    valueFrom: '0.9'
-  - prefix: '-sa'
-    position: 5
-    valueFrom: '0.95'
-  - prefix: '-nc'
-    position: 6
-    valueFrom: '0.30'
-  - prefix: '-cm'
-    position: 7
-    valueFrom: 'larger'
-  - prefix: '-comp'
-    position: 9
-    valueFrom: '50'
-  - prefix: '-con'
-    position: 10
-    valueFrom: '5'
+baseCommand: ["drep-wrapper.sh"]
 
 inputs:
   genomes:
-    type: File[]
+    type: File
     inputBinding:
-      position: 3
       prefix: '-g'
 
   drep_outfolder:
     type: string
     inputBinding:
-      position: 2
+      prefix: '-o'
 
   csv:
     type: File
     inputBinding:
-      position: 8
-      prefix: '--genomeInfo'
+      prefix: '-c'
 
   extra_weights:
-    type: File?
+    type: File
     inputBinding:
-      position: 11
-      prefix: '-extraW'
+      prefix: '-w'
+
+  name:
+    type: string
+    inputBinding:
+      prefix: '-n'
 
 outputs:
 

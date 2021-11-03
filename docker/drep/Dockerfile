@@ -11,3 +11,10 @@ RUN conda install -c bioconda python=3.7 drep --yes --freeze-installed && conda 
 
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools
 ENV PATH=/opt/conda/bin:${PATH}
+
+COPY drep-wrapper.sh \
+    /tools/
+
+RUN chmod a+x /tools/*
+
+ENV PATH="/tools:${PATH}"
