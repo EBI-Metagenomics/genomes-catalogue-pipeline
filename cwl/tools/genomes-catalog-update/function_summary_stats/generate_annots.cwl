@@ -13,9 +13,9 @@ requirements:
       - class: File
         location: ../../../../docker/genomes-catalog-update/scripts/generate_annots.py
 
-hints:
-  DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
 
 baseCommand: [ generate_annots.py ]
 
