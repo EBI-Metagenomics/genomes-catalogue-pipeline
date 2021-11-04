@@ -22,7 +22,7 @@ inputs:
   metadata_outname: string
   ftp_name_catalogue: string
   ftp_version_catalogue: string
-
+  geo_file: File
 
 outputs:
 
@@ -30,7 +30,7 @@ outputs:
     type: File
     outputSource: tar/folder_tar
 
-  matadata:
+  metadata:
     type: File
     outputSource: metadata/metadata_table
 
@@ -40,7 +40,7 @@ steps:
   gtdbtk:
     run: ../tools/gtdbtk/gtdbtk.cwl
     in:
-      drep_folder: annotation/filter_genomes_drep_filtered_genomes
+      drep_folder: filter_genomes_drep
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
     out:
@@ -67,4 +67,5 @@ steps:
       outfile_name: metadata_outname
       ftp_name: ftp_name_catalogue
       ftp_version: ftp_version_catalogue
+      geo: geo_file
     out: [ metadata_table ]

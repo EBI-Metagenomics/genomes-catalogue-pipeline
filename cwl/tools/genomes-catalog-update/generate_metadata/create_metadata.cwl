@@ -71,7 +71,11 @@ inputs:
     inputBinding:
       prefix: '--ftp-version'
       position: 10
-
+  geo:
+    type: File
+    inputBinding:
+      prefix: '--geo'
+      position: 11
 
 outputs:
   metadata_table:

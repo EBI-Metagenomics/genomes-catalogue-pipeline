@@ -49,6 +49,9 @@ kegg_db:
   class: File
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv
 
+geo_metadata:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/continent_countries.csv
 
 #  genomes_ena: Directory?
 #  ena_csv: File?

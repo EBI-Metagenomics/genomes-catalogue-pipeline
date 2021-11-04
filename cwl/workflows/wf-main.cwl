@@ -46,6 +46,7 @@ inputs:
 
   cm_models: Directory
   kegg_db: File
+  geo_metadata: File
 
 outputs:
 
@@ -228,20 +229,21 @@ steps:
     run: wf-gtdb-metadata.cwl
     in:
       skip_flag: skip_gtdbtk_step
-      genomes: preparation/assign_mgygs_renamed_genomes ???
+      genomes: preparation/assign_mgygs_renamed_genomes
       filter_genomes_drep: annotation/filter_genomes_drep_filtered_genomes
       gtdbtk_data: gtdbtk_data
       extra_weights_table: drep_subwf/weights_file
-      checkm_results_table: ???
-      rrna_dir: annotation/rrna
-      naming_table: ???
+      checkm_results_table: preparation/assign_mgygs_renamed_csv
+      rrna_dir: annotation/rrna_out
+      naming_table: preparation/assign_mgygs_naming_table
       clusters_split: drep_subwf/split_text
       metadata_outname: { default: 'metadata.txt'}
       ftp_name_catalogue: ftp_name_catalogue
       ftp_version_catalogue: ftp_version_catalogue
+      geo_file: geo_metadata
     out:
       - gtdbtk_tar
-      - matadata
+      - metadata
 
 # ---------- << return folder with intermediate files >> ----------
   folder_with_intermediate_files:
