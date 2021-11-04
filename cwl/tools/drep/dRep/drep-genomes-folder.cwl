@@ -11,10 +11,18 @@ requirements:
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
-hints:
-  DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v1"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v1"
 
+hints:
+  SoftwareRequirement:
+    packages:
+    - package: drep
+      version:
+      - '3.2.2'
+      specs:
+      - https://anaconda.org/bioconda/drep
 
 baseCommand: ["dRep", "dereplicate"]
 

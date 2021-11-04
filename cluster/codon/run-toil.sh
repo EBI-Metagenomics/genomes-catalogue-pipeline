@@ -80,6 +80,8 @@ if [ "${SINGULARUTY_ON}" == "True" ]; then
         --jobStore ${RUN_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
+        --beta-conda-dependencies \
+        --beta-dependencies-directory /hps/nobackup/rdf/metagenomics/service-team/toil-conda-envs \
         ${CWL} ${YML} > "${LOG_DIR}/${OUTDIRNAME}.json"
 else
     toil-cwl-runner \
@@ -97,6 +99,8 @@ else
         --jobStore ${RUN_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
+        --beta-conda-dependencies \
+        --beta-dependencies-directory /hps/nobackup/rdf/metagenomics/service-team/toil-conda-envs \
         ${CWL} ${YML} > "${LOG_DIR}/${OUTDIRNAME}.json"
 fi
 

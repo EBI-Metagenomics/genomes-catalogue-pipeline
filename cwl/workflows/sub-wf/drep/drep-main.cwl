@@ -57,7 +57,7 @@ steps:
 
   drep:
     when: $(!Boolean(inputs.flag))
-    run: drep-subwf-tar.cwl
+    run: drep-subwf-genomes-folder.cwl  # drep-subwf-tar.cwl
     in:
       flag: skip_flag
       genomes_folder: genomes_folder
