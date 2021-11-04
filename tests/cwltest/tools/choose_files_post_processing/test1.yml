@@ -1,0 +1,39 @@
+annotations:
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000004_eggNOG.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000004_InterProScan.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000005_eggNOG.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000005_InterProScan.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000006_eggNOG.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000006_InterProScan.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000007_eggNOG.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000007_InterProScan.tsv
+faas:
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/FAA/MGYG000000004.faa
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/FAA/MGYG000000005.faa
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/FAA/MGYG000000006.faa
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/FAA/MGYG000000007.faa
+gffs:
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/GFFs/MGYG000000004.gff
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/GFFs/MGYG000000005.gff
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/GFFs/MGYG000000006.gff
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/GFFs/MGYG000000007.gff
+clusters:
+  class: File
+  path: ../../../../input_example/small_set/results/MGYGs/intermediate_files/drep-filt-list.txt
+outdir: output_genomes

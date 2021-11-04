@@ -25,10 +25,10 @@ inputs:
 
 outputs:
 
-  prokka_faa-s:
+  prokka_faa:
     type: File?
     outputSource: prokka/faa
-  prokka_gff-s:
+  prokka_gff:
     type: File?
     outputSource: prokka/gff
 

@@ -66,23 +66,14 @@ outputs:
     type: Directory?
     outputSource: annotation/mmseqs
 
-  gffs:
-    type: Directory
-    outputSource: annotation/gffs
   panaroo:
     type: Directory
     outputSource: annotation/panaroo_folder
-# ------- functional annotation ----------
-  ips:
-    type: File?
-    outputSource: annotation/ips
 
-  eggnog_annotations:
-    type: File?
-    outputSource: annotation/eggnog_annotations
-  eggnog_seed_orthologs:
-    type: File?
-    outputSource: annotation/eggnog_seed_orthologs
+# ------- additional files for clusters (kegg, ips, eggnog, cog, cazy, annotated gff) ----------
+  cluster_annotations:
+    type: Directory[]
+    outputSource: post_processing/annotations_cluster_dir
 
 # ---------- rRNA -------------
   rrna_out:
@@ -93,6 +84,11 @@ outputs:
     type: Directory
     outputSource: annotation/rrna_fasta
 
+# ---------- GFF ----------
+  gff_ftp:
+    type: Directory
+    outputSource: create_gff_folder_ftp/gffs_folder
+
 # ------------ GTDB-Tk --------------
   gtdbtk:
     type: Directory?
@@ -102,11 +98,6 @@ outputs:
   drep_genomes:
     type: Directory
     outputSource: annotation/filter_genomes_drep_filtered_genomes
-
-# ------------ per-genome annotations --------------
-  per_genome_annotations:
-    type: Directory
-    outputSource: post_processing/per_genome_annotations_dir
 
 
 steps:
@@ -174,13 +165,10 @@ steps:
       cm_models: cm_models
 
     out:
-      - pan-genomes
-      - singletons
-      - mmseqs
-      - gffs
-      - ips
-      - eggnog_annotations
-      - eggnog_seed_orthologs
+      - pan-genomes             # Dir[]
+      - singletons              # Dir[]
+      - mmseqs                  # Dir[]
+      - ips_eggnog_annotations  # File[]
       - rrna_out
       - rrna_fasta
       - clusters_annotation_singletons_gunc_completed
@@ -188,18 +176,50 @@ steps:
       - filter_genomes_drep_filtered_genomes
       - mmseqs_clusters_tsv
       - panaroo_folder
+      - main_reps_faa_pangenomes
+      - main_reps_gff_pangenomes
+      - main_reps_faa_singletons
+      - main_reps_gff_singletons
+      - gffs_pangenomes
+#      - main_reps_faa
+#      - main_reps_gff
+#      - gffs
 
 # ---------- << post-processing >> ----------
   post_processing:
     run: wf-post-processing.cwl
     in:
-      ips: annotation/ips
-      eggnog: annotation/eggnog_annotations
-      species_representatives: annotation/filter_genomes_list_drep_filtered
-      mmseqs_tsv: annotation/mmseqs_clusters_tsv
+      annotations: annotation/ips_eggnog_annotations
+      clusters: annotation/filter_genomes_list_drep_filtered
       kegg: kegg_db
+      gffs:
+        source:
+          - annotation/main_reps_gff_pangenomes
+          - annotation/main_reps_gff_singletons
+        pickValue: all_non_null
+        linkMerge: merge_flattened
+      faas:
+        source:
+          - annotation/main_reps_faa_pangenomes
+          - annotation/main_reps_faa_singletons
+        pickValue: all_non_null
+        linkMerge: merge_flattened
     out:
-      - per_genome_annotations_dir
+      - annotations_cluster_dir  # Dir[]
+      - annotated_gff  # File[]
+
+  create_gff_folder_ftp:
+    run: sub-wf/post-processing/create_gffs_folder.cwl
+    in:
+      gffs:
+        source:
+          - post_processing/annotated_gff           # annotated GFFs for main reps
+          - annotation/gffs_pangenomes              # all GFF from pangenomes
+          - annotation/main_reps_gff_singletons     # all GFF from singletones
+        pickValue: all_non_null
+        linkMerge: merge_flattened
+      folder_name: { default: GFF }
+    out: [ gffs_folder ]
 
 
 # ----------- << GTDB - Tk >> -----------
@@ -231,3 +251,4 @@ steps:
         pickValue: all_non_null
       dir_name: { default: 'intermediate_files'}
     out: [ out ]
+

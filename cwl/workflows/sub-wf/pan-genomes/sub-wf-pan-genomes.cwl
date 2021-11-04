@@ -50,6 +50,13 @@ outputs:
   initial_genomes_fa:
     type: File[]
     outputSource: preparation/files
+  main_rep_gff:
+    type: File
+    outputSource: choose_main_rep_gff/file_pattern
+  main_rep_faa:
+    type: File
+    outputSource: choose_main_rep_faa/file_pattern
+
 
 steps:
   preparation:

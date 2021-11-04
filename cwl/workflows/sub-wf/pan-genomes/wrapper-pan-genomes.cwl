@@ -38,6 +38,13 @@ outputs:
   initial_genomes_fa-s:
     type: File[]
     outputSource: flatten_fa-s/array1d
+  main_reps_faa:
+    type: File[]
+    outputSource: process_many_genomes/main_rep_faa
+  main_reps_gff:
+    type: File[]
+    outputSource: process_many_genomes/main_rep_gff
+
 
 steps:
 
@@ -54,6 +61,8 @@ steps:
       - cluster_folder  # Dir
       - panaroo_tar     # File[]
       - initial_genomes_fa  # File[]
+      - main_rep_gff
+      - main_rep_faa
 
   flatten_gffs:
     run: ../../../utils/flatten_array.cwl

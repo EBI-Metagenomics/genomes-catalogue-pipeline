@@ -11,36 +11,23 @@ requirements:
       - class: File
         location: ../../../../docker/genomes-catalog-update/scripts/annot_gff.py
 
-hints:
-  DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
 
 baseCommand: [ annot_gff.py ]
 
 
 inputs:
-  gff:
-    type: File
-    inputBinding:
-      position: 1
-      prefix: -g
 
-  eggnog:
-    type: File
+  input_dir:
+    type: Directory
     inputBinding:
-      position: 2
-      prefix: -e
-
-  ips:
-    type: File
-    inputBinding:
-      position: 3
       prefix: -i
 
   outfile:
     type: string
     inputBinding:
-      position: 4
       prefix: -o
 
 

@@ -1,0 +1,4 @@
+input_dir:
+  class: Directory
+  path: ../../../../input_example/small_set/results/MGYGs/test
+outfile: annotated_MGYG000000007.gff
