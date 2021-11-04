@@ -16,6 +16,8 @@ inputs:
 
   max_accession_mgyg: int
   min_accession_mgyg: int
+  ftp_name_catalogue: string
+  ftp_version_catalogue: string
 
   # skip dRep step if MAGs were already dereplicated and provide Sdb.csv, Mdb.csv and Cdb.csv
   skip_drep_step: boolean   # set True for skipping
@@ -91,8 +93,12 @@ outputs:
 
 # ------------ GTDB-Tk --------------
   gtdbtk:
-    type: Directory?
-    outputSource: gtdbtk/gtdbtk_folder
+    type: File?
+    outputSource: gtdbtk_metadata/gtdbtk_tar
+
+  metadata:
+    type: File?
+    outputSource: gtdbtk_metadata/metadata
 
 # for gtdbtk and post-processing
   drep_genomes:
@@ -122,7 +128,7 @@ steps:
     in:
       genomes_folder: preparation/assign_mgygs_renamed_genomes
       input_csv: preparation/assign_mgygs_renamed_csv
-      # for dereplicated set
+      # ---- for dereplicated set ----
       skip_flag: skip_drep_step
       sdb_dereplicated: sdb_dereplicated
       cdb_dereplicated: cdb_dereplicated
@@ -134,7 +140,6 @@ steps:
       - best_cluster_reps
       - weights_file
       - split_text
-
 
 # ----------- << annotations + IPS, eggnog + filter drep + rRNA >> ------
   annotation:
@@ -180,9 +185,6 @@ steps:
       - main_reps_faa_singletons
       - main_reps_gff_singletons
       - gffs_pangenomes
-#      - main_reps_faa
-#      - main_reps_gff
-#      - gffs
 
 # ---------- << post-processing >> ----------
   post_processing:
@@ -220,17 +222,26 @@ steps:
       folder_name: { default: GFF }
     out: [ gffs_folder ]
 
-
-# ----------- << GTDB - Tk >> -----------
-  gtdbtk:
+# ----------- << GTDB - Tk + Metadata [optional step] >> -----------
+  gtdbtk_metadata:
     when: $(!Boolean(inputs.skip_flag))
-    run: ../tools/gtdbtk/gtdbtk.cwl
+    run: wf-gtdb-metadata.cwl
     in:
       skip_flag: skip_gtdbtk_step
-      drep_folder: annotation/filter_genomes_drep_filtered_genomes
-      gtdb_outfolder: { default: 'gtdb-tk_output' }
-      refdata: gtdbtk_data
-    out: [ gtdbtk_folder ]
+      genomes: preparation/assign_mgygs_renamed_genomes ???
+      filter_genomes_drep: annotation/filter_genomes_drep_filtered_genomes
+      gtdbtk_data: gtdbtk_data
+      extra_weights_table: drep_subwf/weights_file
+      checkm_results_table: ???
+      rrna_dir: annotation/rrna
+      naming_table: ???
+      clusters_split: drep_subwf/split_text
+      metadata_outname: { default: 'metadata.txt'}
+      ftp_name_catalogue: ftp_name_catalogue
+      ftp_version_catalogue: ftp_version_catalogue
+    out:
+      - gtdbtk_tar
+      - matadata
 
 # ---------- << return folder with intermediate files >> ----------
   folder_with_intermediate_files:

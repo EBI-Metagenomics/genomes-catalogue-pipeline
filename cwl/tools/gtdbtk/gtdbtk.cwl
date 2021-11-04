@@ -44,3 +44,7 @@ outputs:
     type: Directory
     outputBinding:
       glob: $(inputs.gtdb_outfolder)
+  gtdbtk_bac:
+    type: File
+    outputBinding:
+      glob: $(inputs.gtdb_outfolder)/classify/gtdbtk.bac120.summary.tsv
