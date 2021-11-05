@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import glob
 from argparse import RawTextHelpFormatter
 import json
 
@@ -20,28 +19,28 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file):
         for line in f:
             linen += 1
             cols = line.rstrip().split("\t")
-            mgnify = cols[17]  # mgnify accession of species rep
-            species = cols[16]  # species rep
+            mgnify = cols[13]  # mgnify accession of species rep
+            species = mgnify  # species rep
             if mgnify == species_name:
-                geo_range.add(cols[22])  # continent
+                geo_range.add(cols[18])  # continent
                 if species == cols[0]:  # means this is the representative
                     species_code = species
-                    genome_accession = cols[15]  # old accession (original one with which it was fetched)
-                    sample_accession = cols[19]
-                    study_accession = cols[20]
-                    geo_origin = cols[22]  # continent
-                    complet = float(cols[8])
-                    cont = float(cols[9])
-                    gtype = cols[3]
-                    genome_length = int(cols[4])
-                    n_contigs = int(cols[5])
-                    n50 = int(cols[6])
-                    gc_content = float(cols[7])
-                    tax_lineage = cols[18]
-                    rna_5s = float(cols[11])
-                    rna_16s = float(cols[12])
-                    rna_23s = float(cols[13])
-                    trnas = int(cols[14])
+                    genome_accession = cols[12]  # old accession (original one with which it was fetched)
+                    sample_accession = cols[15]
+                    study_accession = cols[16]
+                    geo_origin = cols[18]  # continent
+                    complet = float(cols[6])
+                    cont = float(cols[7])
+                    gtype = cols[1]
+                    genome_length = int(cols[2])
+                    n_contigs = int(cols[3])
+                    n50 = int(cols[4])
+                    gc_content = float(cols[5])
+                    tax_lineage = cols[14]
+                    rna_5s = float(cols[8])
+                    rna_16s = float(cols[9])
+                    rna_23s = float(cols[10])
+                    trnas = int(cols[11])
     geo_range = list(geo_range)
     try:
         geo_range.remove("not provided")
@@ -119,7 +118,7 @@ def get_pangenome(core, pangenome_fasta, species_code, counts_file):
                     num_genomes_non_redundant = int(cols[2])
     return {
         'num_genomes_total': num_genomes_total,
-        'num_genomes_non_redundant': num_genomes_non_redundant,
+        'num_genomes_non_redundant': num_genomes_total,
         'pangenome_size': pangenome_size,
         'pangenome_core_size': core_count,
         'pangenome_accessory_size': access_count
