@@ -11,7 +11,7 @@ import json
 #counts_file = "/hps/nobackup2/production/metagenomics/databases/human-gut_resource/species_counts.tsv"
 
 
-def get_metadata(species_name, coverage, fasta, biome, metadata_file, counts_file):
+def get_metadata(species_name, coverage, fasta, biome, metadata_file):
     cov = get_annotcov(coverage)  # cov contains 2 values: IPS coverage and eggNOG coverage
     num_proteins = get_cdscount(fasta)
     with open(metadata_file, 'r') as f:
@@ -81,6 +81,15 @@ def get_cdscount(fasta):
     return cds
 
 
+def get_genecount(list_file):
+    count = 0
+    with open(list_file, 'r') as file_in:
+        for line in file_in:
+            if line.strip() != '':
+                count += 1
+    return count
+
+
 def get_annotcov(annot):
     with open(annot) as f:
         linen = 0
@@ -95,11 +104,10 @@ def get_annotcov(annot):
     return ipr_cov, eggnog_cov
 
 
-def get_pangenome(core, accessory, coverage, species_code, counts_file):
-    core_count = get_cdscount(core)
-    access_count = get_cdscount(accessory)
-    pangenome_size = core_count + access_count
-    cov = get_annotcov(coverage)
+def get_pangenome(core, pangenome_fasta, species_code, counts_file):
+    pangenome_size = get_cdscount(pangenome_fasta)
+    core_count = get_genecount(core)
+    access_count = pangenome_size - core_count
     with open(counts_file) as f:
         linen = 0
         for line in f:
@@ -114,9 +122,7 @@ def get_pangenome(core, accessory, coverage, species_code, counts_file):
         'num_genomes_non_redundant': num_genomes_non_redundant,
         'pangenome_size': pangenome_size,
         'pangenome_core_size': core_count,
-        'pangenome_accessory_size': access_count,
-        'pangenome_eggnog_coverage': cov[-1],
-        'pangenome_ipr_coverage': cov[0]
+        'pangenome_accessory_size': access_count
     }
 
 
@@ -166,8 +172,10 @@ if __name__ == '__main__':
     parser.add_argument('-o', dest='out_file', help='Output json filename [REQUIRED]', required=True)
     parser.add_argument('-b', dest='biome', help='Full biome. Example: root:Host-Associated:Human:Digestive System:'
                                                  'Large intestine', required=True)
-    parser.add_argument('-m', dest='metadata-file', help='Path to the metadata table', required=True)
-    parser.add_argument('-c', dest='counts-file', help='Path to the species counts', required=True)
+    parser.add_argument('-m', dest='metadata_file', help='Path to the metadata table', required=True)
+    parser.add_argument('-c', dest='counts_file', help='Path to the species counts', required=True)
+    parser.add_argument('--pangenome-fasta', help='Path to the fasta file for the pangenome')
+    parser.add_argument('--pangenome-core', help='Path to the list of core genes for the pangenome')
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -175,8 +183,7 @@ if __name__ == '__main__':
     else:
         args = parser.parse_args()
         species_name = os.path.basename(args.protein_fasta).split(".fa")[0]
-        meta_res = get_metadata(species_name, args.annot_cov, args.protein_fasta, args.biome, args.metadata_file,
-                                args.counts_file)
+        meta_res = get_metadata(species_name, args.annot_cov, args.protein_fasta, args.biome, args.metadata_file)
         meta_dict = meta_res[-1]
         species_code = meta_res[1]
         # check genome accession
@@ -202,14 +209,9 @@ if __name__ == '__main__':
                 delete_dict[key] = output[key]
         for key in delete_dict:
             del (output[key])
-        try:
-            pangen_cov = glob.glob(os.path.join(args.in_folder, "pan-genome/*coverage.tsv"))[0]
-            core_cds = glob.glob(os.path.join(args.in_folder, "pan-genome/core_genes.faa"))[0]
-            access_cds = glob.glob(os.path.join(args.in_folder, "pan-genome/accessory_genes.faa"))[0]
-            pangenome = get_pangenome(core_cds, access_cds, pangen_cov, species_code, args.counts_file)
+        if args.pangenome_fasta and args.pangenome_core:
+            pangenome = get_pangenome(args.pangenome_core, args.pangenome_fasta, species_code, args.counts_file)
             pangenome['geographic_range'] = meta_res[0]
             output['pangenome'] = pangenome
-        except:
-            pass
 
         write_obj_2_json(output, args.out_file)
