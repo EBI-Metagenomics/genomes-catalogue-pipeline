@@ -6,9 +6,6 @@ import argparse
 from argparse import RawTextHelpFormatter
 import json
 
-# static files
-#counts_file = "/hps/nobackup2/production/metagenomics/databases/human-gut_resource/species_counts.tsv"
-
 
 def get_metadata(species_name, coverage, fasta, biome, metadata_file):
     cov = get_annotcov(coverage)  # cov contains 2 values: IPS coverage and eggNOG coverage
@@ -103,19 +100,21 @@ def get_annotcov(annot):
     return ipr_cov, eggnog_cov
 
 
-def get_pangenome(core, pangenome_fasta, species_code, counts_file):
+def count_total_genomes(species_code, metadata_file):
+    count = 0
+    with open(metadata_file, 'r') as file_in:
+        for line in file_in:
+            fields = line.strip().split('\t')
+            if fields[13] == species_code:
+                count += 1
+    return count
+
+
+def get_pangenome(core, pangenome_fasta, species_code, metadata_file):
     pangenome_size = get_cdscount(pangenome_fasta)
     core_count = get_genecount(core)
     access_count = pangenome_size - core_count
-    with open(counts_file) as f:
-        linen = 0
-        for line in f:
-            linen += 1
-            if linen > 1:
-                cols = line.rstrip().split("\t")
-                if cols[0] == species_code:
-                    num_genomes_total = int(cols[1])
-                    num_genomes_non_redundant = int(cols[2])
+    num_genomes_total = count_total_genomes(species_code, metadata_file)
     return {
         'num_genomes_total': num_genomes_total,
         'num_genomes_non_redundant': num_genomes_total,
@@ -172,7 +171,6 @@ if __name__ == '__main__':
     parser.add_argument('-b', dest='biome', help='Full biome. Example: root:Host-Associated:Human:Digestive System:'
                                                  'Large intestine', required=True)
     parser.add_argument('-m', dest='metadata_file', help='Path to the metadata table', required=True)
-    parser.add_argument('-c', dest='counts_file', help='Path to the species counts', required=True)
     parser.add_argument('--pangenome-fasta', help='Path to the fasta file for the pangenome')
     parser.add_argument('--pangenome-core', help='Path to the list of core genes for the pangenome')
 
@@ -209,7 +207,7 @@ if __name__ == '__main__':
         for key in delete_dict:
             del (output[key])
         if args.pangenome_fasta and args.pangenome_core:
-            pangenome = get_pangenome(args.pangenome_core, args.pangenome_fasta, species_code, args.counts_file)
+            pangenome = get_pangenome(args.pangenome_core, args.pangenome_fasta, species_code, args.metadata_file)
             pangenome['geographic_range'] = meta_res[0]
             output['pangenome'] = pangenome
 
