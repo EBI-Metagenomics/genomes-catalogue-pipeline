@@ -57,6 +57,14 @@ outputs:
     type: File
     outputSource: choose_main_rep_faa/file_pattern
 
+  # for json
+  core_genes:
+    type: File
+    outputSource: get_core_genes/core_genes
+  pangenome_fna:
+    type: File
+    outputSource: rename_panaroo_fna/renamed_file
+
 
 steps:
   preparation:
@@ -92,9 +100,20 @@ steps:
     run: ../../../tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl
     in:
       input: panaroo/gene_presence_absence
-      output_filename: {default: "core_genes.txt"}
+      output_filename:
+        source: cluster
+        valueFrom: "$(self.basename).core_genes.txt"
     out:
       - core_genes
+
+  rename_panaroo_fna:
+    run: ../../../utils/move.cwl
+    in:
+      initial_file: panaroo/pan_genome_reference-fa
+      out_file_name:
+        source: cluster
+        valueFrom: "$(self.basename).pan-genome.fna"
+    out: [ renamed_file ]
 
   get_mash_file:
     doc: |
@@ -123,7 +142,7 @@ steps:
       list:
         - get_core_genes/core_genes
         - get_mash_file/file_pattern
-        - panaroo/pan_genome_reference-fa
+        - rename_panaroo_fna/renamed_file
         - panaroo/gene_presence_absence
       dir_name: { default: 'pan-genome'}
     out: [ out ]

@@ -85,6 +85,13 @@ outputs:
     type: File[]?
     outputSource: process_one_genome/prokka_gff-s
 
+  all_core_genes:
+    type: File[]
+    outputSource: process_many_genomes/core_genes_files
+  all_pangenome_fna:
+    type: File[]
+    outputSource: process_many_genomes/pangenome_fnas
+
 steps:
 
 # ----------- << mash trees >> -----------
@@ -110,6 +117,8 @@ steps:
       - initial_genomes_fa-s  # File[]
       - main_reps_gff
       - main_reps_faa
+      - core_genes_files
+      - pangenome_fnas
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:

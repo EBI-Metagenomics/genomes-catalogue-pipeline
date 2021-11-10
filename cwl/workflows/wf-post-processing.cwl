@@ -3,8 +3,10 @@ cwlVersion: v1.2
 class: Workflow
 
 doc: |
-  - per-genome annotation
+  - kegg, cog, ..
   - add annotations to gffs
+  - genome.json
+  - wrap to folder cluster/genome/..
 
 requirements:
   SubworkflowFeatureRequirement: {}
@@ -19,6 +21,10 @@ inputs:
   faas: File[]
   gffs: File[]
   clusters: File
+  biom: string
+  metadata: File?
+  pangenome_core_genes: File[]?
+  pangenome_fna: File[]?
 
 outputs:
   annotations_cluster_dir:
@@ -38,6 +44,8 @@ steps:
       faas: faas
       gffs: gffs
       clusters: clusters
+      pangenome_core_genes: pangenome_core_genes
+      pangenome_fna: pangenome_fna
       outdir: { default: 'out-genomes'}
     out: [ cluster_folders ]
 
@@ -47,6 +55,8 @@ steps:
     in:
       kegg: kegg
       files: choose_files/cluster_folders
+      biom: biom
+      metadata: metadata
     out:
       - annotations  # Dir
       - annotated_gff # File

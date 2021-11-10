@@ -44,7 +44,12 @@ outputs:
   main_reps_gff:
     type: File[]
     outputSource: process_many_genomes/main_rep_gff
-
+  core_genes_files:
+    type: File[]
+    outputSource: process_many_genomes/core_genes
+  pangenome_fnas:
+    type: File[]
+    outputSource: process_many_genomes/pangenome_fna
 
 steps:
 
@@ -63,6 +68,8 @@ steps:
       - initial_genomes_fa  # File[]
       - main_rep_gff
       - main_rep_faa
+      - core_genes
+      - pangenome_fna
 
   flatten_gffs:
     run: ../../../utils/flatten_array.cwl

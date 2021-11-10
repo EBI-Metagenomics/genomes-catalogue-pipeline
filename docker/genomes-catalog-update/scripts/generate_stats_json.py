@@ -153,9 +153,18 @@ def write_obj_2_json(obj, filename):
         json.dump(obj, fp, indent=4, sort_keys=True)
 
 
+def get_files(folder, species_name):
+    protein_fasta = os.path.join(folder, species_name + '.faa')
+    pangenome_fasta_path = os.path.join(folder, species_name + ".pan-genome.fna")
+    pangenome_core_path = os.path.join(folder, species_name + ".core_genes.txt")
+    pangenome_fasta = pangenome_fasta_path if os.path.exists(pangenome_fasta_path) else None
+    pangenome_core = pangenome_core_path if os.path.exists(pangenome_core_path) else None
+    return protein_fasta, pangenome_fasta, pangenome_core
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='''
-    Generate species summary stats
+    Generate species summary stats for species reps
 
     Input folder must contain
     - genome/annotation_coverage.tsv
@@ -163,24 +172,27 @@ if __name__ == '__main__':
     - genome/species_name.gff
     - pan-genome/annotation_coverage.tsv
     - pan-genome/core_genes.faa
-    - pan-genome/accessory_genes.faa''', formatter_class=RawTextHelpFormatter)
+    - pan-genome/accessory_genes.faa''',
+                                     formatter_class=RawTextHelpFormatter)
     parser.add_argument('--annot-cov', help='Path to the genome annotation coverage file', required=True)
-    parser.add_argument('--protein-fasta', help='Path to the protein fasta file', required=True)
+    parser.add_argument('-i', dest='input', required=True,
+                        help='Directory with species_name.faa, pangenome.fasta, core_genes')
     parser.add_argument('--gff', help='Path to the gff file', required=True)
     parser.add_argument('-o', dest='out_file', help='Output json filename [REQUIRED]', required=True)
     parser.add_argument('-b', dest='biome', help='Full biome. Example: root:Host-Associated:Human:Digestive System:'
                                                  'Large intestine', required=True)
+    parser.add_argument('-s', dest='species_name', help='Species name (MGYG...)', required=True)
     parser.add_argument('-m', dest='metadata_file', help='Path to the metadata table', required=True)
-    parser.add_argument('--pangenome-fasta', help='Path to the fasta file for the pangenome')
-    parser.add_argument('--pangenome-core', help='Path to the list of core genes for the pangenome')
 
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
     else:
         args = parser.parse_args()
-        species_name = os.path.basename(args.protein_fasta).split(".fa")[0]
-        meta_res = get_metadata(species_name, args.annot_cov, args.protein_fasta, args.biome, args.metadata_file)
+        species_name = args.species_name
+        protein_fasta, pangenome_fasta, pangenome_core = get_files(folder=args.input, species_name=species_name)
+        # Genome is a main representative
+        meta_res = get_metadata(species_name, args.annot_cov, protein_fasta, args.biome, args.metadata_file)
         meta_dict = meta_res[-1]
         species_code = meta_res[1]
         # check genome accession
@@ -206,8 +218,8 @@ if __name__ == '__main__':
                 delete_dict[key] = output[key]
         for key in delete_dict:
             del (output[key])
-        if args.pangenome_fasta and args.pangenome_core:
-            pangenome = get_pangenome(args.pangenome_core, args.pangenome_fasta, species_code, args.metadata_file)
+        if pangenome_fasta and pangenome_core:
+            pangenome = get_pangenome(pangenome_core, pangenome_fasta, species_code, args.metadata_file)
             pangenome['geographic_range'] = meta_res[0]
             output['pangenome'] = pangenome
 

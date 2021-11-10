@@ -6,6 +6,16 @@ doc: |
   - kegg, cog, cazy annotations
   - annotate gff
 
+  Input:
+  - Directory with files:
+    - ips
+    - eggnog
+    - faa
+    - gff
+    - pan-genome.fna [for pangenomes]
+    - core_genes.txt [for pangenomes]
+  - kegg db
+
   output directory:
     MGYG...
        ----- genome
@@ -22,6 +32,8 @@ requirements:
 inputs:
   kegg: File
   files: Directory
+  biom: string
+  metadata: File?
 
 outputs:
   annotations:
@@ -60,18 +72,39 @@ steps:
         valueFrom: "annotated_$(self.basename).gff"
     out: [ annotated_gff ]
 
+# ----------- << genome.json [optional] >> -----------
+  genome_json:
+    when: $(Boolean(inputs.metadata))
+    run: ../../../tools/genomes-catalog-update/stats_json/stats_json.cwl
+    in:
+      metadata: metadata
+      genome_annot_cov: function_summary_stats/annotation_coverage
+      genome_gff: annotate_gff/annotated_gff
+      files: files
+      species_name:
+        source: files
+        valueFrom: $(self.basename)
+      biom: biom
+      outfilename:
+        source: files
+        valueFrom: "$(self.basename).json"
+    out: [ genome_json ]
+
 # --------- create genome folder ----------
 
   wrap_directory_genomes:
     run: ../../../utils/return_directory.cwl
     in:
       list:
-        - function_summary_stats/annotation_coverage
-        - function_summary_stats/kegg_classes
-        - function_summary_stats/kegg_modules
-        - function_summary_stats/cazy_summary
-        - function_summary_stats/cog_summary
-        - annotate_gff/annotated_gff
+        source:
+          - function_summary_stats/annotation_coverage
+          - function_summary_stats/kegg_classes
+          - function_summary_stats/kegg_modules
+          - function_summary_stats/cazy_summary
+          - function_summary_stats/cog_summary
+          - annotate_gff/annotated_gff
+          - genome_json/genome_json
+        pickValue: all_non_null
       dir_name: { default: 'genome'}
     out: [ out ]
 

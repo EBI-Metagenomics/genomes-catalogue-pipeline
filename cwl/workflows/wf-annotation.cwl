@@ -99,6 +99,13 @@ outputs:
     type: File[]
     outputSource: clusters_annotation/all_gffs_pangenomes  #clusters_annotation/gffs_list
 
+  core_genes_files:
+    type: File[]
+    outputSource: clusters_annotation/all_core_genes
+
+  pangenome_fna_files:
+    type: File[]
+    outputSource: clusters_annotation/all_pangenome_fna
 
 # ------- functional annotation ----------
   ips_eggnog_annotations:
@@ -148,6 +155,8 @@ steps:
       - all_main_reps_gff_singletons
       - all_main_reps_faa_singletons
       - all_gffs_pangenomes  # gffs_list  # File[]
+      - all_core_genes          # for json
+      - all_pangenome_fna       # for json
 
 # ----------- << get genomes dereplicated genomes and GUNC-passed >> ------
   filter_genomes:

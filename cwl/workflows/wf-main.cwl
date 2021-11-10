@@ -47,6 +47,7 @@ inputs:
   cm_models: Directory
   kegg_db: File
   geo_metadata: File
+  biom: string
 
 outputs:
 
@@ -186,42 +187,8 @@ steps:
       - main_reps_faa_singletons
       - main_reps_gff_singletons
       - gffs_pangenomes
-
-# ---------- << post-processing >> ----------
-  post_processing:
-    run: wf-post-processing.cwl
-    in:
-      annotations: annotation/ips_eggnog_annotations
-      clusters: annotation/filter_genomes_list_drep_filtered
-      kegg: kegg_db
-      gffs:
-        source:
-          - annotation/main_reps_gff_pangenomes
-          - annotation/main_reps_gff_singletons
-        pickValue: all_non_null
-        linkMerge: merge_flattened
-      faas:
-        source:
-          - annotation/main_reps_faa_pangenomes
-          - annotation/main_reps_faa_singletons
-        pickValue: all_non_null
-        linkMerge: merge_flattened
-    out:
-      - annotations_cluster_dir  # Dir[]
-      - annotated_gff  # File[]
-
-  create_gff_folder_ftp:
-    run: sub-wf/post-processing/create_gffs_folder.cwl
-    in:
-      gffs:
-        source:
-          - post_processing/annotated_gff           # annotated GFFs for main reps
-          - annotation/gffs_pangenomes              # all GFF from pangenomes
-          - annotation/main_reps_gff_singletons     # all GFF from singletones
-        pickValue: all_non_null
-        linkMerge: merge_flattened
-      folder_name: { default: GFF }
-    out: [ gffs_folder ]
+      - core_genes_files
+      - pangenome_fna_files
 
 # ----------- << GTDB - Tk + Metadata [optional step] >> -----------
   gtdbtk_metadata:
@@ -244,6 +211,46 @@ steps:
     out:
       - gtdbtk_tar
       - metadata
+
+# ---------- << post-processing >> ----------
+  post_processing:
+    run: wf-post-processing.cwl
+    in:
+      annotations: annotation/ips_eggnog_annotations
+      clusters: annotation/filter_genomes_list_drep_filtered
+      kegg: kegg_db
+      gffs:
+        source:
+          - annotation/main_reps_gff_pangenomes
+          - annotation/main_reps_gff_singletons
+        pickValue: all_non_null
+        linkMerge: merge_flattened
+      faas:
+        source:
+          - annotation/main_reps_faa_pangenomes
+          - annotation/main_reps_faa_singletons
+        pickValue: all_non_null
+        linkMerge: merge_flattened
+      biom: biom
+      metadata: gtdbtk_metadata/metadata
+      pangenome_core_genes: annotation/core_genes_files
+      pangenome_fna: annotation/pangenome_fna_files
+    out:
+      - annotations_cluster_dir  # Dir[]
+      - annotated_gff  # File[]
+
+  create_gff_folder_ftp:
+    run: sub-wf/post-processing/create_gffs_folder.cwl
+    in:
+      gffs:
+        source:
+          - post_processing/annotated_gff           # annotated GFFs for main reps
+          - annotation/gffs_pangenomes              # all GFF from pangenomes
+          - annotation/main_reps_gff_singletons     # all GFF from singletones
+        pickValue: all_non_null
+        linkMerge: merge_flattened
+      folder_name: { default: GFF }
+    out: [ gffs_folder ]
 
 # ---------- << return folder with intermediate files >> ----------
   folder_with_intermediate_files:

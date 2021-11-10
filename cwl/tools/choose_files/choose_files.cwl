@@ -37,15 +37,25 @@ inputs:
     inputBinding:
       position: 3
       prefix: '--gffs'
+  pangenome_fna:
+    type: File[]?
+    inputBinding:
+      position: 4
+      prefix: '--pangenome-fna'
+  pangenome_core_genes:
+    type: File[]?
+    inputBinding:
+      position: 5
+      prefix: '--pangenome-core'
   clusters:
     type: File
     inputBinding:
-      position: 4
+      position: 6
       prefix: '--clusters'
   outdir:
     type: string
     inputBinding:
-      position: 5
+      position: 7
       prefix: '--output'
 
 outputs:

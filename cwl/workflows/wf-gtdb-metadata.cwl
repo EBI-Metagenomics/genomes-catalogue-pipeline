@@ -34,7 +34,6 @@ outputs:
     type: File
     outputSource: metadata/metadata_table
 
-
 steps:
 # ----------- << GTDB - Tk >> -----------
   gtdbtk:
