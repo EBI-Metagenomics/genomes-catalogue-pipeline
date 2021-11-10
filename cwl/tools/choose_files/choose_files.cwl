@@ -17,7 +17,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
+    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v4"
 
 baseCommand: ["choose_files_post_processing.py"]
 

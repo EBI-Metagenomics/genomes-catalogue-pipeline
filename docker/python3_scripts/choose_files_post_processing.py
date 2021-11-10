@@ -77,12 +77,12 @@ def main():
                         copy(cluster_file[0], os.path.join(cluster, os.path.basename(cluster_file[0])))
                 if args.pangenome_core:
                     core_genes = pattern_core_genes.format(name=cluster_name)
-                    cluster_file = [i for i in os.listdir(args.pangenome_core) if i.endswith(core_genes)]
+                    cluster_file = [i for i in args.pangenome_core if i.endswith(core_genes)]
                     if len(cluster_file) == 1:
                         copy(cluster_file[0], os.path.join(cluster, os.path.basename(cluster_file[0])))
                 if args.pangenome_fna:
                     pangenome_fna = pattern_pangenome_fna.format(name=cluster_name)
-                    cluster_file = [i for i in os.listdir(args.pangenome_fna) if i.endswith(pangenome_fna)]
+                    cluster_file = [i for i in args.pangenome_fna if i.endswith(pangenome_fna)]
                     if len(cluster_file) == 1:
                         copy(cluster_file[0], os.path.join(cluster, os.path.basename(cluster_file[0])))
 

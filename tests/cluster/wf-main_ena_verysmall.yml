@@ -8,6 +8,9 @@ ena_csv:
 max_accession_mgyg: 20
 min_accession_mgyg: 1
 
+ftp_name_catalogue: "TEST-CATALOGUE"
+ftp_version_catalogue: "v1.0"
+
 # no gtdbtk
 skip_gtdbtk_step: True
 skip_drep_step: False
@@ -56,3 +59,8 @@ cm_models:
 kegg_db:
   class: File
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv
+
+geo_metadata:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/continent_countries.csv
+biom: "test:test"
