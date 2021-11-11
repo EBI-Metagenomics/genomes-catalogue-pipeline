@@ -18,7 +18,7 @@ containers_versions=(
         'checkm:v1'
         'detect_rrna:v2'
         'drep:v2'
-        'eggnog-mapper:v1'
+        'eggnog-mapper_genomes_pipeline:v1'
         'genomes-catalog-update:v1'
         'gtdb-tk:v1'
         'gunc:v4'
