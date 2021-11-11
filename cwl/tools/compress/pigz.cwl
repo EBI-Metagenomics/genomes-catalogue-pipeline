@@ -10,7 +10,7 @@ requirements:
 
 hints:
   - class: DockerRequirement
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.bash:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.bash_genomes_pipeline:v1"
 
 inputs:
   uncompressed_file:

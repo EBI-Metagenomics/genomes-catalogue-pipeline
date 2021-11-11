@@ -50,11 +50,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts/split_drep.py
+        location: ../../../docker/python3_scripts_genomes_pipeline/split_drep.py
 
 hints:
   DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3:v4"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts_genomes_pipeline:v4"
 
 baseCommand: [ split_drep.py ]
 

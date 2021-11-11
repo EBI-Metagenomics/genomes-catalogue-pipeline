@@ -11,11 +11,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts/filter_drep_genomes.py
+        location: ../../../docker/python3_scripts_genomes_pipeline/filter_drep_genomes.py
 
 #hints:
 #  DockerRequirement:
-#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3:v4"
+#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts_genomes_pipeline:v4"
 
 baseCommand: [ filter_drep_genomes.py ]
 

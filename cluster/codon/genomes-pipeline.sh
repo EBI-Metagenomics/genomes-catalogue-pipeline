@@ -32,10 +32,10 @@ while getopts :o:y:c:p:d: option; do
 	esac
 done
 
-export PATH=$PATH:${MAIN_PATH}/docker/python3_scripts/
+export PATH=$PATH:${MAIN_PATH}/docker/python3_scripts_genomes_pipeline/
 export PATH=$PATH:${MAIN_PATH}/docker/genomes-catalog-update/scripts/
 
-chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
+chmod a+x ${MAIN_PATH}/docker/python3_scripts_genomes_pipeline/*
 chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
 
 if [ "${DEBUG}" == "True" ]; then

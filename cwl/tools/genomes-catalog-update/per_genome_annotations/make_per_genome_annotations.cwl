@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.genome-catalog-update:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.genomes-catalog-update:v1"
 
 baseCommand: [ make_per_genome_annotations.py ]
 

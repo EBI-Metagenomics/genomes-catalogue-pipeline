@@ -15,7 +15,7 @@ requirements:
 
 #hints:
 #  DockerRequirement:
-#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.genome-catalog-update:v1"
+#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.genomes-catalog-update:v1"
 
 baseCommand: [ generate_extra_weight_table.py ]
 

@@ -10,7 +10,7 @@ doc: |
 
 hints:
   DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.eggnog-mapper:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.eggnog-mapper_genomes_pipeline:v1"
 
 requirements:
   ResourceRequirement:
