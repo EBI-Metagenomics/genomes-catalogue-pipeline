@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.detect_rrna:v2"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v2"
 
 baseCommand: [ rna-detect.sh ]
 

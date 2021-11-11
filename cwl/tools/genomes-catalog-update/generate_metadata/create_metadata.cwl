@@ -15,7 +15,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.genome-catalog-update:v1"
 
 baseCommand: [ create_metadata_table.py ]
 

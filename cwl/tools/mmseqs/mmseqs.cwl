@@ -11,7 +11,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.mmseqs:v2"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.mmseqs:v2"
 
 baseCommand: [ mmseqs_wf.sh ]
 

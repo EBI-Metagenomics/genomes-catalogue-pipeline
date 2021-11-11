@@ -15,7 +15,7 @@ requirements:
       - entry: $(inputs.drep_folder)
         entryname: $("/data")
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.gtdb-tk:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.gtdb-tk:v1"
 
 baseCommand: ["gtdbtk", "classify_wf"]
 

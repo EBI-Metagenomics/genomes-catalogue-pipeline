@@ -2,6 +2,8 @@
 
 set -e
 
+docker login quay.io
+
 export REPO="genomes-pipeline"
 
 export DOCKERHUB_NAME="microbiomeinformatics"
@@ -10,23 +12,6 @@ export QUAY_NAME="quay.io/microbiome-informatics"
 export STORAGE=${QUAY_NAME}
 
 num_containers=14
-
-folders=(
-        'bash'
-        'checkm'
-        'detect_rRNA'
-        'drep'
-        'eggnong'
-        'genomes-catalog-update'
-        'gtdb-tk'
-        'GUNC'
-        'IPS'
-        'mash2nwk'
-        'mmseqs'
-        'panaroo'
-        'prokka'
-        'python3_scripts'
-)
 
 containers_versions=(
         'bash:v1'
@@ -46,7 +31,6 @@ containers_versions=(
 )
 
 for ((i=0;i<${num_containers};i++)) do
-    echo ${i}
-    cd ${folders[${i}]} && docker build -t ${STORAGE}/${REPO}.${containers_versions[${i}]} .
+    echo ${containers_versions[${i}]}
+    docker push ${STORAGE}/${REPO}.${containers_versions[${i}]}
 done
-

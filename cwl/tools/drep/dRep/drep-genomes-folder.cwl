@@ -13,7 +13,7 @@ requirements:
 
 #hints:
 #  DockerRequirement:
-#    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v1"
+#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.drep:v2"
 
 hints:
   SoftwareRequirement:

@@ -17,7 +17,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3:v4"
 
 baseCommand: ["checkm2csv.py"]
 
