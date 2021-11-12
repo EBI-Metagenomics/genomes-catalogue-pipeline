@@ -9,11 +9,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../docker/python3_scripts_genomes_pipeline/translate_genes.py
+        location: ../../docker/python3_scripts/translate_genes.py
 
 hints:
   DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts_genomes_pipeline:v4"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts:v4"
 
 baseCommand: [ translate_genes.py ]
 

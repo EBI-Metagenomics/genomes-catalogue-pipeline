@@ -8,11 +8,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/bash_genomes_pipeline/index_fasta.sh
+        location: ../../../docker/bash/index_fasta.sh
 
 hints:
   DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.bash_genomes_pipeline:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.bash:v1"
 
 inputs:
   fasta:

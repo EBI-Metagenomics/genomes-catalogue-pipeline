@@ -19,7 +19,7 @@ cd genomes-pipeline
 - [conda](https://docs.conda.io/en/latest/)
 2. Add python scripts to PATH
 ```bash
-export PATH=${PATH}:docker/python3_scripts_genomes_pipeline:docker/genomes-catalog-update/scripts
+export PATH=${PATH}:docker/python3_scripts:docker/genomes-catalog-update/scripts
 ```
 All dockers were pushed on DockerHub. If you want to re-build dockers:
 ```bash
@@ -52,8 +52,8 @@ bash build.sh
 2. Add custom scripts to your `$PATH` environment. 
 ```bash
 export PATH=${PATH}:docker/genomes-catalog-update/scriptsexport 
-export PATH=${PATH}:docker/python3_scripts_genomes_pipeline
-export PATH=${PATH}:docker/bash_genomes_pipeline
+export PATH=${PATH}:docker/python3_scripts
+export PATH=${PATH}:docker/bash
 export PATH=${PATH}:docker/detect_rrna
 export PATH=${PATH}:docker/gunc
 export PATH=${PATH}:docker/mash2nwk

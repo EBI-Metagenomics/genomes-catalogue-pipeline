@@ -13,11 +13,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts_genomes_pipeline/checkm2csv.py
+        location: ../../../docker/python3_scripts/checkm2csv.py
 
 hints:
   DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts_genomes_pipeline:v4"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts:v4"
 
 baseCommand: ["checkm2csv.py"]
 

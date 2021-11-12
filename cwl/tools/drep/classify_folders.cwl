@@ -11,11 +11,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts_genomes_pipeline/classify_folders.py
+        location: ../../../docker/python3_scripts/classify_folders.py
 
 #hints:
 #  DockerRequirement:
-#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts_genomes_pipeline:v4"
+#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts:v4"
 
 baseCommand: [ classify_folders.py ]
 

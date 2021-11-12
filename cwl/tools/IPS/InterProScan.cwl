@@ -13,7 +13,7 @@ requirements:
       - entry: $(inputs.databases)
         entryname: $("/opt/interproscan-5.52-86.0/data") 
   - class: DockerRequirement
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.ips_genomes_pipeline:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.ips:v1"
 
 
 baseCommand: [interproscan.sh]

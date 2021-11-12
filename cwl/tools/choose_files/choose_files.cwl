@@ -13,11 +13,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts_genomes_pipeline/choose_files_post_processing.py
+        location: ../../../docker/python3_scripts/choose_files_post_processing.py
 
 hints:
   DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts_genomes_pipeline:v4"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts:v4"
 
 baseCommand: ["choose_files_post_processing.py"]
 
