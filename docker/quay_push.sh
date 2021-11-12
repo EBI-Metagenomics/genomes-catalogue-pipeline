@@ -13,6 +13,23 @@ export STORAGE=${QUAY_NAME}
 
 num_containers=14
 
+folders=(
+        'bash'
+        'checkm'
+        'detect_rrna'
+        'drep'
+        'eggnog-mapper'
+        'genomes-catalog-update'
+        'gtdb-tk'
+        'gunc'
+        'ips'
+        'mash2nwk'
+        'mmseqs'
+        'panaroo'
+        'prokka'
+        'python3_scripts'
+)
+
 containers_versions=(
         'bash:v1'
         'checkm:v1'
@@ -32,5 +49,8 @@ containers_versions=(
 
 for ((i=0;i<${num_containers};i++)) do
     echo ${containers_versions[${i}]}
+    #cd ${folders[${i}]} &&
+    # docker build -t ${STORAGE}/${REPO}.${containers_versions[${i}]} . &&
+    # cd .. &&
     docker push ${STORAGE}/${REPO}.${containers_versions[${i}]}
 done
