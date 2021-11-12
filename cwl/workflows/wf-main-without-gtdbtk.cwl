@@ -14,11 +14,10 @@ inputs:
   ena_csv: File?
   genomes_ncbi: Directory?
 
-  max_accession_mgyg: int?
-  min_accession_mgyg: int?
+  max_accession_mgyg: int
+  min_accession_mgyg: int
 
-  # skip dRep step if MAGs were already dereplicated
-  skip_assigning: boolean?   # skip all steps before drep
+  # skip dRep step if MAGs were already dereplicated and provide Sdb.csv, Mdb.csv and Cdb.csv
   skip_drep_step: boolean   # set True for skipping
   sdb_dereplicated: File?
   cdb_dereplicated: File?
@@ -90,11 +89,6 @@ outputs:
     type: Directory
     outputSource: create_gff_folder_ftp/gffs_folder
 
-# ------------ GTDB-Tk --------------
-#  gtdbtk:
-#    type: Directory?
-#    outputSource: gtdbtk/gtdbtk_folder
-
 # for gtdbtk and post-processing
   drep_genomes:
     type: Directory
@@ -119,75 +113,24 @@ steps:
       - assign_mgygs_naming_table
 
 # ---------- dRep + split -----------
-
-  generate_weights:
-    when: $(!Boolean(inputs.flag))
-    run: ../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
+  drep_subwf:
+    run: sub-wf/drep/drep-main.cwl
     in:
-      flag: skip_drep_step
-      input_directory: preparation/assign_mgygs_renamed_genomes
-      output: { default: "extra_weight_table.txt" }
-    out: [ file_with_weights ]
-
-  get_genomes_list:
-    when: $(!Boolean(inputs.flag))
-    run: ../utils/get_files_from_dir.cwl
-    in:
-      flag: skip_drep_step
-      dir: preparation/assign_mgygs_renamed_genomes
-    out: [ files ]
-
-  drep:
-    when: $(!Boolean(inputs.flag))
-    run: ../tools/drep/dRep/drep-genomes-list.cwl
-    in:
-      flag: skip_drep_step
-      genomes: get_genomes_list/files
-      drep_outfolder: { default: 'drep_outfolder' }
-      csv: preparation/assign_mgygs_renamed_csv
-      extra_weights: generate_weights/file_with_weights
-    out:
-      - Cdb_csv
-      - Mdb_csv
-      - Sdb_csv
-
-  split_drep:
-    run: ../tools/drep/split_drep.cwl
-    in:
-      Cdb_csv:
-        source:
-          - drep/Cdb_csv
-          - cdb_dereplicated
-        pickValue: first_non_null
-      Mdb_csv:
-        source:
-          - drep/Mdb_csv
-          - mdb_dereplicated
-        pickValue: first_non_null
-      Sdb_csv:
-        source:
-          - drep/Sdb_csv
-          - sdb_dereplicated
-        pickValue: first_non_null
-      split_outfolder: { default: 'split_outfolder' }
-    out:
-      - split_out_mash
-      - split_text
-
-  classify_clusters:
-    run: ../tools/drep/classify_folders.cwl
-    in:
-      genomes: preparation/assign_mgygs_renamed_genomes
-      text_file: split_drep/split_text
+      genomes_folder: preparation/assign_mgygs_renamed_genomes
+      input_csv: preparation/assign_mgygs_renamed_csv
+      # for dereplicated set
+      skip_flag: skip_drep_step
+      sdb_dereplicated: sdb_dereplicated
+      cdb_dereplicated: cdb_dereplicated
+      mdb_dereplicated: mdb_dereplicated
     out:
       - many_genomes
       - one_genome
+      - mash_files
+      - best_cluster_reps
+      - weights_file
+      - split_text
 
-  filter_nulls:
-    run: ../utils/filter_nulls.cwl
-    in:
-      list_dirs: classify_clusters/one_genome
-    out: [ out_dirs ]
 
 # ----------- << annotations + IPS, eggnog + filter drep + rRNA >> ------
   annotation:
@@ -196,10 +139,10 @@ steps:
       assign_mgygs_renamed_csv: preparation/assign_mgygs_renamed_csv
       assign_mgygs_renamed_genomes: preparation/assign_mgygs_renamed_genomes
 
-      drep_subwf_many_genomes: classify_clusters/many_genomes
-      drep_subwf_mash_files: split_drep/split_out_mash
-      drep_subwf_one_genome: filter_nulls/out_dirs
-      drep_subwf_split_text: split_drep/split_text
+      drep_subwf_many_genomes: drep_subwf/many_genomes
+      drep_subwf_mash_files: drep_subwf/mash_files
+      drep_subwf_one_genome: drep_subwf/one_genome
+      drep_subwf_split_text: drep_subwf/split_text
 
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
@@ -233,9 +176,6 @@ steps:
       - main_reps_faa_singletons
       - main_reps_gff_singletons
       - gffs_pangenomes
-#      - main_reps_faa
-#      - main_reps_gff
-#      - gffs                    # File[]
 
 # ---------- << post-processing >> ----------
   post_processing:
@@ -273,6 +213,7 @@ steps:
       folder_name: { default: GFF }
     out: [ gffs_folder ]
 
+
 # ---------- << return folder with intermediate files >> ----------
   folder_with_intermediate_files:
     run: ../utils/return_directory.cwl
@@ -282,23 +223,12 @@ steps:
           - preparation/unite_folders_csv                               # initail csv
           - preparation/assign_mgygs_renamed_csv                        # MGYG csv
           - preparation/assign_mgygs_naming_table                       # mapping initial names to MGYGs
-          - generate_weights/file_with_weights                          # weights drep
-          - drep/Sdb_csv                                                # Sdb.csv
-          - split_drep/split_text                                       # split by clusters file
+          - drep_subwf/weights_file                                     # weights drep
+          - drep_subwf/best_cluster_reps                                # Sdb.csv
+          - drep_subwf/split_text                                       # split by clusters file
           - annotation/clusters_annotation_singletons_gunc_completed    # gunc passed genomes list
           - annotation/filter_genomes_list_drep_filtered                # list of dereplicated genomes
           - annotation/mmseqs_clusters_tsv                              # mmseqs 0.9 tsv
         pickValue: all_non_null
       dir_name: { default: 'intermediate_files'}
     out: [ out ]
-
-# ----------- << GTDB - Tk >> -----------
-#  gtdbtk:
-#    when: $(!Boolean(inputs.skip_flag))
-#    run: ../tools/gtdbtk/gtdbtk.cwl
-#    in:
-#      skip_flag: skip_gtdbtk_step
-#      drep_folder: annotation/filter_genomes_drep_filtered_genomes
-#      gtdb_outfolder: { default: 'gtdb-tk_output' }
-#      refdata: gtdbtk_data
-#    out: [ gtdbtk_folder ]

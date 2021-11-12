@@ -15,9 +15,9 @@ requirements:
       - class: File
         location: ../../../docker/python3_scripts/choose_files_post_processing.py
 
-hints:
-  DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "microbiomeinformatics/genomes-pipeline.python3:v3"
 
 baseCommand: ["choose_files_post_processing.py"]
 
