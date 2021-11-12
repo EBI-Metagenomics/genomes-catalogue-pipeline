@@ -27,9 +27,9 @@ outputs:
     outputBinding:
       glob: $(inputs.out_file_name)
 
-hints:
-  - class: DockerRequirement
-    dockerPull: alpine:3.7
+#hints:
+#  - class: DockerRequirement
+#    dockerPull: alpine:3.7
 
 $namespaces:
  edam: http://edamontology.org/
