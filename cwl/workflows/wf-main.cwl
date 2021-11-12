@@ -49,6 +49,8 @@ inputs:
   geo_metadata: File
   biom: string
 
+  ncrna_models: Directory
+
 outputs:
 
 # ------- intermediate files -------

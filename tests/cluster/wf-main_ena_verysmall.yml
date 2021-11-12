@@ -63,4 +63,9 @@ kegg_db:
 geo_metadata:
   class: File
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/continent_countries.csv
+
 biom: "test:test"
+
+ncrna_models:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms

@@ -1,0 +1,15 @@
+cpu: 4
+
+tblout: test.cmscan.tblout
+
+claninfo:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.clanin
+
+models:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms
+
+fasta:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/marine-mmseq/mmseqs_cluster_rep.fa

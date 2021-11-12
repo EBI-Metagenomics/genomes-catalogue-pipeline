@@ -13,7 +13,10 @@ wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/interprosca
 wget https://data.gtdb.ecogenomic.org/releases/latest/auxillary_files/gtdbtk_data.tar.gz && tar -zxvf gtdbtk_data.tar.gz
 
 # cmsearch models
-mkdir rfams_cms && wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfams_cms/* -P rfams_cms
+mkdir -p rfams_cms && wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfams_cms/* -P rfams_cms
 
 # kegg classes
 wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
+
+# cmscan ncRNA models
+mkdir -p ncrna_cms && wget ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/ncrna/* -P ncrna_cms

@@ -53,6 +53,11 @@ geo_metadata:
   class: File
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/continent_countries.csv
 
+# ncRNA
+ncrna_models:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms
+
 #  genomes_ena: Directory?
 #  ena_csv: File?
 #  genomes_ncbi: Directory?
@@ -61,3 +66,4 @@ geo_metadata:
 #  min_accession_mgyg: int
 #  ftp_name_catalogue: string
 #  ftp_version_catalogue: string
+#  biom
