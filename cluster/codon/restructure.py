@@ -101,10 +101,16 @@ if __name__ == "__main__":
                 # IPS + EggNOG
                 ips_old = os.path.join(args.folder_per_genome, name + IPS_POSTFIX)
                 ips_new = os.path.join(genome_folder_path, name + IPS_POSTFIX)
-                copy(ips_old, ips_new)
+                if os.path.exists(ips_old):
+                    copy(ips_old, ips_new)
+                else:
+                    print('no IPS')
                 eggnog_old = os.path.join(args.folder_per_genome, name + EGGNOG_POSTFIX)
                 eggnog_new = os.path.join(genome_folder_path, name + EGGNOG_POSTFIX)
-                copy(eggnog_old, eggnog_new)
+                if os.path.exists(eggnog_old):
+                    copy(eggnog_old, eggnog_new)
+                else:
+                    print('no eggnog')
 
                 if type == 'one_genome':
                     # FAA

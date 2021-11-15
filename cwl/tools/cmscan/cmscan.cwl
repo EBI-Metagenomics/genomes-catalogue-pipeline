@@ -41,6 +41,9 @@ inputs:
     inputBinding:
       position: 10
 
+  models_file:
+    typ
+
   fasta:
     type: File
     inputBinding:
