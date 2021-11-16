@@ -115,7 +115,6 @@ def get_rnas(ncrnas_file):
         for line in f:
             if not line.startswith("#"):
                 cols = line.strip().split()
-                print(cols)
                 counts += 1
                 contig = cols[3]
                 locus = "{}_ncRNA{}".format(contig, counts)
@@ -136,41 +135,45 @@ def get_rnas(ncrnas_file):
     return ncrnas
 
 
-def add_ncrnas_to_gff(gff, ncrnas):
+def add_ncrnas_to_gff(gff_outfile, ncrnas, res):
+    gff_out = open(gff_outfile, 'w')
     added = set()
-    with open(gff) as f:
-        for line in f:
-            line = line.rstrip()
-            cols = line.split("\t")
-            if line[0] != "#" and len(cols) == 9:
-                if cols[2] == "CDS":
-                    print(line)
-                    contig = cols[0]
-                    for r in ncrnas.keys():
-                        if r == contig:
-                            for c in ncrnas[r]:
-                                locus = c[0]
-                                start = str(c[1])
-                                end = str(c[2])
-                                product = c[3]
-                                model = c[4]
-                                strand = c[5]
-                                if locus not in added:
-                                    added.add(locus)
-                                    annot = ["ID="+locus,
-                                         "inference=Rfam:14.6",
-                                         "locus_tag="+locus,
-                                         "product="+product,
-                                         "rfam="+model]
-                                    annot = ";".join(annot)
-                                    newLine = [contig,
-                                          "INFERNAL:1.1.2",
-                                          "ncRNA",
-                                          start, end,
-                                          ".",
-                                          strand, ".",
-                                          annot]
-                                    print("\t".join(newLine))
+    for line in res:
+        cols = line.strip().split("\t")
+        if line[0] != "#" and len(cols) == 9:
+            if cols[2] == "CDS":
+                contig = cols[0]
+                if contig in ncrnas:
+                    for c in ncrnas[contig]:
+                        locus = c[0]
+                        start = str(c[1])
+                        end = str(c[2])
+                        product = c[3]
+                        model = c[4]
+                        strand = c[5]
+                        if locus not in added:
+                            added.add(locus)
+                            annot = ["ID="+locus,
+                                 "inference=Rfam:14.6",
+                                 "locus_tag="+locus,
+                                 "product="+product,
+                                 "rfam="+model]
+                            annot = ";".join(annot)
+                            newLine = [contig,
+                                  "INFERNAL:1.1.2",
+                                  "ncRNA",
+                                  start, end,
+                                  ".",
+                                  strand, ".",
+                                  annot]
+                            gff_out.write("\t".join(newLine) + "\n")
+                gff_out.write("{}\n".format(line))
+            else:
+                gff_out.write("{}\n".format(line))
+        else:
+            gff_out.write("{}\n".format(line))
+    gff_out.close()
+
 
 
 if __name__ == "__main__":
@@ -188,7 +191,6 @@ if __name__ == "__main__":
         ips = [cur_file for cur_file in input_files if cur_file.endswith("InterProScan.tsv")][0]
         eggnog = [cur_file for cur_file in input_files if cur_file.endswith("eggNOG.tsv")][0]
         gff = [cur_file for cur_file in input_files if cur_file.endswith(".gff")][0]
-        print(ips, eggnog, gff)
         res = add_gff(in_gff=os.path.join(args.input_dir, gff),
                       eggnog_file=os.path.join(args.input_dir, eggnog),
                       ipr_file=os.path.join(args.input_dir, ips))
@@ -197,7 +199,6 @@ if __name__ == "__main__":
             outfile = gff.split(".gff")[0]+"_annotated.gff"
         else:
             outfile = args.outfile
-        print(outfile)
         with open(outfile, "w") as fout:
             fout.write("\n".join(res))
-        add_ncrnas_to_gff(outfile, ncRNAs)
+        add_ncrnas_to_gff(outfile, ncRNAs, res)
