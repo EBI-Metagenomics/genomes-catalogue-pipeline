@@ -79,23 +79,28 @@ def load_geography(geofile):
 
 
 def get_metadata(acc):
-    if acc.startswith('CA'):
-        acc = acc + '0' * 7
-    r = run_request(acc, 'https://www.ebi.ac.uk/ena/browser/api/embl')
-    if r.ok:
-        match_pr = re.findall('PR +Project: *(PRJ[A-Z0-9]+)', r.text)
-        if match_pr:
-            project = match_pr[0]
-        else:
-            project = ''
-        match_samp = re.findall('DR +BioSample; ([A-Z0-9]+)', r.text)
-        if match_samp:
-            biosample = match_samp[0]
-        else:
-            biosample = ''
+    if acc.startswith('ERZ'):
+        json_data_erz = load_xml(acc)
+        biosample = json_data_erz['ANALYSIS_SET']['ANALYSIS']['SAMPLE_REF']['IDENTIFIERS']['EXTERNAL_ID']['#text']
+        project = json_data_erz['ANALYSIS_SET']['ANALYSIS']['STUDY_REF']['IDENTIFIERS']['SECONDARY_ID']
     else:
-        logging.error('Cannot obtain metadata from ENA')
-        sys.exit()
+        if acc.startswith('CA'):
+            acc = acc + '0' * 7
+        r = run_request(acc, 'https://www.ebi.ac.uk/ena/browser/api/embl')
+        if r.ok:
+            match_pr = re.findall('PR +Project: *(PRJ[A-Z0-9]+)', r.text)
+            if match_pr:
+                project = match_pr[0]
+            else:
+                project = ''
+            match_samp = re.findall('DR +BioSample; ([A-Z0-9]+)', r.text)
+            if match_samp:
+                biosample = match_samp[0]
+            else:
+                biosample = ''
+        else:
+            logging.error('Cannot obtain metadata from ENA')
+            sys.exit()
     location = get_location(biosample)
     if not location:
         location = 'not provided'
