@@ -168,8 +168,8 @@ def add_ncrnas_to_gff(gff_outfile, ncrnas, res):
                                   annot]
                             gff_out.write("\t".join(newLine) + "\n")
                 gff_out.write("{}\n".format(line))
-            else:
-                gff_out.write("{}\n".format(line))
+#            else:
+#                gff_out.write("{}\n".format(line))
         else:
             gff_out.write("{}\n".format(line))
     gff_out.close()
