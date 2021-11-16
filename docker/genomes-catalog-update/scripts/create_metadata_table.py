@@ -43,7 +43,7 @@ def add_ftp(df, genome_list, catalog_ftp_name, catalog_version, species_reps):
     url = 'ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/mgnify_genomes/{}/{}/all_genomes'.format(
         catalog_ftp_name, catalog_version)
     for genome in genome_list:
-        subfolder = species_reps[genome][:-3]
+        subfolder = species_reps[genome][:-2]
         ftp_res[genome] = '{}/{}/{}/genomes1/{}.gff.gz'.format(url, subfolder, species_reps[genome], genome)
     df['FTP_download'] = df['Genome'].map(ftp_res)
     return df
