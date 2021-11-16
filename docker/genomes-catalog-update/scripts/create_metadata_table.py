@@ -18,12 +18,12 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(genomes_dir, extra_weight_table, checkm_results, rna_results, naming_file, clusters_file, taxonomy_file,
-         geofile, outfile, ftp_name, ftp_version):
+         geofile, outfile, ftp_name, ftp_version, gunc_failed):
     #table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50',	'GC_content',
     #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
     #           'Species_rep', 'MGnify_accession', 'Lineage', 'Sample_accession', 'Study_accession', 'Country',
     #           'Continent', 'FTP_download']
-    genome_list = load_genome_list(genomes_dir)
+    genome_list = load_genome_list(genomes_dir, gunc_failed)
     df = pd.DataFrame(genome_list, columns=['Genome'])
     df = add_genome_type(df, extra_weight_table)
     df = add_stats(df, genomes_dir)
@@ -242,8 +242,16 @@ def add_genome_type(df, extra_weight_table):
     return df
 
 
-def load_genome_list(genomes_dir):
+def load_genome_list(genomes_dir, gunc_file):
     genome_list = [filename.split('.')[0] for filename in os.listdir(genomes_dir)]
+    if gunc_file:
+        with open(gunc_file, 'r') as gunc_in:
+            for line in gunc_in:
+                acc = line.strip().split('.')[0]
+                try:
+                    genome_list.remove(acc)
+                except:
+                    logging.info('Genome {} failed GUNC and is not present in the genomes directory'.format(acc))
     return sorted(genome_list)
 
 
@@ -262,6 +270,8 @@ def parse_args():
                          help='Path to the output file where the metadata table will be stored')
     parser.add_argument('-d', '--genomes-dir', required=True,
                          help='A space delimited list of paths to the directory where genomes are stored')
+    parser.add_argument('-g', '--gunc-failed',
+                        help='Path to the file containing a list of genomes that were filtered out by GUNC')
     parser.add_argument('-r', '--rna-results', required=True,
                          help='Path to the folder with the RNA detection results (rRNA_outs)')
     parser.add_argument('--checkm-results', required=True,
@@ -284,4 +294,4 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     main(args.genomes_dir, args.extra_weight_table, args.checkm_results, args.rna_results, args.naming_table,
-         args.clusters_table, args.taxonomy, args.geo, args.outfile, args.ftp_name, args.ftp_version)
+         args.clusters_table, args.taxonomy, args.geo, args.outfile, args.ftp_name, args.ftp_version, args.gunc_failed)
