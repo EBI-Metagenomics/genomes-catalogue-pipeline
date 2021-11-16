@@ -12,7 +12,7 @@ def getRNAs(ncRNAs):
             if line[0] != "#":
                 line = line.rstrip()
                 cols = line.split()
-                print(cols)
+                #print(cols)
                 counts += 1
                 contig = cols[3]
                 locus = "%s_ncRNA%i" % (contig, counts)
