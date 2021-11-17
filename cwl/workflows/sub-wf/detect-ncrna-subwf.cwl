@@ -11,7 +11,13 @@ requirements:
 
 inputs:
   claninfo: File
-  models: Directory
+  models:
+    type: File
+    secondaryFiles:
+      - .i1f
+      - .i1i
+      - .i1m
+      - .i1p
   fasta: File
 
 outputs:

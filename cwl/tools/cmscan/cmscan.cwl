@@ -37,12 +37,9 @@ inputs:
       position: 3
 
   models:
-    type: Directory
+    type: File
     inputBinding:
       position: 10
-
-  models_file:
-    typ
 
   fasta:
     type: File

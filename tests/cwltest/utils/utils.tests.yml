@@ -55,6 +55,18 @@
       basename: "cat.txt"
       checksum: sha1$f2f67dda72e646e88e8358ec90962f089d71899b
 
+# cat files one input
+- job: concatenate_one.yml
+  tool: ../../../cwl/utils/concatenate.cwl
+  short_name: concatenate.cwl
+  doc: "concatenate files of one input file"
+  output:
+    result:
+      class: File
+      size: 27
+      basename: "cat.txt"
+      checksum: sha1$093082e302ee050338a70186abfe2c7f6d96af3a
+
 # flatten 2D array to 1D array
 - job: flatten_array.yml
   tool: ../../../cwl/utils/flatten_array.cwl

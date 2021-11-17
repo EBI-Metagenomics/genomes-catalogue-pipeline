@@ -45,6 +45,10 @@ outputs:
     outputBinding:
       glob: $(inputs.gtdb_outfolder)
   gtdbtk_bac:
-    type: File
+    type: File?
     outputBinding:
       glob: $(inputs.gtdb_outfolder)/classify/gtdbtk.bac120.summary.tsv
+  gtdbtk_arc:
+    type: File?
+    outputBinding:
+      glob: $(inputs.gtdb_outfolder)/classify/gtdbtk.ar122.summary.tsv

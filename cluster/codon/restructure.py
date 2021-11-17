@@ -23,6 +23,7 @@ all_genomes
 genomes-all_metadata.tsv  (script is not ready)
 README.txt                (script is not ready)
 uhgg_catalogue
+    --- phylo_tree.json
     --- 000
          ----- 00001
                 ----- genome.json

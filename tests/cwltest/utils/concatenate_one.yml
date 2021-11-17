@@ -1,0 +1,4 @@
+files:
+  - class: File
+    path: ../../../input_example/input_ncbi.txt
+outputFileName: cat.txt

@@ -104,6 +104,10 @@ outputs:
     type: File?
     outputSource: gtdbtk_metadata/metadata
 
+  phylo_json:
+    type: File?
+    outputSource: gtdbtk_metadata/phylo_tree
+
 # for gtdbtk and post-processing
   drep_genomes:
     type: Directory
@@ -180,6 +184,7 @@ steps:
       - rrna_out
       - rrna_fasta
       - clusters_annotation_singletons_gunc_completed
+      - clusters_annotation_singletons_gunc_failed
       - filter_genomes_list_drep_filtered
       - filter_genomes_drep_filtered_genomes
       - mmseqs_clusters_tsv
@@ -210,9 +215,11 @@ steps:
       ftp_name_catalogue: ftp_name_catalogue
       ftp_version_catalogue: ftp_version_catalogue
       geo_file: geo_metadata
+      gunc_failed_genomes: annotation/clusters_annotation_singletons_gunc_failed
     out:
       - gtdbtk_tar
       - metadata
+      - phylo_tree
 
 # ---------- << post-processing >> ----------
   post_processing:
@@ -267,6 +274,7 @@ steps:
           - drep_subwf/best_cluster_reps                                # Sdb.csv
           - drep_subwf/split_text                                       # split by clusters file
           - annotation/clusters_annotation_singletons_gunc_completed    # gunc passed genomes list
+          - annotation/clusters_annotation_singletons_gunc_failed       # gunc failed genomes list
           - annotation/filter_genomes_list_drep_filtered                # list of dereplicated genomes
           - annotation/mmseqs_clusters_tsv                              # mmseqs 0.9 tsv
         pickValue: all_non_null

@@ -76,6 +76,11 @@ inputs:
     inputBinding:
       prefix: '--geo'
       position: 11
+  gunc_failed:
+    type: File
+    inputBinding:
+      prefix: '--gunc-failed'
+      position: 12
 
 outputs:
   metadata_table:

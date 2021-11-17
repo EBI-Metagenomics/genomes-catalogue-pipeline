@@ -23,6 +23,7 @@ inputs:
   ftp_name_catalogue: string
   ftp_version_catalogue: string
   geo_file: File
+  gunc_failed_genomes: File
 
 outputs:
 
@@ -33,6 +34,10 @@ outputs:
   metadata:
     type: File
     outputSource: metadata/metadata_table
+
+  phylo_tree:
+    type: File
+    outputSource: phylo_json/phylo_tree_json
 
 steps:
 # ----------- << GTDB - Tk >> -----------
@@ -45,6 +50,21 @@ steps:
     out:
       - gtdbtk_folder
       - gtdbtk_bac
+      - gtdbtk_arc
+
+  cat_tables:
+    when: $(Boolean(inputs.file1) || Boolean(inputs.file2))
+    run: ../utils/concatenate.cwl
+    in:
+      file1: gtdbtk/gtdbtk_bac
+      file2: gtdbtk/gtdbtk_arc
+      files:
+        source:
+          - gtdbtk/gtdbtk_bac
+          - gtdbtk/gtdbtk_arc
+        pickValue: all_non_null
+      outputFileName: {default: "gtdbtk.summary.tsv" }
+    out: [result]
 
   tar:
     run: ../utils/tar.cwl
@@ -62,9 +82,28 @@ steps:
       rrna: rrna_dir
       naming_table: naming_table
       clusters_split: clusters_split
-      gtdb_taxonomy: gtdbtk/gtdbtk_bac
+      gtdb_taxonomy:
+        source:
+          - cat_tables/result
+          - gtdbtk/gtdbtk_bac
+          - gtdbtk/gtdbtk_arc
+        pickValue: first_non_null
       outfile_name: metadata_outname
       ftp_name: ftp_name_catalogue
       ftp_version: ftp_version_catalogue
       geo: geo_file
+      gunc_failed: gunc_failed_genomes
     out: [ metadata_table ]
+
+# ----------- << phylo_json >> -----------
+  phylo_json:
+    run: ../tools/generate_phylo_json/phylo_json.cwl
+    in:
+      table:
+        source:
+          - cat_tables/result
+          - gtdbtk/gtdbtk_bac
+          - gtdbtk/gtdbtk_arc
+        pickValue: first_non_null
+      outname: { default: "phylo_tree.json" }
+    out: [phylo_tree_json]

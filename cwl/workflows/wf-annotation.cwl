@@ -46,6 +46,9 @@ outputs:
   clusters_annotation_singletons_gunc_completed:
     type: File
     outputSource: clusters_annotation/singletons_gunc_completed
+  clusters_annotation_singletons_gunc_failed:
+    type: File
+    outputSource: clusters_annotation/singletons_gunc_failed
 
   filter_genomes_list_drep_filtered:
     type: File
