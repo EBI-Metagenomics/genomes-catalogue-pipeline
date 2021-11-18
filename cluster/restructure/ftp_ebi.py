@@ -204,7 +204,7 @@ if __name__ == "__main__":
                 print('from ' + old_path)
                 print('to ' + genome_path)
                 if not args.verbose:
-                    copy(old_path, genome_path)
+                    copy_tree(old_path, genome_path)
 
             # metadata
             metadata = [i for i in os.listdir(args.result_path) if 'metadata' in i][0]
