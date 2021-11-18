@@ -57,17 +57,33 @@ panaroo_output
 ==================================================================================
    
 pipeline_output:
---- GFF
+--- intermediate_files/                  [not for FTP]
+
+--- GFF/
     --- *.gff.gz
     
---- panaroo_output
+--- panaroo_output/
     --- MGYG*.panaroo.tar.gz
 
---- mmseqs_output
+--- mmseqs_output/
     --- mmseqs_1.0_outdir.tar.gz                           
     --- mmseqs_0.5_outdir.tar.gz
     --- mmseqs_0.9_outdir.tar.gz
     --- mmseqs_0.95_outdir.tar.gz
+    
+--- MGYGXXXXXXXXX/
+    --- genome/
+        ...
+    --- pan-genome/
+        ...
+    --- MGYG*.json
+    
+--- MGYGXXXXXXXXX/
+    --- genome/
+        ...
+    --- pan-genome/
+        ...
+    --- MGYG*.json
 """
 
 PROTEIN_CATALOGUE_FOLDER_NAME = "uhgp_catalogue"  # mmseqs
@@ -172,18 +188,19 @@ if __name__ == "__main__":
                 print('to ' + os.path.join(protein_catalogue_path, new_name))
                 if not args.verbose:
                     copy(os.path.join(old_mmseq, mmseq), os.path.join(protein_catalogue_path, new_name))
-"""
-        # uhgg_catalogue
-        genomes_catalogue = os.path.join(ftp_path, ALL_CATALOGUE_FOLDER_NAME)
-        if not os.path.exists(genomes_catalogue):
-            os.makedirs(genomes_catalogue)
-        for genome in clusters:
-            genomes = clusters[genome]
-            genome_path = os.path.join(genomes_catalogue, genome[:7], genome)
-            if not os.path.exists(genome_path):
-                os.makedirs(genome_path)
-            old_path = os.path.join(args.result_path, genome)
-            print('from ' + old_path)
-            print('to ' + genome_path)
-            #copy(old_path, genome_path)
-"""
+
+        if '4' in args.type:
+            # uhgg_catalogue
+            genomes_catalogue = os.path.join(ftp_path, ALL_CATALOGUE_FOLDER_NAME)
+            if not os.path.exists(genomes_catalogue):
+                os.makedirs(genomes_catalogue)
+            for genome in clusters:
+                genomes = clusters[genome]
+                genome_path = os.path.join(genomes_catalogue, genome[:7], genome)
+                if not os.path.exists(genome_path):
+                    os.makedirs(genome_path)
+                old_path = os.path.join(args.result_path, genome)
+                print('from ' + old_path)
+                print('to ' + genome_path)
+                if not args.verbose:
+                    copy(old_path, genome_path)
