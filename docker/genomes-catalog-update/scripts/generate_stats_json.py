@@ -172,7 +172,7 @@ if __name__ == '__main__':
     - genome/species_name.gff
     - pan-genome/annotation_coverage.tsv
     - pan-genome/core_genes.faa
-    - pan-genome/accessory_genes.faa''',
+    - pan-genome/accessory_genes.fna''',
                                      formatter_class=RawTextHelpFormatter)
     parser.add_argument('--annot-cov', help='Path to the genome annotation coverage file', required=True)
     parser.add_argument('-i', dest='input', required=True,

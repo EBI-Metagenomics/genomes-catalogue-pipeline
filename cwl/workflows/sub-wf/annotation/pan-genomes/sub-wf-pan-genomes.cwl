@@ -68,7 +68,7 @@ outputs:
 
 steps:
   preparation:
-    run: ../../../utils/get_files_from_dir.cwl
+    run: ../../../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
     out: [files]
@@ -84,7 +84,7 @@ steps:
       - faa
 
   panaroo:
-    run: ../../../tools/panaroo/panaroo.cwl
+    run: ../../../../tools/panaroo/panaroo.cwl
     in:
       gffs: prokka/gff
       panaroo_outfolder:
@@ -97,7 +97,7 @@ steps:
       - panaroo_dir
 
   get_core_genes:
-    run: ../../../tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl
+    run: ../../../../tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl
     in:
       input: panaroo/gene_presence_absence
       output_filename:
@@ -107,7 +107,7 @@ steps:
       - core_genes
 
   rename_panaroo_fna:
-    run: ../../../utils/move.cwl
+    run: ../../../../utils/move.cwl
     in:
       initial_file: panaroo/pan_genome_reference-fa
       out_file_name:
@@ -115,12 +115,14 @@ steps:
         valueFrom: "$(self.basename).pan-genome.fna"
     out: [ renamed_file ]
 
+# --------------------------------------- result folders -----------------------------------------
+# ------------------------ pan-genome folder
   get_mash_file:
     doc: |
        Filter mash files by cluster name
        For example: cluster_1_1 should have 1_1.tree.mash inside
                     filtering pattern: "1_1"
-    run: ../../../utils/get_file_pattern.cwl
+    run: ../../../../utils/get_file_pattern.cwl
     in:
       list_files: mash_files
       pattern:
@@ -128,8 +130,6 @@ steps:
         valueFrom: $(self.basename)
     out: [ file_pattern ]
 
-# --------------------------------------- result folders -----------------------------------------
-# ------------------------ pan-genome folder
   create_pangenome_folder:
     doc: |
        Add:
@@ -137,7 +137,7 @@ steps:
          - mash-file.nwk
          - pan_genome_reference-fa (panaroo)
          - gene_presence_absence (panaroo)
-    run: ../../../utils/return_directory.cwl
+    run: ../../../../utils/return_directory.cwl
     in:
       list:
         - get_core_genes/core_genes
@@ -149,7 +149,7 @@ steps:
 
 # ------------------------ genome folder
   choose_main_rep_gff:
-    run: ../../../utils/get_file_pattern.cwl
+    run: ../../../../utils/get_file_pattern.cwl
     in:
       list_files: prokka/gff
       pattern:
@@ -158,7 +158,7 @@ steps:
     out: [ file_pattern ]
 
   choose_main_rep_faa:
-    run: ../../../utils/get_file_pattern.cwl
+    run: ../../../../utils/get_file_pattern.cwl
     in:
       list_files: prokka/faa
       pattern:
@@ -167,7 +167,7 @@ steps:
     out: [ file_pattern ]
 
   choose_main_rep_fa:
-    run: ../../../utils/get_file_pattern.cwl
+    run: ../../../../utils/get_file_pattern.cwl
     in:
       list_files: preparation/files
       pattern:
@@ -176,7 +176,7 @@ steps:
     out: [ file_pattern ]
 
   index_fasta:
-    run: ../../../tools/index_fasta/index_fasta.cwl
+    run: ../../../../tools/index_fasta/index_fasta.cwl
     in:
       fasta: choose_main_rep_fa/file_pattern
     out: [ fasta_index ]
@@ -188,7 +188,7 @@ steps:
          - gff (prokka)
          - fa
          - fa.fai
-    run: ../../../utils/return_directory.cwl
+    run: ../../../../utils/return_directory.cwl
     in:
       list:
         - choose_main_rep_gff/file_pattern
@@ -200,7 +200,7 @@ steps:
 
 # ------------------------ cluster folder
   create_cluster_directory:
-    run: ../../../utils/return_dir_of_dir.cwl
+    run: ../../../../utils/return_dir_of_dir.cwl
     in:
       directory_array:
         - create_pangenome_folder/out
@@ -211,7 +211,7 @@ steps:
     out: [pool_directory]
 
   tar_gz_panaroo_folder:
-    run: ../../../utils/tar.cwl
+    run: ../../../../utils/tar.cwl
     in:
       folder: panaroo/panaroo_dir
     out: [ folder_tar ]

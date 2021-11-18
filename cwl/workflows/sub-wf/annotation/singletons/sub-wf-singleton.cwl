@@ -46,7 +46,7 @@ outputs:
 
 steps:
   preparation:
-    run: ../../../utils/get_files_from_dir.cwl
+    run: ../../../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
     out: [ file ]
@@ -72,7 +72,7 @@ steps:
 
   index_fasta:
     when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../tools/index_fasta/index_fasta.cwl
+    run: ../../../../tools/index_fasta/index_fasta.cwl
     in:
       flag: gunc/flag
       fasta: preparation/file
@@ -80,7 +80,7 @@ steps:
 
   get_filtered_fa:
     when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../utils/get_files_from_dir.cwl
+    run: ../../../../utils/get_files_from_dir.cwl
     in:
       flag: gunc/flag
       dir: cluster
@@ -96,7 +96,7 @@ steps:
          --- gff
          --- faa
     when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../utils/return_directory.cwl
+    run: ../../../../utils/return_directory.cwl
     in:
       flag: gunc/flag
       list:
@@ -110,7 +110,7 @@ steps:
 
   return_cluster_dir:
     when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../utils/return_dir_of_dir.cwl
+    run: ../../../../utils/return_dir_of_dir.cwl
     in:
       flag: gunc/flag
       directory: create_genomes_folder/out

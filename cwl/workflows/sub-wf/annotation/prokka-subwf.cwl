@@ -24,13 +24,13 @@ outputs:
 steps:
 
   change_headers:
-   run: ../../utils/cut_header.cwl
+   run: ../../../utils/cut_header.cwl
    in:
      inputfile: prokka_input
    out: [created_file]
 
   prokka:
-    run: ../../tools/prokka/prokka.cwl
+    run: ../../../tools/prokka/prokka.cwl
     in:
       fa_file: change_headers/created_file
       outdirname: outdirname

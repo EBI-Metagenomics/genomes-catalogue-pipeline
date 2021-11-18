@@ -54,7 +54,7 @@ steps:
       - initial_fa  # File?
 
   create_gunc_reports:
-    run: ../../../tools/GUNC/generate_report.cwl
+    run: ../../../../tools/GUNC/generate_report.cwl
     in:
       input: process_one_genome/gunc_decision
     out:
@@ -62,19 +62,19 @@ steps:
       - report_failed
 
   filter_nulls_prokka:
-    run: ../../../utils/filter_nulls.cwl
+    run: ../../../../utils/filter_nulls.cwl
     in:
       list_files: process_one_genome/prokka_faa
     out: [ out_files ]
 
   filter_nulls_prokka_gff:
-    run: ../../../utils/filter_nulls.cwl
+    run: ../../../../utils/filter_nulls.cwl
     in:
       list_files: process_one_genome/prokka_gff
     out: [ out_files ]
 
   filter_nulls_fa-s:
-    run: ../../../utils/filter_nulls.cwl
+    run: ../../../../utils/filter_nulls.cwl
     in:
       list_files: process_one_genome/initial_fa
     out: [ out_files ]

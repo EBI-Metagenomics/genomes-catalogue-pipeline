@@ -105,7 +105,7 @@ steps:
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
     when: $(Boolean(inputs.input_clusters))
-    run: ../pan-genomes/wrapper-pan-genomes.cwl
+    run: pan-genomes/wrapper-pan-genomes.cwl
     in:
       input_clusters: many_genomes
       mash_folder: process_mash/mash_tree
@@ -123,7 +123,7 @@ steps:
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
     when: $(Boolean(inputs.input_cluster))
-    run: ../singletons/wrapper-singletons.cwl
+    run: singletons/wrapper-singletons.cwl
     in:
       input_cluster: one_genome
       csv: csv

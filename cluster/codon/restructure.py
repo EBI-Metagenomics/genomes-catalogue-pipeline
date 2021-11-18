@@ -5,25 +5,24 @@ import os
 from shutil import copy
 
 """
-all_genomes
-    --- 000
-         ----- 00001
+name/v1.0/all_genomes                               [FTP]
+    --- MGYG0002960 [7 dig]
+         ----- MGYG000296009 [9 dig]
                 ----- genomes1
-                        ------- GUT_GENOME000001.gff.gz
+                        ------- MGYG000296009.gff.gz
                         ...
-                        ------- GUT_GENOME091053.gff.gz
-         ----- 00002
+                        ------- cluster gff.gz
+         ----- MGYG[12]
                 ----- genomes1
-                        ------- GUT_GENOME000002.gff.gz
+                        ------- MGYG[12].gff.gz
                         ... ...
-                        ------- GUT_GENOME091054.gff.gz
          ...
-    --- 001
+    --- MGYG[7]
     ...
-genomes-all_metadata.tsv  (script is not ready)
-README.txt                (script is not ready)
+genomes-all_metadata.tsv                            [FTP]
+README.txt                                          [FTP] ??????  
 uhgg_catalogue
-    --- phylo_tree.json
+    --- phylo_tree.json [Web]
     --- 000
          ----- 00001
                 ----- genome.json
@@ -43,7 +42,8 @@ uhgg_catalogue
                         +---- genes_presence-absence.tsv   ( ready - panaroo - gene_presence_absence.Rtab )
                         +---- mashtree.nwk                 ( ready )
                         +---- pan-genome.fna               ( ready - panaroo - pan_genome_reference.fa)
-uhgp_catalogue  (mmseqs)
+                        
+uhgp_catalogue  (mmseqs)                            [FTP]
     --- mmseqs_1.0_outdir.tar.gz                           ( was uhgp-100.tar.gz)
     --- mmseqs_0.5_outdir.tar.gz
     --- mmseqs_0.9_outdir.tar.gz

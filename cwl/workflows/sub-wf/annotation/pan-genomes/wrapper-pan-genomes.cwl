@@ -72,19 +72,19 @@ steps:
       - pangenome_fna
 
   flatten_gffs:
-    run: ../../../utils/flatten_array.cwl
+    run: ../../../../utils/flatten_array.cwl
     in:
       arrayTwoDim: process_many_genomes/prokka_gff-s
     out: [ array1d ]
 
   flatten_fa-s:
-    run: ../../../utils/flatten_array.cwl
+    run: ../../../../utils/flatten_array.cwl
     in:
       arrayTwoDim: process_many_genomes/initial_genomes_fa
     out: [ array1d ]
 
   panaroo_final_folder:
-    run: ../../../utils/return_directory.cwl
+    run: ../../../../utils/return_directory.cwl
     in:
       list: process_many_genomes/panaroo_tar
       dir_name: { default: panaroo_output }

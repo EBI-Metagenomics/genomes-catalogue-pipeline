@@ -116,6 +116,11 @@ outputs:
 steps:
 
 # ----------- << checkM + assign MGYG >> -----------
+# - checkM for NCBI
+# - unite folders for ENA and NCBI
+# - unite stats files for ENA and NCBI
+# - assign MGYGs
+
   preparation:
     run: wf-preparation.cwl
     in:
@@ -131,12 +136,17 @@ steps:
       - assign_mgygs_naming_table
 
 # ---------- dRep + split -----------
+# - extra_weights generation
+# - dRep
+# - split dRep, create mash-folder
+# - classify to pangenomes and singletons
+
   drep_subwf:
     run: sub-wf/drep/drep-main.cwl
     in:
       genomes_folder: preparation/assign_mgygs_renamed_genomes
       input_csv: preparation/assign_mgygs_renamed_csv
-      # ---- for dereplicated set ----
+      # ---- for dereplicated set ---- [needs testing]
       skip_flag: skip_drep_step
       sdb_dereplicated: sdb_dereplicated
       cdb_dereplicated: cdb_dereplicated
@@ -149,7 +159,15 @@ steps:
       - weights_file
       - split_text
 
-# ----------- << annotations + IPS, eggnog + filter drep + rRNA >> ------
+# ----------- << annotations >> ------
+# - mash2nwk
+# - process pangenomes
+# - process singletons
+# - mmseqs
+# - IPS + eggNOG
+# - filter dRep genomes
+# - rRNA prediction
+
   annotation:
     run: wf-annotation.cwl
     in:
@@ -198,6 +216,10 @@ steps:
       - pangenome_fna_files
 
 # ----------- << GTDB - Tk + Metadata [optional step] >> -----------
+# - GTDB-Tk
+# - metadata.txt
+# - phylo_tree.json
+
   gtdbtk_metadata:
     when: $(!Boolean(inputs.skip_flag))
     run: wf-gtdb-metadata.cwl
@@ -211,7 +233,7 @@ steps:
       rrna_dir: annotation/rrna_out
       naming_table: preparation/assign_mgygs_naming_table
       clusters_split: drep_subwf/split_text
-      metadata_outname: { default: 'metadata.txt'}
+      metadata_outname: { default: 'genomes-all_metadata.tsv'}
       ftp_name_catalogue: ftp_name_catalogue
       ftp_version_catalogue: ftp_version_catalogue
       geo_file: geo_metadata
@@ -221,7 +243,12 @@ steps:
       - metadata
       - phylo_tree
 
-# ---------- << post-processing >> ----------
+# ---------- << post-processing (for each cluster rep) >> ----------
+# - kegg, cog, cazy
+# - ncRNA
+# - add IPS, eggNOG, ncRNA to GFF
+# - genome.json                     [optional: if metadata.txt presented]
+
   post_processing:
     run: wf-post-processing.cwl
     in:

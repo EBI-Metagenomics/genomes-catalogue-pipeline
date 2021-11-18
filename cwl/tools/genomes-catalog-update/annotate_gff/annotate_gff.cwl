@@ -25,6 +25,11 @@ inputs:
     inputBinding:
       prefix: -i
 
+  ncrna_deov:
+    type: File
+    inputBinding:
+      prefix: -r
+
   outfile:
     type: string
     inputBinding:

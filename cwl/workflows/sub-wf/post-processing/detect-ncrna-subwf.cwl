@@ -28,7 +28,7 @@ outputs:
 steps:
 
   cmscan:
-    run: ../../tools/cmscan/cmscan.cwl
+    run: ../../../tools/cmscan/cmscan.cwl
     in:
       cpu: { default: 4 }
       tblout:
@@ -40,7 +40,7 @@ steps:
     out: [ cmscan_result ]
 
   deoverlap:
-    run: ../../utils/deoverlap.cwl
+    run: ../../../utils/deoverlap.cwl
     in:
       cmscan: cmscan/cmscan_result
       outputname:

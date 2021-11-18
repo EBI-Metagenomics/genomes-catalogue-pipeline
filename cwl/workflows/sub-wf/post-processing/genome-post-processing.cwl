@@ -33,6 +33,16 @@ inputs:
   kegg: File
   files: Directory
   biom: string
+
+  claninfo_ncrna: File
+  models_ncrna:
+    type: File
+    secondaryFiles:
+      - .i1f
+      - .i1i
+      - .i1m
+      - .i1p
+
   metadata: File?
 
 outputs:
@@ -61,12 +71,25 @@ steps:
       - cazy_summary
       - cog_summary
 
+# --------- detect ncRNA ----------
+
+  get_fna:  ???
+
+  ncrna:
+    run: detect-ncrna-subwf.cwl
+    in:
+      claninfo: claninfo_ncrna
+      models: models_ncrna
+      fasta:
+    out: cmscan_deoverlap
+
 # --------- annotate GFF ----------
 
   annotate_gff:
     run: ../../../tools/genomes-catalog-update/annotate_gff/annotate_gff.cwl
     in:
       input_dir: files
+      ncrna_deov: ncrna/cmscan_deoverlap
       outfile:
         source: files
         valueFrom: "annotated_$(self.basename).gff"
