@@ -208,4 +208,7 @@ if __name__ == "__main__":
 
             # metadata
             metadata = [i for i in os.listdir(args.result_path) if 'metadata' in i][0]
-            copy(os.path.join(args.result_path, metadata), os.path.join(ftp_path, 'genomes-all_metadata.tsv'))
+            print('from ' + os.path.join(args.result_path, metadata))
+            print('to ' + os.path.join(ftp_path, 'genomes-all_metadata.tsv'))
+            if not args.verbose:
+                copy(os.path.join(args.result_path, metadata), os.path.join(ftp_path, 'genomes-all_metadata.tsv'))
