@@ -107,10 +107,11 @@ if __name__ == "__main__":
     parser.add_argument('--many-folder', dest='many_folder',
                         help='Path to pipeline many folder', required=False)
 
-    parser.add_argument('--type', dest='type',
+    parser.add_argument('--type', dest='type', required=True,
                         help='1: gff, '
                              '2: panaroo, '
-                             '3: mmseqs', required=True)
+                             '3: mmseqs, '
+                             '4: genome and pan-genome')
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true')
     if len(sys.argv) == 1:
         parser.print_help()
@@ -204,3 +205,7 @@ if __name__ == "__main__":
                 print('to ' + genome_path)
                 if not args.verbose:
                     copy(old_path, genome_path)
+
+            # metadata
+            metadata = [i for i in os.listdir(args.result_path) if 'metadata' in i][0]
+            copy(os.path.join(args.result_path, metadata), os.path.join(ftp_path, 'genomes-all_metadata.tsv'))
