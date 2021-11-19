@@ -4,12 +4,12 @@ class: Workflow
 
 doc: |
   Output structure:
-    cluster
-         --- genome
-              --- fna
-              --- fna.fai
-              --- gff
-              --- faa
+    singleton_cluster:
+        --- fna
+        --- fna.fai
+        --- gff
+        --- faa
+      or null
 
 requirements:
   SubworkflowFeatureRequirement: {}
@@ -25,28 +25,25 @@ inputs:
 
 outputs:
 
-  prokka_faa:
-    type: File?
-    outputSource: prokka/faa
-  prokka_gff:
-    type: File?
-    outputSource: prokka/gff
+  singleton_cluster:
+    type: Directory?
+    outputSource: cluster_folder/out
 
   gunc_decision:
     type: string
     outputSource: gunc/flag
 
-  cluster_dir:
-    type: Directory
-    outputSource: return_cluster_dir/dir_of_dir
-
-  initial_fa:
+  initial_fna:
     type: File?
-    outputSource: get_filtered_fa/file
+    outputSource: get_filtered_fna/file
+
+  prokka_faa:
+    type: File?
+    outputSource: prokka/faa
 
 steps:
   preparation:
-    run: ../../../../utils/get_files_from_dir.cwl
+    run: ../../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
     out: [ file ]
@@ -72,51 +69,37 @@ steps:
 
   index_fasta:
     when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../../tools/index_fasta/index_fasta.cwl
+    run: ../../../tools/index_fasta/index_fasta.cwl
     in:
       flag: gunc/flag
       fasta: preparation/file
     out: [ fasta_index ]
 
-  get_filtered_fa:
+  get_filtered_fna:
     when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../../utils/get_files_from_dir.cwl
+    run: ../../../utils/get_files_from_dir.cwl
     in:
       flag: gunc/flag
       dir: cluster
     out: [ file ]
 
-# -------- collect output ----------
-
-  create_genomes_folder:
-    doc: |
-       genome
-         --- initial fasta
-         --- initial fasta fai
-         --- gff
-         --- faa
+  filter_nulls:
     when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../../utils/return_directory.cwl
+    run: ../../../utils/filter_nulls.cwl
     in:
-      flag: gunc/flag
-      list:
-        source:
-          - preparation/file  # File
-          - prokka/gff         # File
-          - prokka/faa         # File
-          - index_fasta/fasta_index  # File
-      dir_name: {default: "genome"}
-    out: [ out ]
+      list_files:
+        - prokka/gff
+        - prokka/faa
+        - index_fasta/fasta_index
+        - get_filtered_fna/file
+    out: [out_files]
 
-  return_cluster_dir:
+  cluster_folder:
     when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../../utils/return_dir_of_dir.cwl
+    run: ../../../utils/return_directory.cwl
     in:
-      flag: gunc/flag
-      directory: create_genomes_folder/out
-      newname:
+      list: filter_nulls/out_files
+      dir_name:
         source: cluster
         valueFrom: $(self.basename)
-    out: [ dir_of_dir ]
-
-
+    out: [ out ]

@@ -16,16 +16,17 @@ inputs:
 
 outputs:
 
-  prokka_faa-s:
+  all_filt_sigletons_faa:
     type: File[]?
-    outputSource: filter_nulls_prokka/out_files  #process_one_genome/prokka_faa
-  prokka_gff-s:
-    type: File[]?
-    outputSource: filter_nulls_prokka_gff/out_files  #process_one_genome/prokka_gff
+    outputSource: filter_nulls_prokka/out_files
 
-  cluster_folder:
-    type: Directory[]
-    outputSource: process_one_genome/cluster_dir
+  all_filt_sigletons_fna:
+    type: File[]?
+    outputSource: filter_nulls_fna/out_files
+
+  singleton_clusters:
+    type: Directory[]?
+    outputSource: filter_null_clusters/out_dirs
 
   gunc_completed:
     type: File
@@ -34,11 +35,8 @@ outputs:
     type: File
     outputSource: create_gunc_reports/report_failed
 
-  filtered_initial_fa-s:
-    type: File[]?
-    outputSource: filter_nulls_fa-s/out_files
-
 steps:
+
   process_one_genome:
     run: sub-wf-singleton.cwl
     scatter: cluster
@@ -47,14 +45,13 @@ steps:
       csv: csv
       gunc_db_path: gunc_db_path
     out:
-      - prokka_faa  # File
-      - prokka_gff
-      - cluster_dir   # Dir
-      - gunc_decision # File
-      - initial_fa  # File?
+      - singleton_cluster  # Dir (faa, fna, fna.fai, gff)?
+      - gunc_decision
+      - initial_fna
+      - prokka_faa
 
   create_gunc_reports:
-    run: ../../../../tools/GUNC/generate_report.cwl
+    run: ../../../tools/GUNC/generate_report.cwl
     in:
       input: process_one_genome/gunc_decision
     out:
@@ -62,19 +59,19 @@ steps:
       - report_failed
 
   filter_nulls_prokka:
-    run: ../../../../utils/filter_nulls.cwl
+    run: ../../../utils/filter_nulls.cwl
     in:
       list_files: process_one_genome/prokka_faa
     out: [ out_files ]
 
-  filter_nulls_prokka_gff:
-    run: ../../../../utils/filter_nulls.cwl
+  filter_nulls_fna:
+    run: ../../../utils/filter_nulls.cwl
     in:
-      list_files: process_one_genome/prokka_gff
+      list_files: process_one_genome/initial_fna
     out: [ out_files ]
 
-  filter_nulls_fa-s:
-    run: ../../../../utils/filter_nulls.cwl
+  filter_null_clusters:
+    run: ../../../utils/filter_nulls.cwl
     in:
-      list_files: process_one_genome/initial_fa
-    out: [ out_files ]
+      list_dirs: process_one_genome/singleton_cluster
+    out: [ out_dirs ]

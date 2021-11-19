@@ -239,3 +239,17 @@
       basename: "1_1.tar.gz"
       class: File
       size: 1781197
+
+# exclude file from list
+- job: exclude_file_pattern.yml
+  tool: ../../../cwl/utils/exclude_file_pattern.cwl
+  short_name: exclude_file_pattern.cwl
+  doc: "exclude file from list"
+  output:
+    left_files:
+      - basename: "CAJJTO01.fa"
+        class: File
+        size: 1672905
+      - basename: "CAJKRE01.fa"
+        class: File
+        size: 2314364

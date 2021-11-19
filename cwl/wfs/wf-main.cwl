@@ -115,14 +115,14 @@ outputs:
 
 steps:
 
-# ----------- << checkM + assign MGYG >> -----------
+# ----------- << 1. checkM + assign MGYG >> -----------
 # - checkM for NCBI
 # - unite folders for ENA and NCBI
 # - unite stats files for ENA and NCBI
 # - assign MGYGs
 
   preparation:
-    run: wf-preparation.cwl
+    run: ../sub-wfs/wf-1-preparation.cwl
     in:
       genomes_ena: genomes_ena
       ena_csv: ena_csv
@@ -135,14 +135,14 @@ steps:
       - assign_mgygs_renamed_csv
       - assign_mgygs_naming_table
 
-# ---------- dRep + split -----------
+# ---------- 2. dRep + split -----------
 # - extra_weights generation
 # - dRep
 # - split dRep, create mash-folder
 # - classify to pangenomes and singletons
 
   drep_subwf:
-    run: sub-wf/drep/drep-main.cwl
+    run: ../sub-wfs/wf-2-drep.cwl
     in:
       genomes_folder: preparation/assign_mgygs_renamed_genomes
       input_csv: preparation/assign_mgygs_renamed_csv
@@ -159,17 +159,43 @@ steps:
       - weights_file
       - split_text
 
-# ----------- << annotations >> ------
+# ----------- << 3. process clusters >> ------
 # - mash2nwk
 # - process pangenomes
 # - process singletons
 # - mmseqs
+
+  process_clusters:
+    run: ../sub-wfs/wf-3-process_clusters.cwl
+    in:
+      many_genomes: drep_subwf/many_genomes
+      mash_folder: drep_subwf/mash_files
+      one_genome: drep_subwf/one_genome
+      csv: drep_subwf/assign_mgygs_renamed_csv
+      gunc_db_path: gunc_db_path
+      mmseqs_limit_c: mmseqs_limit_c
+      mmseqs_limit_i: mmseqs_limit_i
+      mmseq_limit_annotation: mmseq_limit_annotation
+    out:
+      - clusters
+      - all_pangenome_fna
+      - all_singletons_fna
+      - reps_pangenomes_fna
+      - pangenome_other_gffs
+      - singletons_gunc_completed
+      - singletons_gunc_failed
+      - panaroo_folder
+      - mmseq_final_dir
+      - mmseq_cluster_rep_faa
+      - mmseq_cluster_tsv
+
+# ----------- << 4. annotation >> ------
 # - IPS + eggNOG
-# - filter dRep genomes
+# - per_genome_annotations
 # - rRNA prediction
 
   annotation:
-    run: wf-annotation.cwl
+    run: ../sub-wf/wf-annotation.cwl
     in:
       assign_mgygs_renamed_csv: preparation/assign_mgygs_renamed_csv
       assign_mgygs_renamed_genomes: preparation/assign_mgygs_renamed_genomes

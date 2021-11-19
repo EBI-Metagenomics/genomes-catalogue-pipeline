@@ -48,7 +48,7 @@ outputs:
 steps:
   generate_weights:
     when: $(!Boolean(inputs.flag))
-    run: ../../../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
+    run: ../tools/genomes-catalog-update/generate_weight_table/generate_extra_weight_table.cwl
     in:
       flag: skip_flag
       input_directory: genomes_folder
@@ -57,7 +57,7 @@ steps:
 
   drep:
     when: $(!Boolean(inputs.flag))
-    run: drep-subwf-genomes-folder.cwl  # drep-subwf-tar.cwl
+    run: drep/drep-subwf-genomes-folder.cwl  # drep-subwf-tar.cwl
     in:
       flag: skip_flag
       genomes_folder: genomes_folder
@@ -69,7 +69,7 @@ steps:
       - sdb
 
   split_drep:
-    run: ../../../tools/drep/split_drep.cwl
+    run: ../tools/drep/split_drep.cwl
     in:
       Cdb_csv:
         source:
@@ -92,7 +92,7 @@ steps:
       - split_text
 
   classify_clusters:
-    run: ../../../tools/drep/classify_folders.cwl
+    run: ../tools/drep/classify_folders.cwl
     in:
       genomes: genomes_folder
       text_file: split_drep/split_text
@@ -101,7 +101,7 @@ steps:
       - one_genome
 
   filter_nulls:
-    run: ../../../utils/filter_nulls.cwl
+    run: ../utils/filter_nulls.cwl
     in:
       list_dirs: classify_clusters/one_genome
     out: [ out_dirs ]
