@@ -7,6 +7,8 @@ mash_folder:
 one_genome:
   - class: Directory
     path: ../../../../input_example/small_set/results/clusters/3_0
+  - class: Directory
+    path: ../../../../input_example/small_set/results/clusters/4_0
 
 mmseqs_limit_c: 0.8
 mmseqs_limit_i:
@@ -18,18 +20,4 @@ csv:
 gunc_db_path:
   class: File
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
-interproscan_databases:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
-chunk_size_ips: 10000
-chunk_size_eggnog: 100000
-db_diamond_eggnog:
-  class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_proteins.dmnd
-db_eggnog:
-  class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
-data_dir_eggnog:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
 
