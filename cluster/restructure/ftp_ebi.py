@@ -51,7 +51,9 @@ uhgp_catalogue  (mmseqs)                            [FTP]
     --- uhgp-90.tar.gz
     --- uhgp-95.tar.gz
     
-panaroo_output
+panaroo_output ???
+rRNA           ???
+GTDB-Tk        ???
    
    
 ==================================================================================
@@ -91,6 +93,7 @@ ALL_CATALOGUE_FOLDER_NAME = "uhgg_catalogue"
 GFF_FOLDER_NAME = "all_genomes"
 LIMIT_GFF_FOLDER = 500
 INITIAL_GFF_NAME = 'GFF'
+NUMBER_OF_SYMBOLS = 11
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Copy files to correct structure FTP')
@@ -145,7 +148,7 @@ if __name__ == "__main__":
                 os.makedirs(all_genomes_path)
             for genome in clusters:
                 genomes = clusters[genome]
-                gff_genome_path = os.path.join(all_genomes_path, genome[:7], genome)
+                gff_genome_path = os.path.join(all_genomes_path, genome[:NUMBER_OF_SYMBOLS], genome)
                 if not os.path.exists(gff_genome_path):
                     os.makedirs(gff_genome_path)
                 for i in range(0, len(genomes)):
@@ -197,7 +200,7 @@ if __name__ == "__main__":
                 os.makedirs(genomes_catalogue)
             for genome in clusters:
                 genomes = clusters[genome]
-                genome_path = os.path.join(genomes_catalogue, genome[:7], genome)
+                genome_path = os.path.join(genomes_catalogue, genome[:NUMBER_OF_SYMBOLS], genome)
                 if not os.path.exists(genome_path):
                     os.makedirs(genome_path)
                 old_path = os.path.join(args.result_path, genome)
