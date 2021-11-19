@@ -19,9 +19,9 @@ outputs:
     type: Directory
     outputSource: panaroo_final_folder/out
 
-  all_pangenome_fna:
+  other_pangenome_gffs:
     type: File[]
-    outputSource: flatten_fnas/array1d
+    outputSource: flatten_other_gffs/array1d
   all_pangenome_faa:
     type: File[]
     outputSource: flatten_faas/array1d
@@ -29,10 +29,9 @@ outputs:
   reps_fna:
     type: File[]
     outputSource: process_many_genomes/main_rep_fna
-
-  other_pangenome_gffs:
+  pangenome_other_fnas:
     type: File[]
-    outputSource: flatten_gffs/array1d
+    outputSource: flatten_other_fnas/array1d
 
   pangenome_clusters:
     type: Directory[]
@@ -48,22 +47,22 @@ steps:
       mash_files: mash_folder
     out:
       - panaroo_tar
-      - all_pangenome_fna
+      - pangenome_other_fnas
       - all_pangenome_faa
       - pangenome_cluster
       - pangenome_other_gffs
       - main_rep_fna
 
-  flatten_gffs:
+  flatten_other_gffs:
     run: ../../../utils/flatten_array.cwl
     in:
       arrayTwoDim: process_many_genomes/pangenome_other_gffs
     out: [ array1d ]
 
-  flatten_fnas:
+  flatten_other_fnas:
     run: ../../../utils/flatten_array.cwl
     in:
-      arrayTwoDim: process_many_genomes/all_pangenome_fna
+      arrayTwoDim: process_many_genomes/pangenome_other_fnas
     out: [ array1d ]
 
   flatten_faas:
@@ -78,3 +77,4 @@ steps:
       list: process_many_genomes/panaroo_tar
       dir_name: { default: panaroo_output }
     out: [ out ]
+

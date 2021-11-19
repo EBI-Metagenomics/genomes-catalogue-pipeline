@@ -48,7 +48,7 @@ steps:
       as one dimensional array (File[])
       if only many_genomes clusters were detected
    when: $(Boolean(inputs.arrayTwoDim))
-   run: ../../../utils/flatten_array.cwl
+   run: ../../utils/flatten_array.cwl
    in:
      arrayTwoDim: prokka_many
    out: [array1d]
@@ -59,7 +59,7 @@ steps:
        Prokka one_genome could be empty as well as prokka from many_genomes
        In case of all empty prokkas - tool returns null
        Otherwise it will return prokka files
-    run: ../../../utils/filter_nulls.cwl
+    run: ../../utils/filter_nulls.cwl
     in:
       list_files:
         source:
@@ -74,7 +74,7 @@ steps:
        If all files are empty - this step would be skipped
        together with the following steps
     when: $(Boolean(inputs.files))
-    run: ../../../utils/concatenate.cwl
+    run: ../../utils/concatenate.cwl
     in:
       files: filter_nulls/out_files
       outputFileName: { default: 'prokka_cat.fa' }
@@ -83,7 +83,7 @@ steps:
 # ------ mmseq --------
   mmseqs:
     when: $(Boolean(inputs.files))
-    run: ../../../tools/mmseqs/mmseqs.cwl
+    run: ../../tools/mmseqs/mmseqs.cwl
     scatter: limit_i
     in:
       files: filter_nulls/out_files
@@ -102,7 +102,7 @@ steps:
        It would be difficult to detect this folder from scatter output
        That is why this step was made separate in order to have results
     when: $(Boolean(inputs.files))
-    run: ../../../tools/mmseqs/mmseqs.cwl
+    run: ../../tools/mmseqs/mmseqs.cwl
     in:
       files: filter_nulls/out_files
       input_fasta: concatenate/result
@@ -116,7 +116,7 @@ steps:
 
 # ----- tar.gz all mmseqs folders -----
   create_tars:
-    run: ../../../utils/tar.cwl
+    run: ../../utils/tar.cwl
     when: $(Boolean(inputs.folder))
     scatter: folder
     in:
@@ -129,7 +129,7 @@ steps:
 
   create_mmseqs_dir:
     when: $(Boolean(inputs.list))
-    run: ../../../utils/return_directory.cwl
+    run: ../../utils/return_directory.cwl
     in:
       list:
         source: create_tars/folder_tar

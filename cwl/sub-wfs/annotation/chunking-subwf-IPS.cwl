@@ -29,7 +29,7 @@ steps:
       seqs: faa
       chunk_size: chunk_size
     out: [ chunks ]
-    run: ../../../tools/protein_chunker/protein_chunker.cwl
+    run: ../../tools/protein_chunker/protein_chunker.cwl
 
   # << InterProScan >>
   interproscan:
@@ -38,7 +38,7 @@ steps:
       inputFile: split_seqs/chunks
       databases: interproscan_databases
     out: [ annotations ]
-    run: ../../../tools/IPS/InterProScan.cwl
+    run: ../../tools/IPS/InterProScan.cwl
     label: "InterProScan: protein sequence classifier"
 
   combine_ips:
@@ -48,7 +48,7 @@ steps:
         source: faa
         valueFrom: $(self.nameroot).IPS.tsv
     out: [result]
-    run: ../../../utils/concatenate.cwl
+    run: ../../utils/concatenate.cwl
 
 
 $namespaces:

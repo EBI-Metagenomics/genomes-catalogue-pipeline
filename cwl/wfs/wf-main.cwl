@@ -54,32 +54,40 @@ inputs:
 outputs:
 
 # ------- intermediate files -------
-  intermediate_files:
-    type: Directory
-    outputSource: folder_with_intermediate_files/out
+#  intermediate_files:
+#    type: Directory
+#    outputSource: folder_with_intermediate_files/out
 
 # ------- clusters_annotation -------
 
-  pan-genomes:
-    type: Directory[]?
-    outputSource: annotation/pan-genomes
+#  pan-genomes:
+#    type: Directory[]?
+#    outputSource: annotation/pan-genomes
 
-  singletons:
-    type: Directory[]?
-    outputSource: annotation/singletons
+#  singletons:
+#    type: Directory[]?
+#    outputSource: annotation/singletons
+
+  clusters_pangenome:
+    type: Directory[]
+    outputSource: process_clusters/clusters_pangenome
+
+  clusters_singletons:
+    type: Directory[]
+    outputSource: process_clusters/clusters_singletons
 
   mmseqs:
     type: Directory?
-    outputSource: annotation/mmseqs
+    outputSource: process_clusters/mmseq_final_dir
 
   panaroo:
     type: Directory
-    outputSource: annotation/panaroo_folder
+    outputSource: process_clusters/panaroo_folder
 
 # ------- additional files for clusters (kegg, ips, eggnog, cog, cazy, annotated gff) ----------
-  cluster_annotations:
-    type: Directory[]
-    outputSource: post_processing/annotations_cluster_dir
+#  cluster_annotations:
+#    type: Directory[]
+#    outputSource: post_processing/annotations_cluster_dir
 
 # ---------- rRNA -------------
   rrna_out:
@@ -91,9 +99,9 @@ outputs:
     outputSource: annotation/rrna_fasta
 
 # ---------- GFF ----------
-  gff_ftp:
-    type: Directory
-    outputSource: create_gff_folder_ftp/gffs_folder
+#  gff_ftp:
+#    type: Directory
+#    outputSource: create_gff_folder_ftp/gffs_folder
 
 # ------------ GTDB-Tk --------------
   gtdbtk:
@@ -107,11 +115,6 @@ outputs:
   phylo_json:
     type: File?
     outputSource: gtdbtk_metadata/phylo_tree
-
-# for gtdbtk and post-processing
-  drep_genomes:
-    type: Directory
-    outputSource: annotation/filter_genomes_drep_filtered_genomes
 
 steps:
 
@@ -171,14 +174,15 @@ steps:
       many_genomes: drep_subwf/many_genomes
       mash_folder: drep_subwf/mash_files
       one_genome: drep_subwf/one_genome
-      csv: drep_subwf/assign_mgygs_renamed_csv
+      csv: preparation/assign_mgygs_renamed_csv
       gunc_db_path: gunc_db_path
       mmseqs_limit_c: mmseqs_limit_c
       mmseqs_limit_i: mmseqs_limit_i
       mmseq_limit_annotation: mmseq_limit_annotation
     out:
-      - clusters
-      - all_pangenome_fna
+      - clusters_pangenome
+      - clusters_singletons
+      - other_pangenome_fna
       - all_singletons_fna
       - reps_pangenomes_fna
       - pangenome_other_gffs
@@ -188,6 +192,7 @@ steps:
       - mmseq_final_dir
       - mmseq_cluster_rep_faa
       - mmseq_cluster_tsv
+      - file_all_reps_filt_fna
 
 # ----------- << 4. annotation >> ------
 # - IPS + eggNOG
@@ -195,51 +200,28 @@ steps:
 # - rRNA prediction
 
   annotation:
-    run: ../sub-wf/wf-annotation.cwl
+    run: ../sub-wfs/wf-4-annotation.cwl
     in:
-      assign_mgygs_renamed_csv: preparation/assign_mgygs_renamed_csv
-      assign_mgygs_renamed_genomes: preparation/assign_mgygs_renamed_genomes
-
-      drep_subwf_many_genomes: drep_subwf/many_genomes
-      drep_subwf_mash_files: drep_subwf/mash_files
-      drep_subwf_one_genome: drep_subwf/one_genome
-      drep_subwf_split_text: drep_subwf/split_text
-
-      mmseqs_limit_c: mmseqs_limit_c
-      mmseqs_limit_i: mmseqs_limit_i
-      mmseq_limit_annotation: mmseq_limit_annotation
-
-      gunc_db_path: gunc_db_path
-
+      mmseqs_faa: process_clusters/mmseq_cluster_rep_faa
+      mmseqs_tsv: process_clusters/mmseq_cluster_tsv
+      all_reps_filtered: process_clusters/file_all_reps_filt_fna
+      all_fnas:
+        source:
+          - process_clusters/reps_pangenomes_fna
+          - process_clusters/other_pangenome_fna
+          - process_clusters/all_singletons_fna
+        linkMerge: merge_flattened
       interproscan_databases: interproscan_databases
       chunk_size_ips: chunk_size_ips
       chunk_size_eggnog: chunk_size_eggnog
       db_diamond_eggnog: db_diamond_eggnog
       db_eggnog: db_eggnog
       data_dir_eggnog: data_dir_eggnog
-
       cm_models: cm_models
-
     out:
-      - pan-genomes             # Dir[]
-      - singletons              # Dir[]
-      - mmseqs                  # Dir[]
       - ips_eggnog_annotations  # File[]
-      - rrna_out
-      - rrna_fasta
-      - clusters_annotation_singletons_gunc_completed
-      - clusters_annotation_singletons_gunc_failed
-      - filter_genomes_list_drep_filtered
-      - filter_genomes_drep_filtered_genomes
-      - mmseqs_clusters_tsv
-      - panaroo_folder
-      - main_reps_faa_pangenomes
-      - main_reps_gff_pangenomes
-      - main_reps_faa_singletons
-      - main_reps_gff_singletons
-      - gffs_pangenomes
-      - core_genes_files
-      - pangenome_fna_files
+      - rrna_out                # Dir
+      - rrna_fasta              # Dir
 
 # ----------- << GTDB - Tk + Metadata [optional step] >> -----------
 # - GTDB-Tk
@@ -248,11 +230,12 @@ steps:
 
   gtdbtk_metadata:
     when: $(!Boolean(inputs.skip_flag))
-    run: wf-gtdb-metadata.cwl
+    run: ../sub-wfs/wf-5-gtdb.cwl
     in:
       skip_flag: skip_gtdbtk_step
-      genomes: preparation/assign_mgygs_renamed_genomes
-      filter_genomes_drep: annotation/filter_genomes_drep_filtered_genomes
+      reps_pangenomes_fna: process_clusters/reps_pangenomes_fna
+      other_pangenomes_fna: process_clusters/other_pangenome_fna
+      singletons_fna: process_clusters/all_singletons_fna
       gtdbtk_data: gtdbtk_data
       extra_weights_table: drep_subwf/weights_file
       checkm_results_table: preparation/assign_mgygs_renamed_csv
@@ -263,73 +246,11 @@ steps:
       ftp_name_catalogue: ftp_name_catalogue
       ftp_version_catalogue: ftp_version_catalogue
       geo_file: geo_metadata
-      gunc_failed_genomes: annotation/clusters_annotation_singletons_gunc_failed
+      gunc_failed_genomes: process_clusters/singletons_gunc_failed
     out:
       - gtdbtk_tar
       - metadata
       - phylo_tree
 
-# ---------- << post-processing (for each cluster rep) >> ----------
-# - kegg, cog, cazy
-# - ncRNA
-# - add IPS, eggNOG, ncRNA to GFF
-# - genome.json                     [optional: if metadata.txt presented]
 
-  post_processing:
-    run: wf-post-processing.cwl
-    in:
-      annotations: annotation/ips_eggnog_annotations
-      clusters: annotation/filter_genomes_list_drep_filtered
-      kegg: kegg_db
-      gffs:
-        source:
-          - annotation/main_reps_gff_pangenomes
-          - annotation/main_reps_gff_singletons
-        pickValue: all_non_null
-        linkMerge: merge_flattened
-      faas:
-        source:
-          - annotation/main_reps_faa_pangenomes
-          - annotation/main_reps_faa_singletons
-        pickValue: all_non_null
-        linkMerge: merge_flattened
-      biom: biom
-      metadata: gtdbtk_metadata/metadata
-      pangenome_core_genes: annotation/core_genes_files
-      pangenome_fna: annotation/pangenome_fna_files
-    out:
-      - annotations_cluster_dir  # Dir[]
-      - annotated_gff  # File[]
 
-  create_gff_folder_ftp:
-    run: sub-wf/post-processing/create_gffs_folder.cwl
-    in:
-      gffs:
-        source:
-          - post_processing/annotated_gff           # annotated GFFs for main reps
-          - annotation/gffs_pangenomes              # all GFF from pangenomes
-          - annotation/main_reps_gff_singletons     # all GFF from singletones
-        pickValue: all_non_null
-        linkMerge: merge_flattened
-      folder_name: { default: GFF }
-    out: [ gffs_folder ]
-
-# ---------- << return folder with intermediate files >> ----------
-  folder_with_intermediate_files:
-    run: ../utils/return_directory.cwl
-    in:
-      list:
-        source:
-          - preparation/unite_folders_csv                               # initail csv
-          - preparation/assign_mgygs_renamed_csv                        # MGYG csv
-          - preparation/assign_mgygs_naming_table                       # mapping initial names to MGYGs
-          - drep_subwf/weights_file                                     # weights drep
-          - drep_subwf/best_cluster_reps                                # Sdb.csv
-          - drep_subwf/split_text                                       # split by clusters file
-          - annotation/clusters_annotation_singletons_gunc_completed    # gunc passed genomes list
-          - annotation/clusters_annotation_singletons_gunc_failed       # gunc failed genomes list
-          - annotation/filter_genomes_list_drep_filtered                # list of dereplicated genomes
-          - annotation/mmseqs_clusters_tsv                              # mmseqs 0.9 tsv
-        pickValue: all_non_null
-      dir_name: { default: 'intermediate_files'}
-    out: [ out ]

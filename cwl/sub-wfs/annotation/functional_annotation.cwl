@@ -74,7 +74,7 @@ steps:
 
   # ----------- << per genome annotation >> -----------
   generate_per_genome_annotations:
-    run: ../../../tools/genomes-catalog-update/per_genome_annotations/make_per_genome_annotations.cwl
+    run: ../../tools/genomes-catalog-update/per_genome_annotations/make_per_genome_annotations.cwl
     in:
       ips: ips/ips_result
       eggnog: eggnog/annotations

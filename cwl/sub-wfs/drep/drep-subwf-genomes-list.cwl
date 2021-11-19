@@ -32,13 +32,13 @@ outputs:
 steps:
 
   get_genomes_list:
-    run: ../../../utils/get_files_from_dir.cwl
+    run: ../../utils/get_files_from_dir.cwl
     in:
       dir: genomes_folder
     out: [ files ]
 
   drep:
-    run: ../../../tools/drep/dRep/drep-genomes-list.cwl
+    run: ../../tools/drep/dRep/drep-genomes-list.cwl
     in:
       genomes: get_genomes_list/files
       drep_outfolder: { default: 'drep_outfolder' }

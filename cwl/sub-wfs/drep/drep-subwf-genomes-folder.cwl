@@ -32,7 +32,7 @@ outputs:
 steps:
 
   drep:
-    run: ../../../tools/drep/dRep/drep-genomes-folder.cwl
+    run: ../../tools/drep/dRep/drep-genomes-folder.cwl
     in:
       genomes: genomes_folder
       drep_outfolder: { default: 'drep_outfolder' }

@@ -253,3 +253,13 @@
       - basename: "CAJKRE01.fa"
         class: File
         size: 2314364
+
+# return list of input file's basenames to separate file
+- job: list_of_basenames.yml
+  tool: ../../../cwl/utils/list_of_basenames.cwl
+  short_name: list_of_basenames.cwl
+  doc: "list of basenames"
+  output:
+    list:
+      basename: "test.txt"
+      size: 36

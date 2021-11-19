@@ -49,7 +49,7 @@ steps:
   #  out: [files]
 
   detect:
-    run: ../../../tools/detect_rRNA/detect_rRna.cwl
+    run: ../../tools/detect_rRNA/detect_rRna.cwl
     scatter: fasta
     in:
       fasta: filtered_genomes  # get_files/files
@@ -57,14 +57,14 @@ steps:
     out: [out_counts, fasta_seq]
 
   wrap_outs:
-    run: ../../../utils/return_dir_of_dir.cwl
+    run: ../../utils/return_dir_of_dir.cwl
     in:
       directory_array: detect/out_counts
       newname: {default: "rRNA_outs"}
     out: [pool_directory]
 
   wrap_fastas:
-    run: ../../../utils/return_dir_of_dir.cwl
+    run: ../../utils/return_dir_of_dir.cwl
     in:
       directory_array: detect/fasta_seq
       newname: {default: "rRNA_fastas"}

@@ -42,9 +42,9 @@ outputs:
     type: File
     outputSource: panaroo/panaroo_dir_tar
 
-  all_pangenome_fna:
+  pangenome_other_fnas:
     type: File[]
-    outputSource: preparation/files
+    outputSource: get_pangenome_fnas/left_files
 
   all_pangenome_faa:
     type: File[]
@@ -65,7 +65,7 @@ outputs:
 
 steps:
   preparation:
-    run: ../../../../utils/get_files_from_dir.cwl
+    run: ../../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
     out: [files]
@@ -124,6 +124,15 @@ steps:
     run: ../../../utils/exclude_file_pattern.cwl
     in:
       list_files: prokka/gff
+      pattern:
+        source: cluster
+        valueFrom: $(self.basename)
+    out: [ left_files ]
+
+  get_pangenome_fnas:
+    run: ../../../utils/exclude_file_pattern.cwl
+    in:
+      list_files: preparation/files
       pattern:
         source: cluster
         valueFrom: $(self.basename)

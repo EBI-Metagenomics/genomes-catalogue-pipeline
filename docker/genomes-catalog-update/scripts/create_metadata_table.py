@@ -17,16 +17,16 @@ from get_ENA_metadata import get_location, load_xml
 logging.basicConfig(level=logging.INFO)
 
 
-def main(genomes_dir, extra_weight_table, checkm_results, rna_results, naming_file, clusters_file, taxonomy_file,
+def main(genomes_list, extra_weight_table, checkm_results, rna_results, naming_file, clusters_file, taxonomy_file,
          geofile, outfile, ftp_name, ftp_version, gunc_failed):
     #table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50',	'GC_content',
     #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
     #           'Species_rep', 'MGnify_accession', 'Lineage', 'Sample_accession', 'Study_accession', 'Country',
     #           'Continent', 'FTP_download']
-    genome_list = load_genome_list(genomes_dir, gunc_failed)
+    genome_list = load_genome_list(genomes_list, gunc_failed)
     df = pd.DataFrame(genome_list, columns=['Genome'])
     df = add_genome_type(df, extra_weight_table)
-    df = add_stats(df, genomes_dir)
+    df = add_stats(df, genomes_list)
     df = add_checkm(df, checkm_results)
     df = add_rna(df, genome_list, rna_results)
     df, original_accessions = add_original_accession(df, naming_file)
@@ -218,16 +218,21 @@ def add_checkm(df, checkm_results):
     return df
 
 
-def add_stats(df, genomes_dir):
-    new_df = df.apply(lambda x: calc_assembly_stats(genomes_dir, x['Genome']), axis=1)
+def add_stats(df, genomes_list):
+    new_df = df.apply(lambda x: calc_assembly_stats(genomes_list, x['Genome']), axis=1)
     return pd.concat([df, new_df], axis=1)
 
 
-def calc_assembly_stats(genomes_dir, acc):
-    file_path = os.path.join(genomes_dir, '{}.fa'.format(acc))
+def calc_assembly_stats(genomes_list, acc):
+    #file_path = os.path.join(genomes_dir, '{}.fa'.format(acc))
+    file_paths = [i for i in genomes_list if acc in os.path.basename(i)]
+    if len(file_paths) != 1:
+        print('error finding genome')
+    else:
+        file_path = file_paths[0]
     stats = run_assembly_stats(file_path)
-    return pd.Series([int(stats['Length']), int(stats['N_contigs']), int(stats['N50']), str(round(stats['GC_content'],2))],
-                     index=['Length', 'N_contigs', 'N50', 'GC_content'])
+    return pd.Series([int(stats['Length']), int(stats['N_contigs']), int(stats['N50']),
+                      str(round(stats['GC_content'], 2))], index=['Length', 'N_contigs', 'N50', 'GC_content'])
 
 
 def add_genome_type(df, extra_weight_table):
@@ -247,8 +252,8 @@ def add_genome_type(df, extra_weight_table):
     return df
 
 
-def load_genome_list(genomes_dir, gunc_file):
-    genome_list = [filename.split('.')[0] for filename in os.listdir(genomes_dir)]
+def load_genome_list(input_genomes_list, gunc_file):
+    genome_list = [i.split('.')[0] for i in input_genomes_list]
     if gunc_file:
         with open(gunc_file, 'r') as gunc_in:
             for line in gunc_in:
@@ -273,8 +278,8 @@ def parse_args():
                              'accession')
     parser.add_argument('-o', '--outfile', required=True,
                          help='Path to the output file where the metadata table will be stored')
-    parser.add_argument('-d', '--genomes-dir', required=True,
-                         help='A space delimited list of paths to the directory where genomes are stored')
+    parser.add_argument('-d', '--genomes-list', required=True,
+                         help='A space delimited list of genomes', nargs='+')
     parser.add_argument('-g', '--gunc-failed',
                         help='Path to the file containing a list of genomes that were filtered out by GUNC')
     parser.add_argument('-r', '--rna-results', required=True,
@@ -298,5 +303,5 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.genomes_dir, args.extra_weight_table, args.checkm_results, args.rna_results, args.naming_table,
+    main(args.genomes_list, args.extra_weight_table, args.checkm_results, args.rna_results, args.naming_table,
          args.clusters_table, args.taxonomy, args.geo, args.outfile, args.ftp_name, args.ftp_version, args.gunc_failed)

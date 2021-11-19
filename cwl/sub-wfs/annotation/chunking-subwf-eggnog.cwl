@@ -36,11 +36,11 @@ steps:
       seqs: faa_file
       chunk_size: chunk_size
     out: [ chunks ]
-    run: ../../../tools/protein_chunker/protein_chunker.cwl
+    run: ../../tools/protein_chunker/protein_chunker.cwl
 
   eggnog_homology_searches:
     scatter: fasta_file
-    run: ../../../tools/eggnog/eggnog.cwl
+    run: ../../tools/eggnog/eggnog.cwl
     in:
       fasta_file: split_seqs/chunks
       db_diamond: db_diamond
@@ -56,7 +56,7 @@ steps:
     out: [ output_orthologs ]
 
   unite_seed_orthologs:
-    run: ../../../utils/concatenate.cwl
+    run: ../../utils/concatenate.cwl
     in:
       files: eggnog_homology_searches/output_orthologs
       outputFileName:
@@ -65,7 +65,7 @@ steps:
     out: [result]
 
   eggnog_annotation:
-    run: ../../../tools/eggnog/eggnog.cwl
+    run: ../../tools/eggnog/eggnog.cwl
     in:
       annotate_hits_table: unite_seed_orthologs/result
       data_dir: data_dir

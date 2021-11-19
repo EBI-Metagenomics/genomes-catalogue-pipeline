@@ -31,13 +31,13 @@ outputs:
 steps:
 
   tar:
-    run: ../../../utils/tar.cwl
+    run: ../../utils/tar.cwl
     in:
       folder: genomes_folder
     out: [ folder_tar ]
 
   drep_tar:
-    run: ../../../tools/drep/dRep/drep-tar.cwl
+    run: ../../tools/drep/dRep/drep-tar.cwl
     in:
       genomes: tar/folder_tar
       drep_outfolder: { default: 'drep_outfolder' }

@@ -23,26 +23,30 @@ inputs:
 
 outputs:
 
-  clusters:
+  clusters_pangenome:
     type: Directory[]
-    outputSource:
-      source:
-        - process_many_genomes/pangenome_clusters
-        - process_one_genome/singleton_clusters
-      linkMerge: merge_flattened
+    outputSource: process_many_genomes/pangenome_clusters
+
+  clusters_singletons:
+    type: Directory[]
+    outputSource: process_one_genome/singleton_clusters
+
+  file_all_reps_filt_fna:
+    type: File
+    outputSource: get_reps/list
 
 # ===== fna =======
-  all_pangenome_fna:
+  other_pangenome_fna:
     type: File[]
-    outputSource: process_many_genomes/all_pangenome_fna
-
-  all_singletons_fna:
-    type: File[]
-    outputSource: process_one_genome/all_filt_sigletons_fna
+    outputSource: process_many_genomes/pangenome_other_fnas
 
   reps_pangenomes_fna:
     type: File[]
     outputSource: process_many_genomes/reps_fna
+
+  all_singletons_fna:
+    type: File[]
+    outputSource: process_one_genome/all_filt_sigletons_fna
 
 # ===== gff =======
   pangenome_other_gffs:
@@ -93,11 +97,11 @@ steps:
       mash_folder: process_mash/mash_tree
     out:
       - panaroo_output
-      - all_pangenome_fna
       - all_pangenome_faa
       - other_pangenome_gffs
       - pangenome_clusters
       - reps_fna
+      - pangenome_other_fnas
 
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
@@ -116,7 +120,7 @@ steps:
 
 # ----------- << mmseqs >> -----------
   mmseqs:
-    run: mmseq-subwf.cwl
+    run: process_clusters/mmseq-subwf.cwl
     in:
       prokka_many: process_many_genomes/all_pangenome_faa
       prokka_one: process_one_genome/all_filt_sigletons_faa
@@ -128,3 +132,14 @@ steps:
       - cluster_reps
       - cluster_tsv
 
+# ----------- << get list of cluster reps filtered>> -----------
+  get_reps:
+    run: ../utils/list_of_basenames.cwl
+    in:
+      files:
+        source:
+          - process_many_genomes/reps_fna
+          - process_one_genome/all_filt_sigletons_fna
+        linkMerge: merge_flattened
+      name: { default: "list_reps_filtered.txt"}
+    out: [ list ]
