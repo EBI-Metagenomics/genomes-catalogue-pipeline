@@ -51,7 +51,7 @@ steps:
 
 # ----------- << functional annotation >> ------
   functional_annotation:
-    run: annotation/functional_annotation.cwl
+    run: 4_annotation/functional_annotation.cwl
     in:
       input_faa: mmseqs_faa
       interproscan_databases: interproscan_databases
@@ -67,7 +67,7 @@ steps:
 
 # ---------- << detect rRNA >> ---------
   detect_rrna:
-    run: annotation/detect_rrna_subwf.cwl
+    run: 4_annotation/detect_rrna_subwf.cwl
     in:
       filtered_genomes: all_fnas
       cm_models: cm_models

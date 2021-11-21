@@ -41,7 +41,7 @@ steps:
 
 # ----------- << checkm for NCBI >> -----------
   checkm_subwf:
-    run: preparation/checkm-subwf.cwl
+    run: 1_preparation/checkm-subwf.cwl
     when: $(Boolean(inputs.genomes_folder))
     in:
       genomes_folder: genomes_ncbi

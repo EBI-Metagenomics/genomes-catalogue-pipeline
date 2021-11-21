@@ -7,9 +7,9 @@ claninfo:
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.clanin
 
 models:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.cm
 
 fasta:
   class: File
-  path:
+  path: ../../../../input_example/small_set/all_genomes/CAJJTO01.fa

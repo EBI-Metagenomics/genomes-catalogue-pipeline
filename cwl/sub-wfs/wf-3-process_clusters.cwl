@@ -2,6 +2,47 @@
 cwlVersion: v1.2
 class: Workflow
 
+doc: |
+  Workflow to process clusters returned from dRep step.
+  Steps:
+    - convert all mash.tsv to mash.nwk
+    - process pan-genomes
+    - process singletons
+    - mmseqs
+  output:
+    - clusters_pangenomes:
+       Dir[]:
+         - panaroo.fna
+         - panaroo.gene_presence_absence
+         - core_genes.txt
+         - genome.mash.nwk
+         - main_genome.fna
+         - main_genome.faa
+         - main_genome.fna.fai
+         - main_genome.gff
+    - clusters_singletons:
+       Dir[]:
+         - genome.fna
+         - genome.faa
+         - genome.fna.fai
+         - genome.gff
+    - list_of_aLL_main_reps
+    - FNA-s:
+      - all_singletons_fna (all singletons initial fnas excluded genomes filtered by GUNC)
+      - reps_pangenomes_fna (cluster reps for pan-genomes)
+      - other_pangenome_fna (non cluster reps for pan-genomes)
+    - GFF-s:
+      - pangenome_other_gffs (gffs for non cluster pan-genome clusters)
+    - GUNC
+      - singletons_gunc_completed (list of singletons passed GUNC)
+      - singletons_gunc_failed (list of singletons filtered by GUNC)
+    - panaroo_output (folder with genome_panaroo.tar.gz-s)
+    - mmseqs
+      - mmseq_final_dir (4 mmseq.tar.gz)
+      - mmseq_cluster_rep_faa (mmseq.0.9.reps.faa)
+      - mmseq_cluster_tsv (mmseq.0.9.tsv)
+
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
@@ -91,7 +132,7 @@ steps:
 # ----------- << many genomes cluster processing >> -----------
   process_many_genomes:
     when: $(Boolean(inputs.input_clusters))
-    run: process_clusters/pan-genomes/wrapper-pan-genomes.cwl
+    run: 3_process_clusters/pan-genomes/wrapper-pan-genomes.cwl
     in:
       input_clusters: many_genomes
       mash_folder: process_mash/mash_tree
@@ -106,7 +147,7 @@ steps:
 # ----------- << one genome cluster processing >> -----------
   process_one_genome:
     when: $(Boolean(inputs.input_cluster))
-    run: process_clusters/singletons/wrapper-singletons.cwl
+    run: 3_process_clusters/singletons/wrapper-singletons.cwl
     in:
       input_cluster: one_genome
       csv: csv
@@ -120,7 +161,7 @@ steps:
 
 # ----------- << mmseqs >> -----------
   mmseqs:
-    run: process_clusters/mmseq-subwf.cwl
+    run: 3_process_clusters/mmseq-subwf.cwl
     in:
       prokka_many: process_many_genomes/all_pangenome_faa
       prokka_one: process_one_genome/all_filt_sigletons_faa

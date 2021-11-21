@@ -223,7 +223,7 @@ steps:
       - rrna_out                # Dir
       - rrna_fasta              # Dir
 
-# ----------- << GTDB - Tk + Metadata [optional step] >> -----------
+# ----------- << 5. GTDB - Tk + Metadata [optional step] >> -----------
 # - GTDB-Tk
 # - metadata.txt
 # - phylo_tree.json
@@ -252,5 +252,35 @@ steps:
       - metadata
       - phylo_tree
 
+# ---------- << 6. post-processing (for each cluster rep) >> ----------
+# - kegg, cog, cazy
+# - ncRNA
+# - add IPS, eggNOG, ncRNA to GFF
+# - genome.json                     [optional: if metadata.txt presented]
 
+  post_processing:
+    run: wf-6-post-processing.cwl
+    in:
+      annotations: annotation/ips_eggnog_annotations
+      clusters: annotation/filter_genomes_list_drep_filtered
+      kegg: kegg_db
+      gffs:
+        source:
+          - annotation/main_reps_gff_pangenomes
+          - annotation/main_reps_gff_singletons
+        pickValue: all_non_null
+        linkMerge: merge_flattened
+      faas:
+        source:
+          - annotation/main_reps_faa_pangenomes
+          - annotation/main_reps_faa_singletons
+        pickValue: all_non_null
+        linkMerge: merge_flattened
+      biom: biom
+      metadata: gtdbtk_metadata/metadata
+      pangenome_core_genes: annotation/core_genes_files
+      pangenome_fna: annotation/pangenome_fna_files
+    out:
+      - annotations_cluster_dir  # Dir[]
+      - annotated_gff  # File[]
 
