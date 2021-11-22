@@ -19,7 +19,9 @@ outputs:
   faa:
     type: File
     outputSource: prokka/faa
-
+  fna:
+    type: File
+    outputSource: prokka/fna
 
 steps:
 
@@ -34,5 +36,5 @@ steps:
     in:
       fa_file: change_headers/created_file
       outdirname: outdirname
-    out: [ gff, faa ]
+    out: [ gff, faa, fna ]
 

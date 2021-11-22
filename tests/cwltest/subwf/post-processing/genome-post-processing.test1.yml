@@ -1,0 +1,28 @@
+annotations:
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/test-pipeline/MGYG000297503_eggNOG.tsv
+  - class: File
+    path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/test-pipeline/MGYG000297503_InterProScan.tsv
+
+kegg:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv
+
+cluster:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/test-pipeline/data
+
+biom: "test:biom"
+
+# ncRNA
+claninfo_ncrna:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.clanin
+
+models_ncrna:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.cm
+
+metadata:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/metadata.txt

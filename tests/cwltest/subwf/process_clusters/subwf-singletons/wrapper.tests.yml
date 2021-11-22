@@ -1,7 +1,7 @@
 #cwltest
 
 - job: wrapper.test1.yml
-  tool: ../../../../cwl/workflows/sub-wf/singletons/wrapper-singletons.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/singletons/wrapper-singletons.cwl
   short_name: wrapper-singletons.cwl
   doc: "scatter run singletons wf"
   output:

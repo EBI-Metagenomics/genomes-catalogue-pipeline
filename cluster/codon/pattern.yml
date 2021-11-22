@@ -54,9 +54,13 @@ geo_metadata:
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/continent_countries.csv
 
 # ncRNA
-ncrna_models:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms
+claninfo_ncrna:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.clanin
+
+models_ncrna:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.cm
 
 #  genomes_ena: Directory?
 #  ena_csv: File?

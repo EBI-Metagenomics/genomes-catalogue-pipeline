@@ -130,7 +130,7 @@ if __name__ == '__main__':
         input_files = os.listdir(args.input_dir)
         fasta_protein = [cur_file for cur_file in input_files if cur_file.endswith('.faa')][0]
         fasta_in = os.path.join(args.input_dir, fasta_protein)
-        species_name = fasta_in.split("/")[-1].split(".")[0]
+        species_name = fasta_in.split("/")[-1].rsplit(".", 1)[0]
 
         # get IPS and EggNOG
         if args.annotations:

@@ -51,19 +51,19 @@ def create_folder(name, dir, kegg_files, index, gff, annotations=None):
         if not os.path.exists(pangenome_folder):
             os.mkdir(pangenome_folder)
         if len(core_genes) > 0:
-            copy(os.path.join(dir, core_genes), os.path.join(pangenome_folder, core_genes))
+            copy(os.path.join(dir, core_genes[0]), os.path.join(pangenome_folder, core_genes[0]))
         else:
             print('no core_genes')
         if len(mash) > 0:
-            copy(os.path.join(dir, mash), os.path.join(pangenome_folder, mash))
+            copy(os.path.join(dir, mash[0]), os.path.join(pangenome_folder, mash[0]))
         else:
             print('no mash')
         if len(gene_presence_absence) > 0:
-            copy(os.path.join(dir, gene_presence_absence), os.path.join(pangenome_folder, gene_presence_absence))
+            copy(os.path.join(dir, gene_presence_absence[0]), os.path.join(pangenome_folder, gene_presence_absence[0]))
         else:
             print('no gene_presence_absence')
         if len(pan_genome_reference) > 0:
-            copy(os.path.join(dir, pan_genome_reference), os.path.join(pangenome_folder, pan_genome_reference))
+            copy(os.path.join(dir, pan_genome_reference[0]), os.path.join(pangenome_folder, pan_genome_reference[0]))
         else:
             print('no pan_genome_reference')
     else:
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', dest='input_dir', required=True,
                         help='Directory with protein.fasta, fna, gff (IPS, Eggnog if -a is not presented')
     parser.add_argument('-a', dest='annotations', help='IPS and EggNOG files', required=False, nargs='+')
-    parser.add_argument('-k', dest='kegg_files', help='KEGG annotation files', required=True)
+    parser.add_argument('-k', dest='kegg_files', help='KEGG annotation files', required=True, nargs='+')
     parser.add_argument('--index', dest='index', help='fna.fai', required=True)
     parser.add_argument('-g', dest='annotated_gff', help='Annotated gff', required=True)
     parser.add_argument('-j', dest='json', help='genome.json', required=False)

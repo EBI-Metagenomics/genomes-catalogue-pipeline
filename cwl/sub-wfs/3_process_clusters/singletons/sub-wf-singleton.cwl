@@ -32,9 +32,9 @@ outputs:
     type: string
     outputSource: gunc/flag
 
-  initial_fna:
+  prokka_fna:
     type: File?
-    outputSource: get_filtered_fna/file
+    outputSource: prokka/fna
 
   prokka_faa:
     type: File?
@@ -65,14 +65,7 @@ steps:
     out:
       - faa
       - gff
-
-  get_filtered_fna:
-    when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../utils/get_files_from_dir.cwl
-    in:
-      flag: gunc/flag
-      dir: cluster
-    out: [ file ]
+      - fna
 
   filter_nulls:
     when: $(inputs.flag.includes("complete.txt"))
@@ -82,7 +75,7 @@ steps:
       list_files:
         - prokka/gff
         - prokka/faa
-        - get_filtered_fna/file
+        - prokka/fna
     out: [out_files]
 
   cluster_folder:

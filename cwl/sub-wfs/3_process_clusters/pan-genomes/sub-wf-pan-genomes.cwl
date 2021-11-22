@@ -78,6 +78,7 @@ steps:
     out:
       - gff
       - faa
+      - fna
 # --------------------------------------- pan-genome specific -----------------------------------------
 
   panaroo:
@@ -131,7 +132,7 @@ steps:
   get_pangenome_fnas:
     run: ../../../utils/exclude_file_pattern.cwl
     in:
-      list_files: preparation/files
+      list_files: prokka/fna
       pattern:
         source: cluster
         valueFrom: $(self.basename)
@@ -160,12 +161,11 @@ steps:
   choose_main_rep_fna:
     run: ../../../utils/get_file_pattern.cwl
     in:
-      list_files: preparation/files
+      list_files: prokka/fna
       pattern:
         source: cluster
         valueFrom: $(self.basename)
     out: [ file_pattern ]
-
 
 # --------------------------------------- final folder -----------------------------------------
 

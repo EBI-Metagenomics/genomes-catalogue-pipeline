@@ -47,7 +47,7 @@ steps:
     out:
       - singleton_cluster  # Dir (faa, fna, gff)?
       - gunc_decision
-      - initial_fna
+      - prokka_fna
       - prokka_faa
 
   create_gunc_reports:
@@ -67,7 +67,7 @@ steps:
   filter_nulls_fna:
     run: ../../../utils/filter_nulls.cwl
     in:
-      list_files: process_one_genome/initial_fna
+      list_files: process_one_genome/prokka_fna
     out: [ out_files ]
 
   filter_null_clusters:

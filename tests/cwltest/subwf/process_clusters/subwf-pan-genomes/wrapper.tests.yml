@@ -1,7 +1,7 @@
 #cwltest
 
 - job: wrapper.test1.yml
-  tool: ../../../../cwl/workflows/sub-wf/pan-genomes/wrapper-pan-genomes.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/pan-genomes/wrapper-pan-genomes.cwl
   short_name: wrapper-pan-genomes.cwl
   doc: "pan-genomes wrapper"
   output:
