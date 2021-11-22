@@ -49,45 +49,35 @@ inputs:
   geo_metadata: File
   biom: string
 
-  ncrna_models: Directory
+  claninfo_ncrna: File
+  models_ncrna:
+    type: File
+    secondaryFiles:
+      - .i1f
+      - .i1i
+      - .i1m
+      - .i1p
 
 outputs:
 
 # ------- intermediate files -------
-#  intermediate_files:
-#    type: Directory
-#    outputSource: folder_with_intermediate_files/out
+  intermediate_files:
+    type: Directory
+    outputSource: folder_with_intermediate_files/out
 
 # ------- clusters_annotation -------
 
-#  pan-genomes:
-#    type: Directory[]?
-#    outputSource: annotation/pan-genomes
-
-#  singletons:
-#    type: Directory[]?
-#    outputSource: annotation/singletons
-
-  clusters_pangenome:
+  annotated_clusters:
     type: Directory[]
-    outputSource: process_clusters/clusters_pangenome
-
-  clusters_singletons:
-    type: Directory[]
-    outputSource: process_clusters/clusters_singletons
+    outputSource: post_processing/annotations_cluster_dir
 
   mmseqs:
-    type: Directory?
+    type: Directory
     outputSource: process_clusters/mmseq_final_dir
 
   panaroo:
     type: Directory
     outputSource: process_clusters/panaroo_folder
-
-# ------- additional files for clusters (kegg, ips, eggnog, cog, cazy, annotated gff) ----------
-#  cluster_annotations:
-#    type: Directory[]
-#    outputSource: post_processing/annotations_cluster_dir
 
 # ---------- rRNA -------------
   rrna_out:
@@ -99,9 +89,9 @@ outputs:
     outputSource: annotation/rrna_fasta
 
 # ---------- GFF ----------
-#  gff_ftp:
-#    type: Directory
-#    outputSource: create_gff_folder_ftp/gffs_folder
+  gff_ftp:
+    type: Directory
+    outputSource: create_gff_folder_ftp/gffs_folder
 
 # ------------ GTDB-Tk --------------
   gtdbtk:
@@ -259,7 +249,7 @@ steps:
 # - genome.json                     [optional: if metadata.txt presented]
 
   post_processing:
-    run: wf-6-post-processing.cwl
+    run: ../sub-wfs/wf-6-post-processing.cwl
     in:
       annotations: annotation/ips_eggnog_annotations
       clusters:
@@ -270,10 +260,39 @@ steps:
       kegg: kegg_db
       biom: biom
       metadata: gtdbtk_metadata/metadata
+      claninfo_ncrna: claninfo_ncrna
+      models_ncrna: models_ncrna
     out:
       - annotations_cluster_dir  # Dir[]
       - annotated_gffs  # File[]
 
 # ---------- << 7. create GFF folder for FTP >> ----------
+  create_gff_folder_ftp:
+    run: ../sub-wfs/6_post-processing/create_gffs_folder.cwl
+    in:
+      gffs:
+        source:
+          - post_processing/annotated_gffs           # annotated GFFs for main reps
+          - process_clusters/pangenome_other_gffs              # other gffs from pan-genomes
+        pickValue: all_non_null
+        linkMerge: merge_flattened
+      folder_name: { default: GFF }
+    out: [ gffs_folder ]
 
 # ---------- << 8. create intermediate_files for FTP>> ----------
+  folder_with_intermediate_files:
+    run: ../utils/return_directory.cwl
+    in:
+      list:
+        source:
+          - preparation/unite_folders_csv                               # initail csv
+          - preparation/assign_mgygs_renamed_csv                        # MGYG csv
+          - preparation/assign_mgygs_naming_table                       # mapping initial names to MGYGs
+          - drep_subwf/weights_file                                     # weights drep
+          - drep_subwf/best_cluster_reps                                # Sdb.csv
+          - drep_subwf/split_text                                       # split by clusters file
+          - process_clusters/singletons_gunc_completed                  # gunc passed genomes list
+          - process_clusters/singletons_gunc_failed                     # gunc failed genomes list
+        pickValue: all_non_null
+      dir_name: { default: 'intermediate_files'}
+    out: [ out ]

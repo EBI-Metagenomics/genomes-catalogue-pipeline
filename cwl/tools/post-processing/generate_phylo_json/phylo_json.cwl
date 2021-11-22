@@ -11,7 +11,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts/phylo_tree_generator.py
+        location: ../../../../docker/python3_scripts/phylo_tree_generator.py
 
 hints:
   DockerRequirement:

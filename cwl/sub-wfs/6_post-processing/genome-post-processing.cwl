@@ -58,7 +58,7 @@ inputs:
 outputs:
   final_folder:
     type: Directory
-    outputSource:
+    outputSource: create_final_folder/final_folder
 
   annotated_gff:
     type: File
@@ -69,7 +69,7 @@ steps:
 # --------- KEGG, COG, CAZY ----------
 
   function_summary_stats:
-    run: ../../../tools/genomes-catalog-update/function_summary_stats/generate_annots.cwl
+    run: ../../tools/genomes-catalog-update/function_summary_stats/generate_annots.cwl
     in:
       input_dir: cluster
       output: { default: "func_summary" }
@@ -85,13 +85,13 @@ steps:
 # --------- detect ncRNA ----------
 
   get_list_of_files:
-    run: ../../../utils/get_files_from_dir.cwl
+    run: ../../utils/get_files_from_dir.cwl
     in:
       dir: cluster
     out: [files]
 
   get_fna:
-    run: ../../../utils/get_file_pattern.cwl
+    run: ../../utils/get_file_pattern.cwl
     in:
       list_files: get_list_of_files/files
       pattern: { default: ".fna" }
@@ -106,7 +106,7 @@ steps:
     out: [ cmscan_deoverlap ]
 
   index_fna:
-    run: ../../../tools/index_fasta/index_fasta.cwl
+    run: ../../tools/index_fasta/index_fasta.cwl
     in:
       fasta: get_fna/file_pattern
     out: [ fasta_index ]
@@ -114,7 +114,7 @@ steps:
 # --------- annotate GFF ----------
 
   annotate_gff:
-    run: ../../../tools/genomes-catalog-update/annotate_gff/annotate_gff.cwl
+    run: ../../tools/genomes-catalog-update/annotate_gff/annotate_gff.cwl
     in:
       input_dir: cluster
       ncrna_deov: ncrna/cmscan_deoverlap
@@ -127,7 +127,7 @@ steps:
 # ----------- << genome.json [optional] >> -----------
   genome_json:
     when: $(Boolean(inputs.metadata))
-    run: ../../../tools/genomes-catalog-update/stats_json/stats_json.cwl
+    run: ../../tools/genomes-catalog-update/stats_json/stats_json.cwl
     in:
       metadata: metadata
       genome_annot_cov: function_summary_stats/annotation_coverage
@@ -144,8 +144,21 @@ steps:
 
 # --------- create genome final folder ----------
   create_final_folder:
-    run: ../../../tools/post-processing/create_final_folder/create_final_folder.cwl
+    run: ../../tools/post-processing/create_final_folder/create_final_folder.cwl
     in:
-
-    out:
-
+      annotations: annotations
+      cluster_directory: cluster
+      gff: annotate_gff/annotated_gff
+      kegg:
+        source:
+          - function_summary_stats/annotation_coverage
+          - function_summary_stats/kegg_classes
+          - function_summary_stats/kegg_modules
+          - function_summary_stats/cazy_summary
+          - function_summary_stats/cog_summary
+      index: index_fna/fasta_index
+      json: genome_json/genome_json
+      outdir:
+        source: cluster
+        valueFrom: $(self.basename)
+    out: [ final_folder ]

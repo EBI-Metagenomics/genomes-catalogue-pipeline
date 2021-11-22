@@ -23,6 +23,14 @@ inputs:
   clusters: Directory[]
   biom: string
   metadata: File?
+  claninfo_ncrna: File
+  models_ncrna:
+    type: File
+    secondaryFiles:
+      - .i1f
+      - .i1i
+      - .i1m
+      - .i1p
 
 outputs:
   annotations_cluster_dir:
@@ -56,17 +64,17 @@ steps:
       - ncRNA
       - gff annotation
       - json generation
-    run: sub-wf/post-processing/genome-post-processing.cwl
-    scatter: [files, clusters]
+    run: 6_post-processing/genome-post-processing.cwl
+    scatter: [annotations, cluster]
     scatterMethod: dotproduct
     in:
       annotations: choose_annotations/file_pattern
       kegg: kegg
-      files: clusters
+      cluster: clusters
       biom: biom
       metadata: metadata
-      claninfo_ncrna:
-      models_ncrna:
+      claninfo_ncrna: claninfo_ncrna
+      models_ncrna: models_ncrna
     out:
       - final_folder  # Dir
       - annotated_gff # File
