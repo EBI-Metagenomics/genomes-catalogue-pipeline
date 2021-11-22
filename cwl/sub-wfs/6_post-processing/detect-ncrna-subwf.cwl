@@ -28,7 +28,7 @@ outputs:
 steps:
 
   cmscan:
-    run: ../../../tools/cmscan/cmscan.cwl
+    run: ../../../tools/post-processing/cmscan/cmscan.cwl
     in:
       cpu: { default: 4 }
       tblout:

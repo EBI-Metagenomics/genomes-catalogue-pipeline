@@ -56,9 +56,9 @@ inputs:
   metadata: File?
 
 outputs:
-  annotations:
+  final_folder:
     type: Directory
-    outputSource: create_cluster_directory/dir_of_dir
+    outputSource:
 
   annotated_gff:
     type: File
@@ -74,6 +74,7 @@ steps:
       input_dir: cluster
       output: { default: "func_summary" }
       kegg_db: kegg
+      annotations: annotations
     out:
       - annotation_coverage
       - kegg_classes
@@ -119,7 +120,8 @@ steps:
       ncrna_deov: ncrna/cmscan_deoverlap
       outfile:
         source: cluster
-        valueFrom: "annotated_$(self.basename).gff"
+        valueFrom: "$(self.basename).gff"
+      annotations: annotations
     out: [ annotated_gff ]
 
 # ----------- << genome.json [optional] >> -----------
@@ -140,5 +142,10 @@ steps:
         valueFrom: "$(self.basename).json"
     out: [ genome_json ]
 
-# --------- create genome folder ----------
+# --------- create genome final folder ----------
+  create_final_folder:
+    run: ../../../tools/post-processing/create_final_folder/create_final_folder.cwl
+    in:
+
+    out:
 

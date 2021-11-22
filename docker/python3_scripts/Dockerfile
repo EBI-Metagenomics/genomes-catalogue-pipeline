@@ -13,6 +13,7 @@ COPY checkm2csv.py \
      classify_folders.py \
      classify_dereplicated.py \
      choose_files_post_processing.py \
+     create_final_folder.py \
      generate_gunc_report.py \
      filter_drep_genomes.py \
      ncrna2gff.py \

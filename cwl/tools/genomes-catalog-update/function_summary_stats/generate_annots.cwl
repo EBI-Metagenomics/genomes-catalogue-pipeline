@@ -35,6 +35,11 @@ inputs:
     inputBinding:
       prefix: '-k'
       position: 5
+  annotations:
+    type: File[]?
+    inputBinding:
+      prefix: '-a'
+      position: 2
 
 outputs:
   annotation_coverage:

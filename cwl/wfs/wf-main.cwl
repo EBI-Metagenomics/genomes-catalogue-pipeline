@@ -262,25 +262,18 @@ steps:
     run: wf-6-post-processing.cwl
     in:
       annotations: annotation/ips_eggnog_annotations
-      clusters: annotation/filter_genomes_list_drep_filtered
+      clusters:
+        source:
+          - process_clusters/clusters_pangenome
+          - process_clusters/clusters_singletons
+        linkMerge: merge_flattened
       kegg: kegg_db
-      gffs:
-        source:
-          - annotation/main_reps_gff_pangenomes
-          - annotation/main_reps_gff_singletons
-        pickValue: all_non_null
-        linkMerge: merge_flattened
-      faas:
-        source:
-          - annotation/main_reps_faa_pangenomes
-          - annotation/main_reps_faa_singletons
-        pickValue: all_non_null
-        linkMerge: merge_flattened
       biom: biom
       metadata: gtdbtk_metadata/metadata
-      pangenome_core_genes: annotation/core_genes_files
-      pangenome_fna: annotation/pangenome_fna_files
     out:
       - annotations_cluster_dir  # Dir[]
-      - annotated_gff  # File[]
+      - annotated_gffs  # File[]
 
+# ---------- << 7. create GFF folder for FTP >> ----------
+
+# ---------- << 8. create intermediate_files for FTP>> ----------

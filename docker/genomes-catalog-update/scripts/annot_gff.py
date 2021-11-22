@@ -179,7 +179,9 @@ def add_ncrnas_to_gff(gff_outfile, ncrnas, res):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='''
     Add functional annotation to GFF file''', formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-i', dest='input_dir', help='Directory with eggnog, ips, gff', required=True)
+    parser.add_argument('-i', dest='input_dir', required=True,
+                        help='Directory with faa, fna, gff,.. and ips, eggnog if -a is not presented')
+    parser.add_argument('-a', dest='annotations', help='IPS and EggNOG files', required=False, nargs='+')
     parser.add_argument('-r', dest='rfam', help='Rfam results', required=True)
     parser.add_argument('-o', dest='outfile', help='Outfile name', required=False)
     if len(sys.argv) == 1:
@@ -188,12 +190,20 @@ if __name__ == "__main__":
     else:
         args = parser.parse_args()
         input_files = os.listdir(args.input_dir)
-        ips = [cur_file for cur_file in input_files if cur_file.endswith("InterProScan.tsv")][0]
-        eggnog = [cur_file for cur_file in input_files if cur_file.endswith("eggNOG.tsv")][0]
+        if args.annotations:
+            annotations_list = args.annotations
+        else:
+            # search in input directory
+            annotations_list = input_files
+        eggnog_name = [cur_file for cur_file in annotations_list if cur_file.endswith('eggNOG.tsv')][0]
+        eggnog_results = eggnog_name if args.annotations else os.path.join(args.input_dir, eggnog_name)
+        ips_name = [cur_file for cur_file in annotations_list if cur_file.endswith('InterProScan.tsv')][0]
+        ipr_results = ips_name if args.annotations else os.path.join(args.input_dir, ips_name)
+
         gff = [cur_file for cur_file in input_files if cur_file.endswith(".gff")][0]
         res = add_gff(in_gff=os.path.join(args.input_dir, gff),
-                      eggnog_file=os.path.join(args.input_dir, eggnog),
-                      ipr_file=os.path.join(args.input_dir, ips))
+                      eggnog_file=eggnog_results,
+                      ipr_file=ipr_results)
         ncRNAs = get_rnas(args.rfam)
         if not args.outfile:
             outfile = gff.split(".gff")[0]+"_annotated.gff"

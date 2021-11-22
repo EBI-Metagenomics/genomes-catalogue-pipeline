@@ -19,20 +19,19 @@ requirements:
 inputs:
 
   annotations: File[]
-  #  kegg: File
+  kegg: File
   clusters: Directory[]
-#  biom: string
-#  metadata: File?
+  biom: string
+  metadata: File?
 
-outputs: []
+outputs:
+  annotations_cluster_dir:
+    type: Directory[]
+    outputSource: process_folders/final_folder
 
-#  annotations_cluster_dir:
-#    type: Directory[]
-#    outputSource: process_folders/annotations
-
-#  annotated_gff:
-#    type: File[]
-#    outputSource: process_folders/annotated_gff
+  annotated_gffs:
+    type: File[]
+    outputSource: process_folders/annotated_gff
 
 steps:
 
@@ -51,13 +50,23 @@ steps:
     out: [ file_pattern ]  # File[]
 
   process_folders:
+    doc: |
+      For each cluster run post-processing:
+      - kegg
+      - ncRNA
+      - gff annotation
+      - json generation
     run: sub-wf/post-processing/genome-post-processing.cwl
-    scatter: files
+    scatter: [files, clusters]
+    scatterMethod: dotproduct
     in:
+      annotations: choose_annotations/file_pattern
       kegg: kegg
-      files: choose_files/cluster_folders
+      files: clusters
       biom: biom
       metadata: metadata
+      claninfo_ncrna:
+      models_ncrna:
     out:
-      - annotations  # Dir
+      - final_folder  # Dir
       - annotated_gff # File

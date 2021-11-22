@@ -35,6 +35,10 @@ inputs:
     inputBinding:
       prefix: -o
 
+  annotations:
+    type: File[]?
+    inputBinding:
+      prefix: -a
 
 outputs:
   annotated_gff:

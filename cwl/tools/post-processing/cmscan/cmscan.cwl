@@ -38,6 +38,11 @@ inputs:
 
   models:
     type: File
+    secondaryFiles:
+      - .i1f
+      - .i1i
+      - .i1m
+      - .i1p
     inputBinding:
       position: 10
 

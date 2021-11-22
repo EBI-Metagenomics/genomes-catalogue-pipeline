@@ -115,7 +115,7 @@ steps:
 
 # ----------- << phylo_json >> -----------
   phylo_json:
-    run: ../tools/generate_phylo_json/phylo_json.cwl
+    run: ../tools/post-processing/generate_phylo_json/phylo_json.cwl
     in:
       table:
         source:
