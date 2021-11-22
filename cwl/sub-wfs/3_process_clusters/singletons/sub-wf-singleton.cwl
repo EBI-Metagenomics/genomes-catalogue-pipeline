@@ -6,7 +6,6 @@ doc: |
   Output structure:
     singleton_cluster:
         --- fna
-        --- fna.fai
         --- gff
         --- faa
       or null
@@ -67,14 +66,6 @@ steps:
       - faa
       - gff
 
-  index_fasta:
-    when: $(inputs.flag.includes("complete.txt"))
-    run: ../../../tools/index_fasta/index_fasta.cwl
-    in:
-      flag: gunc/flag
-      fasta: preparation/file
-    out: [ fasta_index ]
-
   get_filtered_fna:
     when: $(inputs.flag.includes("complete.txt"))
     run: ../../../utils/get_files_from_dir.cwl
@@ -87,10 +78,10 @@ steps:
     when: $(inputs.flag.includes("complete.txt"))
     run: ../../../utils/filter_nulls.cwl
     in:
+      flag: gunc/flag
       list_files:
         - prokka/gff
         - prokka/faa
-        - index_fasta/fasta_index
         - get_filtered_fna/file
     out: [out_files]
 
@@ -98,6 +89,7 @@ steps:
     when: $(inputs.flag.includes("complete.txt"))
     run: ../../../utils/return_directory.cwl
     in:
+      flag: gunc/flag
       list: filter_nulls/out_files
       dir_name:
         source: cluster

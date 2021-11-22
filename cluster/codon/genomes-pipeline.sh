@@ -22,9 +22,9 @@ MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
 CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
 YML=${MAIN_PATH}/tests/cluster/wf-main_ena_small.yml
 
-while getopts :o:y:c:p:d: option; do
+while getopts :n:y:c:p:d: option; do
 	case "${option}" in
-		o) OUTDIR=${OPTARG};;
+		n) OUTDIR=${OPTARG};;
 		y) YML=${OPTARG};;
 		c) CWL=${OPTARG};;
 		p) MAIN_PATH=${OPTARG};;

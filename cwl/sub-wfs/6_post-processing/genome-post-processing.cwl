@@ -9,11 +9,12 @@ doc: |
 
   Input:
   - Directory with files:
-    - fna, fna.fai, faa, gff
+    - fna, faa, gff
     - pan-genome.fna (panaroo.fna), core_genes.txt [for pangenomes]
     - mash.nwk, panaroo.gene_presence_absence [for pangenomes not in use]
   - kegg db
   - ncRNA db files
+  - metadata [optional]
 
   Output:
   - output directories:
@@ -22,7 +23,7 @@ doc: |
                ----- fna, fna.fai, faa, gff (annotated)
                ----- kegg, cog, cazy,...
                ----- IPS, eggNOG
-       ----- genome.json
+       ----- genome.json [ if metadata presented]
        ----- pan-genome
                ----- pan-genome.fna
                ----- core_genes.txt
@@ -38,8 +39,9 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
+  annotations: File[]
   kegg: File
-  files: Directory
+  cluster: Directory
   biom: string
 
   claninfo_ncrna: File
@@ -69,8 +71,8 @@ steps:
   function_summary_stats:
     run: ../../../tools/genomes-catalog-update/function_summary_stats/generate_annots.cwl
     in:
-      input_dir: files
-      output: { default: func_summary }
+      input_dir: cluster
+      output: { default: "func_summary" }
       kegg_db: kegg
     out:
       - annotation_coverage
@@ -81,25 +83,42 @@ steps:
 
 # --------- detect ncRNA ----------
 
-  get_fna:  ???
+  get_list_of_files:
+    run: ../../../utils/get_files_from_dir.cwl
+    in:
+      dir: cluster
+    out: [files]
+
+  get_fna:
+    run: ../../../utils/get_file_pattern.cwl
+    in:
+      list_files: get_list_of_files/files
+      pattern: { default: ".fna" }
+    out: [file_pattern]
 
   ncrna:
     run: detect-ncrna-subwf.cwl
     in:
       claninfo: claninfo_ncrna
       models: models_ncrna
-      fasta:
-    out: cmscan_deoverlap
+      fasta: get_fna/file_pattern
+    out: [ cmscan_deoverlap ]
+
+  index_fna:
+    run: ../../../tools/index_fasta/index_fasta.cwl
+    in:
+      fasta: get_fna/file_pattern
+    out: [ fasta_index ]
 
 # --------- annotate GFF ----------
 
   annotate_gff:
     run: ../../../tools/genomes-catalog-update/annotate_gff/annotate_gff.cwl
     in:
-      input_dir: files
+      input_dir: cluster
       ncrna_deov: ncrna/cmscan_deoverlap
       outfile:
-        source: files
+        source: cluster
         valueFrom: "annotated_$(self.basename).gff"
     out: [ annotated_gff ]
 
@@ -111,42 +130,15 @@ steps:
       metadata: metadata
       genome_annot_cov: function_summary_stats/annotation_coverage
       genome_gff: annotate_gff/annotated_gff
-      files: files
+      files: cluster
       species_name:
-        source: files
+        source: cluster
         valueFrom: $(self.basename)
       biom: biom
       outfilename:
-        source: files
+        source: cluster
         valueFrom: "$(self.basename).json"
     out: [ genome_json ]
 
 # --------- create genome folder ----------
-
-  wrap_directory_genomes:
-    run: ../../../utils/return_directory.cwl
-    in:
-      list:
-        source:
-          - function_summary_stats/annotation_coverage
-          - function_summary_stats/kegg_classes
-          - function_summary_stats/kegg_modules
-          - function_summary_stats/cazy_summary
-          - function_summary_stats/cog_summary
-          - annotate_gff/annotated_gff
-          - genome_json/genome_json
-        pickValue: all_non_null
-      dir_name: { default: 'genome'}
-    out: [ out ]
-
-# --------- create cluster folder ----------
-
-  create_cluster_directory:
-    run: ../../../utils/return_dir_of_dir.cwl
-    in:
-      directory: wrap_directory_genomes/out
-      newname:
-        source: files
-        valueFrom: $(self.basename)
-    out: [ dir_of_dir ]
 

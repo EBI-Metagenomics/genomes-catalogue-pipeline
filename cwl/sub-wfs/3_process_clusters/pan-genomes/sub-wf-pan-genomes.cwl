@@ -21,7 +21,6 @@ doc: |
          --- rep.faa                    [ genome ]
          --- rep.gff                    [ genome ]
          --- rep.fna                    [ genome ]
-         --- rep.fna.fai                [ genome ]
     FNAs (all) File[]
     FAAs (all) File[]
     gffs / main_rep.gff
@@ -167,11 +166,6 @@ steps:
         valueFrom: $(self.basename)
     out: [ file_pattern ]
 
-  index_fasta:
-    run: ../../../tools/index_fasta/index_fasta.cwl
-    in:
-      fasta: choose_main_rep_fna/file_pattern
-    out: [ fasta_index ]
 
 # --------------------------------------- final folder -----------------------------------------
 
@@ -186,7 +180,6 @@ steps:
         - choose_main_rep_gff/file_pattern
         - choose_main_rep_faa/file_pattern
         - choose_main_rep_fna/file_pattern
-        - index_fasta/fasta_index
       dir_name:
         source: cluster
         valueFrom: $(self.basename)

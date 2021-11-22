@@ -84,17 +84,29 @@
         checksum: sha1$093082e302ee050338a70186abfe2c7f6d96af3a
 
 # get file by pattern in filename
-- job: get_file_pattern.yml
+- job: get_file_pattern_one.yml
   tool: ../../../cwl/utils/get_file_pattern.cwl
   short_name: get_file_pattern.cwl
-  doc: "get file by pattern"
+  doc: "get file by pattern (output of 1 file)"
   output:
     file_pattern:
       class: File
-      size: 143
-      checksum: sha1$1438a92cb4882c132767f86a17d5c93ea4c24be6
-      basename: "translate_genes.yml"
+      size: 156
+      basename: "flatten_array.yml"
 
+# get files by pattern in filename
+- job: get_file_pattern_many.yml
+  tool: ../../../cwl/utils/get_file_pattern.cwl
+  short_name: get_file_pattern.cwl
+  doc: "get file by pattern (output of 2 files)"
+  output:
+    file_pattern:
+      - class: File
+        size: 157
+        basename: "concatenate.yml"
+      - class: File
+        size: 94
+        basename: "concatenate_one.yml"
 
 # wrap directory into another directory
 - job: return_dir_of_dir_one_dir.yml

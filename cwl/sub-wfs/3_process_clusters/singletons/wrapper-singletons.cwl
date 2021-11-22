@@ -45,7 +45,7 @@ steps:
       csv: csv
       gunc_db_path: gunc_db_path
     out:
-      - singleton_cluster  # Dir (faa, fna, fna.fai, gff)?
+      - singleton_cluster  # Dir (faa, fna, gff)?
       - gunc_decision
       - initial_fna
       - prokka_faa

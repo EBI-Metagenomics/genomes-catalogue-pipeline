@@ -51,10 +51,16 @@ uhgp_catalogue  (mmseqs)                            [FTP]
     --- uhgp-90.tar.gz
     --- uhgp-95.tar.gz
     
-panaroo_output ???
-rRNA           ???
-GTDB-Tk        ???
-   
+panaroo_output 
+gtdb-tk_output.tar.gz
+rRNA           ???    (fastas)  
+intermediate_files ???
+  - mgyg_stats.csv                        
+  - naming_table 
+  - additional_weights_file 
+  - Sdb.csv
+  - split_clusters.txt
+  - singletons_gunc_failed
    
 ==================================================================================
    

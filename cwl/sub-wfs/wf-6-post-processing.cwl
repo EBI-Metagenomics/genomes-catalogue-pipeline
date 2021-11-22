@@ -17,38 +17,38 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  kegg: File
+
   annotations: File[]
-  faas: File[]
-  gffs: File[]
-  clusters: File
-  biom: string
-  metadata: File?
-  pangenome_core_genes: File[]?
-  pangenome_fna: File[]?
+  #  kegg: File
+  clusters: Directory[]
+#  biom: string
+#  metadata: File?
 
-outputs:
-  annotations_cluster_dir:
-    type: Directory[]
-    outputSource: process_folders/annotations
+outputs: []
 
-  annotated_gff:
-    type: File[]
-    outputSource: process_folders/annotated_gff
+#  annotations_cluster_dir:
+#    type: Directory[]
+#    outputSource: process_folders/annotations
+
+#  annotated_gff:
+#    type: File[]
+#    outputSource: process_folders/annotated_gff
 
 steps:
 
-  choose_files:
-    run: ../tools/choose_files/choose_files.cwl
+  choose_annotations:
+    doc: |
+      input: list of all IPS and EggNOGs
+      ex: MGYG000296485_InterProScan.tsv, MGYG000296486_eggNOG.tsv, ....)
+      goal: get corresponding annotations for each MGYG cluster
+    run: ../utils/get_file_pattern.cwl
+    scatter: pattern
     in:
-      annotations: annotations
-      faas: faas
-      gffs: gffs
-      clusters: clusters
-      pangenome_core_genes: pangenome_core_genes
-      pangenome_fna: pangenome_fna
-      outdir: { default: 'out-genomes'}
-    out: [ cluster_folders ]
+      list_files: annotations
+      pattern:
+        source: clusters
+        valueFrom: $(self.basename)
+    out: [ file_pattern ]  # File[]
 
   process_folders:
     run: sub-wf/post-processing/genome-post-processing.cwl

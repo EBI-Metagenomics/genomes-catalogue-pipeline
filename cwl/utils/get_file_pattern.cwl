@@ -23,7 +23,9 @@ inputs:
 
 outputs:
   file_pattern:
-    type: File
+    type:
+      - File
+      - File[]
 
 expression: >
   ${
@@ -32,5 +34,8 @@ expression: >
         if (inputs.list_files[i].nameroot.split(inputs.pattern).length > 1) {
             helpArray.push(inputs.list_files[i]);
       }}
-    return { 'file_pattern' : helpArray[0] }
+    if (helpArray.length == 1) {
+      return {'file_pattern' : helpArray[0]}}
+    else {
+      return { 'file_pattern' : helpArray }}
   }

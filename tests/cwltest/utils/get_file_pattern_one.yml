@@ -4,5 +4,5 @@ list_files:
   - class: File
     path: flatten_array.yml
   - class: File
-    path: translate_genes.yml
-pattern: translate
+    path: concatenate_one.yml
+pattern: flatten

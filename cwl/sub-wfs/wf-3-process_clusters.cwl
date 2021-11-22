@@ -18,13 +18,11 @@ doc: |
          - genome.mash.nwk
          - main_genome.fna
          - main_genome.faa
-         - main_genome.fna.fai
          - main_genome.gff
     - clusters_singletons:
        Dir[]:
          - genome.fna
          - genome.faa
-         - genome.fna.fai
          - genome.gff
     - list_of_aLL_main_reps
     - FNA-s:
