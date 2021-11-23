@@ -80,7 +80,6 @@ steps:
     run: ../tar.cwl
     in:
       folder: add_files_to_annotation_dir/dir
-      output_name: {default: "protein_catalogue_0.9.tar.gz"}
     out: [folder_tar]
 
   wrap_to_dir:

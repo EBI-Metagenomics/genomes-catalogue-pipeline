@@ -36,7 +36,8 @@ doc: |
       - singletons_gunc_failed (list of singletons filtered by GUNC)
     - panaroo_output (folder with genome_panaroo.tar.gz-s)
     - mmseqs
-      - mmseq_final_dir (4 mmseq.tar.gz)
+      - mmseq_dirs (3 mmseq.tar.gz)
+      - mmseq_ann_dir (mmseqs directory of 0.9)
       - mmseq_cluster_rep_faa (mmseq.0.9.reps.faa)
       - mmseq_cluster_tsv (mmseq.0.9.tsv)
 

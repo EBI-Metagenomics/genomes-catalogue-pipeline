@@ -10,7 +10,7 @@ hints:
 
 baseCommand: [ "tar" ]
 
-arguments: ["-zcvf", "$(inputs.output_name)"]
+arguments: ["-zcvf", "$(inputs.folder.basename).tar.gz"]
 
 inputs:
 
@@ -18,8 +18,6 @@ inputs:
     type: Directory
     inputBinding:
       position: 2
-  output_name:
-    type: string
 
 outputs:
   folder_tar:

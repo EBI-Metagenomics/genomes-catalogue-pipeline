@@ -2,6 +2,16 @@
 cwlVersion: v1.2
 class: Workflow
 
+doc: |
+  Input:
+    pangenome.prokka.faa [][]
+    singleton.prokka.faa []
+    mmseqs params
+  Steps: concatenate faa-s -> mmseqs -> process folders
+
+  Output:
+
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
@@ -100,12 +110,9 @@ steps:
   create_tars:
     run: ../../utils/tar.cwl
     when: $(Boolean(inputs.folder))
-    scatter: [folder, limit_i]
-    scatterMethod: dotproduct
+    scatter: folder
     in:
       folder: mmseqs/outdir              # Dir[]
-      limit_i: mmseqs_limit_i
-      output_name: { default: "protein_catalogue_$(inputs.limit_i).tar.gz"}
     out: [ folder_tar ]
 
 # ------ mmseq for functional annotation ------

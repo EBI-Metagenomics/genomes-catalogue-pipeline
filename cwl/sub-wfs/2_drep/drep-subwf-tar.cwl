@@ -34,9 +34,6 @@ steps:
     run: ../../utils/tar.cwl
     in:
       folder: genomes_folder
-      output_name:
-        source: genomes_folder
-        valueFrom: "$(self.basename).tar.gz"
     out: [ folder_tar ]
 
   drep_tar:
