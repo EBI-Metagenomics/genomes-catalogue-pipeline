@@ -1,7 +1,7 @@
 #cwltest
 
 - job: checkm.test1.yml
-  tool: ../../../../cwl/workflows/sub-wf/checkm-subwf.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/checkm-subwf.cwl
   short_name: checkm-subwf.cwl
   doc: "checkm step + convert checkm to csv"
   output:

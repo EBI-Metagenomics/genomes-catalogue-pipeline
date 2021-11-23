@@ -1,7 +1,7 @@
 #cwltest
 
 - job: get_core_genes.yml
-  tool: ../../../../cwl/tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl
+  tool: ../../../../../cwl/tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl
   short_name: get_core_genes.cwl
   doc: "get core genes of panaroo output"
   output:

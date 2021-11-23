@@ -13,19 +13,19 @@ doc: |
      eggnog.tsv
    Output:
        protein_catalogue/
-         protein_catalogue-1.0.tar.gz
+         mmseqs_outdir-1.0.tar.gz
            mmseqs_1.0_outdir/
              mmseqs_cluster*
              mmseqs.*
-         protein_catalogue-0.95.tar.gz
+         mmseqs_outdir-0.95.tar.gz
            mmseqs_0.95_outdir/
              mmseqs_cluster*
              mmseqs.*
-         protein_catalogue-0.5.tar.gz
+         mmseqs_outdir-0.5.tar.gz
            mmseqs_0.5_outdir/
              mmseqs_cluster*
              mmseqs.*
-         protein_catalogue-0.9.tar.gz
+         mmseqs_outdir-0.9.tar.gz
            mmseqs_0.9_outdir/
              protein_catalogue-90_eggNOG.tsv
              protein_catalogue-90_InterProScan.tsv
@@ -77,13 +77,13 @@ steps:
     out: [ dir ]
 
   tar_annotation_folder:
-    run: ../tar.cwl
+    run: ../utils/tar.cwl
     in:
       folder: add_files_to_annotation_dir/dir
     out: [folder_tar]
 
   wrap_to_dir:
-    run: ../return_directory.cwl
+    run: ../utils/return_directory.cwl
     in:
       list:
         source:

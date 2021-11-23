@@ -1,5 +1,5 @@
 genomes:
-  path: ../../../../input_example/small_set/results/clusters/CAJLGA01
+  path: ../../../../../input_example/small_set/results/clusters/CAJLGA01
   class: Directory
 prefix: MGYG
 start_number: 1
@@ -9,4 +9,4 @@ output_dirname: renamed_genomes
 
 csv:
   class: File
-  path: ../../../../input_example/small_set/download.csv
+  path: ../../../../../input_example/small_set/download.csv

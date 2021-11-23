@@ -1,0 +1,22 @@
+#cwltest
+- job: test1.yml
+  tool: ../../../../cwl/workflows/sub-wfs/wf-8-create-protein_catalogue.cwl
+  short_name: wf-8-create-protein_catalogue.cwl
+  doc: "create final folder with mmseqs"
+  output:
+    protein_catalogue_final_folder:
+      class: Directory
+      basename: protein_catalogue
+      listing:
+        - basename: mmseqs-0.9.tar.gz
+          class: File
+          checksum: sha1$aeb325cb0c06c73d3c5fd95e4b3bde5509944937
+          size: 267
+        - class: File
+          size: 0
+          basename: mmseqs-0.5.tar.gz
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+        - class: File
+          size: 0
+          basename: mmseqs-1.0.tar.gz
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709

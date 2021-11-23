@@ -271,7 +271,7 @@ steps:
 
 # ---------- << 7. create GFF folder for FTP >> ----------
   create_gff_folder_ftp:
-    run: wf-7-create_gffs_folder.cwl
+    run: ../sub-wfs/wf-7-create_gffs_folder.cwl
     in:
       gffs:
         source:
@@ -284,7 +284,7 @@ steps:
 
 # ---------- << 8. create protein_catalogue folder for FTP >> ----------
   create_protein_catalogue_folder_ftp:
-    run: wf-8-create-protein_catalogue.cwl
+    run: ../sub-wfs/wf-8-create-protein_catalogue.cwl
     in:
       mmseq_tars: process_clusters/mmseq_dirs
       mmseq_ann_folder: process_clusters/mmseq_ann_dir

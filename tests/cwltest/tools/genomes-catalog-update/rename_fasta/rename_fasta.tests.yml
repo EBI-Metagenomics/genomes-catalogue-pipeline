@@ -2,7 +2,7 @@
 
 # rename contigs
 - job: rename_fasta.yml
-  tool: ../../../../cwl/tools/genomes-catalog-update/rename_fasta/rename_fasta.cwl
+  tool: ../../../../../cwl/tools/genomes-catalog-update/rename_fasta/rename_fasta.cwl
   short_name: rename_fasta.cwl
   doc: "rename fasta to MGYG"
   output:
