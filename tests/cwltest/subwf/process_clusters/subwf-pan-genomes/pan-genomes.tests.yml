@@ -17,7 +17,7 @@
           size: 8458
         - class: File
           size: 185
-          basename: 2_1_mash.tsv
+          basename: CAJKXJ01_mash.tsv
           nameroot: 2_1_mash
           nameext: ".tsv"
           checksum: sha1$68f10f993ed7bc8de9fcafce9aba8ecfa4251333
@@ -44,7 +44,7 @@
       class: Directory
       basename: mash_trees
       listing:
-        - basename: 2_1_mashtree.nwk
+        - basename: CAJKXJ01_mashtree.nwk
           nameroot: 2_1_mashtree
           nameext: ".nwk"
           class: File

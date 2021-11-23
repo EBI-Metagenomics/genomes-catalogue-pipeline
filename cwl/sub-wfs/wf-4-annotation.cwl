@@ -37,6 +37,12 @@ outputs:
   ips_eggnog_annotations:
     type: File[]
     outputSource: functional_annotation/per_genome_annotations
+  ips_tsv:
+    type: File
+    outputSource: functional_annotation/ips_result
+  eggnog_tsv:
+    type: File
+    outputSource: functional_annotation/eggnog_annotations
 
 # ---------- rRNA -------------
   rrna_out:
@@ -63,6 +69,8 @@ steps:
       species_representatives: all_reps_filtered
       mmseqs_tsv: mmseqs_tsv
     out:
+      - ips_result
+      - eggnog_annotations
       - per_genome_annotations
 
 # ---------- << detect rRNA >> ---------

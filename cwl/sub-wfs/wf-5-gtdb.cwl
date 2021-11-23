@@ -83,6 +83,7 @@ steps:
     run: ../utils/tar.cwl
     in:
       folder: gtdbtk/gtdbtk_folder
+      output_name: {default: "gtdb-tk.tar.gz"}
     out: [ folder_tar ]
 
 # ----------- << Metadata >> -----------

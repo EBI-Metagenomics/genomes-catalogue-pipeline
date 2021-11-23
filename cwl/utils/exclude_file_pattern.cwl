@@ -32,5 +32,5 @@ expression: >
         if (inputs.list_files[i].nameroot.split(inputs.pattern).length == 1) {
             helpArray.push(inputs.list_files[i]);
       }}
-    return { 'file_pattern' : helpArray }
+    return { 'left_files' : helpArray }
   }

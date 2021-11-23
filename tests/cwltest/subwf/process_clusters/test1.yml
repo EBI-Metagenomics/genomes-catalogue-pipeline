@@ -1,14 +1,14 @@
 many_genomes:
   - class: Directory
-    path: ../../../../input_example/small_set/results/clusters/2_1
+    path: ../../../../input_example/small_set/results/clusters/CAJKXJ01
 mash_folder:
   - class: File
-    path: ../../../../input_example/small_set/results/2_1_mash.tsv
+    path: ../../../../input_example/small_set/results/CAJKXJ01_mash.tsv
 one_genome:
   - class: Directory
-    path: ../../../../input_example/small_set/results/clusters/3_0
+    path: ../../../../input_example/small_set/results/clusters/CAJKRY01
   - class: Directory
-    path: ../../../../input_example/small_set/results/clusters/4_0
+    path: ../../../../input_example/small_set/results/clusters/CAJKXZ01
 
 mmseqs_limit_c: 0.8
 mmseqs_limit_i:

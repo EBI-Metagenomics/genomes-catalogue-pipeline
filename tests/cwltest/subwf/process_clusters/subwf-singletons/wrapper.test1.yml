@@ -1,6 +1,6 @@
 input_cluster:
   - class: Directory
-    path: ../../../../input_example/small_set/results/clusters/3_0
+    path: ../../../../input_example/small_set/results/clusters/CAJKRY01
   - class: Directory
     path: ../../tools/GUNC/filter_inputs/genome/
 csv:

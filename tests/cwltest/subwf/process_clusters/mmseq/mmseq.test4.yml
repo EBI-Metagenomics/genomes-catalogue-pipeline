@@ -6,6 +6,6 @@ prokka_one: null
 prokka_many:
   -
     - class: File
-      path: ../../../../input_example/small_set/results/prokka/CAJKRY01.faa
+      path: ../../../../../input_example/small_set/results/prokka/CAJKRY01.faa
     - class: File
-      path: ../../../../input_example/small_set/results/prokka/CAJKXZ01.faa
+      path: ../../../../../input_example/small_set/results/prokka/CAJKXZ01.faa

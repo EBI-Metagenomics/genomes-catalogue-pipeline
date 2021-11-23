@@ -1,7 +1,7 @@
 directory_array:
   - class: Directory
-    path: ../../../input_example/small_set/results/clusters/2_1
+    path: ../../../input_example/small_set/results/clusters/CAJKXJ01
   - class: Directory
-    path: ../../../input_example/small_set/results/clusters/3_0
+    path: ../../../input_example/small_set/results/clusters/CAJKRY01
 
 newname: many_dirs

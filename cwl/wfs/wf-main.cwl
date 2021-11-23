@@ -73,7 +73,7 @@ outputs:
 
   mmseqs:
     type: Directory
-    outputSource: process_clusters/mmseq_final_dir
+    outputSource: create_protein_catalogue_folder_ftp/protein_catalogue_final_folder
 
   panaroo:
     type: Directory
@@ -179,7 +179,8 @@ steps:
       - singletons_gunc_completed
       - singletons_gunc_failed
       - panaroo_folder
-      - mmseq_final_dir
+      - mmseq_dirs          # File[]?
+      - mmseq_ann_dir       # Dir?
       - mmseq_cluster_rep_faa
       - mmseq_cluster_tsv
       - file_all_reps_filt_fna
@@ -210,6 +211,8 @@ steps:
       cm_models: cm_models
     out:
       - ips_eggnog_annotations  # File[]
+      - ips_tsv
+      - eggnog_tsv
       - rrna_out                # Dir
       - rrna_fasta              # Dir
 
@@ -268,7 +271,7 @@ steps:
 
 # ---------- << 7. create GFF folder for FTP >> ----------
   create_gff_folder_ftp:
-    run: ../sub-wfs/6_post-processing/create_gffs_folder.cwl
+    run: wf-7-create_gffs_folder.cwl
     in:
       gffs:
         source:
@@ -279,7 +282,17 @@ steps:
       folder_name: { default: GFF }
     out: [ gffs_folder ]
 
-# ---------- << 8. create intermediate_files for FTP>> ----------
+# ---------- << 8. create protein_catalogue folder for FTP >> ----------
+  create_protein_catalogue_folder_ftp:
+    run: wf-8-create-protein_catalogue.cwl
+    in:
+      mmseq_tars: process_clusters/mmseq_dirs
+      mmseq_ann_folder: process_clusters/mmseq_ann_dir
+      ips: annotation/ips_tsv
+      eggnog: annotation/eggnog_tsv
+    out: [ protein_catalogue_final_folder ]
+
+# ---------- << 9. create intermediate_files for FTP>> ----------
   folder_with_intermediate_files:
     run: ../utils/return_directory.cwl
     in:

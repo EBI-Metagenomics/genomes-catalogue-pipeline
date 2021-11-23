@@ -48,4 +48,7 @@ steps:
     run: ../../../utils/tar.cwl
     in:
       folder: panaroo/panaroo_dir
+      output_name:
+        source: panaroo/panaroo_dir
+        valueFrom: "$(self.basename).tar.gz"
     out: [ folder_tar ]

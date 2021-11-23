@@ -4,4 +4,4 @@ mmseqs_limit_i:
 mmseq_limit_annotation: 0.9
 prokka_one:
   - class: File
-    path: ../../../../input_example/small_set/results/prokka/CAJKRY01.faa
+    path: ../../../../../input_example/small_set/results/prokka/CAJKRY01.faa

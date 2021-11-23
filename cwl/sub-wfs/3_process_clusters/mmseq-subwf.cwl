@@ -29,9 +29,12 @@ inputs:
 
 outputs:
 
-  mmseqs_dir:
+  mmseqs_dirs:
+    type: File[]?
+    outputSource: create_tars/folder_tar
+  mmseqs_annotation_dir:
     type: Directory?
-    outputSource: create_mmseqs_dir/out
+    outputSource: mmseqs_annotations/outdir
 
   cluster_reps:
     type: File?
@@ -92,6 +95,19 @@ steps:
       limit_c: mmseqs_limit_c
     out: [ outdir ]
 
+# ----- tar.gz mmseqs folders -----
+
+  create_tars:
+    run: ../../utils/tar.cwl
+    when: $(Boolean(inputs.folder))
+    scatter: [folder, limit_i]
+    scatterMethod: dotproduct
+    in:
+      folder: mmseqs/outdir              # Dir[]
+      limit_i: mmseqs_limit_i
+      output_name: { default: "protein_catalogue_$(inputs.limit_i).tar.gz"}
+    out: [ folder_tar ]
+
 # ------ mmseq for functional annotation ------
 
   mmseqs_annotations:
@@ -113,26 +129,3 @@ steps:
       - faa
       - mmseq_cluster_tsv
 
-
-# ----- tar.gz all mmseqs folders -----
-  create_tars:
-    run: ../../utils/tar.cwl
-    when: $(Boolean(inputs.folder))
-    scatter: folder
-    in:
-      folder:
-        source:
-          - mmseqs_annotations/outdir  # Dir
-          - mmseqs/outdir              # Dir[]
-        linkMerge: merge_flattened
-    out: [ folder_tar ]
-
-  create_mmseqs_dir:
-    when: $(Boolean(inputs.list))
-    run: ../../utils/return_directory.cwl
-    in:
-      list:
-        source: create_tars/folder_tar
-        pickValue: all_non_null
-      dir_name: { default: "mmseqs_output" }
-    out: [ out ]

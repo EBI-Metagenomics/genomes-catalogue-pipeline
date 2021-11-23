@@ -1,5 +1,5 @@
 genomes:
-  path: ../../../../input_example/small_set/results/clusters/1_1
+  path: ../../../../input_example/small_set/results/clusters/CAJLGA01
   class: Directory
 prefix: MGYG
 start_number: 1

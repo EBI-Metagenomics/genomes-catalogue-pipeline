@@ -107,9 +107,12 @@ outputs:
     outputSource: process_many_genomes/panaroo_output
 
 # ===== mmseqs =======
-  mmseq_final_dir:
-    type: Directory
-    outputSource: mmseqs/mmseqs_dir
+  mmseq_dirs:
+    type: File[]?
+    outputSource: mmseqs/mmseqs_dirs
+  mmseq_ann_dir:
+    type: Directory?
+    outputSource: mmseqs/mmseqs_annotation_dir
   mmseq_cluster_rep_faa:
     type: File
     outputSource: mmseqs/cluster_reps
@@ -167,7 +170,8 @@ steps:
       mmseqs_limit_c: mmseqs_limit_c
       mmseq_limit_annotation: mmseq_limit_annotation
     out:
-      - mmseqs_dir
+      - mmseqs_dirs
+      - mmseqs_annotation_dir
       - cluster_reps
       - cluster_tsv
 

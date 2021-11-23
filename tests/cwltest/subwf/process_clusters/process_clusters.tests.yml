@@ -20,7 +20,7 @@
         size: 8458
       - class: File
         size: 491
-        basename: 2_1_mash.tsv
+        basename: CAJKXJ01_mash.tsv
         checksum: sha1$24cdcc1fefd5541d2180ddf5527be6562a9359de
     many_genomes_genomes:
     - class: Directory
@@ -209,7 +209,7 @@
     - class: Directory
       basename: mash_trees
       listing:
-        basename: 2_1_mashtree.nwk
+        basename: CAJKXJ01_mashtree.nwk
         class: File
         checksum: sha1$0bbe16df9e1fa63aeae9ed5cb122391b172e83d3
         size: 107

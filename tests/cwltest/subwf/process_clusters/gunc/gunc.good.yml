@@ -1,6 +1,6 @@
 input_fasta:
   class: File
-  path: ../../../../input_example/small_set/results/clusters/3_0/CAJKRY01.fa
+  path: ../../../../input_example/small_set/results/clusters/CAJKRY01/CAJKRY01.fa
 input_csv:
   class: File
   path: ../../../../input_example/small_set/download.csv

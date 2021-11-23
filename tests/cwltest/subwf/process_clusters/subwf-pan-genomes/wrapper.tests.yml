@@ -17,7 +17,7 @@
             size: 4880
           - class: File
             size: 401
-            basename: 1_1_mash.tsv
+            basename: CAJLGA01_mash.tsv
             nameroot: 1_1_mash
             nameext: ".tsv"
             checksum: sha1$a687f02d0278ce4aa28d204961a883b0e400b26d
@@ -32,7 +32,7 @@
             size: 8458
           - class: File
             size: 185
-            basename: 2_1_mash.tsv
+            basename: CAJKXJ01_mash.tsv
             nameroot: 2_1_mash
             nameext: ".tsv"
             checksum: sha1$68f10f993ed7bc8de9fcafce9aba8ecfa4251333
@@ -665,7 +665,7 @@
             class: File
             checksum: sha1$829b693c6cf72da5a7d415f571dee34b2d5216b7
             size: 92
-          - basename: 2_1_mashtree.nwk
+          - basename: CAJKXJ01_mashtree.nwk
             nameroot: 2_1_mashtree
             nameext: ".nwk"
             class: File
@@ -680,7 +680,7 @@
             class: File
             checksum: sha1$829b693c6cf72da5a7d415f571dee34b2d5216b7
             size: 92
-          - basename: 2_1_mashtree.nwk
+          - basename: CAJKXJ01_mashtree.nwk
             nameroot: 2_1_mashtree
             nameext: ".nwk"
             class: File

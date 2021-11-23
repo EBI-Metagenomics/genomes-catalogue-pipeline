@@ -23,7 +23,7 @@ name/v1.0/all_genomes                               [FTP]
     ...
 genomes-all_metadata.tsv                            [FTP]
 README.txt                                          [FTP] ??????  
-uhgg_catalogue
+species_catalogue
     --- phylo_tree.json                             [Web]
     --- 000
          ----- 00001
@@ -45,13 +45,16 @@ uhgg_catalogue
                         +---- mashtree.nwk                 ( ready )
                         +---- pan-genome.fna               ( ready - panaroo - pan_genome_reference.fa)
 
-uhgp_catalogue  (mmseqs)                            [FTP]
-    --- uhgp-100.tar.gz                          
-    --- uhgp-50.tar.gz
-    --- uhgp-90.tar.gz
-    --- uhgp-95.tar.gz
+protein_catalogue  (mmseqs)                            [FTP]
+    --- protein_catalogue-100.tar.gz                          
+    --- protein_catalogue-50.tar.gz
+    --- protein_catalogue-90.tar.gz
+       - protein_catalogue-90_InterProScan.tsv
+       - protein_catalogue-90_eggNOG.tsv
+       name of files...
+    --- protein_catalogue-95.tar.gz
     
-panaroo_output 
+panaroo_output  ??????
 gtdb-tk_output.tar.gz
 rRNA           ???    (fastas)  
 intermediate_files ???
@@ -94,8 +97,8 @@ pipeline_output:
     --- MGYG*.json
 """
 
-PROTEIN_CATALOGUE_FOLDER_NAME = "uhgp_catalogue"  # mmseqs
-ALL_CATALOGUE_FOLDER_NAME = "uhgg_catalogue"
+PROTEIN_CATALOGUE_FOLDER_NAME = "protein_catalogue"  # mmseqs
+ALL_CATALOGUE_FOLDER_NAME = "species_catalogue"
 GFF_FOLDER_NAME = "all_genomes"
 LIMIT_GFF_FOLDER = 500
 INITIAL_GFF_NAME = 'GFF'
@@ -193,7 +196,7 @@ if __name__ == "__main__":
             mmseqs = os.listdir(old_mmseq)
             for mmseq in mmseqs:
                 percentage = int(float(mmseq.split('_')[1]) * 100)
-                new_name = 'uhgp-' + str(percentage) + '.tar.gz'
+                new_name = 'protein_catalogue-' + str(percentage) + '.tar.gz'
                 print('from ' + os.path.join(old_mmseq, mmseq))
                 print('to ' + os.path.join(protein_catalogue_path, new_name))
                 if not args.verbose:

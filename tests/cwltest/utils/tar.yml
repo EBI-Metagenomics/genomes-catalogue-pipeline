@@ -1,3 +1,4 @@
 folder:
   class: Directory
-  path: ../../../input_example/small_set/results/clusters/1_1/
+  path: ../../../input_example/small_set/results/clusters/CAJLGA01/
+output_name: CAJLGA01.tar.gz

@@ -25,7 +25,7 @@
           checksum: sha1$bde22cdb8b3901e11630391a4f6ecf9d98dfac39
           size: 1773038
     many_genomes:
-      - basename: '1_1'
+      - basename: 'CAJLGA01'
         class: Directory
         listing:
           - class: File
@@ -40,7 +40,7 @@
             basename: CAJJTO01.fa
             checksum: sha1$b2d063739a50fc031eb4eec94180f56988ae6eab
             size: 1672905
-      - basename: '2_1'
+      - basename: 'CAJKXJ01'
         class: Directory
         listing:
           - class: File
@@ -52,24 +52,24 @@
             checksum: sha1$5a18736b41c827f0de008a8c2da2ca570bb89843
             size: 2314364
     mash_folder:
-      - basename: 1_1_mash.tsv
+      - basename: CAJLGA01_mash.tsv
         class: File
         checksum: sha1$46b0902f924178cb9e9a0ed1d9f5e803c1658a3c
         size: 402
-      - basename: 2_1_mash.tsv
+      - basename: CAJKXJ01_mash.tsv
         class: File
         checksum: sha1$a9546bb1b6236f7a601399c250e59462852ab30d
         size: 186
     one_genome:
-      - basename: '3_0'
+      - basename: 'CAJKRY01'
         class: Directory
         listing:
           - class: File
             basename: CAJKRY01.fa
             checksum: sha1$bde22cdb8b3901e11630391a4f6ecf9d98dfac39
             size: 1773038
-      - location: file:///hps/nobackup/rdf/metagenomics/test-folder/genomes-pipeline/drep/4_0
-        basename: '4_0'
+      - location: file:///hps/nobackup/rdf/metagenomics/test-folder/genomes-pipeline/drep/CAJKXZ01
+        basename: 'CAJKXZ01'
         class: Directory
         listing:
           - class: File
@@ -142,7 +142,7 @@
           checksum: sha1$cecbaf247c1b1862a88b77f93986cceae1e22a67
           size: 2291990
     many_genomes:
-      - basename: '1_1'
+      - basename: 'CAJLGA01'
         class: Directory
         listing:
           - class: File
@@ -153,7 +153,7 @@
             basename: CAJKRE01.fa
             checksum: sha1$5a18736b41c827f0de008a8c2da2ca570bb89843
             size: 2314364
-      - basename: '2_1'
+      - basename: 'CAJKXJ01'
         class: Directory
         listing:
           - class: File
@@ -169,11 +169,11 @@
             checksum: sha1$b2d063739a50fc031eb4eec94180f56988ae6eab
             size: 1672905
     mash_folder:
-      - basename: 1_1_mash.tsv
+      - basename: CAJLGA01_mash.tsv
         class: File
         checksum: sha1$a9546bb1b6236f7a601399c250e59462852ab30d
         size: 186
-      - basename: 2_1_mash.tsv
+      - basename: CAJKXJ01_mash.tsv
         class: File
         checksum: sha1$bd89d319ae9d84a79eaa31ac7439fb9c16271943
         size: 402
