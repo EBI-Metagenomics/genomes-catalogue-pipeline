@@ -1,7 +1,7 @@
 #cwltest
 
 - job: gunc.bad.yml
-  tool: ../../../../cwl/workflows/sub-wf/singletons/gunc-subwf.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/singletons/gunc-subwf.cwl
   short_name: gunc-subwf.cwl
   doc: "GUNC subwf with not passed example"
   output:
@@ -22,7 +22,7 @@
 
 
 - job: gunc.good.yml
-  tool: ../../../../cwl/workflows/sub-wf/singletons/gunc-subwf.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/singletons/gunc-subwf.cwl
   short_name: gunc-subwf.cwl
   doc: "GUNC subwf with passed example"
   output:

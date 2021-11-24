@@ -1,9 +1,9 @@
 input_fasta:
   class: File
-  path: ../../tools/GUNC/filter_inputs/genome/CAJPIO01
+  path: ../../../tools/GUNC/filter_inputs/genome/CAJPIO01
 input_csv:
   class: File
-  path: ../../tools/GUNC/filter_inputs/completeness_bad.csv
+  path: ../../../tools/GUNC/filter_inputs/completeness_bad.csv
 gunc_db_path:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
+  path: gunc_db_2.0.4.dmnd

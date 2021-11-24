@@ -1,7 +1,7 @@
 #cwltest
 
 - job: mmseq.test1.yml
-  tool: ../../../../cwl/workflows/sub-wf/mmseq-subwf.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/mmseq-subwf.cwl
   short_name: mmseq-subwf.cwl
   doc: "mmseq subwf for multiple params one-prokka"
   output:
@@ -375,7 +375,7 @@
 
 
 - job: mmseq.test2.yml
-  tool: ../../../../cwl/workflows/sub-wf/mmseq-subwf.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/mmseq-subwf.cwl
   short_name: mmseq-subwf.cwl
   doc: "mmseq subwf for multiple params many-prokka"
   output:
@@ -754,7 +754,7 @@
 
 
 - job: mmseq.test3.yml
-  tool: ../../../../cwl/workflows/sub-wf/mmseq-subwf.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/mmseq-subwf.cwl
   short_name: mmseq-subwf.cwl
   doc: "mmseq subwf for null input"
   output:
@@ -765,7 +765,7 @@
 
 
 - job: mmseq.test4.yml
-  tool: ../../../../cwl/workflows/sub-wf/mmseq-subwf.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/mmseq-subwf.cwl
   short_name: mmseq-subwf.cwl
   doc: "mmseq subwf for multiple params many-prokka list"
   output:

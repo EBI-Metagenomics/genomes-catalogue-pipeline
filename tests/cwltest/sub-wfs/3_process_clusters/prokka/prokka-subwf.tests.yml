@@ -1,7 +1,7 @@
 #cwltest
 
 - job: prokka-subwf.yml
-  tool: ../../../../cwl/workflows/sub-wf/prokka-subwf.cwl
+  tool: ../../../../../cwl/workflows/sub-wf/prokka-subwf.cwl
   short_name: prokka-subwf.cwl
   doc: "prokka subwf"
   output:

@@ -1,7 +1,7 @@
 #cwltest
 
 - job: singletons-subwf.test2.yml
-  tool: ../../../../cwl/workflows/sub-wf/singletons/sub-wf-singletons.cwl
+  tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
   short_name: sub-wf-singletons.cwl
   doc: "singletons bad gunc"
   output:
@@ -23,7 +23,7 @@
               checksum: sha1$f62d84bca25dd09ddc54374918c3186da350bb41
 
 - job: singletons-subwf.test1.yml
-  tool: ../../../../cwl/workflows/sub-wf/singletons/sub-wf-singletons.cwl
+  tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
   short_name: sub-wf-singletons.cwl
   doc: "singletons good gunc"
   output:
