@@ -1,101 +1,64 @@
 #cwltest
 
-- job: singletons-subwf.test2.yml
-  tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
-  short_name: sub-wf-singletons.cwl
-  doc: "singletons bad gunc"
-  output:
-    prokka_faa-s: null
-    gunc_decision:
-      basename": "CAJPIO01_empty.txt"
-      class: File
-      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
-      size: 0
-    cluster_dir:
-      class: Directory
-      basename: "cluster_genome"
-      listing:
-        - class: Directory
-          basename: "genome"
-            - class: File
-              basename: "CAJPIO01"
-              size: 6155
-              checksum: sha1$f62d84bca25dd09ddc54374918c3186da350bb41
-
 - job: singletons-subwf.test1.yml
   tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
   short_name: sub-wf-singletons.cwl
   doc: "singletons good gunc"
   output:
-    cluster_dir:
-      class: Directory
-      basename: cluster_3_0
-      listing:
-        - basename: prokka_output
-          class: Directory
-          listing:
-            - class: File
-              basename: CAJKRY01.fna
-              checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
-              size: 1769564
-            - class: File
-              basename: CAJKRY01.txt
-              checksum: sha1$f2f9d3084dba43a4f2aa522cf3931d163cf29bd4
-              size: 88
-            - class: File
-              basename: CAJKRY01.faa
-              checksum: sha1$93ec2ed81f42e46044233a559d7024ffec810de0
-              size: 593054
-            - class: File
-              basename: CAJKRY01.sqn
-              checksum: sha1$668f1a57d333387552459118fa29a7f3f7104b38
-              size: 6028570
-            - class: File
-              basename: CAJKRY01.gbk
-              checksum: sha1$839ef11d1c15c2ec508630086ef11dbb1cc720f8
-              size: 3614316
-            - class: File
-              basename: CAJKRY01.err
-              checksum: sha1$97c9d8a7db058a27886d8c1d6b9d2abcbc4fa0a2
-              size: 633298
-            - class: File
-              basename: CAJKRY01.log
-              checksum: sha1$a0d09df4ca2fdcd75564a3b0941cab8bf8c09f25
-              size: 25745
-            - class: File
-              basename: CAJKRY01.ffn
-              checksum: sha1$e4bff5c79dfc48d64411ef267ac9886285d351f1
-              size: 1636546
-            - class: File
-              basename: CAJKRY01.fsa
-              checksum: sha1$17bb46efff047d24dc15a4e2343dd43cc1b58c98
-              size: 1770968
-            - class: File
-              basename: CAJKRY01.tsv
-              checksum: sha1$0cfd5fb4c4ef462a172ab7d0c9f33c881b8d3171
-              size: 104674
-            - class: File
-              basename: CAJKRY01.tbl
-              checksum: sha1$2427cab3734a86124063aa131f05f8d62c23008a
-              size: 303835
-            - class: File
-              basename: CAJKRY01.gff
-              checksum: sha1$ef05c93ee32b03702f5ca5a114db0d25af4f9d73
-              size: 2189316
-        - class: Directory
-          basename: genome
-          listing:
-            - class: File
-              basename: CAJKRY01.fa
-              size: 1773038
-              checksum: sha1$bde22cdb8b3901e11630391a4f6ecf9d98dfac39
-    gunc_decision:
-      basename: CAJKRY01_complete.txt
-      class: File
-      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
-      size: 0
-    prokka_faa-s:
+    gunc_decision: "CAJKRY01_complete.txt"
+    prokka_faa:
       basename: CAJKRY01.faa
+      nameroot: CAJKRY01
+      nameext: ".faa"
       class: File
       checksum: sha1$93ec2ed81f42e46044233a559d7024ffec810de0
       size: 593054
+    prokka_fna:
+      basename: CAJKRY01.fna
+      nameroot: CAJKRY01
+      nameext: ".fna"
+      class: File
+      checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
+      size: 1769564
+    singleton_cluster:
+      class: Directory
+      basename: CAJKRY01
+      listing:
+        - basename: CAJKRY01.gff
+          nameroot: CAJKRY01
+          nameext: ".gff"
+          class: File
+          checksum: sha1$ef05c93ee32b03702f5ca5a114db0d25af4f9d73
+          size: 2189316
+        - basename: CAJKRY01.faa
+          nameroot: CAJKRY01
+          nameext: ".faa"
+          class: File
+          checksum: sha1$93ec2ed81f42e46044233a559d7024ffec810de0
+          size: 593054
+        - basename: CAJKRY01.fna
+          nameroot: CAJKRY01
+          nameext: ".fna"
+          class: File
+          checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
+          size: 1769564
+
+- job: singletons-subwf.test2.yml
+  tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
+  short_name: sub-wf-singletons.cwl
+  doc: "singletons bad gunc (not real example)"
+  output:
+    gunc_decision: "CAJPIO01_empty.txt"
+    prokka_faa: null
+    prokka_fna: null
+    singleton_cluster: null
+
+- job: singletons-subwf.test3.yml
+  tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
+  short_name: sub-wf-singletons.cwl
+  doc: "singletons bad gunc (real example)"
+  output:
+    gunc_decision: "CAJKXZ01_empty.txt"
+    prokka_faa: null
+    prokka_fna: null
+    singleton_cluster: null

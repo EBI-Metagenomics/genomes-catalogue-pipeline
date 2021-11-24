@@ -1,11 +1,11 @@
 input_cluster:
   - class: Directory
-    path: ../../../../input_example/small_set/results/clusters/CAJKRY01
+    path: ../../../../../input_example/small_set/results/clusters/CAJKRY01
   - class: Directory
-    path: ../../tools/GUNC/filter_inputs/genome/
+    path: ../../../../../input_example/small_set/results/clusters/CAJKXZ01
 csv:
   class: File
-  path: wrapper.test.csv
+  path: ../../../../../input_example/small_set/download.csv
 gunc_db_path:
   class: File
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
