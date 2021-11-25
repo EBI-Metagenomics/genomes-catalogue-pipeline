@@ -111,6 +111,8 @@ if __name__ == "__main__":
     parser.add_argument('--catalogue-name', dest='name', help='Catalogue name (ex. marine)', required=True)
     parser.add_argument('--split-clusters', dest='split_clusters',
                         help='File from drep subwf named split_clusters.txt', required=True)
+    parser.add_argument('--gunc-failed', dest='gunc_failed',
+                        help='File with gunc filtered report', required=True)
     parser.add_argument('--result-path', dest='result_path',
                         help='Path to pipeline output', required=True)
 
@@ -130,13 +132,18 @@ if __name__ == "__main__":
         sys.exit(1)
     else:
         args = parser.parse_args()
-
+        gunc_failed = []
+        with open(args.gunc_failed, 'r') as file_gunc:
+            for line in file_gunc:
+                gunc_failed.append(line.strip.split('.')[0])
         # dict for clusters
         clusters = {}
         with open(args.split_clusters, 'r') as file_in:
             for line in file_in:
                 genomes = line.strip().split(':')[2].split(',')
                 main_rep = genomes[0].split('.')[0]
+                if main_rep in gunc_failed:
+                    continue
                 if len(genomes) >= 1:
                     clusters[main_rep] = [i.split('.')[0] for i in genomes]
                 else:

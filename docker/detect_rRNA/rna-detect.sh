@@ -34,12 +34,12 @@ cmsearch-deoverlap.pl --maxkeep --clanin ${cm_db}/ribo.claninfo results/${FILENA
 mv ${FILENAME}"_"all.tblout.deoverlapped results/
 
 echo "Parsing final results..."
-parse_rRNA-bacteria.py results/${FILENAME}"_"all.tblout.deoverlapped > results/${FILENAME}"_"rRNAs.out
-rRNA2seq.py results/${FILENAME}"_"all.tblout.deoverlapped ${fasta} > results/${FILENAME}"_"rRNAs.fasta
+parse_rRNA-bacteria.py -i results/${FILENAME}"_"all.tblout.deoverlapped > results/${FILENAME}"_"rRNAs.out
+rRNA2seq.py -d results/${FILENAME}"_"all.tblout.deoverlapped -i ${fasta} > results/${FILENAME}"_"rRNAs.fasta
 
 echo "[ Detecting tRNAs ]"
 tRNAscan-SE -B -Q -m results/${FILENAME}_stats.out -o results/${FILENAME}_trna.out ${fasta}
-parse_tRNA.py results/${FILENAME}_stats.out > results/${FILENAME}_tRNA_20aa.out
+parse_tRNA.py -i results/${FILENAME}_stats.out > results/${FILENAME}_tRNA_20aa.out
 
 echo "Cleaning tmp files..."
 rm results/${FILENAME}"_"all.tblout.deoverlapped results/${FILENAME}"_"all.tblout results/${FILENAME}"_"all.tblout.sort results/${FILENAME}"_"*.cm.*out results/${FILENAME}_stats.out results/${FILENAME}_trna.out
