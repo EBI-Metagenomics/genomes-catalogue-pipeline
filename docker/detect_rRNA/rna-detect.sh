@@ -45,7 +45,17 @@ echo "Cleaning tmp files..."
 rm results/${FILENAME}"_"all.tblout.deoverlapped results/${FILENAME}"_"all.tblout results/${FILENAME}"_"all.tblout.sort results/${FILENAME}"_"*.cm.*out results/${FILENAME}_stats.out results/${FILENAME}_trna.out
 
 echo "Create out-folder"
-mkdir ${FILENAME}_out-results && mv results/${FILENAME}*.out ${FILENAME}_out-results
+mkdir ${FILENAME}_out-results
+for i in $(ls results | grep ".out"); do
+  if [ -s results/${i} ]; then
+    mv results/${i} ${FILENAME}_out-results
+  fi
+done
 
 echo "Create fasta-folder"
-mkdir ${FILENAME}_fasta-results && mv results/${FILENAME}*.fasta ${FILENAME}_fasta-results
+mkdir ${FILENAME}_fasta-results
+for i in $(ls results | grep ".fasta"); do
+  if [ -s results/${i} ]; then
+    mv results/${i} ${FILENAME}_fasta-results
+  fi
+done

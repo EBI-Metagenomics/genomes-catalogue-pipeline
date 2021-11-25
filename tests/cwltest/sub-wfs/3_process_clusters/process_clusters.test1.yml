@@ -1,7 +1,11 @@
 many_genomes:
   - class: Directory
-    path: ../../../../input_example/small_set/results/clusters/CAJKXJ01
+    path: ../../../../input_example/small_set/results/clusters/CAJLGA01  # 3 genomes
+  - class: Directory
+    path: ../../../../input_example/small_set/results/clusters/CAJKXJ01  # 2 genomes
 mash_folder:
+  - class: File
+    path: ../../../../input_example/small_set/results/CAJLGA01_mash.tsv
   - class: File
     path: ../../../../input_example/small_set/results/CAJKXJ01_mash.tsv
 one_genome:

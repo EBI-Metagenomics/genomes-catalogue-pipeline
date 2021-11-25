@@ -43,7 +43,12 @@ outputs:
   best_cluster_reps:
     type: File?
     outputSource: drep/sdb
-
+  mdb:
+    type: File?
+    outputSource: drep/mdb
+  cdb:
+    type: File?
+    outputSource: drep/cdb
 
 steps:
   generate_weights:

@@ -35,6 +35,7 @@ outputs:
 
   pangenome_clusters:
     type: Directory[]
+    outputSource: process_many_genomes/pangenome_cluster
 
 steps:
 

@@ -151,6 +151,8 @@ steps:
       - best_cluster_reps
       - weights_file
       - split_text
+      - cdb
+      - mdb
 
 # ----------- << 3. process clusters >> ------
 # - mash2nwk
@@ -303,6 +305,8 @@ steps:
           - preparation/assign_mgygs_naming_table                       # mapping initial names to MGYGs
           - drep_subwf/weights_file                                     # weights drep
           - drep_subwf/best_cluster_reps                                # Sdb.csv
+          - drep_subwf/cdb                                              # Cdb.csv
+          - drep_subwf/mdb                                              # Mdb.csv
           - drep_subwf/split_text                                       # split by clusters file
           - process_clusters/singletons_gunc_completed                  # gunc passed genomes list
           - process_clusters/singletons_gunc_failed                     # gunc failed genomes list
