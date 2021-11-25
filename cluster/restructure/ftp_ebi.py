@@ -135,7 +135,7 @@ if __name__ == "__main__":
         gunc_failed = []
         with open(args.gunc_failed, 'r') as file_gunc:
             for line in file_gunc:
-                gunc_failed.append(line.strip.split('.')[0])
+                gunc_failed.append(line.strip().split('.')[0])
         # dict for clusters
         clusters = {}
         with open(args.split_clusters, 'r') as file_in:
