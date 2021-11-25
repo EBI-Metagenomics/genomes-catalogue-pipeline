@@ -25,5 +25,54 @@
       nameroot: mmseqs_0.9_cluster_rep.IPS
       nameext: ".tsv"
       class: File
-      checksum: sha1$820772d87ab1562cf65e271f2ef91d5be221338b
+      checksum: sha1$1f32aec724e0529f0f19be9ed158669c9d178732
       size: 222251907
+    per_genome_annotations:
+      - basename: MGYG000000004_InterProScan.tsv
+        nameroot: MGYG000000004_InterProScan
+        nameext: ".tsv"
+        class: File
+        checksum: sha1$6a16035c5f46433ae6db08c6b92d7cd94845dfe5
+        size: 11455640
+      - basename: MGYG000000004_eggNOG.tsv
+        nameroot: MGYG000000004_eggNOG
+        nameext: ".tsv"
+        class: File
+        checksum: sha1$0b32bc8103d15a73e0b72e82a7d712b5ca85d32a
+        size: 166683
+      - basename: MGYG000000005_InterProScan.tsv
+        nameroot: MGYG000000005_InterProScan
+        nameext: ".tsv"
+        class: File
+        checksum: sha1$6395a61c51f943902875ea4c54f4be6017ee1135
+        size: 37635780
+      - basename: MGYG000000005_eggNOG.tsv
+        nameroot: MGYG000000005_eggNOG
+        nameext: ".tsv"
+        class: File
+        checksum: sha1$718c6a787929d90b6c9365c322562a9c17cd9e73
+        size: 491087
+      - basename: MGYG000000006_InterProScan.tsv
+        nameroot: MGYG000000006_InterProScan
+        nameext: ".tsv"
+        class: File
+        checksum: sha1$c7944763024431f498aabb26bde506db34a60c72
+        size: 30273001
+      - basename: MGYG000000006_eggNOG.tsv
+        nameroot: MGYG000000006_eggNOG
+        nameext: ".tsv"
+        class: File
+        checksum: sha1$a18964edca69a1ce02eb51d5babeb7838f91855a
+        size: 368634
+      - basename: MGYG000000007_InterProScan.tsv
+        nameroot: MGYG000000007_InterProScan
+        nameext: ".tsv"
+        class: File
+        checksum: sha1$9f309f9c6eb006c27c8ddda6d0d82e7f182e8b55
+        size: 18393899
+      - basename: MGYG000000007_eggNOG.tsv
+        nameroot: MGYG000000007_eggNOG
+        nameext: ".tsv"
+        class: File
+        checksum: sha1$709fa003beaea7a3e7a3a1cb12242e066222cb06
+        size: 282367
