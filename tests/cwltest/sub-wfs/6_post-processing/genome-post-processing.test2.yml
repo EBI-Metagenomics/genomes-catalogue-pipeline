@@ -13,12 +13,16 @@ models_ncrna:
   class: File
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.cm
 
+metadata:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/metadata.txt
+
 annotations:
   - class: File
-    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000004_InterProScan.tsv
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000007_InterProScan.tsv
   - class: File
-    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000004_eggNOG.tsv
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000007_eggNOG.tsv
 
 cluster:
   class: Directory
-  path: ../../../../input_example/small_set/results/MGYGs/MGYG000000004
+  path: ../../../../input_example/small_set/results/MGYGs/MGYG000000007

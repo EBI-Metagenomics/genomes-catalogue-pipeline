@@ -4,7 +4,7 @@ input_faa:
 interproscan_databases:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
-chunk_size_IPS: 5000
+chunk_size_ips: 5000
 chunk_size_eggnog: 5000
 db_diamond_eggnog:
   class: File
@@ -15,3 +15,11 @@ db_eggnog:
 data_dir_eggnog:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
+
+species_representatives:
+  class: File
+  path: ../../../../input_example/small_set/results/MGYGs/intermediate_files/drep-filt-list.txt
+
+mmseqs_tsv:
+  class: File
+  path: ../../../../input_example/small_set/results/MGYGs/intermediate_files/mmseqs_cluster.tsv

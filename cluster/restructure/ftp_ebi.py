@@ -210,7 +210,7 @@ if __name__ == "__main__":
                     copy(os.path.join(old_mmseq, mmseq), os.path.join(protein_catalogue_path, new_name))
 
         if '4' in args.type:
-            # uhgg_catalogue
+            # species catalogue (uhgg_catalogue)
             genomes_catalogue = os.path.join(ftp_path, ALL_CATALOGUE_FOLDER_NAME)
             if not os.path.exists(genomes_catalogue):
                 os.makedirs(genomes_catalogue)

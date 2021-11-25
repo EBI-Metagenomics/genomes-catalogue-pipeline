@@ -1,6 +1,6 @@
 #cwltest
 
-- job: process_clusters.test1.yml
+- job: 3_process_clusters.test1.yml
   tool: ../../../../cwl/workflows/sub-wf/subwf-process_clusters.cwl
   short_name: subwf-process_clusters.cwl
   doc: "process singletons and clusters"
