@@ -12,7 +12,7 @@ import requests
 from retry import retry
 
 from assembly_stats import run_assembly_stats
-from get_ENA_metadata import get_location, load_xml
+from get_ENA_metadata import get_location, load_xml, load_gca_json, get_gca_location
 
 logging.basicConfig(level=logging.INFO)
 
@@ -104,18 +104,26 @@ def get_metadata(acc):
             logging.error('Cannot obtain metadata from ENA')
             sys.exit()
     if not acc.startswith('GUT'):
-        location = get_location(biosample)
+        if acc.startswith('GCA'):
+            location = get_gca_location(biosample)
+        else:
+            location = get_location(biosample)
     if not location:
         location = 'not provided'
     if not acc.startswith('GUT'):
-        json_data_sample = load_xml(biosample)
-        converted_sample = json_data_sample['SAMPLE_SET']['SAMPLE']['IDENTIFIERS']['PRIMARY_ID']
-        if not converted_sample:
+        if acc.startswith('GCA'):
+            json_data_sample = load_xml(acc)
             converted_sample = biosample
-        json_data_project = load_xml(project)
-        converted_project = json_data_project['PROJECT_SET']['PROJECT']['IDENTIFIERS']['SECONDARY_ID']
-        if not converted_project:
-            converted_project = project
+            converted_project = json_data_sample[['ASSEMBLY_SET']['ASSEMBLY']['STUDY_REF']['IDENTIFIERS']['PRIMARY_ID']]
+        else:
+            json_data_sample = load_xml(biosample)
+            converted_sample = json_data_sample['SAMPLE_SET']['SAMPLE']['IDENTIFIERS']['PRIMARY_ID']
+            if not converted_sample:
+                converted_sample = biosample
+            json_data_project = load_xml(project)
+            converted_project = json_data_project['PROJECT_SET']['PROJECT']['IDENTIFIERS']['SECONDARY_ID']
+            if not converted_project:
+                converted_project = project
     else:
         converted_sample = 'FILL'
         converted_project = 'FILL'
