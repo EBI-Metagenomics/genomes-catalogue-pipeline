@@ -114,16 +114,16 @@ def get_metadata(acc):
         if acc.startswith('GCA'):
             json_data_sample = load_xml(acc)
             converted_sample = biosample
-            converted_project = json_data_sample['ASSEMBLY_SET']['ASSEMBLY']['STUDY_REF']['IDENTIFIERS']['PRIMARY_ID']
+            project = json_data_sample['ASSEMBLY_SET']['ASSEMBLY']['STUDY_REF']['IDENTIFIERS']['PRIMARY_ID']
         else:
             json_data_sample = load_xml(biosample)
             converted_sample = json_data_sample['SAMPLE_SET']['SAMPLE']['IDENTIFIERS']['PRIMARY_ID']
             if not converted_sample:
                 converted_sample = biosample
-            json_data_project = load_xml(project)
-            converted_project = json_data_project['PROJECT_SET']['PROJECT']['IDENTIFIERS']['SECONDARY_ID']
-            if not converted_project:
-                converted_project = project
+        json_data_project = load_xml(project)
+        converted_project = json_data_project['PROJECT_SET']['PROJECT']['IDENTIFIERS']['SECONDARY_ID']
+        if not converted_project:
+            converted_project = project
     else:
         converted_sample = 'FILL'
         converted_project = 'FILL'
