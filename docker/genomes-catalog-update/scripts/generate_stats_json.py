@@ -153,10 +153,15 @@ def write_obj_2_json(obj, filename):
         json.dump(obj, fp, indent=4, sort_keys=True)
 
 
-def get_files(folder, species_name):
-    protein_fasta = os.path.join(folder, species_name + '.faa')
-    pangenome_fasta_path = os.path.join(folder, species_name + ".pan-genome.fna")
-    pangenome_core_path = os.path.join(folder, species_name + ".core_genes.txt")
+def get_files(folder, species_name, cluster_structure):
+    if cluster_structure:
+        protein_fasta = os.path.join(folder, 'genome', species_name + '.faa')
+        pangenome_fasta_path = os.path.join(folder, 'pan-genome', species_name + ".pan-genome.fna")
+        pangenome_core_path = os.path.join(folder, 'pan-genome', species_name + ".core_genes.txt")
+    else:
+        protein_fasta = os.path.join(folder, species_name + '.faa')
+        pangenome_fasta_path = os.path.join(folder, species_name + ".pan-genome.fna")
+        pangenome_core_path = os.path.join(folder, species_name + ".core_genes.txt")
     pangenome_fasta = pangenome_fasta_path if os.path.exists(pangenome_fasta_path) else None
     pangenome_core = pangenome_core_path if os.path.exists(pangenome_core_path) else None
     return protein_fasta, pangenome_fasta, pangenome_core
@@ -183,6 +188,8 @@ if __name__ == '__main__':
                                                  'Large intestine', required=True)
     parser.add_argument('-s', dest='species_name', help='Species name (MGYG...)', required=True)
     parser.add_argument('-m', dest='metadata_file', help='Path to the metadata table', required=True)
+    parser.add_argument('--cluster-structure', help='If True: cluster has folders genome and pan-genome, '
+                                                    'otherwise all files are in the same folder', action='store_true')
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -190,7 +197,8 @@ if __name__ == '__main__':
     else:
         args = parser.parse_args()
         species_name = args.species_name
-        protein_fasta, pangenome_fasta, pangenome_core = get_files(folder=args.input, species_name=species_name)
+        protein_fasta, pangenome_fasta, pangenome_core = get_files(folder=args.input, species_name=species_name,
+                                                                   cluster_structure=args.cluster_structure)
         # Genome is a main representative
         meta_res = get_metadata(species_name, args.annot_cov, protein_fasta, args.biome, args.metadata_file)
         meta_dict = meta_res[-1]
