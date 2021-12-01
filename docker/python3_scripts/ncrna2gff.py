@@ -14,7 +14,7 @@ def getRNAs(ncRNAs):
                 cols = line.split()
                 #print(cols)
                 counts += 1
-                contig = cols[3]
+                contig = cols[3].split('-')[0]
                 locus = "%s_ncRNA%i" % (contig, counts)
                 product = " ".join(cols[26:])
                 model = cols[2]
