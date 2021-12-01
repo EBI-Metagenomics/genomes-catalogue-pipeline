@@ -94,7 +94,9 @@ steps:
     run: ../../utils/get_file_pattern.cwl
     in:
       list_files: get_list_of_files/files
-      pattern: { default: ".fna" }
+      pattern:
+        source: cluster
+        valueFrom: "$(self.basename).fna"
     out: [file_pattern]
 
   ncrna:
