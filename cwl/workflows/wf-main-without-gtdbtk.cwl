@@ -75,6 +75,16 @@ outputs:
     type: Directory[]
     outputSource: post_processing/annotations_cluster_dir
 
+  ips_full:
+    type: File
+    outputSource: annotation/ips_tsv
+  eggnog_full:
+    type: File
+    outputSource: annotation/eggnog_tsv
+  ips_eggnog_per_genome:
+    type: File[]
+    outputSource: annotation/ips_eggnog_annotations
+
 # ---------- rRNA -------------
   rrna_out:
     type: Directory
@@ -164,6 +174,8 @@ steps:
       - singletons              # Dir[]
       - mmseqs                  # Dir[]
       - ips_eggnog_annotations  # File[]
+      - ips_tsv
+      - eggnog_tsv
       - rrna_out
       - rrna_fasta
       - clusters_annotation_singletons_gunc_completed
