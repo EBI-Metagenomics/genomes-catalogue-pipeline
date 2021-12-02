@@ -31,7 +31,7 @@ expression: >
   ${
     var helpArray= [];
     for (var i = 0; i < inputs.list_files.length; i++) {
-        if (inputs.list_files[i].nameroot.split(inputs.pattern).length > 1) {
+        if (inputs.list_files[i].basename.split(inputs.pattern).length > 1) {
             helpArray.push(inputs.list_files[i]);
       }}
     if (helpArray.length == 1) {
