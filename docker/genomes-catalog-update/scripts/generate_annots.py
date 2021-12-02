@@ -114,10 +114,8 @@ if __name__ == '__main__':
     - kegg_modules.tsv
     - cazy_summary.tsv
     - cog_summary.tsv''', formatter_class=RawTextHelpFormatter)
-    #parser.add_argument('-e', dest='eggnog_results', help='EggNOG results file [REQUIRED]', required=True)
-    #parser.add_argument('-i', dest='ipr_results', help='InterProScan results file [REQUIRED]', required=True)
-    #parser.add_argument('-f', dest='fasta', help='Protein FASTA file [REQUIRED]', required=True)
     parser.add_argument('-i', dest='input_dir', help='Directory with protein.fasta, eggnog, ips', required=True)
+    parser.add_argument('-a', dest='annotations', help='eggnog and ips', required=False, nargs='+')
     parser.add_argument('-k', dest='kegg_classes', help='KEGG orthology classes DB [REQUIRED]', required=True)
     parser.add_argument('-o', dest='out_folder', help='Output folder [REQUIRED]', required=True)
     if len(sys.argv) == 1:
@@ -132,11 +130,17 @@ if __name__ == '__main__':
         fasta_in = os.path.join(args.input_dir, fasta_protein)
         species_name = fasta_in.split("/")[-1].rsplit(".", 1)[0]
 
-        eggnog_name = [cur_file for cur_file in input_files if cur_file.endswith('eggNOG.tsv')][0]
-        eggnog_results = os.path.join(args.input_dir, eggnog_name)
-
-        ips_name = [cur_file for cur_file in input_files if cur_file.endswith('InterProScan.tsv')][0]
-        ipr_results = os.path.join(args.input_dir, ips_name)
+        # get IPS and EggNOG
+        if args.annotations:
+            # search in annotations
+            annotations_list = args.annotations
+        else:
+            # search in input directory
+            annotations_list = input_files
+        eggnog_name = [cur_file for cur_file in annotations_list if cur_file.endswith('eggNOG.tsv')][0]
+        eggnog_results = eggnog_name if args.annotations else os.path.join(args.input_dir, eggnog_name)
+        ips_name = [cur_file for cur_file in annotations_list if cur_file.endswith('InterProScan.tsv')][0]
+        ipr_results = ips_name if args.annotations else os.path.join(args.input_dir, ips_name)
 
         kegg_classes = args.kegg_classes
         eggnog_data = parse_eggnog(eggnog_results)
