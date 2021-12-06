@@ -6,110 +6,110 @@
   doc: "annotate GFF and KEGG, COG, CAZY"
   output:
     annotations_dir:
+      - class: Directory
+        basename: MGYG000000004
+        listing:
+          - basename: MGYG000000004_annotation_coverage.tsv
+            class: File
+            checksum: sha1$2242a08e0d64405c0cca2acba1a96a3b7ac7452a
+            size: 194
+          - basename: MGYG000000004_kegg_classes.tsv
+            class: File
+            checksum: sha1$5a73c352f625f1d426f5c3ba1e6d513af222bb63
+            size: 1025
+          - basename: MGYG000000004_kegg_modules.tsv
+            class: File
+            checksum: sha1$0d6401765f91c292f0f50abcd8705160de46c7a5
+            size: 3748
+          - basename: MGYG000000004_cazy_summary.tsv
+            class: File
+            checksum: sha1$452b05e365194dafa8af057484a8304716550005
+            size: 161
+          - basename: MGYG000000004_cog_summary.tsv
+            class: File
+            checksum: sha1$aa2324499f491ef4fe54bfece3c04fe39ae4ba49
+            size: 430
+          - basename: annotated_MGYG000000004.gff
+            class: File
+            checksum: sha1$a3dba763c6eb7f4a6b82e9a27ab434056e05063c
+            size: 2323913
         - class: Directory
-          basename: MGYG000000004
+          basename: MGYG000000005
           listing:
-            - basename: MGYG000000004_annotation_coverage.tsv
+            - basename: MGYG000000005_annotation_coverage.tsv
               class: File
-              checksum: sha1$2242a08e0d64405c0cca2acba1a96a3b7ac7452a
+              checksum: sha1$87155829f7fae330115cfa11f14b0f6dbf5821b5
+              size: 193
+            - basename: MGYG000000005_kegg_classes.tsv
+              class: File
+              checksum: sha1$34efd8776638ec09feea6757f06e81e6bed88b1f
+              size: 1026
+            - basename: MGYG000000005_kegg_modules.tsv
+              class: File
+              checksum: sha1$a2d39d6d1dc4c61de884a8aabdb6b738a3366e6d
+              size: 4205
+            - basename: MGYG000000005_cazy_summary.tsv
+              class: File
+              checksum: sha1$86bd976a7e55b6a5f02d5bdc9a71d018ed526658
+              size: 162
+            - basename: MGYG000000005_cog_summary.tsv
+              class: File
+              checksum: sha1$0754f6c69d4fe7550c012846dfc350baf4e033b2
+              size: 431
+            - basename: annotated_MGYG000000005.gff
+              class: File
+              checksum: sha1$1647c698419b169a80647a0dba38d27031f52bfb
+              size: 2948070
+        - class: Directory
+          basename: MGYG000000006
+          listing:
+            - basename: MGYG000000006_annotation_coverage.tsv
+              class: File
+              checksum: sha1$d4d98a95964e4c4784c3b9a28c76a2f84b135a21
               size: 194
-            - basename: MGYG000000004_kegg_classes.tsv
+            - basename: MGYG000000006_kegg_classes.tsv
               class: File
-              checksum: sha1$5a73c352f625f1d426f5c3ba1e6d513af222bb63
-              size: 1025
-            - basename: MGYG000000004_kegg_modules.tsv
+              checksum: sha1$0bdac0f9bb626f0617f36227c2ab4c559af3506a
+              size: 1004
+            - basename: MGYG000000006_kegg_modules.tsv
               class: File
-              checksum: sha1$0d6401765f91c292f0f50abcd8705160de46c7a5
-              size: 3748
-            - basename: MGYG000000004_cazy_summary.tsv
+              checksum: sha1$660a2706dd7da1dc17b3335dd96a579726cc7699
+              size: 3585
+            - basename: MGYG000000006_cazy_summary.tsv
               class: File
-              checksum: sha1$452b05e365194dafa8af057484a8304716550005
+              checksum: sha1$132a1694dd854d6028f8aca90457ab2cfc4de569
               size: 161
-            - basename: MGYG000000004_cog_summary.tsv
+            - basename: MGYG000000006_cog_summary.tsv
               class: File
-              checksum: sha1$aa2324499f491ef4fe54bfece3c04fe39ae4ba49
-              size: 430
-            - basename: annotated_MGYG000000004.gff
+              checksum: sha1$057133c78d209d24c4c080369f177b0093e09892
+              size: 429
+            - basename: annotated_MGYG000000006.gff
               class: File
-              checksum: sha1$a3dba763c6eb7f4a6b82e9a27ab434056e05063c
-              size: 2323913
-          - class: Directory
-            basename: MGYG000000005
-            listing:
-              - basename: MGYG000000005_annotation_coverage.tsv
-                class: File
-                checksum: sha1$87155829f7fae330115cfa11f14b0f6dbf5821b5
-                size: 193
-              - basename: MGYG000000005_kegg_classes.tsv
-                class: File
-                checksum: sha1$34efd8776638ec09feea6757f06e81e6bed88b1f
-                size: 1026
-              - basename: MGYG000000005_kegg_modules.tsv
-                class: File
-                checksum: sha1$a2d39d6d1dc4c61de884a8aabdb6b738a3366e6d
-                size: 4205
-              - basename: MGYG000000005_cazy_summary.tsv
-                class: File
-                checksum: sha1$86bd976a7e55b6a5f02d5bdc9a71d018ed526658
-                size: 162
-              - basename: MGYG000000005_cog_summary.tsv
-                class: File
-                checksum: sha1$0754f6c69d4fe7550c012846dfc350baf4e033b2
-                size: 431
-              - basename: annotated_MGYG000000005.gff
-                class: File
-                checksum: sha1$1647c698419b169a80647a0dba38d27031f52bfb
-                size: 2948070
-          - class: Directory
-            basename: MGYG000000006
-            listing:
-              - basename: MGYG000000006_annotation_coverage.tsv
-                class: File
-                checksum: sha1$d4d98a95964e4c4784c3b9a28c76a2f84b135a21
-                size: 194
-              - basename: MGYG000000006_kegg_classes.tsv
-                class: File
-                checksum: sha1$0bdac0f9bb626f0617f36227c2ab4c559af3506a
-                size: 1004
-              - basename: MGYG000000006_kegg_modules.tsv
-                class: File
-                checksum: sha1$660a2706dd7da1dc17b3335dd96a579726cc7699
-                size: 3585
-              - basename: MGYG000000006_cazy_summary.tsv
-                class: File
-                checksum: sha1$132a1694dd854d6028f8aca90457ab2cfc4de569
-                size: 161
-              - basename: MGYG000000006_cog_summary.tsv
-                class: File
-                checksum: sha1$057133c78d209d24c4c080369f177b0093e09892
-                size: 429
-              - basename: annotated_MGYG000000006.gff
-                class: File
-                checksum: sha1$a47472250772cc8166b05cfe57e700bdb52ad54d
-                size: 2095709
-          - class: Directory
-            basename: MGYG000000007
-            listing:
-              - basename: MGYG000000007_annotation_coverage.tsv
-                class: File
-                checksum: sha1$b2977f9cfd816267a591e7cef4b7abce72b13ef3
-                size: 193
-              - basename: MGYG000000007_kegg_classes.tsv
-                class: File
-                checksum: sha1$96841ff19cbdf6fbc5e05819ffb20233880ab8c5
-                size: 1115
-              - basename: MGYG000000007_kegg_modules.tsv
-                class: File
-                checksum: sha1$4243a67b7712d8c16872d5898ab4e83282150b99
-                size: 3995
-              - basename: MGYG000000007_cazy_summary.tsv
-                class: File
-                checksum: sha1$916de39b8eda5b4859e1b87f4de6564526b92476
-                size: 162
-              - class: File
-                checksum: sha1$f1aad27ed1c592699c7fdcc0a5fbb437d36143b7
-                size: 411=
-              - basename: annotated_MGYG000000007.gff
-                class: File
-                checksum: sha1$358992c0913c325734d0d70e5fd284201d0a95a5
-                size: 2865412
+              checksum: sha1$a47472250772cc8166b05cfe57e700bdb52ad54d
+              size: 2095709
+        - class: Directory
+          basename: MGYG000000007
+          listing:
+            - basename: MGYG000000007_annotation_coverage.tsv
+              class: File
+              checksum: sha1$b2977f9cfd816267a591e7cef4b7abce72b13ef3
+              size: 193
+            - basename: MGYG000000007_kegg_classes.tsv
+              class: File
+              checksum: sha1$96841ff19cbdf6fbc5e05819ffb20233880ab8c5
+              size: 1115
+            - basename: MGYG000000007_kegg_modules.tsv
+              class: File
+              checksum: sha1$4243a67b7712d8c16872d5898ab4e83282150b99
+              size: 3995
+            - basename: MGYG000000007_cazy_summary.tsv
+              class: File
+              checksum: sha1$916de39b8eda5b4859e1b87f4de6564526b92476
+              size: 162
+            - class: File
+              checksum: sha1$f1aad27ed1c592699c7fdcc0a5fbb437d36143b7
+              size: 411=
+            - basename: annotated_MGYG000000007.gff
+              class: File
+              checksum: sha1$358992c0913c325734d0d70e5fd284201d0a95a5
+              size: 2865412
