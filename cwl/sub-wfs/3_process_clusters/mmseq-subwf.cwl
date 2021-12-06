@@ -24,9 +24,7 @@ inputs:
     type:
       - 'null'
       - type: array
-        items:
-          type: array
-          items: File
+        items: File
   prokka_one:
     type:
       - 'null'
@@ -55,17 +53,6 @@ outputs:
 
 steps:
 
-  flatten_many:
-   doc: |
-      Firstly, make prokka output from many_genomes_sub_wf ([File[], File[]])
-      as one dimensional array (File[])
-      if only many_genomes clusters were detected
-   when: $(Boolean(inputs.arrayTwoDim))
-   run: ../../utils/flatten_array.cwl
-   in:
-     arrayTwoDim: prokka_many
-   out: [array1d]
-
   filter_nulls:
     doc: |
        Remove all nulls from concatenate input.
@@ -76,7 +63,7 @@ steps:
     in:
       list_files:
         source:
-          - flatten_many/array1d
+          - prokka_many
           - prokka_one
         linkMerge: merge_flattened
     out: [out_files]
