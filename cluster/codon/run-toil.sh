@@ -2,7 +2,7 @@
 
 set -e
 
-. /hps/software/users/rdf/metagenomics/service-team/envs/mitrc.sh
+. /hps/software/users/rdf/metagenomics/service-team/repos/mi-automation/team_environments/codon/mitrc.sh
 
 mitload miniconda
 
