@@ -9,7 +9,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/detect_rrna/rna-detect.sh
+        location: ../../../docker/detect_rrnas/rna-detect.sh
 
 hints:
   DockerRequirement:

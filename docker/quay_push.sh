@@ -16,7 +16,7 @@ num_containers=14
 folders=(
         'bash'
         'checkm'
-        'detect_rrna'
+        'detect_rrnas'
         'drep'
         'eggnog-mapper'
         'genomes-catalog-update'
@@ -33,7 +33,7 @@ folders=(
 containers_versions=(
         'bash:v1'
         'checkm:v1'
-        'detect_rrna:v2'
+        'detect_rrna:v3'
         'drep:v2'
         'eggnog-mapper:v1'
         'genomes-catalog-update:v1'

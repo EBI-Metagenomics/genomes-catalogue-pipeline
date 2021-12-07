@@ -54,7 +54,7 @@ bash build.sh
 export PATH=${PATH}:docker/genomes-catalog-update/scriptsexport 
 export PATH=${PATH}:docker/python3_scripts
 export PATH=${PATH}:docker/bash
-export PATH=${PATH}:docker/detect_rrna
+export PATH=${PATH}:docker/detect_rrnas
 export PATH=${PATH}:docker/gunc
 export PATH=${PATH}:docker/mash2nwk
 export PATH=${PATH}:docker/mmseqs
