@@ -1,6 +1,6 @@
 kegg:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv
+  path: ../../../../input_example/kegg_classes.tsv
 
 biom: "test:biom"
 
@@ -15,7 +15,7 @@ models_ncrna:
 
 metadata:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/metadata.txt
+  path: ../../../../input_example/small_set/results/MGYGs/metadata.txt
 
 annotations:
   - class: File
