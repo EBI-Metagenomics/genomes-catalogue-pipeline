@@ -32,7 +32,7 @@ gunc_db_path:
 interproscan_databases:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
-chunk_size_IPS: 10000
+chunk_size_ips: 10000
 
 # EggNOG
 chunk_size_eggnog: 100000
