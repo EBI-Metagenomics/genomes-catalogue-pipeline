@@ -14,7 +14,7 @@ def main(ips, eggnog, rep_list, outdir, mmseqs_tsv, cores):
         os.makedirs(outdir)
     # load representative accessions
     with open(rep_list, 'r') as rep_in:
-        genome_list = [line.strip().replace('.fa', '') for line in rep_in]
+        genome_list = [line.strip().split('.')[0] for line in rep_in]
     logging.info('Loaded the representative accessions.')
     # load cluster information
     pool = mp.Pool(cores)

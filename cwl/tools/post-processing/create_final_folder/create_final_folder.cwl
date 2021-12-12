@@ -15,9 +15,9 @@ requirements:
       - class: File
         location: ../../../../docker/python3_scripts/create_final_folder.py
 
-hints:
-  DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts:v4"
+#hints:
+#  DockerRequirement:
+#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts:v4"
 
 baseCommand: ["create_final_folder.py"]
 
