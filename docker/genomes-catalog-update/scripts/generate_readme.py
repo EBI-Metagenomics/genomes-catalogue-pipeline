@@ -92,11 +92,11 @@ def print_file(outfile_name, version, cat_url, num_genomes, num_species, ver_gtd
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Creates a README file for a genome catalog')
-    parser.add_argument('-m', '--metadata-table',
+    parser.add_argument('-m', '--metadata-table', required=True,
                          help='A path to the metadata table for the catalog')
-    parser.add_argument('-o', '--outfile-name',
+    parser.add_argument('-o', '--outfile-name', required=True,
                          help='A path to outfile')
-    parser.add_argument('-b', '--biome',
+    parser.add_argument('-b', '--biome', required=True,
                          help='The biome for the catalog. Examples: human gut, cow rumen, human oral')
     parser.add_argument('--gtdb-version', default='r202', type=str,
                          help='GTDB release used. Default: r202')
