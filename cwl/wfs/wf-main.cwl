@@ -95,8 +95,8 @@ outputs:
 
 # ------------ GTDB-Tk --------------
   gtdbtk:
-    type: File?
-    outputSource: gtdbtk_metadata/gtdbtk_tar
+    type: Directory?
+    outputSource: gtdbtk_metadata/gtdbtk_outdir
 
   metadata:
     type: File?
@@ -181,7 +181,7 @@ steps:
       - singletons_gunc_completed
       - singletons_gunc_failed
       - panaroo_folder
-      - mmseq_dirs          # File[]?
+      - mmseq_dirs          # Dir[]?
       - mmseq_ann_dir       # Dir?
       - mmseq_cluster_rep_faa
       - mmseq_cluster_tsv
@@ -243,7 +243,7 @@ steps:
       geo_file: geo_metadata
       gunc_failed_genomes: process_clusters/singletons_gunc_failed
     out:
-      - gtdbtk_tar
+      - gtdbtk_outdir
       - metadata
       - phylo_tree
 
@@ -288,7 +288,7 @@ steps:
   create_protein_catalogue_folder_ftp:
     run: ../sub-wfs/wf-8-create-protein_catalogue.cwl
     in:
-      mmseq_tars: process_clusters/mmseq_dirs
+      mmseq_dirs: process_clusters/mmseq_dirs
       mmseq_ann_folder: process_clusters/mmseq_ann_dir
       ips: annotation/ips_tsv
       eggnog: annotation/eggnog_tsv

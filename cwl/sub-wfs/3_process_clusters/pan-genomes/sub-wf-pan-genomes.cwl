@@ -37,9 +37,9 @@ inputs:
   mash_files: File[]
 
 outputs:
-  panaroo_tar:
-    type: File
-    outputSource: panaroo/panaroo_dir_tar
+  panaroo_outdir:
+    type: Directory
+    outputSource: panaroo/panaroo_dir
 
   pangenome_other_fnas:
     type: File[]
@@ -94,7 +94,7 @@ steps:
     out:
       - gene_presence_absence
       - panaroo_fna
-      - panaroo_dir_tar
+      - panaroo_dir
 
   get_core_genes:
     run: ../../../tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl

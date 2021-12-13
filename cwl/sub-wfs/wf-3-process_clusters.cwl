@@ -109,7 +109,7 @@ outputs:
 
 # ===== mmseqs =======
   mmseq_dirs:
-    type: File[]?
+    type: Directory[]?
     outputSource: mmseqs/mmseqs_dirs
   mmseq_ann_dir:
     type: Directory?

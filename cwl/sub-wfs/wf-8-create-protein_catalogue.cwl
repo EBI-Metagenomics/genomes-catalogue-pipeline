@@ -41,7 +41,7 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  mmseq_tars: File[]
+  mmseq_dirs: Directory[]
   mmseq_ann_folder: Directory
   ips: File
   eggnog: File
@@ -49,7 +49,7 @@ inputs:
 outputs:
   protein_catalogue_final_folder:
     type: Directory
-    outputSource: wrap_to_dir/out
+    outputSource: wrap_to_dir/pool_directory
 
 steps:
 
@@ -76,20 +76,14 @@ steps:
         - rename_eggnog/renamed_file
     out: [ dir ]
 
-  tar_annotation_folder:
-    run: ../utils/tar.cwl
-    in:
-      folder: add_files_to_annotation_dir/dir
-    out: [folder_tar]
-
   wrap_to_dir:
-    run: ../utils/return_directory.cwl
+    run: ../utils/return_dir_of_dir.cwl
     in:
-      list:
+      directory_array:
         source:
-          - tar_annotation_folder/folder_tar
-          - mmseq_tars
+          - add_files_to_annotation_dir/dir
+          - mmseq_dirs
         linkMerge: merge_flattened
-      dir_name: {default: "protein_catalogue"}
-    out: [out]
+      newname: {default: "protein_catalogue"}
+    out: [ pool_directory ]
 

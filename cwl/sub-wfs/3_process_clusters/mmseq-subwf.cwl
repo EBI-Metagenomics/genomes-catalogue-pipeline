@@ -38,8 +38,8 @@ inputs:
 outputs:
 
   mmseqs_dirs:
-    type: File[]?
-    outputSource: create_tars/folder_tar
+    type: Directory[]?
+    outputSource: mmseqs/outdir
   mmseqs_annotation_dir:
     type: Directory?
     outputSource: mmseqs_annotations/outdir
@@ -92,15 +92,7 @@ steps:
       limit_c: mmseqs_limit_c
     out: [ outdir ]
 
-# ----- tar.gz mmseqs folders -----
-
-  create_tars:
-    run: ../../utils/tar.cwl
-    when: $(Boolean(inputs.folder))
-    scatter: folder
-    in:
-      folder: mmseqs/outdir              # Dir[]
-    out: [ folder_tar ]
+# ----- tar.gz mmseqs folders [not in use because it compress extra folders]-----
 
 # ------ mmseq for functional annotation ------
 

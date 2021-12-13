@@ -20,9 +20,9 @@ outputs:
   panaroo_fna:
     type: File
     outputSource: rename_panaroo_fna/renamed_file
-  panaroo_dir_tar:
-    type: File
-    outputSource: tar_gz_panaroo_folder/folder_tar
+  panaroo_dir:
+    type: Directory
+    outputSource: panaroo/panaroo_dir
 
 steps:
 
@@ -44,8 +44,8 @@ steps:
       out_file_name: panaroo_fna_name
     out: [ renamed_file ]
 
-  tar_gz_panaroo_folder:
-    run: ../../../utils/tar.cwl
-    in:
-      folder: panaroo/panaroo_dir
-    out: [ folder_tar ]
+  #tar_gz_panaroo_folder:
+  #  run: ../../../utils/tar.cwl
+  #  in:
+  #    folder: panaroo/panaroo_dir
+  #  out: [ folder_tar ]

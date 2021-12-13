@@ -34,16 +34,16 @@ def create_folder(name, dir, kegg_files, index, gff, annotations=None):
     copy(ipr_results, os.path.join(genome_folder, os.path.basename(ipr_results)))
 
     # fna, faa, gff
-    fna = [cur_file for cur_file in input_files if cur_file.endswith('.fna')][0]
-    faa = [cur_file for cur_file in input_files if cur_file.endswith('.faa')][0]
+    fna = [cur_file for cur_file in input_files if cur_file.endswith(name + '.fna')][0]
+    faa = [cur_file for cur_file in input_files if cur_file.endswith(name + '.faa')][0]
     #prokka_gff = [cur_file for cur_file in input_files if cur_file.endswith('.gff')][0]
     copy(os.path.join(dir, fna), os.path.join(genome_folder, fna))
     copy(os.path.join(dir, faa), os.path.join(genome_folder, faa))
 
-    core_genes = [cur_file for cur_file in input_files if len(cur_file.split('core_genes')) > 1]
-    mash = [cur_file for cur_file in input_files if len(cur_file.split('mashtree')) > 1]
-    gene_presence_absence = [cur_file for cur_file in input_files if len(cur_file.split('gene_presence_absence')) > 1]
-    pan_genome_reference = [cur_file for cur_file in input_files if len(cur_file.split('pan_genome_reference')) > 1]
+    core_genes = [cur_file for cur_file in input_files if len(cur_file.split('core_genes.txt')) > 1]
+    mash = [cur_file for cur_file in input_files if len(cur_file.split('mashtree.nwk')) > 1]
+    gene_presence_absence = [cur_file for cur_file in input_files if len(cur_file.split('gene_presence_absence.Rtab')) > 1]
+    pan_genome_reference = [cur_file for cur_file in input_files if len(cur_file.split('pan_genome.fna')) > 1]
 
     if len(core_genes) > 0 or len(mash) > 0 or len(gene_presence_absence) > 0 or len(pan_genome_reference) > 0:
         print('Create pan-genome folder')

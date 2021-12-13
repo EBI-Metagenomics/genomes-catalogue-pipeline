@@ -17,7 +17,7 @@ outputs:
 
   panaroo_output:
     type: Directory
-    outputSource: panaroo_final_folder/out
+    outputSource: panaroo_final_folder/pool_directory
 
   other_pangenome_gffs:
     type: File[]
@@ -47,7 +47,7 @@ steps:
       cluster: input_clusters
       mash_files: mash_folder
     out:
-      - panaroo_tar
+      - panaroo_outdir
       - pangenome_other_fnas
       - all_pangenome_faa
       - pangenome_cluster
@@ -73,9 +73,9 @@ steps:
     out: [ array1d ]
 
   panaroo_final_folder:
-    run: ../../../utils/return_directory.cwl
+    run: ../../../utils/return_dir_of_dir.cwl
     in:
-      list: process_many_genomes/panaroo_tar
-      dir_name: { default: panaroo_output }
-    out: [ out ]
+      directory_array: process_many_genomes/panaroo_outdir
+      newname: { default: panaroo_output }
+    out: [ pool_directory ]
 

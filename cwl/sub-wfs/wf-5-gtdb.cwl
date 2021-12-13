@@ -28,9 +28,9 @@ inputs:
 
 outputs:
 
-  gtdbtk_tar:
-    type: File
-    outputSource: tar/folder_tar
+  gtdbtk_outdir:
+    type: Directory
+    outputSource: gtdbtk/gtdbtk_folder
 
   metadata:
     type: File
@@ -79,11 +79,11 @@ steps:
       outputFileName: {default: "gtdbtk.summary.tsv" }
     out: [result]
 
-  tar:
-    run: ../utils/tar.cwl
-    in:
-      folder: gtdbtk/gtdbtk_folder
-    out: [ folder_tar ]
+  # tar:
+  #  run: ../utils/tar.cwl
+  #  in:
+  #    folder: gtdbtk/gtdbtk_folder
+  #  out: [ folder_tar ]
 
 # ----------- << Metadata >> -----------
   metadata:
