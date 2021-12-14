@@ -25,18 +25,33 @@ import re
 logging.basicConfig(level=logging.INFO)
 
 
+def read_map_file(map_file):
+	mapping = {}
+	with open(map_file, 'r') as file_in:
+		for line in file_in:
+			line = line.strip().split('\t')
+			mapping[line[0]] = line[1]
+	return mapping
+
+
 def main(fasta_file_directory, prefix, index, cluster_file, table_file, num_digits, rename_deflines, outdir=None,
-		 max_number=None, csv=None):
+		 max_number=None, csv=None, map_file=None):
 	names = dict()  # matches old and new names
+	if map_file:
+		names = read_map_file(map_file)
 	files = os.listdir(fasta_file_directory)
 	logging.info('Renaming files...')
 	if cluster_file:
 		assert os.path.isfile(cluster_file), 'Provided cluster information file does not exist'
 	for file in files:
 		if file.endswith(('fa', 'fasta')) and not file.startswith(prefix):
-			accession = '{}{}{}'.format(prefix, '0' * (num_digits - len(str(index))), str(index))
-			new_name = '{}.fa'.format(accession)
-			names[file] = new_name
+			if not map_file:
+				accession = '{}{}{}'.format(prefix, '0' * (num_digits - len(str(index))), str(index))
+				new_name = '{}.fa'.format(accession)
+				names[file] = new_name
+			else:
+				accession = names[file].split('.fa')[0]
+				new_name = names[file]
 			if outdir:
 				rename_to_outdir(file, new_name, accession, input_dir=fasta_file_directory, output_dir=outdir)
 			else:
@@ -126,7 +141,9 @@ def rename_csv(names, csv_file):
 
 def parse_args():
 	parser = argparse.ArgumentParser(description='Rename multifasta files, cluster information file and create a table '
-												 'matching old and new names')
+												 'matching old and new names. '
+												 'If you have map-file: new_name - old_name you can provide it '
+												 'and files would be renamed according to this file')
 	parser.add_argument('-d', dest='fasta_file_directory', required=True, help='Input directory containing FASTA files')
 	parser.add_argument('-p', dest='prefix', default='MGYG', help='Header prefix')
 	parser.add_argument('-i', dest='index', type=int, default=1,
@@ -147,11 +164,14 @@ def parse_args():
 						help='Output directory for renamed FASTA files (use in CWL)')
 	parser.add_argument('--csv', dest='csv', required=False,
 						help='CSV file with completeness and contamination')
+
+	parser.add_argument('--map-file', dest='map_file', required=False,
+						help='If genomes names were already assigned, mapping file has <old name - new name> info')
 	return parser.parse_args()
 
 
 if __name__ == '__main__':
 	args = parse_args()
 	main(args.fasta_file_directory, args.prefix, args.index, args.cluster_file, args.table_file, args.num_digits,
-		 args.rename_deflines, outdir=args.outputdir, max_number=args.max, csv=args.csv)
+		 args.rename_deflines, outdir=args.outputdir, max_number=args.max, csv=args.csv, map_file=args.map_file)
 
