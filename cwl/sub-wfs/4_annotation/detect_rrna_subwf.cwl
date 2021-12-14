@@ -28,7 +28,8 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  filtered_genomes: File[]
+  filtered_genomes: File[]?
+  filtered_genomes_folder: Directory?
   cm_models: Directory
 
 outputs:
@@ -42,17 +43,22 @@ outputs:
 
 steps:
 
-  #get_files:
-  #  run: ../../../utils/get_files_from_dir.cwl
-  #  in:
-  #    dir: filtered_genomes
-  #  out: [files]
+  get_files:
+    when: $(Boolean(inputs.dir))
+    run: ../../utils/get_files_from_dir.cwl
+    in:
+      dir: filtered_genomes_folder
+    out: [files]
 
   detect:
     run: ../../tools/detect_rRNA/detect_rRna.cwl
     scatter: fasta
     in:
-      fasta: filtered_genomes  # get_files/files
+      fasta:
+        source:
+          - filtered_genomes
+          - get_files/files
+        pickValue: first_non_null
       cm_models: cm_models
     out: [out_counts, fasta_seq]
 
