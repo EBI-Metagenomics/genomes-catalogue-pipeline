@@ -65,6 +65,10 @@ outputs:
     type: Directory
     outputSource: folder_with_intermediate_files/out
 
+  mgyg_genomes:
+    type: Directory
+    outputSource: folder_with_genomes/out
+
 # ------- clusters_annotation -------
 
   annotated_clusters:
@@ -312,4 +316,18 @@ steps:
           - process_clusters/singletons_gunc_failed                     # gunc failed genomes list
         pickValue: all_non_null
       dir_name: { default: 'intermediate_files'}
+    out: [ out ]
+
+# ---------- << 10. create mgyg_genomes folder without GUNC-failed genomes>> ----------
+  folder_with_genomes:
+    run: ../utils/return_directory.cwl
+    in:
+      list:
+        source:
+          - process_clusters/reps_pangenomes_fna
+          - process_clusters/other_pangenome_fna
+          - process_clusters/all_singletons_fna
+        linkMerge: merge_flattened
+        pickValue: all_non_null
+      dir_name: { default: 'mgyg_genomes'}
     out: [ out ]
