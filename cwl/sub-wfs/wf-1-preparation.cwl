@@ -24,6 +24,14 @@ inputs:
   min_accession_mgyg: int
 
 outputs:
+
+  checkm_stderr:
+    type: File?
+    outputSource: checkm_subwf/checkm_err
+  checkm_stdout:
+    type: File?
+    outputSource: checkm_subwf/checkm_out
+
   unite_folders_csv:
     type: File
     outputSource: unite_folders/csv
@@ -47,6 +55,8 @@ steps:
       genomes_folder: genomes_ncbi
     out:
       - checkm_csv
+      - checkm_err
+      - checkm_out
 
 # ----------- << unite NCBI and ENA >> -----------
   unite_folders:

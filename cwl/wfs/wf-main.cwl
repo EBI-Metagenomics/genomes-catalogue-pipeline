@@ -127,6 +127,8 @@ steps:
       max_accession_mgyg: max_accession_mgyg
       min_accession_mgyg: min_accession_mgyg
     out:
+      - checkm_stderr
+      - checkm_stdout
       - unite_folders_csv
       - assign_mgygs_renamed_genomes
       - assign_mgygs_renamed_csv
@@ -304,6 +306,8 @@ steps:
     in:
       list:
         source:
+          - preparation/checkm_stderr                                   # checkm.err
+          - preparation/checkm_stdout                                   # checkm.out
           - preparation/unite_folders_csv                               # initail csv
           - preparation/assign_mgygs_renamed_csv                        # MGYG csv
           - preparation/assign_mgygs_naming_table                       # mapping initial names to MGYGs
