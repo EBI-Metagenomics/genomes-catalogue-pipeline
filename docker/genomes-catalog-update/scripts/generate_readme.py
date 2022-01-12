@@ -44,7 +44,7 @@ def print_file(outfile_name, version, cat_url, num_genomes, num_species, ver_gtd
 Website URL: {url}
 
 * A total of {num_genomes} prokaryotic genomes from the {biome} microbiome were clustered into {num_species} species representatives.
-* Genomes from the following studies were used to generate the catalog: {study_list}
+* Genomes from the following studies were used to generate the catalogue: {study_list}
 * Taxonomic annotations were generated with the Genome Taxonomy Database {ver_gtdb}. 
 * Pan-genome analyses were performed with Panaroo {ver_panaroo} for all conspecific genomes.
 * Functional annotation results generated with eggNOG (emapper-{ver_eggnog}) and InterProScan {ver_ips} are available for the genomes of all species representatives. COG and KEGG results were derived from the eggNOG annotations.
@@ -81,7 +81,7 @@ Website URL: {url}
     * protein_catalogue-XX.tar.gz
         - protein_catalogue-XX.faa : Protein FASTA file of the clustered, representative sequences.
         - protein_catalogue-XX.tsv : Cluster membership of all the protein sequences.
-    For 90% identity catalog only:
+    For 90% identity catalogue only:
         - protein_catalogue-90_eggNOG.tsv : eggNOG annotation results of the protein catalogue.
         - protein_catalogue-90_InterProScan.tsv : InterProScan annotation results of the protein catalogue.
     '''.format(version=version, url=cat_url, num_genomes=num_genomes, num_species=num_species, ver_gtdb=ver_gtdb,
