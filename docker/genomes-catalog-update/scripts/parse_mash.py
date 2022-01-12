@@ -71,8 +71,8 @@ def evaluate(genomes, scores):
 
 
 def generate_output(discard, new_strains, new_species, outfolder, infolder):
-    strains_folder = os.path.join(outfolder, 'New strains')
-    species_folder = os.path.join(outfolder, 'New species')
+    strains_folder = os.path.join(outfolder, 'New_strains')
+    species_folder = os.path.join(outfolder, 'New_species')
     for f in [outfolder, strains_folder, species_folder]:
         if not os.path.exists(f):
             os.makedirs(f)
@@ -88,8 +88,12 @@ def generate_output(discard, new_strains, new_species, outfolder, infolder):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Takes two files - mash and drep outputs - and outputs the '
-                                                 'smallest value for each MAG')
+    parser = argparse.ArgumentParser(description='''
+    The script parses mash output (dereplicated genomes compared against a mash sketch of the existing genome 
+    catalog) and separates new genomes into 3 categories: new species, new strains, and repeat strains 
+    (to be discarded). To determine the category of a new genome, the script finds the most similar genome in the 
+    existing catalog (based on mash distance).
+    ''')
     parser.add_argument('-m', '--mash', required=True,
                         help='Path to the mash filename')
     parser.add_argument('-e', '--evaluate-list', required=True,
@@ -97,7 +101,7 @@ def parse_args():
     parser.add_argument('-o', '--outfolder', required=True,
                         help='Path to folder where the results will be saved to')
     parser.add_argument('-f', '--input-folder', required=True,
-                        help='Path to folder where the MAG fasta files are located')
+                        help='Path to folder where the dereplicated new genome fasta files are located')
     return parser.parse_args()
 
 
