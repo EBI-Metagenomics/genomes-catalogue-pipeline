@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   ResourceRequirement:
-    ramMin: 250000
+    ramMin: 150000
     coresMin: 32
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
