@@ -43,7 +43,7 @@ export PATH=$PATH:${MAIN_PATH}/docker/genomes-catalog-update/scripts/
 chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
 chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
 
-export TMPDIR="/tmp"
+export TMPDIR="/hps/scratch/rdf/metagenomics/pipelines-tmp"  #"/tmp"
 
 export TOIL_LSF_ARGS="-q ${QUEUE}"
 if [ "${BIG_MEM}" == "True" ]; then

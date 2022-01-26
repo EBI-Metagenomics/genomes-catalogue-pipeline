@@ -43,7 +43,7 @@ CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
 YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
 
 
-export TMPDIR="/tmp"
+export TMPDIR="/hps/scratch/rdf/metagenomics/pipelines-tmp"  #"/tmp"
 
 export TOIL_LSF_ARGS="-q ${QUEUE}"
 if [ "${BIG_MEM}" == "True" ]; then
