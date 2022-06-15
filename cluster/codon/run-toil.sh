@@ -17,6 +17,7 @@ YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
 
 JOBSTORE="/hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test"
 OUTDIR="/hps/nobackup/rdf/metagenomics/test-folder/genomes-pipeline"
+TMPDIR="/hps/scratch/rdf/metagenomics/pipelines-tmp"
 OUTDIRNAME="test"
 MEMORY=100G
 QUEUE="production"
@@ -24,7 +25,7 @@ BIG_MEM="False"
 SINGULARUTY_ON="True"
 
 
-while getopts :n:y:c:m:q:b:s:p: option; do
+while getopts :n:y:c:m:q:b:s:p:o:t: option; do
         case "${option}" in
                 n) OUTDIRNAME=${OPTARG};;
                 y) YML=${OPTARG};;
@@ -34,6 +35,8 @@ while getopts :n:y:c:m:q:b:s:p: option; do
                 b) BIG_MEM=${OPTARG};;
                 s) SINGULARUTY_ON=${OPTARG};;
                 p) MAIN_PATH=${OPTARG};;
+                o) OUTDIR=${OPTARG};;
+                t) TMPDIR=${OPTARG};;
         esac
 done
 
@@ -42,8 +45,6 @@ export PATH=$PATH:${MAIN_PATH}/docker/genomes-catalog-update/scripts/
 
 chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
 chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
-
-export TMPDIR="/hps/scratch/rdf/metagenomics/pipelines-tmp"  #"/tmp"
 
 export TOIL_LSF_ARGS="-q ${QUEUE}"
 if [ "${BIG_MEM}" == "True" ]; then
