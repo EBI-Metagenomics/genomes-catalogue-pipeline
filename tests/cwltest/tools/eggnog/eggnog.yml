@@ -11,9 +11,9 @@ db:
   class: File
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
 
-data_dir:
-  class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
+#data_dir:
+#  class: Directory
+#  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_data/data/
 
 mode: diamond
 cpu: 16
