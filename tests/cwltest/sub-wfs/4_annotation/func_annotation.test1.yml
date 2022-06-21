@@ -1,6 +1,25 @@
-input_faa:
+mmseqs_faa:
   class: File
   path: ../../../../input_example/small_set/results/mmseqs_0.9_cluster_rep.fa
+mmseqs_tsv:
+  class: File
+  path: ../../../../input_example/small_set/results/MGYGs/intermediate_files/mmseqs_cluster.tsv
+
+all_reps_filtered:
+  class: File
+  path: ../../../../input_example/small_set/results/MGYGs/intermediate_files/drep-filt-list.txt
+
+# there should be all genomes including MGYG1, MGYG2, MGYG3
+all_fnas:
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/MGYG000000004/MGYG000000004.fna
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/MGYG000000005/MGYG000000005.fna
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/MGYG000000006/MGYG000000006.fna
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/MGYG000000007/MGYG000000007.fna
+
 interproscan_databases:
   class: Directory
   path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/ips/data
@@ -8,18 +27,15 @@ chunk_size_ips: 5000
 chunk_size_eggnog: 5000
 db_diamond_eggnog:
   class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/eggnog_proteins.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/eggnog_proteins.dmnd
 db_eggnog:
   class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/eggnog.db
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/eggnog.db
 data_dir_eggnog:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/
 
-species_representatives:
-  class: File
-  path: ../../../../input_example/small_set/results/MGYGs/intermediate_files/drep-filt-list.txt
+cm_models:
+  class: Directory
+  path: ../../tools/detect_rRNA/models
 
-mmseqs_tsv:
-  class: File
-  path: ../../../../input_example/small_set/results/MGYGs/intermediate_files/mmseqs_cluster.tsv

@@ -41,7 +41,7 @@ def create_folder(name, dir, kegg_files, index, gff, annotations=None):
     copy(os.path.join(dir, faa), os.path.join(genome_folder, faa))
 
     core_genes = [cur_file for cur_file in input_files if len(cur_file.split('core_genes.txt')) > 1]
-    mash = [cur_file for cur_file in input_files if len(cur_file.split('mashtree.nwk')) > 1]
+    mash = [cur_file for cur_file in input_files if len(cur_file.split('.nwk')) > 1]
     gene_presence_absence = [cur_file for cur_file in input_files if len(cur_file.split('gene_presence_absence.Rtab')) > 1]
     pan_genome_reference = [cur_file for cur_file in input_files if len(cur_file.split('pan-genome.fna')) > 1]
 

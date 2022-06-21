@@ -1,6 +1,6 @@
 genomes_ena:
   class: Directory
-  path: ../../input_example/small_set/mixed
+  path: ../../input_example/small_set/all_genomes
 ena_csv:
   class: File
   path: ../../input_example/small_set/download.csv
@@ -8,12 +8,10 @@ ena_csv:
 max_accession_mgyg: 20
 min_accession_mgyg: 1
 
-ftp_name_catalogue: "TEST-CATALOGUE"
-ftp_version_catalogue: "v1.0"
-
 # no gtdbtk
 skip_gtdbtk_step: True
-skip_drep_step: False
+skip_drep_step: True
+skip_assigning: True
 
 # common input
 mmseqs_limit_i:
@@ -38,13 +36,13 @@ chunk_size_ips: 10000
 chunk_size_eggnog: 100000
 db_diamond_eggnog:
   class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/eggnog_proteins.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/eggnog_proteins.dmnd
 db_eggnog:
   class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/eggnog.db
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/eggnog.db
 data_dir_eggnog:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/
 
 # GTDB-Tk
 gtdbtk_data:
@@ -59,18 +57,3 @@ cm_models:
 kegg_db:
   class: File
   path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/kegg_classes.tsv
-
-geo_metadata:
-  class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/continent_countries.csv
-
-biom: "test:test"
-
-# ncRNA
-claninfo_ncrna:
-  class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.clanin
-
-models_ncrna:
-  class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.cm

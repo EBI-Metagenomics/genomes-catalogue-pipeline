@@ -1,8 +1,8 @@
 #cwltest
 
 - job: genome-post-processing.test1.yml
-  tool: ../../../../cwl/workflows/wf-post-processing.cwl
-  short_name: wf-post-processing.cwl
+  tool: ../../../../cwl/sub-wfs/6_post-processing/genome-post-processing.cwl
+  short_name: genome-post-processing.cwl
   doc: "annotate GFF and KEGG, COG, CAZY"
   output:
     annotated_gff:
@@ -67,8 +67,8 @@
               size: 601060
 
 - job: genome-post-processing.test2.yml
-  tool: ../../../../cwl/workflows/wf-post-processing.cwl
-  short_name: wf-post-processing.cwl
+  tool: ../../../../cwl/sub-wfs/6_post-processing/genome-post-processing.cwl
+  short_name: genome-post-processing.cwl
   doc: "annotate GFF and KEGG, COG, CAZY, json with metadata + pan-genome"
   output:
     annotated_gff:
@@ -146,3 +146,152 @@
           basename: MGYG000000007.core_genes.txt
           checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
           size: 0
+
+- job: wf-6-post-processing.yml
+  tool: ../../../../cwl/sub-wfs/wf-6-post-processing.cwl
+  short_name: wf-6-post-processing.cwl
+  doc: "kegg, cog, ncRNA, add annotations to gffs, genome.json"
+  output:
+    annotated_gffs:
+        - basename: MGYG000000004.gff
+          nameroot: MGYG000000004
+          nameext: ".gff"
+          class: File
+          checksum: sha1$1b39cca5c876c417d244d081316b5d980cbf9c9f
+          size: 2316909
+        - basename: MGYG000000007.gff
+          nameroot: MGYG000000007
+          nameext: ".gff"
+          class: File
+          checksum: sha1$cb63ff25613a9d45bd19164d1d43f5ed9ff703ca
+          size: 2856679
+    annotations_cluster_dir:
+      - basename: MGYG000000004
+        nameroot: MGYG000000004
+        nameext: ''
+        class: Directory
+        listing:
+          - class: File
+            basename: MGYG000000004.json
+            checksum: sha1$8fea295b3b878138f16e5b7d90cd56acd766c02e
+            size: 686
+          - class: Directory
+            basename: genome
+            listing:
+              - class: File
+                basename: MGYG000000004.faa
+                checksum: sha1$c79c44a7f2ba6b410d1121eeba360c61226992b6
+                size: 601739
+              - class: File
+                basename: MGYG000000004.fna
+                checksum: sha1$73081261b58b48790787aca5cb41254bd1ffb091
+                size: 1769694
+              - class: File
+                basename: MGYG000000004.fna.fai
+                checksum: sha1$86cb246848acb0279d1a07618504ebdf408cbf70
+                size: 1689
+              - class: File
+                basename: MGYG000000004.gff
+                checksum: sha1$1b39cca5c876c417d244d081316b5d980cbf9c9f
+                size: 2316909
+              - class: File
+                basename: MGYG000000004_InterProScan.tsv
+                checksum: sha1$4789f037d1800d7eea0d79b5fb019b16546aac14
+                size: 47211489
+              - class: File
+                basename: MGYG000000004_annotation_coverage.tsv
+                checksum: sha1$2242a08e0d64405c0cca2acba1a96a3b7ac7452a
+                size: 194
+              - class: File
+                basename: MGYG000000004_cazy_summary.tsv
+                checksum: sha1$452b05e365194dafa8af057484a8304716550005
+                size: 161
+              - class: File
+                basename: MGYG000000004_cog_summary.tsv
+                checksum: sha1$aa2324499f491ef4fe54bfece3c04fe39ae4ba49
+                size: 430
+              - class: File
+                basename: MGYG000000004_eggNOG.tsv
+                checksum: sha1$0f0f9d90285edc0d64861c8fb7801ace40abbe31
+                size: 601060
+              - class: File
+                basename: MGYG000000004_kegg_classes.tsv
+                checksum: sha1$5a73c352f625f1d426f5c3ba1e6d513af222bb63
+                size: 1025
+              - class: File
+                basename: MGYG000000004_kegg_modules.tsv
+                checksum: sha1$0d6401765f91c292f0f50abcd8705160de46c7a5
+                size: 3748
+      - basename: MGYG000000007
+        nameroot: MGYG000000007
+        nameext: ''
+        class: Directory
+        listing:
+          - class: File
+            basename: MGYG000000007.json
+            checksum: sha1$ec5316078028581f2850edcfd823bb6b5c4543e0
+            size: 934
+          - class: Directory
+            basename: genome
+            listing:
+              - class: File
+                basename: MGYG000000007.faa
+                checksum: sha1$b4eef91c630bcec7b2025c4da0e800fba48d22d1
+                size: 710006
+              - class: File
+                basename: MGYG000000007.fna
+                checksum: sha1$38ff5b69ecb710c9902d25bc9c65781d15fd7c45
+                size: 2282788
+              - class: File
+                basename: MGYG000000007.fna.fai
+                checksum: sha1$34046b9f4408a1238e0bbb2c0cc9bb5e3ec4863e
+                size: 5369
+              - class: File
+                basename: MGYG000000007.gff
+                checksum: sha1$cb63ff25613a9d45bd19164d1d43f5ed9ff703ca
+                size: 2856679
+              - class: File
+                basename: MGYG000000007_InterProScan.tsv
+                checksum: sha1$9283e9b53a8d790e2c0ce89e451450c662ec8709
+                size: 52945471
+              - class: File
+                basename: MGYG000000007_annotation_coverage.tsv
+                checksum: sha1$b2977f9cfd816267a591e7cef4b7abce72b13ef3
+                size: 193
+              - class: File
+                basename: MGYG000000007_cazy_summary.tsv
+                checksum: sha1$916de39b8eda5b4859e1b87f4de6564526b92476
+                size: 162
+              - class: File
+                basename: MGYG000000007_cog_summary.tsv
+                checksum: sha1$f1aad27ed1c592699c7fdcc0a5fbb437d36143b7
+                size: 411
+              - class: File
+                basename: MGYG000000007_eggNOG.tsv
+                checksum: sha1$722739138c629826cf78c5ed24777975080d16fe
+                size: 734343
+              - class: File
+                basename: MGYG000000007_kegg_classes.tsv
+                checksum: sha1$96841ff19cbdf6fbc5e05819ffb20233880ab8c5
+                size: 1115
+              - class: File
+                basename: MGYG000000007_kegg_modules.tsv
+                checksum: sha1$4243a67b7712d8c16872d5898ab4e83282150b99
+                size: 3995
+          - class: Directory
+            basename: pan-genome
+            listing:
+              - class: File
+                basename: MGYG000000007.core_genes.txt
+                checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+                size: 0
+              - class: File
+                basename: MGYG000000007.pan-genome.fna
+                checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+                size: 0
+              - class: File
+                basename: panaroo.gene_presence_absence.Rtab
+                checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+                size: 0
+              - class: File
+                basename: MGYG000000007_mash.nwk
