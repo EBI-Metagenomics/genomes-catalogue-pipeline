@@ -9,7 +9,8 @@ db_diamond:
 
 db:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/eggnog.db
+  #/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
 
 #data_dir:
 #  class: Directory

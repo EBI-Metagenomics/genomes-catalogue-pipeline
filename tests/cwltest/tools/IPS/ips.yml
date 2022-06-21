@@ -4,4 +4,5 @@ inputFile:
 
 databases:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/ips/data
+  #/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
