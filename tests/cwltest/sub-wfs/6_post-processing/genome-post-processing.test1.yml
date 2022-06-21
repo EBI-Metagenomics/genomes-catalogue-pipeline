@@ -1,17 +1,17 @@
 kegg:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/kegg_classes.tsv
 
 biom: "test:biom"
 
 # ncRNA
 claninfo_ncrna:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.clanin
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.clanin
 
 models_ncrna:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/ncrna_cms/Rfam.cm
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.cm
 
 annotations:
   - class: File

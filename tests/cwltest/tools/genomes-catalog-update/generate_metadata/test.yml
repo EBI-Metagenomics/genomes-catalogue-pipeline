@@ -24,4 +24,4 @@ ftp_name: 'marine'
 ftp_version: 'v1.0'
 geo:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/continent_countries.csv
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/continent_countries.csv

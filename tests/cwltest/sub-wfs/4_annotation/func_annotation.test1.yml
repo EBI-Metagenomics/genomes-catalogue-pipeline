@@ -3,15 +3,15 @@ input_faa:
   path: ../../../../input_example/small_set/results/mmseqs_0.9_cluster_rep.fa
 interproscan_databases:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/ips/data
 chunk_size_ips: 5000
 chunk_size_eggnog: 5000
 db_diamond_eggnog:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_proteins.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/eggnog_proteins.dmnd
 db_eggnog:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/eggnog.db
 data_dir_eggnog:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs

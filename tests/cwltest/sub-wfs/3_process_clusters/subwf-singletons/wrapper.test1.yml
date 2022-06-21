@@ -8,4 +8,4 @@ csv:
   path: ../../../../../input_example/small_set/download.csv
 gunc_db_path:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd

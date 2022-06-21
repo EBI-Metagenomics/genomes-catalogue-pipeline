@@ -26,22 +26,22 @@ mmseqs_limit_c: 0.8
 # GUNC
 gunc_db_path:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd
 
 # IPS
 interproscan_databases:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/ips/data
 chunk_size_ips: 10000
 
 # EggNOG
 chunk_size_eggnog: 100000
 db_diamond_eggnog:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_proteins.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/eggnog_proteins.dmnd
 db_eggnog:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/eggnog.db
 data_dir_eggnog:
   class: Directory
   path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
@@ -49,8 +49,8 @@ data_dir_eggnog:
 # GTDB-Tk
 gtdbtk_data:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/release202
 
 kegg_db:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/kegg_classes.tsv
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/kegg_classes.tsv
