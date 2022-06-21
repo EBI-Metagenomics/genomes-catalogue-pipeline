@@ -1,5 +1,3 @@
-
-
 # no gtdbtk
 skip_gtdbtk_step: True
 skip_drep_step: False

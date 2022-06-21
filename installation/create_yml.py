@@ -2,10 +2,6 @@
 
 import argparse
 
-WGS_ANALYSIS = "wgs"
-ASSEMBLY_ANALYSIS = "assembly"
-AMPLICON_ANALYSIS = "amplicon"
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -15,29 +11,28 @@ if __name__ == "__main__":
         "-y", "--yml", dest="yml", help="YAML file with the constants", required=True
     )
     parser.add_argument(
-        "-a",
-        "--analysis",
-        dest="analysis",
-        choices=[WGS_ANALYSIS, ASSEMBLY_ANALYSIS, AMPLICON_ANALYSIS],
-        help="Type of analysis",
-        required=True,
+        "-e", "--ena", dest="ena_genomes", help="Genomes from ENA", required=False
     )
     parser.add_argument(
-        "-t",
-        "--type",
-        dest="type",
-        choices=["single", "paired"],
-        help="single/paired option",
-        required=False,
+        "-s", "--csv", dest="ena_csv", help="CSV file for ENA genomes", required=False
     )
     parser.add_argument(
-        "-f", "--fr", dest="fr", help="forward reads file path", required=False
+        "-a", "--ncbi", dest="ncbi_genomes", help="Genomes from NCBI", required=False
     )
     parser.add_argument(
-        "-r", "--rr", dest="rr", help="reverse reads file path", required=False
+        "-m", "--max", dest="max", help="maximum MGYG number", required=True
     )
     parser.add_argument(
-        "-s", "--single", dest="single", help="single reads file path", required=False
+        "-n", "--min", dest="min", help="minimum MGYG number", required=True
+    )
+    parser.add_argument(
+        "-c", "--name", dest="catalogue_name", help="name of catalogue on FTP (example: HUMAN-GUT)", required=True
+    )
+    parser.add_argument(
+        "-v", "--version", dest="version", help="version of catalogue (example: v1.0)", required=True
+    )
+    parser.add_argument(
+        "-b", "--biom", dest="biom", help="biom (example: Human:Gut)", required=True
     )
     parser.add_argument(
         "-o", "--output", dest="output", help="Output yaml file path", required=True
@@ -45,58 +40,57 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    type_required = args.analysis in [WGS_ANALYSIS, AMPLICON_ANALYSIS]
-    if type_required and args.type is None:
-        parser.error(f"For {WGS_ANALYSIS} or {AMPLICON_ANALYSIS}, --type is required.")
+    if not(args.ena_genomes or args.ncbi_genomes):
+        parser.error("ENA or NCBI genomes are required.")
 
-    if args.analysis in [ASSEMBLY_ANALYSIS, AMPLICON_ANALYSIS] and args.single is None:
-        parser.error(
-            f"For {ASSEMBLY_ANALYSIS} or {AMPLICON_ANALYSIS}, --single is required."
-        )
+    if args.ena_genomes:
+        if not args.ena_csv:
+            parser.error("For ENA genomes --csv is required.")
+
+    if args.ena_csv:
+        if not args.ena_genomes:
+            parser.error("ENA CSV given without ENA genomes location.")
+
+    if int(args.min) > int(args.max):
+        parser.error("Min accession is bigger than Max accession")
+
+    if "v" not in args.version:
+        parser.error("Add version with 'v'. Example: v1.0")
 
     print(f"Loading the constants from {args.yml}.")
     with open(args.yml, "r") as constants_yml:
         constants = constants_yml.read()
 
-    print("---------> prepare YML file for " + args.analysis)
+    print(f"---------> prepare YML file for {args.catalogue_name} version {args.version}")
 
     with open(args.output, "w") as output_yml:
         print(constants, "", sep="\n", file=output_yml)
-        if args.analysis in [WGS_ANALYSIS, AMPLICON_ANALYSIS]:
-            if args.type == "single":
-                print(
-                    "single_reads:",
-                    "  class: File",
-                    "  format: edam:format_1930",
-                    "  path: " + args.single,
-                    sep="\n",
-                    file=output_yml,
-                )
-            elif args.type == "paired":
-                print(
-                    "forward_reads:",
-                    "  class: File",
-                    "  format: edam:format_1930",
-                    "  path: " + args.fr,
-                    sep="\n",
-                    file=output_yml,
-                )
-                print(
-                    "reverse_reads:",
-                    "  class: File",
-                    "  format: edam:format_1930",
-                    "  path: " + args.rr,
-                    sep="\n",
-                    file=output_yml,
-                )
-        elif args.analysis == ASSEMBLY_ANALYSIS:
+        print("max_accession_mgyg: " + args.max, sep="\n", file=output_yml)
+        print("min_accession_mgyg: " + args.min, sep="\n", file=output_yml)
+        print("ftp_name_catalogue: \"" + args.catalogue_name + "\"", sep="\n", file=output_yml)
+        print("ftp_version_catalogue: \"" + args.version + "\"", sep="\n", file=output_yml)
+        print("biom: \"" + args.biom + "\"", sep="\n", file=output_yml)
+        if args.ena_genomes:
             print(
-                "contigs:",
-                "  class: File",
-                "  format: edam:format_1929",
-                "  path: " + args.single,
+                "genomes_ena:",
+                "  class: Directory",
+                "  path: " + args.ena_genomes,
                 sep="\n",
-                file=output_yml,
+            file=output_yml,
             )
-
-        print("---------> yml done")
+            print(
+                "ena_csv:",
+                "  class: File",
+                "  path: " + args.ena_csv,
+                sep="\n",
+            file=output_yml,
+            )
+        if args.ncbi_genomes:
+            print(
+                "genomes_ncbi:",
+                "  class: Directory",
+                "  path: " + args.ncbi_genomes,
+                sep="\n",
+            file=output_yml,
+            )
+    print("---------> yml done. Exit")
