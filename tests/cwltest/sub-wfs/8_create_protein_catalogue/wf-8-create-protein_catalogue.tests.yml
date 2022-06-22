@@ -8,15 +8,38 @@
       class: Directory
       basename: protein_catalogue
       listing:
-        - basename: mmseqs-0.9.tar.gz
+      - class: Directory
+        basename: mmseqs-0.9
+        listing:
+        - class: File
+          basename: 2.txt
+          size: 0
+          nameroot: '2'
+          nameext: ".txt"
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+        - basename: protein_catalogue-90_InterProScan.tsv
+          nameroot: protein_catalogue-90_InterProScan
+          nameext: ".tsv"
           class: File
-          checksum: sha1$aeb325cb0c06c73d3c5fd95e4b3bde5509944937
-          size: 267
-        - class: File
-          size: 0
-          basename: mmseqs-0.5.tar.gz
           checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
-        - class: File
           size: 0
-          basename: mmseqs-1.0.tar.gz
+        - basename: protein_catalogue-90_eggNOG.tsv
+          nameroot: protein_catalogue-90_eggNOG
+          nameext: ".tsv"
+          class: File
           checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+      - class: Directory
+        basename: mmseqs-0.5
+        listing:
+        - class: File
+          basename: 1.txt
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+      - class: Directory
+        basename: mmseqs-1.0
+        listing:
+        - class: File
+          basename: 3.txt
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0

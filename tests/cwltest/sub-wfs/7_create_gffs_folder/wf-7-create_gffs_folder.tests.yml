@@ -1,0 +1,23 @@
+#cwltest
+
+- job: test1.yml
+  tool: ../../../../cwl/sub-wfs/wf-7-create_gffs_folder.cwl
+  short_name: wf-7-create_gffs_folder.cwl
+  doc: "create GFF folder"
+  output:
+    gffs_folder:
+      class: Directory
+      basename: GFF
+      listing:
+      - basename: 1.gff.gz
+        nameroot: 1.gff
+        nameext: ".gz"
+        class: File
+        checksum: sha1$a6cdb6f9b9db495ccfb38ab221a49f800d9d153c
+        size: 26
+      - basename: 2.gff.gz
+        nameroot: 2.gff
+        nameext: ".gz"
+        class: File
+        checksum: sha1$2e64fa21de0c0eef418b633a5da1f9e571d9eaba
+        size: 26
