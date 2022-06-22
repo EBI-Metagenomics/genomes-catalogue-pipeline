@@ -1,42 +1,46 @@
 # MGnify genome analysis pipeline
 
-MGnify CWL pipeline to characterize a set of isolate or metagenome-assembled genomes (MAGs) using the workflow described in the following publication: 
+[MGnify](https://www.ebi.ac.uk/metagenomics/) [CWL](https://www.commonwl.org/) pipeline to characterize a set of isolate or metagenome-assembled genomes (MAGs) using the workflow described in the following publication: 
 
 A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, E Sakharova, DH Parks, P Hugenholtz, N Segata, NC Kyrpides and RD Finn. (2020) [A unified catalog of 204,938 reference genomes from the human gut microbiome.](https://www.nature.com/articles/s41587-020-0603-3) <i>Nature Biotechnol</i>. doi: https://doi.org/10.1038/s41587-020-0603-3
 
+Detail information about existing MGnify catalogues: https://docs.mgnify.org/en/latest/genome-viewer.html#
 
-## Clone repo
+## Pipeline structure
+
+![Pipeline overview](pipeline_overview.png)
+
+## Installation 
+
+### CWL
+Genome pipeline was implemented on [Common Workflow Language (CWL)](https://www.commonwl.org/). 
+Install [CWL](https://github.com/common-workflow-language/cwltool).
+The current implementation uses CWL version 1.2. It was tested using [Toil](https://toil.readthedocs.io/en/3.10.1/gettingStarted/install.html) version 5.3.0 as the workflow engine and [conda](https://docs.conda.io/en/latest/) to manage the software dependencies.
+
+### Docker
+Our team kindly recommend to use [docker](https://www.docker.com/) containers to run pipeline.
+All dockers were pushed on [quay.io/microbiome-informatics](https://quay.io/organization/microbiome-informatics). If you want to re-build dockers *(it will take a while)* use script:
 ```bash
-git clone https://github.com/EBI-Metagenomics/genomes-pipeline.git
-cd genomes-pipeline
+cd docker && bash build.sh
+```
+### Download databases
+Pipeline execution requires memory ~150G for necessary databases.
+```bash
+bash download_db.sh
 ```
 
-## Installation with Docker
-
-1. Install all necessary tools (better use separate env):
-- [cwltool](https://github.com/common-workflow-language/cwltool) (tested v1.0.2) or [toil](https://toil.readthedocs.io/en/3.10.1/gettingStarted/install.html)
-- [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/guides/3.0/user-guide/installation.html)
-- [conda](https://docs.conda.io/en/latest/)
-2. Add python scripts to PATH
+### Add custom python3 scripts to PATH
 ```bash
 export PATH=${PATH}:docker/python3_scripts:docker/genomes-catalog-update/scripts
 ```
-All dockers were pushed on DockerHub. If you want to re-build dockers:
-```bash
-cd docker
-bash build.sh
-```
 
-
-## Installation without Docker
+### In addition do this if you will not use Docker or Singularity
 
 1. Install the necessary dependencies:
-- [cwltool](https://github.com/common-workflow-language/cwltool) (tested v1.0.2) or [toil](https://toil.readthedocs.io/en/3.10.1/gettingStarted/install.html)
 - [R](https://www.r-project.org/) (tested v3.5.2). Packages: reshape2, fastcluster, optparse, data.table and ape.
 - [Python](https://www.python.org/) v3.6+
 - [Perl](https://www.perl.org/get.html)
 - [CheckM](https://github.com/Ecogenomics/CheckM) (tested v1.0.11)
-- [CAT](https://github.com/dutilh/CAT) (tested v5.0)
 - [cmsearch](https://manpages.ubuntu.com/manpages/xenial/man1/cmsearch.1.html)
 - [dRep](https://drep.readthedocs.io/en/latest/) (tested v2.2.4)
 - [eggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper/wiki/eggNOG-mapper-v2) (tested v2.0)
@@ -51,8 +55,6 @@ bash build.sh
 
 2. Add custom scripts to your `$PATH` environment. 
 ```bash
-export PATH=${PATH}:docker/genomes-catalog-update/scriptsexport 
-export PATH=${PATH}:docker/python3_scripts
 export PATH=${PATH}:docker/bash
 export PATH=${PATH}:docker/detect_rrnas
 export PATH=${PATH}:docker/gunc
@@ -60,27 +62,47 @@ export PATH=${PATH}:docker/mash2nwk
 export PATH=${PATH}:docker/mmseqs
 ```
 
-## Download databases 
-```bash
-bash download_db.sh
-```
 
 ## Run
 
-Note: You can manually change parameters of MMseqs2 for protein clustering in your YML file (arguments mmseqs_limit_i, mmseq_limit_annotation, mmseqs_limit_c)</b>
-1. You need to pre-download your data to directory (GENOMES) and make sure that all genomes are not compressed
-2. Create YML file with our help-script:
-```bash
-export GENOMES=
+**Note 1**: You can manually change parameters of MMseqs2 for protein clustering in your YML file (arguments mmseqs_limit_i, mmseq_limit_annotation, mmseqs_limit_c)</b>
 
+**Note 2**: Pipeline currently doesn't support GTDB-Tk and will skip this step. 
+
+1. You need to pre-download your data to directory/ies and make sure that all genomes are not compressed. If you have downloaded genomes from ENA and NCBI put them into different folders. If you've downloaded genomes from ENA save output CSV file with ENA genomes.
+2. You will need the following information to create YML:
+ - catalogue name (for example, GUT)
+ - catalogue version (for example, v1.0)
+ - catalogue biom (for example, Human:Gut)
+ - min amd max number of accessions (only MGnify specific). Max - Min = #total number of genomes (NCBI+ENA)
+3. Create YML file with our help-script:
+```bash
+export ENA_GENOMES=
+export ENA_GENOMES_CSV=
+export NCBI_GENOMES=
+export BIOM=
+export NAME=
+export VERSION=
+export OUTPUT=  # output.yml
+export MIN=
+export MAX
 
 python3 installation/create_yml.py \
-        -d ${GENOMES} ...
+        -y pattern.yml -o ${OUTPUT} \
+        -m ${MAX} -n ${MIN} -v ${VERSION} -b ${BIOM} -c ${NAME} \
+        # for ENA genomes
+        -e ${ENA_GENOMES} -s ${ENA_GENOMES_CSV}
+        # for NCBI genomes
+        -a ${NCBI_GENOMES}
 ```
-## Pipeline structure
+4. Simple run 
+```
+cwltool cwl/wfs/wf-main.cwl ${OUTPUT}
+```
+Add all necessary cwltool/Toil arguments for run.
 
-![Pipeline overview](pipeline_overview.png)
 
+## Output
 
 Output files/folders:
 ```
@@ -129,14 +151,4 @@ MGYG...NUM
   per-genome-annotations/ (for post-processing)
   drep_genomes/                   (for GTDB-Tk)
 ```
-
-### Tool description
-- CheckM: Estimate genome completeness and contamination.
-- GTDB-Tk: Genome taxonomic assignment using the GTDB framework.
-- dRep: Genome de-replication.
-- Mash2Nwk: Generate Mash distance tree of conspecific genomes.
-- Prokka: Predict protein-coding sequences from genome assembly.
-- MMseqs2: Cluster protein-coding sequences.
-- InterProScan: Protein functional annotation using the InterPro database.
-- eggNOG-mapper: Protein functional annotation using the eggNOG database.
 
