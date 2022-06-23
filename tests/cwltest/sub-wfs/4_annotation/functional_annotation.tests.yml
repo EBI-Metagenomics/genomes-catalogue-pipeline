@@ -1,11 +1,11 @@
 # cwltest
 
-- job: functional_annotation.tests.yml
-  tool: ../../../../cwl/workflows/sub-wf/
-  short_name: functional_annotation.cwl
-  doc: "chunking eggnog + chunking IPS"
+- job: func_annotation.test1.yml
+  tool: ../../../../cwl/workflows/sub-wf/wf-4-annotation.cwl
+  short_name: wf-4-annotation.cwl
+  doc: "chunking eggnog + chunking IPS + detect rRNA"
   output:
-    eggnog_annotations:
+    eggnog_tsv:
       basename: mmseqs_0.9_cluster_rep.emapper.annotations
       nameroot: mmseqs_0.9_cluster_rep.emapper
       nameext: ".annotations"
@@ -13,26 +13,12 @@
       checksum: sha1$ee30c791fd662dd2a854ec0a3e92ecacee153dd2
       size: 2847837
       format: http://edamontology.org/format_3475
-    eggnog_seed_orthologs:
-      basename: mmseqs_0.9_cluster_rep.emapper.seed_orthologs
-      nameroot: mmseqs_0.9_cluster_rep.emapper
-      nameext: ".seed_orthologs"
-      class: File
-      checksum: sha1$d0c853b3fd4358b8936bfada97acece30082f010
-      size: 578502
-    ips_result:
-      basename: mmseqs_0.9_cluster_rep.IPS.tsv
-      nameroot: mmseqs_0.9_cluster_rep.IPS
-      nameext: ".tsv"
-      class: File
-      checksum: sha1$1f32aec724e0529f0f19be9ed158669c9d178732
-      size: 222251907
-    per_genome_annotations:
+    ips_eggnog_annotations:
       - basename: MGYG000000004_InterProScan.tsv
         nameroot: MGYG000000004_InterProScan
         nameext: ".tsv"
         class: File
-        checksum: sha1$6a16035c5f46433ae6db08c6b92d7cd94845dfe5
+        checksum: sha1$77d6dffe2472a49252ee96289e399642f8f59d22
         size: 11455640
       - basename: MGYG000000004_eggNOG.tsv
         nameroot: MGYG000000004_eggNOG
@@ -44,19 +30,19 @@
         nameroot: MGYG000000005_InterProScan
         nameext: ".tsv"
         class: File
-        checksum: sha1$6395a61c51f943902875ea4c54f4be6017ee1135
+        checksum: sha1$edd2df32163de9a5f137038ae66aef3068864946
         size: 37635780
       - basename: MGYG000000005_eggNOG.tsv
         nameroot: MGYG000000005_eggNOG
         nameext: ".tsv"
         class: File
-        checksum: sha1$718c6a787929d90b6c9365c322562a9c17cd9e73
+        checksum: sha1$0389c34894ffd6a89a52f95156e610da03c05b57
         size: 491087
       - basename: MGYG000000006_InterProScan.tsv
         nameroot: MGYG000000006_InterProScan
         nameext: ".tsv"
         class: File
-        checksum: sha1$c7944763024431f498aabb26bde506db34a60c72
+        checksum: sha1$7f9195b27e73f66ea441bbb61dfc3d49596e3838
         size: 30273001
       - basename: MGYG000000006_eggNOG.tsv
         nameroot: MGYG000000006_eggNOG
@@ -68,7 +54,7 @@
         nameroot: MGYG000000007_InterProScan
         nameext: ".tsv"
         class: File
-        checksum: sha1$9f309f9c6eb006c27c8ddda6d0d82e7f182e8b55
+        checksum: sha1$9ea254f3d501e1d399508dda2ee174d65ba5bf05
         size: 18393899
       - basename: MGYG000000007_eggNOG.tsv
         nameroot: MGYG000000007_eggNOG
@@ -76,3 +62,118 @@
         class: File
         checksum: sha1$709fa003beaea7a3e7a3a1cb12242e066222cb06
         size: 282367
+    ips_tsv:
+      basename: mmseqs_0.9_cluster_rep.IPS.tsv
+      nameroot: mmseqs_0.9_cluster_rep.IPS
+      nameext: ".tsv"
+      class: File
+      checksum: sha1$92b3b9f2b2318ea22e9cdddc9ed19a7b6b852d63
+      size: 222251907
+    rrna_fasta:
+      class: Directory
+      basename: rRNA_fastas
+      listing:
+        - basename: MGYG000000004_fasta-results
+          nameroot: MGYG000000004_fasta-results
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: MGYG000000004_rRNAs.fasta
+              checksum: sha1$0123a98dc9c10d89679c45f57f3774a78e2f0bf4
+              size: 2999
+              nameroot: MGYG000000004_rRNAs
+              nameext: ".fasta"
+        - basename: MGYG000000005_fasta-results
+          nameroot: MGYG000000005_fasta-results
+          nameext: ''
+          class: Directory
+          listing: []
+        - basename: MGYG000000006_fasta-results
+          nameroot: MGYG000000006_fasta-results
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: MGYG000000006_rRNAs.fasta
+              checksum: sha1$3d15c63be3f1f617ed0f3018ead6a8e24b2129a9
+              size: 3002
+              nameroot: MGYG000000006_rRNAs
+              nameext: ".fasta"
+        - basename: MGYG000000007_fasta-results
+          nameroot: MGYG000000007_fasta-results
+          nameext: ''
+          class: Directory
+          listing: []
+    rrna_out:
+      class: Directory
+      basename: rRNA_outs
+      listing:
+        - basename: MGYG000000004_out-results
+          nameroot: MGYG000000004_out-results
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: MGYG000000004_rRNAs.out
+              checksum: sha1$e49ff88f15494c4828f0525dfaa502756ace30c8
+              size: 102
+              nameroot: MGYG000000004_rRNAs
+              nameext: ".out"
+            - class: File
+              basename: MGYG000000004_tRNA_20aa.out
+              checksum: sha1$ee0b84f8881db299f7252e05ce93a5d22e94ac23
+              size: 17
+              nameroot: MGYG000000004_tRNA_20aa
+              nameext: ".out"
+        - basename: MGYG000000005_out-results
+          nameroot: MGYG000000005_out-results
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: MGYG000000005_rRNAs.out
+              checksum: sha1$a0fbee4e1230f4f0becee9fcc4cb73a76b7533c8
+              size: 101
+              nameroot: MGYG000000005_rRNAs
+              nameext: ".out"
+            - class: File
+              basename: MGYG000000005_tRNA_20aa.out
+              checksum: sha1$d56f0d959c421ae1bc2c4027c493f5edac82c30e
+              size: 17
+              nameroot: MGYG000000005_tRNA_20aa
+              nameext: ".out"
+        - basename: MGYG000000006_out-results
+          nameroot: MGYG000000006_out-results
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: MGYG000000006_rRNAs.out
+              checksum: sha1$3f502921c0d2f0fa446f75e46d1585a25f806dde
+              size: 102
+              nameroot: MGYG000000006_rRNAs
+              nameext: ".out"
+            - class: File
+              basename: MGYG000000006_tRNA_20aa.out
+              checksum: sha1$645e47a6787c60bb9d0151a41948158a1cd461d0
+              size: 17
+              nameroot: MGYG000000006_tRNA_20aa
+              nameext: ".out"
+        - basename: MGYG000000007_out-results
+          nameroot: MGYG000000007_out-results
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: MGYG000000007_rRNAs.out
+              checksum: sha1$915956cf88de33ecc8df03247948e2fe7ba66673
+              size: 101
+              nameroot: MGYG000000007_rRNAs
+              nameext: ".out"
+            - class: File
+              basename: MGYG000000007_tRNA_20aa.out
+              checksum: sha1$9e20f0cbd81681550cff485f3c3c1f9267c3f5a7
+              size: 17
+              nameroot: MGYG000000007_tRNA_20aa
+              nameext: ".out"
