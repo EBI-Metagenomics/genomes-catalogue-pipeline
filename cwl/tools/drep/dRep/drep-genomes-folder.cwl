@@ -11,18 +11,9 @@ requirements:
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
-#hints:
-#  DockerRequirement:
-#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.drep:v2"
-
 hints:
-  SoftwareRequirement:
-    packages:
-    - package: drep
-      version:
-      - '3.2.2'
-      specs:
-      - https://anaconda.org/bioconda/drep
+  DockerRequirement:
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.drep:v2
 
 baseCommand: ["dRep", "dereplicate"]
 

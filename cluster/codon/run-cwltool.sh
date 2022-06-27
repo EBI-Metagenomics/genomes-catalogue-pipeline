@@ -22,9 +22,10 @@ MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
 CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
 YML=${MAIN_PATH}/tests/cluster/wf-main_ena_small.yml
 
-while getopts :n:y:c:p:d: option; do
+while getopts :o:n:y:c:p:d: option; do
 	case "${option}" in
-		n) OUTDIR=${OPTARG};;
+		o) OUTDIR=${OPTARG};;
+		n) NAME=${OPTARG};;
 		y) YML=${OPTARG};;
 		c) CWL=${OPTARG};;
 		p) MAIN_PATH=${OPTARG};;
@@ -39,7 +40,7 @@ chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
 chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
 
 if [ "${DEBUG}" == "True" ]; then
-    cwltool --singularity --preserve-entire-environment --debug --leave-container --outdir ${OUTDIR} ${CWL} ${YML}
+    cwltool --singularity --preserve-entire-environment --debug --leave-container --outdir ${OUTDIR}/${NAME} ${CWL} ${YML}
 else
-    cwltool --singularity --preserve-entire-environment --leave-container --outdir ${OUTDIR} ${CWL} ${YML}
+    cwltool --singularity --preserve-entire-environment --leave-container --outdir ${OUTDIR}/${NAME} ${CWL} ${YML}
 fi
