@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.drep:v2"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.drep:v2"
 
 
 baseCommand: ["drep-wrapper.sh"]

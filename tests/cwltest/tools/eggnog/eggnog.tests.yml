@@ -8,9 +8,9 @@
     output_annotations:
       basename: eggnog-output.emapper.annotations
       class: File
-      size: 2848193
+      size: 2848194
     output_orthologs:
       basename: eggnog-output.emapper.seed_orthologs
       class: File
-      size: 579251
+      size: 579252
       

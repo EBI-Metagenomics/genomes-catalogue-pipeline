@@ -2,7 +2,7 @@ FROM python:3.7.9-slim-buster
 
 ########################################################################
 # Dockerfile Version:   19.03.1
-# Software:             genome-catalog-update
+# Software:             genomes-catalog-update
 # Developer:            Tatiana Gurbich <tgurbich@ebi.ac.uk>
 # Description:          scripts to fetch data
 ########################################################################

@@ -1,0 +1,138 @@
+#cwltest
+
+- job: wrapper.test1.yml
+  tool: ../../../../../cwl/workflows/sub-wf/pan-genomes/wrapper-pan-genomes.cwl
+  short_name: wrapper-pan-genomes.cwl
+  doc: "pan-genomes wrapper on 2 clusters (3 and 2 genomes)"
+  output:
+    all_pangenome_faa:
+      - basename: CAJLGA01.faa
+        class: File
+        checksum: sha1$3c817c0beac183f55b514cde0f5e68d0b2a1466d
+        size: 701336
+      - basename: CAJKGB01.faa
+        class: File
+        checksum: sha1$21bb7c6f59f6322a84beb3dd5c5ec74ccbfff780
+        size: 521038
+      - basename: CAJJTO01.faa
+        class: File
+        checksum: sha1$95a5ee8267b3917e0824ae835127c44e4e1ab171
+        size: 410329
+      - basename: CAJKXJ01.faa
+        class: File
+        checksum: sha1$45cb3a61811e3e1cdd2b0e73ca8f61df070bee94
+        size: 756508
+      - basename: CAJKRE01.faa
+        class: File
+        checksum: sha1$2137912d2d769bd9b90baf2298b114ecf41f2ef9
+        size: 748402
+    other_pangenome_gffs:
+      - basename: CAJKGB01.gff
+        class: File
+        checksum: sha1$89f753e3158d882c58be26580f4ea69bd371211f
+        size: 2375336
+      - basename: CAJJTO01.gff
+        class: File
+        checksum: sha1$e43e7e7c7846a7962816a90acba9fcf7fa4d9771
+        size: 1946132
+      - basename: CAJKRE01.gff
+        class: File
+        checksum: sha1$2f1a10c3ad2efd98eb0597a1b6c87c8dd0a85125
+        size: 2781757
+    panaroo_output:
+      class: Directory
+      basename: panaroo_output
+      listing:
+        - basename: CAJLGA01_panaroo.tar.gz
+          class: File
+          checksum: sha1$6939a3895d5b778817ea1eb45d9fead634c80ddf
+          size: 8792969
+        - basename: CAJKXJ01_panaroo.tar.gz
+          class: File
+          checksum: sha1$905c96b45a805a6ead02e3fc8956c5c3eb4ad005
+          size: 8456679
+    pangenome_clusters:
+      - class: Directory
+        basename: CAJLGA01
+        listing:
+          - basename: CAJLGA01.pan-genome.fna
+            class: File
+            checksum: sha1$1ff40bc217084dc7643ba652792a963d1c423188
+            size: 1723432
+          - basename: gene_presence_absence.Rtab
+            class: File
+            checksum: sha1$13aa05d4fcbbcc824ae3c79ec798a058bcd0691a
+            size: 21778
+          - basename: CAJLGA01.core_genes.txt
+            class: File
+            checksum: sha1$3f113b8afba0ee0c77c086e2a3aa882ae021f337
+            size: 4880
+          - class: File
+            size: 401
+            basename: CAJLGA01_mash.tsv
+            checksum: sha1$a687f02d0278ce4aa28d204961a883b0e400b26d
+          - basename: CAJLGA01.gff
+            class: File
+            checksum: sha1$839ef1047e9eceda28892f57c3a938e7f4bbc13f
+            size: 2724682
+          - basename: CAJLGA01.faa
+            class: File
+            checksum: sha1$3c817c0beac183f55b514cde0f5e68d0b2a1466d
+            size: 701336
+          - basename: CAJLGA01.fna
+            class: File
+            checksum: sha1$71b796d6e6c19d6c4c407bdd173ef6572155bf23
+            size: 2282365
+      - class: Directory
+        basename: CAJKXJ01
+        listing:
+          - basename: CAJKXJ01.pan-genome.fna
+            class: File
+            checksum: sha1$43082e996491902fa1050762c79f91bcf2d5836e
+            size: 1924251
+          - basename: gene_presence_absence.Rtab
+            class: File
+            checksum: sha1$0a35a74834dcc0e8084da6a620e2f025fa02eb09
+            size: 20402
+          - basename: CAJKXJ01.core_genes.txt
+            class: File
+            checksum: sha1$e42628900da78ecc10b00cb0684349dace860497
+            size: 8501
+          - class: File
+            size: 185
+            basename: CAJKXJ01_mash.tsv
+            checksum: sha1$68f10f993ed7bc8de9fcafce9aba8ecfa4251333
+          - basename: CAJKXJ01.gff
+            class: File
+            checksum: sha1$c6cc25270eedeaea0051b375277b9e358e71aeca
+            size: 2794082
+          - basename: CAJKXJ01.faa
+            class: File
+            checksum: sha1$45cb3a61811e3e1cdd2b0e73ca8f61df070bee94
+            size: 756508
+          - basename: CAJKXJ01.fna
+            class: File
+            checksum: sha1$bf97b8d50091f8f4615b33f3db9562f7c49e78eb
+            size: 2317862
+    pangenome_other_fnas:
+      - basename: CAJKGB01.fna
+        class: File
+        checksum: sha1$5a08e6819c14aba2f3f47185c3d01fa2d0a50a5d
+        size: 1940860
+      - basename: CAJJTO01.fna
+        class: File
+        checksum: sha1$c4c1cecaf285e71dae97222d900a648ad33059c1
+        size: 1588836
+      - basename: CAJKRE01.fna
+        class: File
+        checksum: sha1$ab9f2819271a2b1f2abc895f20fa581bb68fac1c
+        size: 2308825
+    reps_fna:
+      - basename: CAJLGA01.fna
+        class: File
+        checksum: sha1$71b796d6e6c19d6c4c407bdd173ef6572155bf23
+        size: 2282365
+      - basename: CAJKXJ01.fna
+        class: File
+        checksum: sha1$bf97b8d50091f8f4615b33f3db9562f7c49e78eb
+        size: 2317862

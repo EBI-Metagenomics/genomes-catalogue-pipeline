@@ -1,0 +1,15 @@
+cpu: 4
+
+tblout: test.cmscan.tblout
+
+claninfo:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.clanin
+
+models:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.cm
+
+fasta:
+  class: File
+  path: ../../../../input_example/small_set/all_genomes/CAJJTO01.fa

@@ -5,15 +5,15 @@ fasta_file:
 
 db_diamond:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_proteins.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/eggnog_proteins.dmnd
 
 db:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/eggnog.db
 
 data_dir:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/
 
 mode: diamond
 cpu: 16

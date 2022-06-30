@@ -13,7 +13,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.checkm:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.checkm:v1"
 
 baseCommand: ["checkm", "lineage_wf"]
 

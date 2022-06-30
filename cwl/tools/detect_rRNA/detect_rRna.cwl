@@ -9,11 +9,11 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/detect_rRNA/rna-detect.sh
+        location: ../../../docker/detect_rrnas/rna-detect.sh
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.detect_rrna:v2"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3"
 
 baseCommand: [ rna-detect.sh ]
 

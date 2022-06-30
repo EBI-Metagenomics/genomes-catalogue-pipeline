@@ -15,7 +15,7 @@ requirements:
       - entry: $(inputs.drep_folder)
         entryname: $("/data")
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.gtdb-tk:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.gtdb-tk:v1"
 
 baseCommand: ["gtdbtk", "classify_wf"]
 
@@ -44,3 +44,11 @@ outputs:
     type: Directory
     outputBinding:
       glob: $(inputs.gtdb_outfolder)
+  gtdbtk_bac:
+    type: File?
+    outputBinding:
+      glob: $(inputs.gtdb_outfolder)/classify/gtdbtk.bac120.summary.tsv
+  gtdbtk_arc:
+    type: File?
+    outputBinding:
+      glob: $(inputs.gtdb_outfolder)/classify/gtdbtk.ar122.summary.tsv

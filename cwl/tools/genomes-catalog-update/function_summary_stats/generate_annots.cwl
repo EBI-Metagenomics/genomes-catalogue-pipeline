@@ -15,7 +15,7 @@ requirements:
 
 #hints:
 #  DockerRequirement:
-#    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.genomes-catalog-update:v1"
 
 baseCommand: [ generate_annots.py ]
 
@@ -35,6 +35,11 @@ inputs:
     inputBinding:
       prefix: '-k'
       position: 5
+  annotations:
+    type: File[]?
+    inputBinding:
+      prefix: '-a'
+      position: 2
 
 outputs:
   annotation_coverage:

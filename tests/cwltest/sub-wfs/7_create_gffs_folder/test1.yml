@@ -1,0 +1,6 @@
+gffs:
+  - class: File
+    path: input/1.gff
+  - class: File
+    path: input/2.gff
+folder_name: GFF

@@ -1,0 +1,64 @@
+#cwltest
+
+- job: singletons-subwf.test1.yml
+  tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
+  short_name: sub-wf-singletons.cwl
+  doc: "singletons good gunc"
+  output:
+    gunc_decision: "CAJKRY01_complete.txt"
+    prokka_faa:
+      basename: CAJKRY01.faa
+      nameroot: CAJKRY01
+      nameext: ".faa"
+      class: File
+      checksum: sha1$93ec2ed81f42e46044233a559d7024ffec810de0
+      size: 593054
+    prokka_fna:
+      basename: CAJKRY01.fna
+      nameroot: CAJKRY01
+      nameext: ".fna"
+      class: File
+      checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
+      size: 1769564
+    singleton_cluster:
+      class: Directory
+      basename: CAJKRY01
+      listing:
+        - basename: CAJKRY01.gff
+          nameroot: CAJKRY01
+          nameext: ".gff"
+          class: File
+          checksum: sha1$ef05c93ee32b03702f5ca5a114db0d25af4f9d73
+          size: 2189316
+        - basename: CAJKRY01.faa
+          nameroot: CAJKRY01
+          nameext: ".faa"
+          class: File
+          checksum: sha1$93ec2ed81f42e46044233a559d7024ffec810de0
+          size: 593054
+        - basename: CAJKRY01.fna
+          nameroot: CAJKRY01
+          nameext: ".fna"
+          class: File
+          checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
+          size: 1769564
+
+- job: singletons-subwf.test2.yml
+  tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
+  short_name: sub-wf-singletons.cwl
+  doc: "singletons bad gunc (not real example)"
+  output:
+    gunc_decision: "CAJPIO01_empty.txt"
+    prokka_faa: null
+    prokka_fna: null
+    singleton_cluster: null
+
+- job: singletons-subwf.test3.yml
+  tool: ../../../../cwl/workflows/sub-wfs/3_process_clusters/singletons/sub-wf-singletons.cwl
+  short_name: sub-wf-singletons.cwl
+  doc: "singletons bad gunc (real example)"
+  output:
+    gunc_decision: "CAJKXZ01_empty.txt"
+    prokka_faa: null
+    prokka_fna: null
+    singleton_cluster: null

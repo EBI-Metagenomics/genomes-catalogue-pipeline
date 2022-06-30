@@ -23,6 +23,7 @@ RUN apk add --no-cache pigz nodejs coreutils bash zlib bzip2 ncurses  \
 COPY --from=build /samtools /samtools
 
 COPY index_fasta.sh \
+     remove_overlaps_cmscan.sh \
     /tools/
 
 RUN chmod a+x /tools/*

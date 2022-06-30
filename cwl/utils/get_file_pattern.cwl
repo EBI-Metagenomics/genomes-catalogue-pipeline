@@ -1,6 +1,12 @@
 cwlVersion: v1.2
 class: ExpressionTool
 
+doc: |
+  Return file that's nameroot has input pattern. In case of many files - would be returned first
+  example:
+    input: [ MGYG1.fa, MGYG2.fa, MGYG3.fa ] and pattern=MGYG2
+    output: MGYG2.fa
+
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
@@ -17,14 +23,19 @@ inputs:
 
 outputs:
   file_pattern:
-    type: File
+    type:
+      - File
+      - File[]
 
 expression: >
   ${
     var helpArray= [];
     for (var i = 0; i < inputs.list_files.length; i++) {
-        if (inputs.list_files[i].nameroot.split(inputs.pattern).length > 1) {
+        if (inputs.list_files[i].basename.split(inputs.pattern).length > 1) {
             helpArray.push(inputs.list_files[i]);
       }}
-    return { 'file_pattern' : helpArray[0] }
+    if (helpArray.length == 1) {
+      return {'file_pattern' : helpArray[0]}}
+    else {
+      return { 'file_pattern' : helpArray }}
   }

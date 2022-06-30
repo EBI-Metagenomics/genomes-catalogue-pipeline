@@ -12,4 +12,6 @@ conda install -c anaconda perl
 
 echo "Install GTDB-Tk"
 conda install -c bioconda gtdbtk
+
+echo "Downloading DBs will take time"
 download-db.sh

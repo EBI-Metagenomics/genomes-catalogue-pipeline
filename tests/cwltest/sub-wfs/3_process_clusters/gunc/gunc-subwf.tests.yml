@@ -1,0 +1,42 @@
+#cwltest
+
+- job: gunc.bad.yml
+  tool: ../../../../../cwl/workflows/sub-wf/singletons/gunc-subwf.cwl
+  short_name: gunc-subwf.cwl
+  doc: "GUNC subwf with not passed example"
+  output:
+    flag:
+      basename: CAJPIO01_empty.txt
+      nameroot: CAJPIO01_empty
+      nameext: ".txt"
+      class: File
+      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+      size: 0
+    tsv:
+      basename: GUNC.progenomes_2.1.maxCSS_level.tsv
+      nameroot: GUNC.progenomes_2.1.maxCSS_level
+      nameext: ".tsv"
+      class: File
+      checksum: sha1$6d7e29ea761e868fc320179ad2f1f2939b7c0cee
+      size: 312
+
+
+- job: gunc.good.yml
+  tool: ../../../../../cwl/workflows/sub-wf/singletons/gunc-subwf.cwl
+  short_name: gunc-subwf.cwl
+  doc: "GUNC subwf with passed example"
+  output:
+    flag:
+      basename: CAJKRY01_complete.txt
+      nameroot: CAJKRY01_complete
+      nameext: ".txt"
+      class: File
+      checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+      size: 0
+    tsv:
+      basename: GUNC.progenomes_2.1.maxCSS_level.tsv
+      nameroot: GUNC.progenomes_2.1.maxCSS_level
+      nameext: ".tsv"
+      class: File
+      checksum: sha1$34660ea3d0098648ec12e337654533b4f1b4b469
+      size: 322

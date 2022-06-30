@@ -5,10 +5,14 @@ requirements:
   ResourceRequirement:
     coresMax: 1
     ramMin: 200  # just a default, could be lowered
+  InitialWorkDirRequirement:
+    listing:
+      - class: File
+        location: ../../../docker/bash/index_fasta.sh
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.bash:v1"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.bash:v1"
 
 inputs:
   fasta:

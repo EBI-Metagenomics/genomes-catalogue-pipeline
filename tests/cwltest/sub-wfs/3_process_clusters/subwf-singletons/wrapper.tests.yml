@@ -1,0 +1,57 @@
+#cwltest
+
+- job: wrapper.test1.yml
+  tool: ../../../../../cwl/workflows/sub-wf/singletons/wrapper-singletons.cwl
+  short_name: wrapper-singletons.cwl
+  doc: "scatter run singletons wf"
+  output:
+    all_filt_sigletons_faa:
+        - basename: CAJKRY01.faa
+          nameroot: CAJKRY01
+          nameext: ".faa"
+          class: File
+          checksum: sha1$93ec2ed81f42e46044233a559d7024ffec810de0
+          size: 593054
+    all_filt_sigletons_fna:
+      - basename: CAJKRY01.fna
+        nameroot: CAJKRY01
+        nameext: ".fna"
+        class: File
+        checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
+        size: 1769564
+    gunc_completed:
+      basename: gunc_report_completed.txt
+      nameroot: gunc_report_completed
+      nameext: ".txt"
+      class: File
+      checksum: sha1$440737b0209550319846f7e23dbe2c3a1dff02a8
+      size: 12
+    gunc_failed:
+      basename: gunc_report_failed.txt
+      nameroot: gunc_report_failed
+      nameext: ".txt"
+      class: File
+      checksum: sha1$d49f956c0bc6d13ae676ec291ff4bf9ddad9dc6f
+      size: 12
+    singleton_clusters:
+      - class: Directory
+        basename: CAJKRY01
+        listing:
+          - basename: CAJKRY01.gff
+            nameroot: CAJKRY01
+            nameext: ".gff"
+            class: File
+            checksum: sha1$ef05c93ee32b03702f5ca5a114db0d25af4f9d73
+            size: 2189316
+          - basename: CAJKRY01.faa
+            nameroot: CAJKRY01
+            nameext: ".faa"
+            class: File
+            checksum: sha1$93ec2ed81f42e46044233a559d7024ffec810de0
+            size: 593054
+          - basename: CAJKRY01.fna
+            nameroot: CAJKRY01
+            nameext: ".fna"
+            class: File
+            checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
+            size: 1769564

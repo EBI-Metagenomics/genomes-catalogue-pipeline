@@ -1,0 +1,24 @@
+kegg:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/kegg_classes.tsv
+
+biom: "test:biom"
+
+# ncRNA
+claninfo_ncrna:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.clanin
+
+models_ncrna:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.cm
+
+annotations:
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000004_InterProScan.tsv
+  - class: File
+    path: ../../../../input_example/small_set/results/MGYGs/per-genome-annotations/MGYG000000004_eggNOG.tsv
+
+cluster:
+  class: Directory
+  path: ../../../../input_example/small_set/results/MGYGs/MGYG000000004

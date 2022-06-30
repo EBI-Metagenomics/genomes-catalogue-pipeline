@@ -8,12 +8,12 @@
     many_genomes: null
     mash_folder: null
     one_genome:
-      - basename: "1_1"
+      - basename: "CAJLGA01"
         class: Directory
         listing:
           - class: File
             basename: "1.fa"
-      - basename: "2_1"
+      - basename: "CAJKXJ01"
         class: Directory
         listing:
           - class: File
@@ -25,14 +25,14 @@
   doc: "Classify folders only many"
   output:
     many_genomes:
-      - basename: "1_1"
+      - basename: "CAJLGA01"
         class: Directory
         listing:
           - class: File
             basename: "1.fa"
           - class: File
             basename: "2.fa"
-      - basename: "2_1"
+      - basename: "CAJKXJ01"
         class: Directory
         listing:
           - class: File
@@ -52,7 +52,7 @@
   doc: "Classify folders many and one"
   output:
     many_genomes:
-      - basename: "1_1"
+      - basename: "CAJLGA01"
         class: Directory
         listing:
           - class: File
@@ -63,7 +63,7 @@
       - basename: "1.mash.tsv"
         class: File
     one_genome:
-      - basename: "2_1"
+      - basename: "CAJKXJ01"
         class: Directory
         listing:
           - class: File
@@ -75,7 +75,7 @@
   doc: "Classify folders many and one by file"
   output:
     many_genomes:
-        - basename: '1_1'
+        - basename: 'CAJLGA01'
           class: Directory
           listing:
             - class: File
@@ -90,7 +90,7 @@
               basename: CAJJTO01.fa
               checksum: sha1$b2d063739a50fc031eb4eec94180f56988ae6eab
               size: 1672905
-          - basename: '2_1'
+          - basename: 'CAJKXJ01'
             class: Directory
             listing:
               - class: File
@@ -103,14 +103,14 @@
                 size: 2314364
     mash_folder: null
     one_genome:
-      - basename: '3_0'
+      - basename: 'CAJKRY01'
         class: Directory
         listing:
           - class: File
             basename: CAJKRY01.fa
             checksum: sha1$bde22cdb8b3901e11630391a4f6ecf9d98dfac39
             size: 1773038
-      - basename: '4_0'
+      - basename: 'CAJKXZ01'
         class: Directory
         listing:
           - class: File

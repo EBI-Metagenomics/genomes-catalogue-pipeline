@@ -13,7 +13,7 @@ requirements:
 
 #hints:
 #  DockerRequirement:
-#    dockerPull: "microbiomeinformatics/genomes-pipeline.genome-catalog-update:v1"
+#    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.genomes-catalog-update:v1"
 
 baseCommand: [ annot_gff.py ]
 
@@ -25,11 +25,20 @@ inputs:
     inputBinding:
       prefix: -i
 
+  ncrna_deov:
+    type: File
+    inputBinding:
+      prefix: -r
+
   outfile:
     type: string
     inputBinding:
       prefix: -o
 
+  annotations:
+    type: File[]?
+    inputBinding:
+      prefix: -a
 
 outputs:
   annotated_gff:

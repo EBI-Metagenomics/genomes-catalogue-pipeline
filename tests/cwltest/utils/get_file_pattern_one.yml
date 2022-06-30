@@ -1,0 +1,8 @@
+list_files:
+  - class: File
+    path: concatenate.yml
+  - class: File
+    path: flatten_array.yml
+  - class: File
+    path: concatenate_one.yml
+pattern: flatten

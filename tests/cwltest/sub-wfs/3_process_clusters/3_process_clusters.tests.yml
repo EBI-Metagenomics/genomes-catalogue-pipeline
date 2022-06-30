@@ -1,0 +1,1091 @@
+#cwltest
+
+- job: 3_process_clusters.test1.yml
+  tool: ../../../../cwl/workflows/sub-wf/subwf-process_clusters.cwl
+  short_name: subwf-process_clusters.cwl
+  doc: "process singletons and clusters"
+  output:
+    all_singletons_fna:
+        - basename: CAJKRY01.fna
+          nameroot: CAJKRY01
+          nameext: ".fna"
+          class: File
+          checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
+          size: 1769564
+    clusters_pangenome:
+      - class: Directory
+        basename: CAJLGA01
+        listing:
+          - basename: CAJLGA01.pan-genome.fna
+            nameroot: CAJLGA01.pan-genome
+            nameext: ".fna"
+            class: File
+            checksum: sha1$36b57709917e2bf97366c15a509d86ced72e1c9f
+            size: 1719778
+          - basename: gene_presence_absence.Rtab
+            nameroot: gene_presence_absence
+            nameext: ".Rtab"
+            class: File
+            checksum: sha1$f6262a53db55779893677d49baa4249638556adf
+            size: 21732
+          - basename: CAJLGA01.core_genes.txt
+            nameroot: CAJLGA01.core_genes
+            nameext: ".txt"
+            class: File
+            checksum: sha1$846276d9aee77d18ee22c2f8103fb4629a6fb0fd
+            size: 4850
+          - basename: CAJLGA01_mashtree.nwk
+            nameroot: CAJLGA01_mashtree
+            nameext: ".nwk"
+            class: File
+            checksum: sha1$829b693c6cf72da5a7d415f571dee34b2d5216b7
+            size: 92
+          - basename: CAJLGA01.gff
+            nameroot: CAJLGA01
+            nameext: ".gff"
+            class: File
+            checksum: sha1$839ef1047e9eceda28892f57c3a938e7f4bbc13f
+            size: 2724682
+          - basename: CAJLGA01.faa
+            nameroot: CAJLGA01
+            nameext: ".faa"
+            class: File
+            checksum: sha1$3c817c0beac183f55b514cde0f5e68d0b2a1466d
+            size: 701336
+          - basename: CAJLGA01.fna
+            nameroot: CAJLGA01
+            nameext: ".fna"
+            class: File
+            checksum: sha1$71b796d6e6c19d6c4c407bdd173ef6572155bf23
+            size: 2282365
+      - class: Directory
+        basename: CAJKXJ01
+        listing:
+          - basename: CAJKXJ01.pan-genome.fna
+            nameroot: CAJKXJ01.pan-genome
+            nameext: ".fna"
+            class: File
+            checksum: sha1$016c022e768985da083e97d1ca0b153bcf750fc1
+            size: 1924003
+          - basename: gene_presence_absence.Rtab
+            nameroot: gene_presence_absence
+            nameext: ".Rtab"
+            class: File
+            checksum: sha1$2615455c21116eb0f009b17b1966aea7684ab3e2
+            size: 20402
+          - basename: CAJKXJ01.core_genes.txt
+            nameroot: CAJKXJ01.core_genes
+            nameext: ".txt"
+            class: File
+            checksum: sha1$615b15080383c8a238ea394d504b960b63d6c1bb
+            size: 8458
+          - basename: CAJKXJ01_mashtree.nwk
+            nameroot: CAJKXJ01_mashtree
+            nameext: ".nwk"
+            class: File
+            checksum: sha1$5aca5bdfbb01c78087ec43400a21dee8d1cc5e3f
+            size: 49
+          - basename: CAJKXJ01.gff
+            nameroot: CAJKXJ01
+            nameext: ".gff"
+            class: File
+            checksum: sha1$c6cc25270eedeaea0051b375277b9e358e71aeca
+            size: 2794082
+          - basename: CAJKXJ01.faa
+            nameroot: CAJKXJ01
+            nameext: ".faa"
+            class: File
+            checksum: sha1$45cb3a61811e3e1cdd2b0e73ca8f61df070bee94
+            size: 756508
+          - basename: CAJKXJ01.fna
+            nameroot: CAJKXJ01
+            nameext: ".fna"
+            class: File
+            checksum: sha1$bf97b8d50091f8f4615b33f3db9562f7c49e78eb
+            size: 2317862
+    clusters_singletons:
+      - class: Directory
+        basename: CAJKRY01
+        listing:
+          - basename: CAJKRY01.gff
+            nameroot: CAJKRY01
+            nameext: ".gff"
+            class: File
+            checksum: sha1$ef05c93ee32b03702f5ca5a114db0d25af4f9d73
+            size: 2189316
+          - basename: CAJKRY01.faa
+            nameroot: CAJKRY01
+            nameext: ".faa"
+            class: File
+            checksum: sha1$93ec2ed81f42e46044233a559d7024ffec810de0
+            size: 593054
+          - basename: CAJKRY01.fna
+            nameroot: CAJKRY01
+            nameext: ".fna"
+            class: File
+            checksum: sha1$f9245f43f960fc82eecef632110527c341225b7a
+            size: 1769564
+    file_all_reps_filt_fna:
+      basename: list_reps_filtered.txt
+      nameroot: list_reps_filtered
+      nameext: ".txt"
+      class: File
+      checksum: sha1$8d2c8a289bf60e173a470b4ba93aaedd7cd9b7e6
+      size: 39
+    mmseq_ann_dir:
+      basename: mmseqs_0.9_outdir
+      nameroot: mmseqs_0
+      nameext: ".9_outdir"
+      class: Directory
+      listing:
+        - class: File
+          basename: mmseqs.db
+          checksum: sha1$595cb6721ebc3b67c03298bb2957a4ceb99f1463
+          size: 3248598
+        - class: File
+          basename: mmseqs.db.dbtype
+          checksum: sha1$9069ca78e7450a285173431b3e52c5c25299e473
+          size: 4
+        - class: File
+          basename: mmseqs.db.index
+          checksum: sha1$ddf17b106c79673a789bddfc9876151801ab722e
+          size: 167313
+        - class: File
+          basename: mmseqs.db.lookup
+          checksum: sha1$6ae82b708c43908f707d8eb0ff4029d4ab0dd038
+          size: 222547
+        - class: File
+          basename: mmseqs.db.source
+          checksum: sha1$ae8e9fbc81d4561fb612830438bcc1c2ab9ff62f
+          size: 16
+        - class: File
+          basename: mmseqs.db_h
+          checksum: sha1$4c8cc2c0ac59e858db08be1620d9674cb728f76f
+          size: 443559
+        - class: File
+          basename: mmseqs.db_h.dbtype
+          checksum: sha1$f3a56292ca640b843071c9a143404cea014f4d5c
+          size: 4
+        - class: File
+          basename: mmseqs.db_h.index
+          checksum: sha1$85bbf1236f501fdc3746cbaf622813beffb92937
+          size: 148929
+        - class: File
+          basename: mmseqs_cluster.db.0
+          checksum: sha1$8ab67609b9af7587e7cbcc6b78d6c0f88ce60832
+          size: 5493
+        - class: File
+          basename: mmseqs_cluster.db.1
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.10
+          checksum: sha1$111196898456fcd830a4f6ee399aa7de5cdfa5e4
+          size: 793
+        - class: File
+          basename: mmseqs_cluster.db.11
+          checksum: sha1$fc90e686620af4cbfce464041463b7c01cc78eaa
+          size: 421
+        - class: File
+          basename: mmseqs_cluster.db.12
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.13
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.14
+          checksum: sha1$715dca0de454846a8384f672b44498639d2546aa
+          size: 4447
+        - class: File
+          basename: mmseqs_cluster.db.15
+          checksum: sha1$e7698b1ae08d1bae6738284996260455a15d24ab
+          size: 3751
+        - class: File
+          basename: mmseqs_cluster.db.16
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.17
+          checksum: sha1$ccb6c12a1a0bd62e060864f1c416bb7b7b9e9610
+          size: 6673
+        - class: File
+          basename: mmseqs_cluster.db.18
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.19
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.2
+          checksum: sha1$7d3775b33aa87e7e395c64745d31f9046c0a0f64
+          size: 521
+        - class: File
+          basename: mmseqs_cluster.db.20
+          checksum: sha1$a79342bdbc179806d439f002de2467cf3c8a7626
+          size: 5733
+        - class: File
+          basename: mmseqs_cluster.db.21
+          checksum: sha1$3406863ac5350f75fb340a0a8f4328815e65ef77
+          size: 552
+        - class: File
+          basename: mmseqs_cluster.db.22
+          checksum: sha1$2648eef56b3cc62cc0badd279021d200e42f42f1
+          size: 1031
+        - class: File
+          basename: mmseqs_cluster.db.23
+          checksum: sha1$3bba6c641c5d7308754688d4d1ad41fcf446818a
+          size: 406
+        - class: File
+          basename: mmseqs_cluster.db.24
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.25
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.26
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.27
+          checksum: sha1$d30830f673c8302966ce98bf77b5cce1b0ddddd4
+          size: 6125
+        - class: File
+          basename: mmseqs_cluster.db.28
+          checksum: sha1$e0991d000158abc827e95c9ecf1fb3f7181916ce
+          size: 844
+        - class: File
+          basename: mmseqs_cluster.db.29
+          checksum: sha1$c7bba2984cf4a4938dd74132462c165f3d613311
+          size: 6034
+        - class: File
+          basename: mmseqs_cluster.db.3
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.30
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.31
+          checksum: sha1$37b6beb3614345edfb924707ad0583c22da3bc72
+          size: 696
+        - class: File
+          basename: mmseqs_cluster.db.4
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.5
+          checksum: sha1$c3ac7aa14a44e24c7609a03ade123d7b09459505
+          size: 523
+        - class: File
+          basename: mmseqs_cluster.db.6
+          checksum: sha1$b4ae809516335b8cc74b27ced68406f68e1d5034
+          size: 438
+        - class: File
+          basename: mmseqs_cluster.db.7
+          checksum: sha1$5da63291b1a7e2365b5b3bb0edef2105111ed5d2
+          size: 7296
+        - class: File
+          basename: mmseqs_cluster.db.8
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster.db.9
+          checksum: sha1$f21b55b71f4dc07d0456a21e4a62211eb62629e1
+          size: 5156
+        - class: File
+          basename: mmseqs_cluster.db.dbtype
+          checksum: sha1$8098e7dfb09adba3bf783794ba0db81985a814d7
+          size: 4
+        - class: File
+          basename: mmseqs_cluster.db.index
+          checksum: sha1$284a16c507a8a46706acf9d0e5fd4c8ab7341c9d
+          size: 92233
+        - class: File
+          basename: mmseqs_cluster.fa
+          checksum: sha1$a5d744154d86f068c10ac7f4ec66b356ae5233ef
+          size: 3795422
+        - class: File
+          basename: mmseqs_cluster.tsv
+          checksum: sha1$af13384f3de8775f2adfa099ae7b3df46506596e
+          size: 304770
+        - class: File
+          basename: mmseqs_cluster_rep
+          checksum: sha1$d104df81ac04d8eb79dc158871e15381d47636d8
+          size: 2325681
+        - class: File
+          basename: mmseqs_cluster_rep.dbtype
+          checksum: sha1$9069ca78e7450a285173431b3e52c5c25299e473
+          size: 4
+        - class: File
+          basename: mmseqs_cluster_rep.fa
+          checksum: sha1$a77c060e5c5a0b9b09436dbfa0ca2fb8cc029e9a
+          size: 2630667
+        - class: File
+          basename: mmseqs_cluster_rep.index
+          checksum: sha1$e0a2d01b9587182d9afa35f5c50132900bafd919
+          size: 115700
+        - class: File
+          basename: mmseqs_cluster_rep.lookup
+          checksum: sha1$6ae82b708c43908f707d8eb0ff4029d4ab0dd038
+          size: 222547
+        - class: File
+          basename: mmseqs_cluster_rep.source
+          checksum: sha1$ae8e9fbc81d4561fb612830438bcc1c2ab9ff62f
+          size: 16
+        - class: File
+          basename: mmseqs_cluster_rep_h
+          checksum: sha1$4c8cc2c0ac59e858db08be1620d9674cb728f76f
+          size: 443559
+        - class: File
+          basename: mmseqs_cluster_rep_h.dbtype
+          checksum: sha1$f3a56292ca640b843071c9a143404cea014f4d5c
+          size: 4
+        - class: File
+          basename: mmseqs_cluster_rep_h.index
+          checksum: sha1$85bbf1236f501fdc3746cbaf622813beffb92937
+          size: 148929
+        - class: File
+          basename: mmseqs_cluster_seq.0
+          checksum: sha1$422ea0ccdabac2701ed6e7cbe1ffa69d486321b6
+          size: 52430
+        - class: File
+          basename: mmseqs_cluster_seq.1
+          checksum: sha1$94f908c3307bc755864f6a2925e8444a1ebf602c
+          size: 52229
+        - class: File
+          basename: mmseqs_cluster_seq.10
+          checksum: sha1$47cf75f262c987eba2b30edf23cbd342ea10bdf3
+          size: 51310
+        - class: File
+          basename: mmseqs_cluster_seq.11
+          checksum: sha1$6805ce0cdd602994b61d215362e67925d7493dfc
+          size: 42729
+        - class: File
+          basename: mmseqs_cluster_seq.12
+          checksum: sha1$dad0b66619766ac662c2fcddd1fd522fb622bde7
+          size: 56825
+        - class: File
+          basename: mmseqs_cluster_seq.13
+          checksum: sha1$1e2e496a460eafb18cb92aa7e6ae573432aae7ae
+          size: 42581
+        - class: File
+          basename: mmseqs_cluster_seq.14
+          checksum: sha1$d5a94b2db150d708d73a78bf719e05a3e0156079
+          size: 63452
+        - class: File
+          basename: mmseqs_cluster_seq.15
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.16
+          checksum: sha1$b7a42bc39fa2fbc91ab01ae08e0e80fc35821dea
+          size: 60784
+        - class: File
+          basename: mmseqs_cluster_seq.17
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.18
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.19
+          checksum: sha1$41f2f0664b2e0096fdd5a5fa12b53ecde6c39dc1
+          size: 67814
+        - class: File
+          basename: mmseqs_cluster_seq.2
+          checksum: sha1$2de625de28c3f6e0da6861b9bab0846e1ee324bf
+          size: 66363
+        - class: File
+          basename: mmseqs_cluster_seq.20
+          checksum: sha1$cdd8563d24d2e6bb068e6cf95596d6b2b2a15e8d
+          size: 60902
+        - class: File
+          basename: mmseqs_cluster_seq.21
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.22
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.23
+          checksum: sha1$2287de5d310b3677d8c028ea959405a7063721f7
+          size: 49135
+        - class: File
+          basename: mmseqs_cluster_seq.24
+          checksum: sha1$bc9de0be7baaff94fee06dc082d46a0e3204fe6e
+          size: 40579
+        - class: File
+          basename: mmseqs_cluster_seq.25
+          checksum: sha1$442c3403440fa08c0a8013a9c9f6815d343eeba3
+          size: 41452
+        - class: File
+          basename: mmseqs_cluster_seq.26
+          checksum: sha1$9d40dc7dc14f4e4cc98556ccae71cff4e8aa4850
+          size: 50489
+        - class: File
+          basename: mmseqs_cluster_seq.27
+          checksum: sha1$2590014c72bc8c5fab33f85a8d4005a94963dafa
+          size: 51969
+        - class: File
+          basename: mmseqs_cluster_seq.28
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.29
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.3
+          checksum: sha1$d1e076685faa6d9e0a78f0a33bb085c16e684c8b
+          size: 37286
+        - class: File
+          basename: mmseqs_cluster_seq.30
+          checksum: sha1$7a64d8e599d3eec5e0d0af8231938fa2881f705c
+          size: 47894
+        - class: File
+          basename: mmseqs_cluster_seq.31
+          checksum: sha1$5d79446ef07b131406b611794b31344f11828804
+          size: 2360635
+        - class: File
+          basename: mmseqs_cluster_seq.4
+          checksum: sha1$deb33ee7c08c554c0f854702b09499cf65fa5865
+          size: 79243
+        - class: File
+          basename: mmseqs_cluster_seq.5
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.6
+          checksum: sha1$4722953c5caf877e3a9e31a2930f0a545b28d9d7
+          size: 312986
+        - class: File
+          basename: mmseqs_cluster_seq.7
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.8
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.9
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: File
+          basename: mmseqs_cluster_seq.dbtype
+          checksum: sha1$f3a56292ca640b843071c9a143404cea014f4d5c
+          size: 4
+        - class: File
+          basename: mmseqs_cluster_seq.index
+          checksum: sha1$fb9f80615869b4a16bbe26d672de40d45705cdbc
+          size: 118269
+    mmseq_cluster_rep_faa:
+      basename: mmseqs_cluster_rep.fa
+      nameroot: mmseqs_cluster_rep
+      nameext: ".fa"
+      class: File
+      checksum: sha1$a77c060e5c5a0b9b09436dbfa0ca2fb8cc029e9a
+      size: 2630667
+    mmseq_cluster_tsv:
+      basename: mmseqs_cluster.tsv
+      nameroot: mmseqs_cluster
+      nameext: ".tsv"
+      class: File
+      checksum: sha1$af13384f3de8775f2adfa099ae7b3df46506596e
+      size: 304770
+    mmseq_dirs:
+        basename: mmseqs_1.0_outdir
+        nameroot: mmseqs_1
+        nameext: ".0_outdir"
+        class: Directory
+        listing:
+          - class: File
+            basename: mmseqs.db
+            checksum: sha1$595cb6721ebc3b67c03298bb2957a4ceb99f1463
+            size: 3248598
+          - class: File
+            basename: mmseqs.db.dbtype
+            checksum: sha1$9069ca78e7450a285173431b3e52c5c25299e473
+            size: 4
+          - class: File
+            basename: mmseqs.db.index
+            checksum: sha1$ddf17b106c79673a789bddfc9876151801ab722e
+            size: 167313
+          - class: File
+            basename: mmseqs.db.lookup
+            checksum: sha1$6ae82b708c43908f707d8eb0ff4029d4ab0dd038
+            size: 222547
+          - class: File
+            basename: mmseqs.db.source
+            checksum: sha1$ae8e9fbc81d4561fb612830438bcc1c2ab9ff62f
+            size: 16
+          - class: File
+            basename: mmseqs.db_h
+            checksum: sha1$4c8cc2c0ac59e858db08be1620d9674cb728f76f
+            size: 443559
+          - class: File
+            basename: mmseqs.db_h.dbtype
+            checksum: sha1$f3a56292ca640b843071c9a143404cea014f4d5c
+            size: 4
+          - class: File
+            basename: mmseqs.db_h.index
+            checksum: sha1$85bbf1236f501fdc3746cbaf622813beffb92937
+            size: 148929
+          - class: File
+            basename: mmseqs_cluster.db.0
+            checksum: sha1$6db49ed3ce84e7b22fc0ed52306f89810f6eb8de
+            size: 7114
+          - class: File
+            basename: mmseqs_cluster.db.1
+            checksum: sha1$db3a0690e8d941892afd95f0af3948b32591b875
+            size: 8535
+          - class: File
+            basename: mmseqs_cluster.db.10
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.11
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.12
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.13
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.14
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.15
+            checksum: sha1$45fb718a5be5880052e10b66655ee23b4a7b31ff
+            size: 8522
+          - class: File
+            basename: mmseqs_cluster.db.16
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.17
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.18
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.19
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.2
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.20
+            checksum: sha1$0a88d121d3fad34d50a8d0d83a9b0d1ee0740885
+            size: 4773
+          - class: File
+            basename: mmseqs_cluster.db.21
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.22
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.23
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.24
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.25
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.26
+            checksum: sha1$abdb468b7d9786cdcd7e29200438c288ef1a2848
+            size: 8441
+          - class: File
+            basename: mmseqs_cluster.db.27
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.28
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.29
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.3
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.30
+            checksum: sha1$e2387f132f4704ac182ffcee791c6598bf8ec909
+            size: 6833
+          - class: File
+            basename: mmseqs_cluster.db.31
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.4
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.5
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.6
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.7
+            checksum: sha1$8e00003ddeb283959356e2b69757f812c340b0d2
+            size: 10751
+          - class: File
+            basename: mmseqs_cluster.db.8
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster.db.9
+            checksum: sha1$da14f1999661fcf462a94ff319d5ed2ccf8d3b1a
+            size: 4192
+          - class: File
+            basename: mmseqs_cluster.db.dbtype
+            checksum: sha1$8098e7dfb09adba3bf783794ba0db81985a814d7
+            size: 4
+          - class: File
+            basename: mmseqs_cluster.db.index
+            checksum: sha1$b1d1c0dcda6dafeded88871b79932b9f04805b00
+            size: 119182
+          - class: File
+            basename: mmseqs_cluster.fa
+            checksum: sha1$a536ac0699f64fefed25afc084d4dea1bebf9b16
+            size: 3831070
+          - class: File
+            basename: mmseqs_cluster.tsv
+            checksum: sha1$2f6a55dd3845c8773ffbaa93ac6f69257b7eee98
+            size: 304770
+          - class: File
+            basename: mmseqs_cluster_rep
+            checksum: sha1$fe4de2157f537626e2a80ff463ba4a7af86c9771
+            size: 3050126
+          - class: File
+            basename: mmseqs_cluster_rep.dbtype
+            checksum: sha1$9069ca78e7450a285173431b3e52c5c25299e473
+            size: 4
+          - class: File
+            basename: mmseqs_cluster_rep.fa
+            checksum: sha1$7d3c0980e1ea290ca858f8804fe3125e30d8d33b
+            size: 3455714
+          - class: File
+            basename: mmseqs_cluster_rep.index
+            checksum: sha1$e0436bfad92a00016a9bb70155d2bc4348eaa2c7
+            size: 153360
+          - class: File
+            basename: mmseqs_cluster_rep.lookup
+            checksum: sha1$6ae82b708c43908f707d8eb0ff4029d4ab0dd038
+            size: 222547
+          - class: File
+            basename: mmseqs_cluster_rep.source
+            checksum: sha1$ae8e9fbc81d4561fb612830438bcc1c2ab9ff62f
+            size: 16
+          - class: File
+            basename: mmseqs_cluster_rep_h
+            checksum: sha1$4c8cc2c0ac59e858db08be1620d9674cb728f76f
+            size: 443559
+          - class: File
+            basename: mmseqs_cluster_rep_h.dbtype
+            checksum: sha1$f3a56292ca640b843071c9a143404cea014f4d5c
+            size: 4
+          - class: File
+            basename: mmseqs_cluster_rep_h.index
+            checksum: sha1$85bbf1236f501fdc3746cbaf622813beffb92937
+            size: 148929
+          - class: File
+            basename: mmseqs_cluster_seq.0
+            checksum: sha1$47662552469adeeb42a117128b69776df01c0a02
+            size: 45042
+          - class: File
+            basename: mmseqs_cluster_seq.1
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.10
+            checksum: sha1$9ba5dbaed230612204b132223a39ee19ee5f9808
+            size: 5227
+          - class: File
+            basename: mmseqs_cluster_seq.11
+            checksum: sha1$425221fab88d60562934bf05f8b137a118306207
+            size: 37329
+          - class: File
+            basename: mmseqs_cluster_seq.12
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.13
+            checksum: sha1$dab7d91e888eaa31ec3dce12c849366b6da8da5e
+            size: 1841335
+          - class: File
+            basename: mmseqs_cluster_seq.14
+            checksum: sha1$43c85c02111b08940c4d7ec13abf7ed4bdbcbb99
+            size: 40234
+          - class: File
+            basename: mmseqs_cluster_seq.15
+            checksum: sha1$3f4c6814207125d15140f147babef1d71e008e8f
+            size: 46067
+          - class: File
+            basename: mmseqs_cluster_seq.16
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.17
+            checksum: sha1$0e618d080806b08c4e73cd8f88e314fc4242b68a
+            size: 37393
+          - class: File
+            basename: mmseqs_cluster_seq.18
+            checksum: sha1$d637b31cdf941de012182845fe8cfac854c0920b
+            size: 411696
+          - class: File
+            basename: mmseqs_cluster_seq.19
+            checksum: sha1$60faf6c6375c2fb9962dd72f50af30cb748f6a3a
+            size: 42933
+          - class: File
+            basename: mmseqs_cluster_seq.2
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.20
+            checksum: sha1$745dae7653c045412b5c9df95112d43620398475
+            size: 895267
+          - class: File
+            basename: mmseqs_cluster_seq.21
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.22
+            checksum: sha1$b6d32b992c52f135ddf7a54e448cc3e716a014e9
+            size: 43404
+          - class: File
+            basename: mmseqs_cluster_seq.23
+            checksum: sha1$d01308f143c8d42c065d595ad8d912eacff79aa5
+            size: 40924
+          - class: File
+            basename: mmseqs_cluster_seq.24
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.25
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.26
+            checksum: sha1$64f875d0417ebf71d2f3aa4d113ef1ff76b3bc52
+            size: 42344
+          - class: File
+            basename: mmseqs_cluster_seq.27
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.28
+            checksum: sha1$d84467b6c064b51f774ee08030fd7d1a810d6cdf
+            size: 46168
+          - class: File
+            basename: mmseqs_cluster_seq.29
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.3
+            checksum: sha1$b7b7d4c3ecf3c314ebaa7a2b4fa2eea87f20b549
+            size: 41410
+          - class: File
+            basename: mmseqs_cluster_seq.30
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.31
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.4
+            checksum: sha1$890d82329dd087c6a4ef9423a45d8cd62ba03369
+            size: 34628
+          - class: File
+            basename: mmseqs_cluster_seq.5
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.6
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.7
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.8
+            checksum: sha1$78b6ecda3c4bb9133c49017b14ad9b5844ca76ec
+            size: 39914
+          - class: File
+            basename: mmseqs_cluster_seq.9
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: mmseqs_cluster_seq.dbtype
+            checksum: sha1$f3a56292ca640b843071c9a143404cea014f4d5c
+            size: 4
+          - class: File
+            basename: mmseqs_cluster_seq.index
+            checksum: sha1$041748681c31f1ff2021676297a3bfc8bf39d7dc
+            size: 154739
+    other_pangenome_fna:
+      - basename: CAJJTO01.fna
+        nameroot: CAJJTO01
+        nameext: ".fna"
+        class: File
+        checksum: sha1$c4c1cecaf285e71dae97222d900a648ad33059c1
+        size: 1588836
+      - basename: CAJKGB01.fna
+        nameroot: CAJKGB01
+        nameext: ".fna"
+        class: File
+        checksum: sha1$5a08e6819c14aba2f3f47185c3d01fa2d0a50a5d
+        size: 1940860
+      - basename: CAJKRE01.fna
+        nameroot: CAJKRE01
+        nameext: ".fna"
+        class: File
+        checksum: sha1$ab9f2819271a2b1f2abc895f20fa581bb68fac1c
+        size: 2308825
+    panaroo_folder:
+      class: Directory
+      basename: panaroo_output
+      listing:
+        - basename: CAJLGA01_panaroo
+          nameroot: CAJLGA01_panaroo
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: combined_DNA_CDS.fasta
+              checksum: sha1$17a616bb673f0c5ce7cbe15dbae364107f39e08a
+              size: 4467489
+              nameroot: combined_DNA_CDS
+              nameext: ".fasta"
+            - class: File
+              basename: combined_protein_CDS.fasta
+              checksum: sha1$13249c077132b1fa32d6f288dec08ce145cc5f76
+              size: 1514180
+              nameroot: combined_protein_CDS
+              nameext: ".fasta"
+            - class: File
+              basename: combined_protein_cdhit_out.txt
+              checksum: sha1$9da5b4ac15922e97472e24956353749ea7ef6682
+              size: 1035362
+              nameroot: combined_protein_cdhit_out
+              nameext: ".txt"
+            - class: File
+              basename: combined_protein_cdhit_out.txt.clstr
+              checksum: sha1$5758e17044987dc8175426cb912e61667d81e653
+              size: 160580
+              nameroot: combined_protein_cdhit_out.txt
+              nameext: ".clstr"
+            - class: File
+              basename: final_graph.gml
+              checksum: sha1$ff9fe2420a4df7a82cac034b15844a518546c390
+              size: 3733111
+              nameroot: final_graph
+              nameext: ".gml"
+            - class: File
+              basename: gene_data.csv
+              checksum: sha1$935b13495d4e6eb7186eb3a756044e851ad4f100
+              size: 6280544
+              nameroot: gene_data
+              nameext: ".csv"
+            - class: File
+              basename: gene_presence_absence.Rtab
+              checksum: sha1$f6262a53db55779893677d49baa4249638556adf
+              size: 21732
+              nameroot: gene_presence_absence
+              nameext: ".Rtab"
+            - class: File
+              basename: gene_presence_absence.csv
+              checksum: sha1$bd9eaca54283e9e972a35d22e915e6b7a710b704
+              size: 120444
+              nameroot: gene_presence_absence
+              nameext: ".csv"
+            - class: File
+              basename: gene_presence_absence_roary.csv
+              checksum: sha1$1af4edcc3163870687c2daed4e0f06caf7ae8dab
+              size: 170917
+              nameroot: gene_presence_absence_roary
+              nameext: ".csv"
+            - class: File
+              basename: pan_genome_reference.fa
+              checksum: sha1$36b57709917e2bf97366c15a509d86ced72e1c9f
+              size: 1719778
+              nameroot: pan_genome_reference
+              nameext: ".fa"
+            - class: File
+              basename: pre_filt_graph.gml
+              checksum: sha1$7a483dc20f93ec02b941e626c612b77d0cecd0b4
+              size: 5639965
+              nameroot: pre_filt_graph
+              nameext: ".gml"
+            - class: File
+              basename: struct_presence_absence.Rtab
+              checksum: sha1$0fee2841221ba5f68ad99a5b09d20e5728d0cd4d
+              size: 215
+              nameroot: struct_presence_absence
+              nameext: ".Rtab"
+            - class: File
+              basename: summary_statistics.txt
+              checksum: sha1$7a0300882eaa26d6e80c00e9ddf0e30f846470e5
+              size: 196
+              nameroot: summary_statistics
+              nameext: ".txt"
+        - basename: CAJKXJ01_panaroo
+          nameroot: CAJKXJ01_panaroo
+          nameext: ''
+          class: Directory
+          listing:
+            - class: File
+              basename: combined_DNA_CDS.fasta
+              checksum: sha1$d3cf0f7f7a5e95e80bcc67276965d7d7a25613fa
+              size: 4059430
+              nameroot: combined_DNA_CDS
+              nameext: ".fasta"
+            - class: File
+              basename: combined_protein_CDS.fasta
+              checksum: sha1$377753777bf0d3c550b4a83a023681e3c67746f9
+              size: 1371652
+              nameroot: combined_protein_CDS
+              nameext: ".fasta"
+            - class: File
+              basename: combined_protein_cdhit_out.txt
+              checksum: sha1$07c8f76534ed5f6df1ab90f3742f24c5439473c7
+              size: 1012080
+              nameroot: combined_protein_cdhit_out
+              nameext: ".txt"
+            - class: File
+              basename: combined_protein_cdhit_out.txt.clstr
+              checksum: sha1$868027f4f45c0f222503041c31ef84c1e2b46439
+              size: 130091
+              nameroot: combined_protein_cdhit_out.txt
+              nameext: ".clstr"
+            - class: File
+              basename: final_graph.gml
+              checksum: sha1$ab3ce75584eecc2356a735380ccd6630d489046d
+              size: 3744069
+              nameroot: final_graph
+              nameext: ".gml"
+            - class: File
+              basename: gene_data.csv
+              checksum: sha1$4a3e5162c6c34b5a9f25277ec07018301fd5f2e9
+              size: 5662458
+              nameroot: gene_data
+              nameext: ".csv"
+            - class: File
+              basename: gene_presence_absence.Rtab
+              checksum: sha1$2615455c21116eb0f009b17b1966aea7684ab3e2
+              size: 20402
+              nameroot: gene_presence_absence
+              nameext: ".Rtab"
+            - class: File
+              basename: gene_presence_absence.csv
+              checksum: sha1$3b685af9e5dc0fe7b60b0bf4f1edfec2a6b93c18
+              size: 115034
+              nameroot: gene_presence_absence
+              nameext: ".csv"
+            - class: File
+              basename: gene_presence_absence_roary.csv
+              checksum: sha1$69e7297e6ec13936841ef8e241161158382940e1
+              size: 171513
+              nameroot: gene_presence_absence_roary
+              nameext: ".csv"
+            - class: File
+              basename: pan_genome_reference.fa
+              checksum: sha1$016c022e768985da083e97d1ca0b153bcf750fc1
+              size: 1924003
+              nameroot: pan_genome_reference
+              nameext: ".fa"
+            - class: File
+              basename: pre_filt_graph.gml
+              checksum: sha1$4924b7d8259fd2beb61bc7cc83b2d034233974e1
+              size: 5379331
+              nameroot: pre_filt_graph
+              nameext: ".gml"
+            - class: File
+              basename: struct_presence_absence.Rtab
+              checksum: sha1$fe32d0f0bb37f481be449fea17ff8ea637d3e508
+              size: 108
+              nameroot: struct_presence_absence
+              nameext: ".Rtab"
+            - class: File
+              basename: summary_statistics.txt
+              checksum: sha1$9adf0eef6baad521e87250b14b5b5afbdaf4c791
+              size: 197
+              nameroot: summary_statistics
+              nameext: ".txt"
+    pangenome_other_gffs:
+      - basename: CAJJTO01.gff
+        nameroot: CAJJTO01
+        nameext: ".gff"
+        class: File
+        checksum: sha1$e43e7e7c7846a7962816a90acba9fcf7fa4d9771
+        size: 1946132
+      - basename: CAJKGB01.gff
+        nameroot: CAJKGB01
+        nameext: ".gff"
+        class: File
+        checksum: sha1$89f753e3158d882c58be26580f4ea69bd371211f
+        size: 2375336
+      - basename: CAJKRE01.gff
+        nameroot: CAJKRE01
+        nameext: ".gff"
+        class: File
+        checksum: sha1$2f1a10c3ad2efd98eb0597a1b6c87c8dd0a85125
+        size: 2781757
+    reps_pangenomes_fna:
+      - basename: CAJLGA01.fna
+        nameroot: CAJLGA01
+        nameext: ".fna"
+        class: File
+        checksum: sha1$71b796d6e6c19d6c4c407bdd173ef6572155bf23
+        size: 2282365
+      - basename: CAJKXJ01.fna
+        nameroot: CAJKXJ01
+        nameext: ".fna"
+        class: File
+        checksum: sha1$bf97b8d50091f8f4615b33f3db9562f7c49e78eb
+        size: 2317862
+    singletons_gunc_completed:
+      basename: gunc_report_completed.txt
+      nameroot: gunc_report_completed
+      nameext: ".txt"
+      class: File
+      checksum: sha1$440737b0209550319846f7e23dbe2c3a1dff02a8
+      size: 12
+    singletons_gunc_failed:
+      basename: gunc_report_failed.txt
+      nameroot: gunc_report_failed
+      nameext: ".txt"
+      class: File
+      checksum: sha1$d49f956c0bc6d13ae676ec291ff4bf9ddad9dc6f
+      size: 12

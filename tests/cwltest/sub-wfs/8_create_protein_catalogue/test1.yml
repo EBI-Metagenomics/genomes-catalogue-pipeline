@@ -1,0 +1,14 @@
+mmseq_dirs:
+  - class: Directory
+    path: inputs/mmseqs-0.5
+  - class: Directory
+    path: inputs/mmseqs-1.0
+mmseq_ann_folder:
+  class: Directory
+  path: inputs/mmseqs-0.9
+ips:
+  class: File
+  path: inputs/ips.tsv
+eggnog:
+  class: File
+  path: inputs/eggnog.tsv

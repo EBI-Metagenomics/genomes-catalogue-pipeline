@@ -2,44 +2,51 @@
 
 set -e
 
-export NAME=genomes-pipeline
+export REPO="genomes-pipeline"
 
-# checkm
-cd  checkm && docker build -t microbiomeinformatics/${NAME}.checkm:v1 .
+export DOCKERHUB_NAME="microbiomeinformatics"
+export QUAY_NAME="quay.io/microbiome-informatics"
 
-# drep
-cd drep && docker build -t microbiomeinformatics/${NAME}.drep:v1 .
+export STORAGE=${QUAY_NAME}
 
-# eggnog
-cd eggnong && docker build -t microbiomeinformatics/${NAME}.eggnog-mapper:v1 .
+num_containers=14
 
-# genome-catalog-update
-cd genomes-catalog-update && docker build -t microbiomeinformatics/${NAME}.genome-catalog-update:v1 .
+folders=(
+        'bash'
+        'checkm'
+        'detect_rrnas'
+        'drep'
+        'eggnog-mapper'
+        'genomes-catalog-update'
+        'gtdb-tk'
+        'gunc'
+        'ips'
+        'mash2nwk'
+        'mmseqs'
+        'panaroo'
+        'prokka'
+        'python3_scripts'
+)
 
-# GUNC
-cd GUNC && docker build -t microbiomeinformatics/${NAME}.gunc:v2 .
+containers_versions=(
+        'bash:v1'
+        'checkm:v1'
+        'detect_rrna:v3'
+        'drep:v2'
+        'eggnog-mapper:v1'
+        'genomes-catalog-update:v1'
+        'gtdb-tk:v1'
+        'gunc:v4'
+        'ips:v1'
+        'mash2nwk:v1'
+        'mmseqs:v2'
+        'panaroo:v1'
+        'prokka:v1'
+        'python3_scripts:v4'
+)
 
-# GTDB-Tk
-cd gtdb-tk && docker build -t microbiomeinformatics/${NAME}.gtdb-tk:v1 .
-
-# index fasta and pigz
-cd bash && docker build -t microbiomeinformatics/${NAME}.bash:v1 .
-
-# IPS
-cd IPS && docker build -t microbiomeinformatics/${NAME}.interproscan:v1 .
-
-# mash2nwk
-cd mash2nwk && docker build -t microbiomeinformatics/${NAME}.mash2nwk:v1 .
-
-# mmseqs
-cd  mmseqs && docker build -t microbiomeinformatics/${NAME}.mmseqs:v1 .
-
-# panaroo
-cd panaroo && docker build -t microbiomeinformatics/${NAME}.panaroo:v1 .
-
-# prokka
-cd prokka && docker build -t microbiomeinformatics/${NAME}.prokka:v1 .
-
-# python3
-cd python3_scripts && docker build -t microbiomeinformatics/${NAME}.python3:v3 .
+for ((i=0;i<${num_containers};i++)) do
+    echo ${i}
+    cd ${folders[${i}]} && docker build -t ${STORAGE}/${REPO}.${containers_versions[${i}]} .
+done
 

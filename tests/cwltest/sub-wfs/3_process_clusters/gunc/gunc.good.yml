@@ -1,0 +1,9 @@
+input_fasta:
+  class: File
+  path: ../../../../../input_example/small_set/results/clusters/CAJKRY01/CAJKRY01.fa
+input_csv:
+  class: File
+  path: ../../../../../input_example/small_set/download.csv
+gunc_db_path:
+  class: File
+  path: gunc_db_2.0.4.dmnd

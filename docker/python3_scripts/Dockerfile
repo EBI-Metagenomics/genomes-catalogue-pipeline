@@ -13,8 +13,11 @@ COPY checkm2csv.py \
      classify_folders.py \
      classify_dereplicated.py \
      choose_files_post_processing.py \
+     create_final_folder.py \
      generate_gunc_report.py \
      filter_drep_genomes.py \
+     ncrna2gff.py \
+     phylo_tree_generator.py \
      split_drep.py \
      translate_genes.py \
      split_to_chunks.py \

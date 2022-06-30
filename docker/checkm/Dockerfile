@@ -9,7 +9,5 @@ LABEL software.version="1.1.3"
 
 RUN conda install -c bioconda python=3.6 checkm-genome --yes --freeze-installed && conda clean -afy
 
-COPY GUT_GENOME000465.fa /files/
-
 ENV PATH=/opt/conda/bin:${PATH}
 

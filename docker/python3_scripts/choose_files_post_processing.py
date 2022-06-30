@@ -32,6 +32,10 @@ def parse_args():
                         help='list of FAA files')
     parser.add_argument('--annotations', required=True, nargs='+',
                         help='list of eggnog and IPS files')
+    parser.add_argument('--pangenome-fna', required=False, nargs='*',
+                        help='pangenome.fna fasta')
+    parser.add_argument('--pangenome-core', required=False, nargs='*',
+                        help='pangenome: core_genes.txt')
     parser.add_argument('--clusters', required=True,
                         help='file with cluster representatives list')
     parser.add_argument('--output', required=True,
@@ -43,6 +47,8 @@ pattern_ips = "{name}_InterProScan.tsv"
 pattern_eggnog = "{name}_eggNOG.tsv"
 pattern_faa = "{name}.faa"
 pattern_gff = "{name}.gff"
+pattern_core_genes = "{name}.core_genes.txt"
+pattern_pangenome_fna = "{name}.pan-genome.fna"
 
 
 def main():
@@ -65,10 +71,21 @@ def main():
                 for file_pattern, files in zip(patterns, types):
                     pattern = file_pattern.format(name=cluster_name)
                     cluster_file = [i for i in files if i.endswith(pattern)]
-                    if len(cluster_file) !=1 :
+                    if len(cluster_file) != 1:
                         exit(1)
                     else:
                         copy(cluster_file[0], os.path.join(cluster, os.path.basename(cluster_file[0])))
+                if args.pangenome_core:
+                    core_genes = pattern_core_genes.format(name=cluster_name)
+                    cluster_file = [i for i in args.pangenome_core if i.endswith(core_genes)]
+                    if len(cluster_file) == 1:
+                        copy(cluster_file[0], os.path.join(cluster, os.path.basename(cluster_file[0])))
+                if args.pangenome_fna:
+                    pangenome_fna = pattern_pangenome_fna.format(name=cluster_name)
+                    cluster_file = [i for i in args.pangenome_fna if i.endswith(pangenome_fna)]
+                    if len(cluster_file) == 1:
+                        copy(cluster_file[0], os.path.join(cluster, os.path.basename(cluster_file[0])))
+
 
 if __name__ == '__main__':
     main()

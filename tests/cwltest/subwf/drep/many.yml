@@ -1,7 +1,0 @@
-genomes_folder:
-  class: Directory
-  path: ../../../../input_example/small_set/cluster_genomes
-input_csv:
-  class: File
-  path: ../../../../input_example/small_set/download.csv
-skip_flag: False

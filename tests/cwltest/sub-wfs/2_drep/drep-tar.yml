@@ -1,0 +1,10 @@
+genomes_folder:
+  class: Directory
+  path: ../../../../../input_example/small_set/all_genomes
+input_csv:
+  class: File
+  path: ../../../../../input_example/small_set/download.csv
+
+extra_weights:
+  class: File
+  path: ../../../../../input_example/small_set/weights.tsv

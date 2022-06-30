@@ -8,6 +8,9 @@ ena_csv:
 max_accession_mgyg: 20
 min_accession_mgyg: 1
 
+ftp_name_catalogue: "TEST-CATALOGUE"
+ftp_version_catalogue: "v1.0"
+
 # no gtdbtk
 skip_gtdbtk_step: True
 skip_drep_step: False
@@ -23,32 +26,51 @@ mmseq_limit_annotation: 0.9
 # GUNC
 gunc_db_path:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/gunc_db_2.0.4.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd
 
 # IPS
 interproscan_databases:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/data
-chunk_size_IPS: 10000
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/ips/data
+chunk_size_ips: 10000
 
 # EggNOG
 chunk_size_eggnog: 100000
 db_diamond_eggnog:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog_proteins.dmnd
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/eggnog_proteins.dmnd
 db_eggnog:
   class: File
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/eggnog.db
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/eggnog.db
 data_dir_eggnog:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/eggnog/data/
 
 # GTDB-Tk
 gtdbtk_data:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/release202
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/release202
 
 # rRNA
 cm_models:
   class: Directory
-  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/dbs/rfams_cms
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/rfams_cms
+
+kegg_db:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/kegg_classes.tsv
+
+geo_metadata:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/continent_countries.csv
+
+biom: "test:test"
+
+# ncRNA
+claninfo_ncrna:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.clanin
+
+models_ncrna:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/ncrna_cms/Rfam.cm

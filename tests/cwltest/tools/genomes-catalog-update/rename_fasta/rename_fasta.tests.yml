@@ -1,0 +1,34 @@
+#cwltest
+
+# rename contigs
+- job: rename_fasta.yml
+  tool: ../../../../../cwl/tools/genomes-catalog-update/rename_fasta/rename_fasta.cwl
+  short_name: rename_fasta.cwl
+  doc: "rename fasta to MGYG"
+  output:
+    naming_table:
+      basename: names
+      class: File
+      checksum: sha1$675afd919d30c5ee3ff242a51d1c34ad52df9c94
+      size: 87
+    renamed_csv:
+      basename: renamed_download.csv
+      class: File
+      checksum: sha1$271cc1963913106f5c4124d2086cb922f4d61752
+      size: 207
+    renamed_genomes:
+      basename: renamed_genomes
+      class: Directory
+      listing:
+      - class: File
+        basename: MGYG000000001.fa
+        checksum: sha1$05c24d85e54624f20b3c25ac755aa65bb2a36c91
+        size: 2282788
+      - class: File
+        basename: MGYG000000002.fa
+        checksum: sha1$cfb8ae61c325a5c57d688d1a3986bd47b50c9771
+        size: 1944555
+      - class: File
+        basename: MGYG000000003.fa
+        checksum: sha1$e0fd822529285c9ec97cae80fa91764f6c115f5c
+        size: 1592418

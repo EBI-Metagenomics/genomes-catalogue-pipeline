@@ -1,0 +1,7 @@
+faa:
+  class: File
+  path: ../../../../input_example/small_set/results/mmseqs_0.9_cluster_rep.fa
+chunk_size: 5000
+interproscan_databases:
+  class: Directory
+  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/ips/data

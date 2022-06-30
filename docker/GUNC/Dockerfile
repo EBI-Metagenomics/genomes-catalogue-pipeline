@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-LABEL software="GUNC"
+LABEL software="gunc"
 LABEL software.version="1.0.3"
 LABEL description="Genome UNClutterer (GUNC) is a tool for detection of chimerism and contamination in prokaryotic genomes resulting from mis-binning of genomic contigs from unrelated lineages"
 LABEL website="https://github.com/grp-bork/gunc"

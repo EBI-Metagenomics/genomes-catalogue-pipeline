@@ -12,18 +12,18 @@ import requests
 from retry import retry
 
 from assembly_stats import run_assembly_stats
-from get_ENA_metadata import get_location, load_xml
+from get_ENA_metadata import get_location, load_xml, load_gca_json, get_gca_location
 
 logging.basicConfig(level=logging.INFO)
 
 
 def main(genomes_dir, extra_weight_table, checkm_results, rna_results, naming_file, clusters_file, taxonomy_file,
-         geofile, outfile, ftp_name, ftp_version):
+         geofile, outfile, ftp_name, ftp_version, gunc_failed):
     #table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50',	'GC_content',
     #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
     #           'Species_rep', 'MGnify_accession', 'Lineage', 'Sample_accession', 'Study_accession', 'Country',
     #           'Continent', 'FTP_download']
-    genome_list = load_genome_list(genomes_dir)
+    genome_list = load_genome_list(genomes_dir, gunc_failed)
     df = pd.DataFrame(genome_list, columns=['Genome'])
     df = add_genome_type(df, extra_weight_table)
     df = add_stats(df, genomes_dir)
@@ -43,7 +43,7 @@ def add_ftp(df, genome_list, catalog_ftp_name, catalog_version, species_reps):
     url = 'ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/mgnify_genomes/{}/{}/all_genomes'.format(
         catalog_ftp_name, catalog_version)
     for genome in genome_list:
-        subfolder = species_reps[genome][:-3]
+        subfolder = species_reps[genome][:-2]
         ftp_res[genome] = '{}/{}/{}/genomes1/{}.gff.gz'.format(url, subfolder, species_reps[genome], genome)
     df['FTP_download'] = df['Genome'].map(ftp_res)
     return df
@@ -79,34 +79,55 @@ def load_geography(geofile):
 
 
 def get_metadata(acc):
-    if acc.startswith('CA'):
-        acc = acc + '0' * 7
-    r = run_request(acc, 'https://www.ebi.ac.uk/ena/browser/api/embl')
-    if r.ok:
-        match_pr = re.findall('PR +Project: *(PRJ[A-Z0-9]+)', r.text)
-        if match_pr:
-            project = match_pr[0]
-        else:
-            project = ''
-        match_samp = re.findall('DR +BioSample; ([A-Z0-9]+)', r.text)
-        if match_samp:
-            biosample = match_samp[0]
-        else:
-            biosample = ''
+    if acc.startswith('ERZ'):
+        json_data_erz = load_xml(acc)
+        biosample = json_data_erz['ANALYSIS_SET']['ANALYSIS']['SAMPLE_REF']['IDENTIFIERS']['EXTERNAL_ID']['#text']
+        project = json_data_erz['ANALYSIS_SET']['ANALYSIS']['STUDY_REF']['IDENTIFIERS']['SECONDARY_ID']
+    elif acc.startswith('GUT'):
+        pass
     else:
-        logging.error('Cannot obtain metadata from ENA')
-        sys.exit()
-    location = get_location(biosample)
+        if acc.startswith('CA'):
+            acc = acc + '0' * 7
+        r = run_request(acc, 'https://www.ebi.ac.uk/ena/browser/api/embl')
+        if r.ok:
+            match_pr = re.findall('PR +Project: *(PRJ[A-Z0-9]+)', r.text)
+            if match_pr:
+                project = match_pr[0]
+            else:
+                project = ''
+            match_samp = re.findall('DR +BioSample; ([A-Z0-9]+)', r.text)
+            if match_samp:
+                biosample = match_samp[0]
+            else:
+                biosample = ''
+        else:
+            logging.error('Cannot obtain metadata from ENA')
+            sys.exit()
+    if not acc.startswith('GUT'):
+        if acc.startswith('GCA'):
+            location = get_gca_location(biosample)
+        else:
+            location = get_location(biosample)
     if not location:
         location = 'not provided'
-    json_data_sample = load_xml(biosample)
-    converted_sample = json_data_sample['SAMPLE_SET']['SAMPLE']['IDENTIFIERS']['PRIMARY_ID']
-    if not converted_sample:
-        converted_sample = biosample
-    json_data_project = load_xml(project)
-    converted_project = json_data_project['PROJECT_SET']['PROJECT']['IDENTIFIERS']['SECONDARY_ID']
-    if not converted_project:
-        converted_project = project
+    if not acc.startswith('GUT'):
+        if acc.startswith('GCA'):
+            json_data_sample = load_xml(acc)
+            converted_sample = biosample
+            project = json_data_sample['ASSEMBLY_SET']['ASSEMBLY']['STUDY_REF']['IDENTIFIERS']['PRIMARY_ID']
+        else:
+            json_data_sample = load_xml(biosample)
+            converted_sample = json_data_sample['SAMPLE_SET']['SAMPLE']['IDENTIFIERS']['PRIMARY_ID']
+            if not converted_sample:
+                converted_sample = biosample
+        json_data_project = load_xml(project)
+        converted_project = json_data_project['PROJECT_SET']['PROJECT']['IDENTIFIERS']['SECONDARY_ID']
+        if not converted_project:
+            converted_project = project
+    else:
+        converted_sample = 'FILL'
+        converted_project = 'FILL'
+        location = 'FILL'
     return converted_sample, converted_project, location
 
 
@@ -136,7 +157,7 @@ def add_species_rep(df, clusters_file):
     with open(clusters_file, 'r') as file_in:
         for line in file_in:
             if line.startswith('one_genome'):
-                genome = line.strip().split(':')[-1].split('.')[0]
+                genome = line.strip().split(':')[-1].rsplit('.', 1)[0]
                 reps[genome] = genome
             elif line.startswith('many_genomes'):
                 fields = line.strip().split(':')
@@ -230,7 +251,7 @@ def add_genome_type(df, extra_weight_table):
     with open(extra_weight_table, 'r') as file_in:
         for line in file_in:
             fields = line.strip().split('\t')
-            genome = fields[0].split('.')[0]
+            genome = fields[0].rsplit('.', 1)[0]
             if fields[1] == '0':
                 result[genome] = 'MAG'
             elif int(fields[1]) > 0:
@@ -242,8 +263,16 @@ def add_genome_type(df, extra_weight_table):
     return df
 
 
-def load_genome_list(genomes_dir):
-    genome_list = [filename.split('.')[0] for filename in os.listdir(genomes_dir)]
+def load_genome_list(genomes_dir, gunc_file):
+    genome_list = [filename.rsplit('.', 1)[0] for filename in os.listdir(genomes_dir)]
+    if gunc_file:
+        with open(gunc_file, 'r') as gunc_in:
+            for line in gunc_in:
+                acc = line.strip().split('.')[0]
+                try:
+                    genome_list.remove(acc)
+                except:
+                    logging.info('Genome {} failed GUNC and is not present in the genomes directory'.format(acc))
     return sorted(genome_list)
 
 
@@ -262,6 +291,8 @@ def parse_args():
                          help='Path to the output file where the metadata table will be stored')
     parser.add_argument('-d', '--genomes-dir', required=True,
                          help='A space delimited list of paths to the directory where genomes are stored')
+    parser.add_argument('-g', '--gunc-failed',
+                        help='Path to the file containing a list of genomes that were filtered out by GUNC')
     parser.add_argument('-r', '--rna-results', required=True,
                          help='Path to the folder with the RNA detection results (rRNA_outs)')
     parser.add_argument('--checkm-results', required=True,
@@ -275,13 +306,10 @@ def parse_args():
                         help='The name of the FTP folder containing the catalog')
     parser.add_argument('--ftp-version', required=True,
                         help='Catalog version for the ftp (for example, v1.0')
-    # parser.add_argument('--update', action='store_true',
-    #                     help='Specify this flag if generating a metadata table for results that were not generated by '
-    #                          'the genomes pipeline')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
     main(args.genomes_dir, args.extra_weight_table, args.checkm_results, args.rna_results, args.naming_table,
-         args.clusters_table, args.taxonomy, args.geo, args.outfile, args.ftp_name, args.ftp_version)
+         args.clusters_table, args.taxonomy, args.geo, args.outfile, args.ftp_name, args.ftp_version, args.gunc_failed)

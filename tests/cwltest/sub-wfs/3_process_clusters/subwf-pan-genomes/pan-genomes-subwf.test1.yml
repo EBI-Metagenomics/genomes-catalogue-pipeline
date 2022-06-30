@@ -1,0 +1,6 @@
+cluster:
+  class: Directory
+  path: ../../../../../input_example/small_set/results/clusters/CAJKXJ01
+mash_files:
+  - class: File
+    path: ../../../../../input_example/small_set/results/CAJKXJ01_mash.tsv

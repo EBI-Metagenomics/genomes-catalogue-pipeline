@@ -1,0 +1,104 @@
+#cwltest
+
+# create final folder pangenomes
+- job: test1.yml
+  tool: ../../../../cwl/tools/post-processing/create_final_folder/create_final_folder.cwl
+  short_name: create_final_folder.cwl
+  doc: "Create folder including genome and pan-genome"
+  output:
+    final_folder:
+      basename: MGYGtest
+      class: Directory
+      listing:
+        - class: Directory
+          basename: pan-genome
+          listing:
+            - class: File
+              basename: mashtree.nwk
+              checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+              size: 0
+        - class: File
+          basename: test.json
+          checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+          size: 0
+        - class: Directory
+          basename: genome
+          listing:
+            - class: File
+              basename: test.faa
+              checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+              size: 0
+            - class: File
+              basename: cog_summary.tsv
+              checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+              size: 0
+            - class: File
+              basename: test.InterProScan.tsv
+              checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+              size: 0
+            - class: File
+              basename: test.fna.fai
+              checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+              size: 0
+            - class: File
+              basename: annotation_coverage.tsv
+              checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+              size: 0
+            - class: File
+              basename: test.an.gff
+              checksum: sha1$61b5c588053629d5f8cd626683afe0354d156578
+              size: 13
+            - class: File
+              basename: test.eggNOG.tsv
+              checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+              size: 0
+            - class: File
+              basename: test.fna
+              checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+              size: 0
+
+# create final folder singletons
+- job: test2.yml
+  tool: ../../../../cwl/tools/post-processing/create_final_folder/create_final_folder.cwl
+  short_name: create_final_folder.cwl
+  doc: "Create folder including only genome"
+  output:
+  final_folder:
+    basename: MGYGtest2
+    class: Directory
+    listing:
+      - class: Directory
+        basename: genome
+        listing:
+          - class: File
+            basename: test.faa
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: cog_summary.tsv
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: test.InterProScan.tsv
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: test.fna.fai
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: annotation_coverage.tsv
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: test.an.gff
+            checksum: sha1$61b5c588053629d5f8cd626683afe0354d156578
+            size: 13
+          - class: File
+            basename: test.eggNOG.tsv
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0
+          - class: File
+            basename: test.fna
+            checksum: sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709
+            size: 0

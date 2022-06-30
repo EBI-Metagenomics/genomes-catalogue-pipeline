@@ -4,14 +4,14 @@ class: CommandLineTool
 
 requirements:
   ResourceRequirement:
-    ramMin: 250000
+    ramMin: 150000
     coresMin: 32
   InlineJavascriptRequirement: {}
   ScatterFeatureRequirement: {}
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.mmseqs:v2"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.mmseqs:v2"
 
 baseCommand: [ mmseqs_wf.sh ]
 

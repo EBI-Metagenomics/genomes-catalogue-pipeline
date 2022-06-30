@@ -10,7 +10,7 @@ requirements:
 
 hints:
   DockerRequirement:
-    dockerPull: "microbiomeinformatics/genomes-pipeline.gunc:v4"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.gunc:v4"
 
 baseCommand: [ "filter.sh" ]
 

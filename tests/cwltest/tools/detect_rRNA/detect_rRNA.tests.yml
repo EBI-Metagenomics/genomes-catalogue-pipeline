@@ -6,15 +6,14 @@
   doc: "detect rRNA"
   output:
     fasta_seq:
-      basename: fasta-results
+      basename: test_fasta-results
       class: Directory
       listing:
       - class: File
         basename: test_rRNAs.fasta
-        checksum: sha1$5806a39719ec83d443cb7b18cc676c310ef94cdf
-        size: 368
+        size: 372
     out_counts:
-      basename: out-results
+      basename: test_out-results
       class: Directory
       listing:
       - class: File

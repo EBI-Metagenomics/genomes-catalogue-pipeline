@@ -1,0 +1,27 @@
+input_dir:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/mgyg_genomes
+extra_weights:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/clusters/extra_weight_table.txt
+checkm_results:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/renamed_genome_stats.txt
+rrna:
+  class: Directory
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/marine-rrna/rRNA_outs
+naming_table:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/names.tsv
+clusters_split:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/clusters/clusters_split.txt
+gtdb_taxonomy:
+  class: File
+  path: /nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/RESULTS/marine/gtdb-tk_output/classify/gtdbtk.bac120.summary.tsv
+outfile_name: 'metadata.txt'
+ftp_name: 'marine'
+ftp_version: 'v1.0'
+geo:
+  class: File
+  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/continent_countries.csv
