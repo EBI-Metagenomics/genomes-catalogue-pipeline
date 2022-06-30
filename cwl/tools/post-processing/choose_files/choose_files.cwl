@@ -19,6 +19,7 @@ hints:
   DockerRequirement:
     dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.python3_scripts:v4"
 
+
 baseCommand: ["choose_files_post_processing.py"]
 
 inputs:
