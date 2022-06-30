@@ -107,48 +107,71 @@ Add all necessary cwltool/Toil arguments for run.
 Output files/folders:
 ```
 MGYG...NUM
+         --- * <cluster>.json (developing)
          --- genome
-              --- fa
-              --- fa.fai
+              --- fna
+              --- fna.fai
               --- faa (main rep)
               --- gff (main rep)
+              --- _annotation_coverage.tsv
+              --- _cazy_summary.tsv
+              --- _cog_summary.tsv
+              --- _eggNOG.tsv
+              --- _InterProScan.tsv
+              --- _kegg_classes.tsv
+              --- _kegg_modules.tsv
          --- pan-genome
-              --- core_genes.txt
+              --- <cluster>.core_genes.txt
               --- <cluster>_mashtree.nwk
-              --- pan_genome_reference.fa
+              --- <cluster>.pan_genome_reference.fa
               --- gene_presence_absence.Rtab
    MGYG...NUM
+         --- * <cluster>.json (developing)
          --- genome
-              --- fa
-              --- fa.fai
-              --- gff
-              --- faa
-  mmseqs_cluster_rep.emapper.annotations 
-  mmseqs_cluster_rep.emapper.seed_orthologs
-  mmseqs_cluster_rep.IPS.tsv
-
+              --- fna
+              --- fna.fai
+              --- faa (main rep)
+              --- gff (main rep)
+              --- _annotation_coverage.tsv
+              --- _cazy_summary.tsv
+              --- _cog_summary.tsv
+              --- _eggNOG.tsv
+              --- _InterProScan.tsv
+              --- _kegg_classes.tsv
+              --- _kegg_modules.tsv
   intermediate_files/
          --- clusters_split.txt
          --- drep-filt-list.txt
          --- extra_weight_table.txt
          --- gunc_report_completed.txt
+         --- gunc_report_failed.txt
          --- names.tsv
          --- renamed_download.csv
          --- Sdb.csv
-         --- mmseq.tsv
-  gtdb-tk_output/ ( commented yet)
+         --- Mdb.csv
+         --- Cdb.csv
+  * gtdb-tk_output/ (developing)
+  * metadata.txt (developing)
   rRNA_fastas/
+         --- MGYG.._fasta-results/
+             _rRNAs.fasta
   rRNA_outs/
+        --- MGYG.._out-results/
+            _rRNAs.out
+            _tRNA_20aa.out
   GFFs/
-  mmseqs_output/
-        mmseqs_0.5_outdir.tar.gz
-        mmseqs_0.95_outdir.tar.gz
-        mmseqs_0.9_outdir.tar.gz
-        mmseqs_1.0_outdir.tar.gz
+         --- MGYG..NUM.gff.gz
+  mgyg_genomes/
+         --- MGYG..NUM.fna
+  protein_catalogue/
+         --- mmseqs_0.5_outdir/
+         --- mmseqs_0.95_outdir/
+         --- mmseqs_0.9_outdir/
+             ... + protein_catalogue-90_eggNOG.tsv
+                 + protein_catalogue-90_InterProScan.tsv
+         --- mmseqs_1.0_outdir/
   panaroo_output/
-        MGYG.._panaroo.tar.gz
-        ...
-  per-genome-annotations/ (for post-processing)
-  drep_genomes/                   (for GTDB-Tk)
+         --- MGYG <cluster_reps>_panaroo/
+
 ```
 
