@@ -7,7 +7,8 @@ set -e
 mitload miniconda
 
 module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
-conda activate toil-5.6.0
+conda activate toil-5.4.0
+#conda activate toil-5.6.0
 
 
 MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
