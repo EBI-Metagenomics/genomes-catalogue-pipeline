@@ -34,11 +34,11 @@ outputs:
 
   metadata:
     type: File
-    outputSource: metadata/metadata_table
+    outputSource: metadata_and_tree/metadata
 
   phylo_tree:
     type: File
-    outputSource: phylo_json/phylo_tree_json
+    outputSource: metadata_and_tree/phylo_tree
 
 steps:
 # ----------- << GTDB - Tk >> -----------
@@ -85,19 +85,16 @@ steps:
   #    folder: gtdbtk/gtdbtk_folder
   #  out: [ folder_tar ]
 
-# ----------- << Metadata >> -----------
-  metadata:
-    run: ../tools/genomes-catalog-update/generate_metadata/create_metadata.cwl
+# ----------- << Metadata and phylo.tree >> -----------
+  metadata_and_tree:
+    run: 5_gtdb/metadata_and_phylo_tree.cwl
     in:
-      input_dir:
-        source:
-          - reps_pangenomes_fna
-          - other_pangenomes_fna
-          - singletons_fna
-        linkMerge: merge_flattened
-      extra_weights: extra_weights_table
-      checkm_results: checkm_results_table
-      rrna: rrna_dir
+      reps_pangenomes_fna: reps_pangenomes_fna
+      other_pangenomes_fna: other_pangenomes_fna
+      singletons_fna: singletons_fna
+      extra_weights_table: extra_weights_table
+      checkm_results_table: checkm_results_table
+      rrna_dir: rrna_dir
       naming_table: naming_table
       clusters_split: clusters_split
       gtdb_taxonomy:
@@ -106,22 +103,11 @@ steps:
           - gtdbtk/gtdbtk_bac
           - gtdbtk/gtdbtk_arc
         pickValue: first_non_null
-      outfile_name: metadata_outname
-      ftp_name: ftp_name_catalogue
-      ftp_version: ftp_version_catalogue
-      geo: geo_file
-      gunc_failed: gunc_failed_genomes
-    out: [ metadata_table ]
-
-# ----------- << phylo_json >> -----------
-  phylo_json:
-    run: ../tools/post-processing/generate_phylo_json/phylo_json.cwl
-    in:
-      table:
-        source:
-          - cat_tables/result
-          - gtdbtk/gtdbtk_bac
-          - gtdbtk/gtdbtk_arc
-        pickValue: first_non_null
-      outname: { default: "phylo_tree.json" }
-    out: [phylo_tree_json]
+      metadata_outname: metadata_outname
+      ftp_name_catalogue: ftp_name_catalogue
+      ftp_version_catalogue: ftp_version_catalogue
+      geo_file: geo_file
+      gunc_failed_genomes: gunc_failed_genomes
+    out:
+      - metadata
+      - phylo_tree

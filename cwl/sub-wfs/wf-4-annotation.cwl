@@ -20,7 +20,8 @@ inputs:
   mmseqs_faa: File
   mmseqs_tsv: File
   all_reps_filtered: File
-  all_fnas: File[]
+  all_fnas: File[]?
+  all_fnas_dir: Directory?
 
   interproscan_databases: [string, Directory]
   chunk_size_ips: int
@@ -78,6 +79,7 @@ steps:
     run: 4_annotation/detect_rrna_subwf.cwl
     in:
       filtered_genomes: all_fnas
+      filtered_genomes_folder: all_fnas_dir
       cm_models: cm_models
     out: [rrna_outs, rrna_fastas]
 
