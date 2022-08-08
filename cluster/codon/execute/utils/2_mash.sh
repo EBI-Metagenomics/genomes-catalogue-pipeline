@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts :o:p:m:l:n:q: option; do
+while getopts :o:p:m:l:n:q:j:c: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -8,6 +8,8 @@ while getopts :o:p:m:l:n:q: option; do
 		l) LOGS=${OPTARG};;
 		n) DIRNAME=${OPTARG};;
 		q) QUEUE=${OPTARG};;
+		j) JOB=${OPTARG};;
+		c) CONDITION_JOB=${OPTARG};;
 	esac
 done
 
@@ -19,7 +21,8 @@ for i in $(ls ${MASH}); do
     echo "  path: ${MASH}/${i}" >> ${YML}
 
     echo "Running ${NAME} mash with ${YML}"
-    bsub -J "Step3.mash.${i}.${DIRNAME}" \
+    bsub -J "${JOB}.${i}.${DIRNAME}" \
+         -w "ended(${CONDITION_JOB}.${DIRNAME}})" \
          -q ${QUEUE} \
          -e ${LOGS}/${i}.mash.err \
          -o ${LOGS}/${i}.mash.out \

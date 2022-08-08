@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts :o:p:l:n:q:y:i:c:m:x: option; do
+while getopts :o:p:l:n:q:y:i:c:m:x:j: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -12,6 +12,7 @@ while getopts :o:p:l:n:q:y:i:c:m:x: option; do
 		c) CSV=${OPTARG};;
 		m) MAX_MGYG=${OPTARG};;
 		x) MIN_MGYG=${OPTARG};;
+		j) JOB_NAME=${OPTARG};;
 	esac
 done
 
@@ -34,7 +35,7 @@ ena_csv:
 
 echo "Running dRep"
 bsub \
-    -J "Step2.drep.${DIRNAME}" \
+    -J "${JOB_NAME}.${DIRNAME}" \
     -q ${QUEUE} \
     -o ${LOGS}/drep.out \
     -e ${LOGS}/drep.err \

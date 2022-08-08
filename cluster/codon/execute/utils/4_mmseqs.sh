@@ -3,7 +3,7 @@
 MMSEQS_LIMIT_I=(1.0 0.95 0.90 0.50)
 MMSEQS_LIMIT_C=0.8
 
-while getopts :o:p:l:n:q:y:i:r:f: option; do
+while getopts :o:p:l:n:q:y:i:r:f:j: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -13,6 +13,7 @@ while getopts :o:p:l:n:q:y:i:r:f: option; do
 		y) YML=${OPTARG};;
 		r) REPS=${OPTARG};;
 		f) ALL_GENOMES=${OPTARG};;
+		j) JOB=${OPTARG};;
 	esac
 done
 
@@ -39,7 +40,7 @@ ls ${OUT}/pg | tr '_' '\t' | cut -f1 >> ${REPS}
 
 echo "Concatenate prokka.faa-s"
 bsub \
-    -J "Step5.1.cat_prokka.${DIRNAME}" \
+    -J "${JOB}.cat.${DIRNAME}" \
     -q ${QUEUE} \
     -e ${LOGS}/cat.err \
     -o ${LOGS}/cat.out \
@@ -48,26 +49,26 @@ bsub \
 echo "Prepare yml for mmseqs"
 for i in ${MMSEQS_LIMIT_I[@]}; do
     bsub \
-        -J "Step5.2.yml.${i}.${DIRNAME}" \
-        -w "ended(Step5.1.cat_prokka.${DIRNAME})" \
+        -J "${JOB}.yml.${i}.${DIRNAME}" \
+        -w "ended(${JOB}.cat.${DIRNAME})" \
         -q ${QUEUE} \
         -e ${LOGS}/mmseqs.yml.err \
         -o ${LOGS}/mmseqs.yml.out \
-        echo \
-        "
+        "echo \
+        '
 input_fasta:
   class: File
   path: ${OUT}/prokka.cat.faa
 limit_i: ${i}
 limit_c: ${MMSEQS_LIMIT_C}
-        " > ${YML}/${i}.mmseqs.yml
+        ' > ${YML}/${i}.mmseqs.yml"
 done
 
 echo "Submitting mmseqs"
 for i in ${MMSEQS_LIMIT_I[@]}; do
     bsub \
-        -J "Step5.3.mmseq.${i}.${DIRNAME}" \
-        -w "ended(Step5.2.yml.*.${DIRNAME})" \
+        -J "${JOB}.${i}.${DIRNAME}" \
+        -w "ended(${JOB}.yml.*.${DIRNAME})" \
         -q ${QUEUE} \
         -e ${LOGS}/mmseqs.${i}.err \
         -o ${LOGS}/mmseqs.${i}.out \

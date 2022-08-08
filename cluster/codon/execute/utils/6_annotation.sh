@@ -30,7 +30,7 @@ for i in $(cat ${OUT}/pg); do
 done
 
 echo "Creating yml"
-cp ${P}/cluster/codon/execute/utils/7_annotation.yml ${YML}/annotation.yml
+cp ${P}/cluster/codon/execute/utils/6_annotation.yml ${YML}/annotation.yml
 echo \
 "
 mmseqs_faa:

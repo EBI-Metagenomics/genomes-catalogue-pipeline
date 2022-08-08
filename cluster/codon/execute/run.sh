@@ -3,6 +3,15 @@
 DEFAULT_QUEUE="standard"
 BIGQUEUE="bigmem"
 
+STEP1="Step1.drep"
+STEP2="Step2.mash"
+STEP3="Step3"
+STEP4="Step4.mmseqs"
+STEP5="Step5.gtdbtk"
+STEP6="Step6.annotation"
+STEP7="Step7.metadata"
+STEP8="Step8.postprocessing"
+
 usage()
 {
 cat << EOF
@@ -109,8 +118,8 @@ export REPS_FILE=${OUT}/cluster_reps.txt
 export ALL_GENOMES=${OUT}/all_cluster_filt.txt
 touch ${REPS_FILE} ${ALL_GENOMES}
 
-# ------------------------- Step 1-2 ------------------------------
-echo "==== 1-2. Run preparation and dRep steps with cwltool ===="
+# ------------------------- Step 1 ------------------------------
+echo "==== 1. Run preparation and dRep steps with cwltool ===="
 # TODO improve for NCBI
 echo "Submitting dRep"
 bash ${MAIN_PATH}/cluster/codon/execute/utils/1_drep.sh \
@@ -123,70 +132,77 @@ bash ${MAIN_PATH}/cluster/codon/execute/utils/1_drep.sh \
     -i ${ENA_GENOMES} \
     -c ${ENA_CSV} \
     -m ${MAX_MGYG} \
-    -x ${MIN_MGYG}
+    -x ${MIN_MGYG} \
+    -j ${STEP1}
+
 sleep 5
-# ------------------------- Step 3 ------------------------------
-echo "==== 3. Run mash2nwk ===="
+# ------------------------- Step 2 ------------------------------
+echo "==== 2. Run mash2nwk ===="
 echo "Submitting mash"
-bsub -w "ended(Step2.drep*${NAME})" \
-     -J "Step3.mash.submit.${NAME}" \
+bsub -w "ended(${STEP1}.${NAME})" \
+     -J "${STEP2}.submit.${NAME}" \
      -q ${QUEUE} \
-     -e ${LOGS}/mash.err \
-     -o ${LOGS}/mash.out \
-     bash ${MAIN_PATH}/cluster/codon/execute/utils/3_mash.sh \
+     -e ${LOGS}/submit.mash.err \
+     -o ${LOGS}/submit.mash.out \
+     bash ${MAIN_PATH}/cluster/codon/execute/utils/2_mash.sh \
         -m ${OUT}/${NAME}_drep/mash \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
         -n ${NAME} \
-        -q ${QUEUE}
+        -q ${QUEUE} \
+        -j ${STEP2} \
+        -c ${STEP1}
 
-# ------------------------- Step 4 ------------------------------
+# ------------------------- Step 3 ------------------------------
 mkdir -p ${OUT}/sg ${OUT}/pg
-echo "==== 4. Run cluster annotation ===="
+echo "==== 3. Run cluster annotation ===="
 echo "Submitting pan-genomes"
 bsub \
-    -J "Step4.1.pg.${NAME}" \
-    -w "ended(Step3.mash.*${NAME})" \
+    -J "${STEP3}.pg.${NAME}" \
+    -w "ended(${STEP2}.*.${NAME})" \
     -q ${QUEUE} \
-    -e ${LOGS}/pg.err \
-    -o ${LOGS}/pg.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/4_process_clusters.sh \
+    -e ${LOGS}/submit.pg.err \
+    -o ${LOGS}/submit.pg.out \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/3_process_clusters.sh \
         -i ${OUT}/${NAME}_drep/pan-genomes \
-        -o ${OUT}/pg \
+        -o ${OUT} \
         -p ${MAIN_PATH} \
         -t 'pg' \
         -l ${LOGS} \
         -n ${NAME} \
         -q ${QUEUE} \
-        -y ${YML}
+        -y ${YML} \
+        -j ${STEP3}
 
 echo "Submitting singletons"
 bsub \
-    -J "Step4.2.sg.${NAME}" \
-    -w "ended(Step2.drep*${NAME})" \
+    -J "${STEP3}.sg.${NAME}" \
+    -w "ended(${STEP2}.*.${NAME})" \
     -q ${QUEUE} \
-    -e ${LOGS}/sg.err \
-    -o ${LOGS}/sg.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/4_process_clusters.sh \
+    -e ${LOGS}/submit.sg.err \
+    -o ${LOGS}/submit.sg.out \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/3_process_clusters.sh \
         -i ${OUT}/${NAME}_drep/singletons \
-        -o ${OUT}/sg \
+        -o ${OUT} \
         -p ${MAIN_PATH} \
         -t 'sg' \
         -l ${LOGS} \
         -n ${NAME} \
-        -q ${QUEUE}
+        -q ${QUEUE} \
+        -y ${YML} \
+        -j ${STEP3}
 
-# ------------------------- Step 5 ------------------------------
-echo "==== 5. Run mmseqs ===="
+# ------------------------- Step 4 ------------------------------
+echo "==== 4. Run mmseqs ===="
 # TODO improve for no sg or pg
 bsub \
-    -J "Step5.mmseqs.submit.${NAME}" \
-    -w "ended(Step4*${NAME})" \
+    -J "${STEP4}.submit.${NAME}" \
+    -w "ended(${STEP3}.*.${NAME})" \
     -q ${QUEUE} \
-    -e ${LOGS}/mmseq.submit.err \
-    -o ${LOGS}/mmseq.submit.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/5_mmseqs.sh \
+    -e ${LOGS}/submit.mmseq.err \
+    -o ${LOGS}/submit.mmseq.out \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/4_mmseqs.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
@@ -194,37 +210,39 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -r ${REPS_FILE} \
-        -f ${ALL_GENOMES}
+        -f ${ALL_GENOMES} \
+        -j ${STEP4}
 
-# ------------------------- Step 6 ------------------------------
+# ------------------------- Step 5 ------------------------------
 
-echo "==== 6. Run GTDB-Tk ===="
+echo "==== 5. Run GTDB-Tk ===="
 echo "Submitting GTDB-Tk"
 bsub \
-    -w "ended(Step5.mmseqs.submit.${NAME})" \
-    -J "Step6.gtdbtk.submit.${NAME}" \
+    -w "ended(${STEP4}.*.${NAME})" \
+    -J "${STEP5}.submit.${NAME}" \
     -q ${QUEUE} \
-    -o ${LOGS}/gtdbtk.submit.out \
-    -e ${LOGS}/gtdbtk.submit.err \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/6_gtdbtk.sh \
+    -o ${LOGS}/submit.gtdbtk.out \
+    -e ${LOGS}/submit.gtdbtk.err \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/5_gtdbtk.sh \
         -q ${QUEUE} \
         -p ${MAIN_PATH} \
         -o ${OUT} \
         -l ${LOGS} \
         -n ${NAME} \
         -y ${YML} \
-        -r ${REPS_FILE}
+        -r ${REPS_FILE} \
+        -j ${STEP5}
 
-# ------------------------- Step 7 ------------------------------
-echo "==== 7. EggNOG, IPS, rRNA ===="
+# ------------------------- Step 6 ------------------------------
+echo "==== 6. EggNOG, IPS, rRNA ===="
 #echo "Submitting annotation"
 #echo bsub \
 #    -J "Step7.annotation.submit.${NAME}" \
 #    -w "ended(Step5*${NAME})" \
 #    -q ${QUEUE} \
-#    -e ${LOGS}/annotation.submit.err \
-#    -o ${LOGS}/annotation.submit.out \
-#    bash ${MAIN_PATH}/cluster/codon/execute/utils/7_annotation.sh \
+#    -e ${LOGS}/submit.annotation.err \
+#    -o ${LOGS}/submit.annotation.out \
+#    bash ${MAIN_PATH}/cluster/codon/execute/utils/6_annotation.sh \
 #        -o ${OUT} \
 #        -p ${MAIN_PATH} \
 #        -l ${LOGS} \
@@ -234,8 +252,8 @@ echo "==== 7. EggNOG, IPS, rRNA ===="
 #        -i ${OUT}/${NAME}_mmseqs \
 #        -r ${REPS_FILE}
 
-# ------------------------- Step 8 ------------------------------
-echo "==== 8. Metadata and phylo.tree ===="
+# ------------------------- Step 7 ------------------------------
+echo "==== 7. Metadata and phylo.tree ===="
 
-# ------------------------- Step 9 ------------------------------
-echo "==== 9. Post-processing ===="
+# ------------------------- Step 8 ------------------------------
+echo "==== 8. Post-processing ===="

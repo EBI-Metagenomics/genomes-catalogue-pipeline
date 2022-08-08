@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts :o:p:l:n:q:y:r: option; do
+while getopts :o:p:l:n:q:y:r:j: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -9,6 +9,7 @@ while getopts :o:p:l:n:q:y:r: option; do
 		q) QUEUE=${OPTARG};;
 		y) YML=${OPTARG};;
 		r) REPS=${OPTARG};;
+		j) JOB=${OPTARG};;
 	esac
 done
 
@@ -30,17 +31,17 @@ echo \
 drep_folder:
   class: Directory
   path: ${OUT}/reps
-gtdb_outfolder: ${OUT}/gtdbtk
+gtdb_outfolder: gtdbtk-outdir
 refdata:
   class: Directory
   path: ${REFDATA}
 " > ${YML}/gtdbtk.yml
 
 echo "Running ${DIRNAME} gtdb with"
-bsub -J "Step3.gtdbtk.${DIRNAME}" \
+bsub -J "${JOB}.${DIRNAME}" \
      -q ${QUEUE} \
-     -e ${LOGS}/${i}.gtdbtk.err \
-     -o ${LOGS}/${i}.gtdbtk.out \
+     -e ${LOGS}/gtdbtk.err \
+     -o ${LOGS}/gtdbtk.out \
      bash ${P}/cluster/codon/run-cwltool.sh \
         -d False \
         -p ${P} \

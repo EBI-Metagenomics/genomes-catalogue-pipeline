@@ -2,9 +2,9 @@
 
 export GUNC_DB="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd"
 
-while getopts :i:o:p:t:l:n:q:y: option; do
+while getopts :i:o:p:t:l:n:q:y:j: option; do
 	case "${option}" in
-	    i) IN=${OPTARG};;
+	    i) INPUT=${OPTARG};;
 		o) OUTDIR=${OPTARG};;
 		p) P=${OPTARG};;
 		t) TYPE=${OPTARG};;
@@ -12,14 +12,13 @@ while getopts :i:o:p:t:l:n:q:y: option; do
 		n) DIRNAME=${OPTARG};;
 		q) QUEUE=${OPTARG};;
 		y) YML_FOLDER=${OPTARG};;
+		j) JOB=${OPTARG};;
 	esac
 done
 
-for i in $(ls ${IN}); do
-    INPUT=${IN}/${i}
+for i in $(ls ${INPUT}); do
 
-    NAME="$(basename -- ${INPUT})"
-    export YML=${YML_FOLDER}/${NAME}.${TYPE}.cluster.yml
+    export YML=${YML_FOLDER}/${i}.${TYPE}.cluster.yml
 
     if [ "${TYPE}" == "pg" ]; then
         CWL=${P}/cwl/sub-wfs/3_process_clusters/pan-genomes/sub-wf-pan-genomes.cwl
@@ -28,7 +27,7 @@ for i in $(ls ${IN}); do
          "
 cluster:
   class: Directory
-  path: ${INPUT}
+  path: ${INPUT}/${i}
 mash_files:
   - class: File
     path: ${MASH}
@@ -40,7 +39,7 @@ mash_files:
          "
 cluster:
   class: Directory
-  path: ${INPUT}
+  path: ${INPUT}/${i}
 gunc_db_path:
   class: File
   path: ${GUNC_DB}
@@ -50,16 +49,16 @@ csv:
      " > ${YML}
     fi
 
-    echo "Running ${NAME} ${TYPE} with ${YML}"
-    bsub -J "Step4.${TYPE}.${i}.${DIRNAME}" \
+    echo "Running ${i} ${TYPE} with ${YML}"
+    bsub -J "${JOB}.${TYPE}.${i}.${DIRNAME}" \
          -e ${LOGS}/${TYPE}_${i}.err \
          -o ${LOGS}/${TYPE}_${i}.out \
          -q ${QUEUE} \
          bash ${P}/cluster/codon/run-cwltool.sh \
             -d False \
             -p ${P} \
-            -o ${OUTDIR} \
-            -n ${NAME}_cluster \
+            -o ${OUTDIR}/${TYPE} \
+            -n ${i}_cluster \
             -c ${CWL} \
             -y ${YML}
 done
