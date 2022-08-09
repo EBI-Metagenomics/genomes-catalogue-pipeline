@@ -114,7 +114,7 @@ if __name__ == '__main__':
     - kegg_modules.tsv
     - cazy_summary.tsv
     - cog_summary.tsv''', formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-i', dest='input_dir', help='Directory with protein.fasta, eggnog, ips', required=True)
+    parser.add_argument('-i', dest='input_dir', help='Directory with protein.fasta', required=True)
     parser.add_argument('-a', dest='annotations', help='eggnog and ips', required=False, nargs='+')
     parser.add_argument('-k', dest='kegg_classes', help='KEGG orthology classes DB [REQUIRED]', required=True)
     parser.add_argument('-o', dest='out_folder', help='Output folder [REQUIRED]', required=True)

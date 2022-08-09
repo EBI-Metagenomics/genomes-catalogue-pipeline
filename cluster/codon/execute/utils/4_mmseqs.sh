@@ -3,7 +3,7 @@
 MMSEQS_LIMIT_I=(1.0 0.95 0.90 0.50)
 MMSEQS_LIMIT_C=0.8
 
-while getopts :o:p:l:n:q:y:i:r:f:j: option; do
+while getopts :o:p:l:n:q:y:i:r:f:j:c:a:b: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -14,46 +14,44 @@ while getopts :o:p:l:n:q:y:i:r:f:j: option; do
 		r) REPS=${OPTARG};;
 		f) ALL_GENOMES=${OPTARG};;
 		j) JOB=${OPTARG};;
+		c) CONDITION_JOB=${OPTARG};;
+		a) REPS_FA=${OPTARG};;
+		b) ALL_FNA=${OPTARG};;
 	esac
 done
 
-echo "Create file with all filtered genomes"
-touch ${ALL_GENOMES}.sg.tmp ${ALL_GENOMES}.pg.tmp
-
-ls ${OUT}/sg | tr '_' '\t' | cut -f1 >> ${ALL_GENOMES}.sg
-
-for i in $(ls ${OUT}/pg); do
-    echo ${i} >> ${ALL_GENOMES}.pg.tmp
-    ls ${OUT}/pg/${i} | grep '.gff' | tr '.' '\t' | cut -f1 >> ${ALL_GENOMES}.pg.tmp
-done
-
-cat ${ALL_GENOMES}.pg.tmp | tr '_' '\t' | cut -f1 > ${ALL_GENOMES}.pg
-rm ${ALL_GENOMES}.pg.tmp
-cat ${ALL_GENOMES}.pg > ${ALL_GENOMES}
-cat ${ALL_GENOMES}.sg.tmp | tr '_' '\t' | cut -f1 > ${ALL_GENOMES}.sg
-rm ${ALL_GENOMES}.sg.tmp
-cat ${ALL_GENOMES}.sg >> ${ALL_GENOMES}
-
-echo "Create file with cluster reps filtered genomes"
-ls ${OUT}/sg | tr '_' '\t' | cut -f1 > ${REPS}
-ls ${OUT}/pg | tr '_' '\t' | cut -f1 >> ${REPS}
+echo "Create files and folders with reps"
+bsub \
+     -J "${JOB}.${DIRNAME}.files" \
+     -w "ended(${CONDITION_JOB}.${DIRNAME}.*)" \
+     -q "${QUEUE}" \
+     -e "${LOGS}"/create_files.err \
+     -o "${LOGS}"/create_files.out \
+     bash ${P}/cluster/codon/execute/utils/4_create_files.sh \
+        -o ${OUT} \
+        -r ${REPS} \
+        -f ${ALL_GENOMES} \
+        -a ${REPS_FA} \
+        -n ${ALL_FNA} \
+        -d ${OUT}/${DIRNAME}_drep
 
 echo "Concatenate prokka.faa-s"
 bsub \
-    -J "${JOB}.cat.${DIRNAME}" \
-    -q ${QUEUE} \
-    -e ${LOGS}/cat.err \
-    -o ${LOGS}/cat.out \
+    -J "${JOB}.${DIRNAME}.cat" \
+    -w "ended(${JOB}.${DIRNAME}.files)" \
+    -q "${QUEUE}" \
+    -e "${LOGS}"/cat.err \
+    -o "${LOGS}"/cat.out \
     "cat ${OUT}/pg/MGYG*_cluster/MGYG*.faa ${OUT}/pg/MGYG*_cluster/MGYG*/MGYG*.faa ${OUT}/sg/MGYG*_cluster/MGYG*/MGYG*.faa > ${OUT}/prokka.cat.faa"
 
 echo "Prepare yml for mmseqs"
 for i in ${MMSEQS_LIMIT_I[@]}; do
     bsub \
-        -J "${JOB}.yml.${i}.${DIRNAME}" \
-        -w "ended(${JOB}.cat.${DIRNAME})" \
-        -q ${QUEUE} \
-        -e ${LOGS}/mmseqs.yml.err \
-        -o ${LOGS}/mmseqs.yml.out \
+        -J "${JOB}.${DIRNAME}.yml.${i}" \
+        -w "ended(${JOB}.${DIRNAME}.cat)" \
+        -q "${QUEUE}" \
+        -e "${LOGS}"/mmseqs.yml.err \
+        -o "${LOGS}"/mmseqs.yml.out \
         "echo \
         '
 input_fasta:
@@ -67,16 +65,16 @@ done
 echo "Submitting mmseqs"
 for i in ${MMSEQS_LIMIT_I[@]}; do
     bsub \
-        -J "${JOB}.${i}.${DIRNAME}" \
-        -w "ended(${JOB}.yml.*.${DIRNAME})" \
-        -q ${QUEUE} \
-        -e ${LOGS}/mmseqs.${i}.err \
-        -o ${LOGS}/mmseqs.${i}.out \
-        bash ${P}/cluster/codon/run-cwltool.sh \
+        -J "${JOB}.${DIRNAME}.${i}" \
+        -w "ended(${JOB}.${DIRNAME}.yml.*)" \
+        -q "${QUEUE}" \
+        -e "${LOGS}"/mmseqs."${i}".err \
+        -o "${LOGS}"/mmseqs."${i}".out \
+        bash "${P}"/cluster/codon/run-cwltool.sh \
             -d False \
-            -p ${P} \
-            -o ${OUT} \
-            -n "${DIRNAME}_mmseqs" \
-            -c ${P}/cwl/tools/mmseqs/mmseqs.cwl \
-            -y ${YML}/${i}.mmseqs.yml
+            -p "${P}" \
+            -o "${OUT}" \
+            -n "${DIRNAME}_mmseqs_${i}" \
+            -c "${P}"/cwl/tools/mmseqs/mmseqs.cwl \
+            -y "${YML}"/"${i}".mmseqs.yml
 done

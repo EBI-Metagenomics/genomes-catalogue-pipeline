@@ -30,7 +30,7 @@ outputs:
 
   gtdbtk_outdir:
     type: Directory
-    outputSource: gtdbtk/gtdbtk_folder
+    outputSource: gtdbtk/gtdbtk_outdir
 
   metadata:
     type: File
@@ -55,54 +55,38 @@ steps:
     out: [out]
 
   gtdbtk:
-    run: ../tools/gtdbtk/gtdbtk.cwl
+    run: 5_gtdb/gtdbtk.cwl
     in:
       drep_folder: create_folder_reps/out
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
     out:
-      - gtdbtk_folder
-      - gtdbtk_bac
-      - gtdbtk_arc
+      - gtdbtk_outdir
+      - taxonomy
 
-  cat_tables:
-    when: $(Boolean(inputs.file1) || Boolean(inputs.file2))
-    run: ../utils/concatenate.cwl
+  create_all_fna_dir:
+    run: ../utils/return_directory.cwl
     in:
-      file1: gtdbtk/gtdbtk_bac
-      file2: gtdbtk/gtdbtk_arc
-      files:
+      list:
         source:
-          - gtdbtk/gtdbtk_bac
-          - gtdbtk/gtdbtk_arc
-        pickValue: all_non_null
-      outputFileName: {default: "gtdbtk.summary.tsv" }
-    out: [result]
-
-  # tar:
-  #  run: ../utils/tar.cwl
-  #  in:
-  #    folder: gtdbtk/gtdbtk_folder
-  #  out: [ folder_tar ]
+          - reps_pangenomes_fna
+          - other_pangenomes_fna
+          - singletons_fna
+        linkMerge: merge_flattened
+      dir_name: {default: "all_fna"}
+    out: [out]
 
 # ----------- << Metadata and phylo.tree >> -----------
   metadata_and_tree:
     run: 5_gtdb/metadata_and_phylo_tree.cwl
     in:
-      reps_pangenomes_fna: reps_pangenomes_fna
-      other_pangenomes_fna: other_pangenomes_fna
-      singletons_fna: singletons_fna
+      all_fna_dir: create_all_fna_dir/out
       extra_weights_table: extra_weights_table
       checkm_results_table: checkm_results_table
       rrna_dir: rrna_dir
       naming_table: naming_table
       clusters_split: clusters_split
-      gtdb_taxonomy:
-        source:
-          - cat_tables/result
-          - gtdbtk/gtdbtk_bac
-          - gtdbtk/gtdbtk_arc
-        pickValue: first_non_null
+      gtdb_taxonomy: gtdbtk/taxonomy
       metadata_outname: metadata_outname
       ftp_name_catalogue: ftp_name_catalogue
       ftp_version_catalogue: ftp_version_catalogue

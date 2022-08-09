@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts :o:p:l:n:q:y:i:r: option; do
+while getopts :o:p:l:n:q:y:i:r:j:c:b: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -10,23 +10,10 @@ while getopts :o:p:l:n:q:y:i:r: option; do
 		y) YML=${OPTARG};;
 		i) INPUT=${OPTARG};;
 		r) REPS=${OPTARG};;
+		j) JOB=${OPTARG};;
+		c) CONDITION_JOB=${OPTARG};;
+		b) ALL_FNA=${OPTARG};;
 	esac
-done
-
-echo "Creating all_fna"
-mkdir -p ${OUT}/all_fna
-for i in $(cat ${OUT}/sg); do
-    NAME="$(basename -- ${i} | tr '_' '\t' | cut -f1)"
-    ln -s ${OUT}/sg/${i}/${NAME}/${NAME}.fna ${OUT}/all_fna/${NAME}.fna
-done
-
-for i in $(cat ${OUT}/pg); do
-    NAME="$(basename -- ${i} | tr '_' '\t' | cut -f1)"
-    ln -s ${OUT}/pg/${i}/${NAME}/${NAME}.fna ${OUT}/all_fna/${NAME}.fna
-    ls ${OUT}/pg/${i} | grep '.fna' > list.txt
-    for j in $(cat list.txt); do
-        ln -s ${OUT}/pg/${i}/${j}.fna ${OUT}/all_fna/${j}.fna;
-    done
 done
 
 echo "Creating yml"
@@ -35,13 +22,13 @@ echo \
 "
 mmseqs_faa:
   class: File
-  path: ${INPUT}/mmseqs_09/faa
+  path: ${INPUT}/mmseqs_cluster_rep.fa
 mmseqs_tsv:
   class: File
-  path: ${INPUT}/mmseqs_09/tsv
+  path: ${INPUT}/mmseqs_cluster.tsv
 all_fnas_dir:
   class: Directory
-  path: ${OUT}/all_fna
+  path: ${ALL_FNA}
 all_reps_filtered:
   class: File
   path: ${REPS}
@@ -49,7 +36,8 @@ all_reps_filtered:
 
 echo "Submitting annotations"
 bsub \
-    -J "Step7.annotation.${DIRNAME}" \
+    -J "${JOB}.${DIRNAME}" \
+    -w "ended(${CONDITION_JOB}.${DIRNAME}.*)"\
     -q ${QUEUE} \
     -e ${LOGS}/annotation.err \
     -o ${LOGS}/annotation.out \

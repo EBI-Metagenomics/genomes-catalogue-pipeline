@@ -10,9 +10,7 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  reps_pangenomes_fna: File[]
-  other_pangenomes_fna: File[]
-  singletons_fna: File[]
+  all_fna_dir: Directory
 
   extra_weights_table: File
   checkm_results_table: File
@@ -42,12 +40,7 @@ steps:
   metadata:
     run: ../../tools/genomes-catalog-update/generate_metadata/create_metadata.cwl
     in:
-      input_dir:
-        source:
-          - reps_pangenomes_fna
-          - other_pangenomes_fna
-          - singletons_fna
-        linkMerge: merge_flattened
+      input_dir: all_fna_dir
       extra_weights: extra_weights_table
       checkm_results: checkm_results_table
       rrna: rrna_dir

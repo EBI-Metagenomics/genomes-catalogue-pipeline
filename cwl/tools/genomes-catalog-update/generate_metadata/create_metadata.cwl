@@ -22,9 +22,9 @@ baseCommand: [ create_metadata_table.py ]
 
 inputs:
   input_dir:
-    type: File[]
+    type: Directory
     inputBinding:
-      prefix: '--genomes-list'
+      prefix: '--genomes-dir'
       position: 1
   extra_weights:
     type: File
