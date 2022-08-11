@@ -69,53 +69,25 @@ done
 echo "Generating yml file"
 export YML_FILE=${YML}/post-processing.yml
 cp ${P}/cluster/codon/execute/utils/8_post_processing.yml ${YML_FILE}
-echo \
-"
-biom: ${BIOM}
-metadata:
-  class: File
-  path: ${METADATA}
-annotations:
-" > ${YML_FILE}
 
-ls ${ANNOTATIONS} | grep 'MGYG' > list_annotations.txt
-for i in $(cat list_annotations.txt); do
-    echo \
-"
-  - class: File
-    path: ${ANNOTATIONS}/${i}
-" >> ${YML_FILE}
-done
-rm list_annotations.txt
-
-echo \
-"
-clusters:
-" >> ${YML_FILE}
-
-for i in $(ls ${OUT}/sg); do
-    NAME="$(basename -- ${i} | tr '_' '\t' | cut -f1)"
-    echo \
-"
-  - class: Directory
-    path: ${OUT}/sg/${i}/${NAME}
-" >> ${YML_FILE}
-done
-
-for i in $(ls ${OUT}/pg); do
-    NAME="$(basename -- ${i} | tr '_' '\t' | cut -f1)"
-    echo \
-"
-  - class: Directory
-    path: ${OUT}/pg/${i}/${NAME}
-" >> ${YML_FILE}
-done
+bsub \
+    -J "${JOB}.${DIRNAME}.yml" \
+    -w "${CONDITION_JOB}"\
+    -q "${QUEUE}" \
+    -e "${LOGS}"/post-processing.yml.err \
+    -o "${LOGS}"/post-processing.yml.out \
+    bash ${P}/cluster/codon/execute/utils/8_generate_yml.sh \
+        -b ${BIOM} \
+        -m ${METADATA} \
+        -y ${YML_FILE} \
+        -o ${OUT} \
+        -a ${ANNOTATIONS}
 
 export CWL=${P}/cwl/sub-wfs/wf-6-post-processing.cwl
 echo "Submitting cluster post-processing"
 bsub \
     -J "${JOB}.${DIRNAME}" \
-    -w "${CONDITION_JOB}"\
+    -w "${JOB}.${DIRNAME}.yml"\
     -q "${QUEUE}" \
     -e "${LOGS}"/post-processing.err \
     -o "${LOGS}"/post-processing.out \
