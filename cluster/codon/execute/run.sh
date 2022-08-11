@@ -282,7 +282,8 @@ bsub \
         -r ${OUT}/${NAME}_annotations/rRNA_outs \
         -j ${STEP7} \
         -c "ended(${STEP5}.${NAME}.*) && ended(${STEP6}.${NAME}.*)" \
-        -f ${ALL_FNA_DIR}
+        -f ${ALL_FNA_DIR} \
+        -s ${ENA_CSV}
 
 # ------------------------- Step 8 ------------------------------
 echo "==== 8. Post-processing ===="

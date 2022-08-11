@@ -19,12 +19,13 @@ OPTIONS:
    -g      Path to GTDB-Tk taxonomy output file
    -r      Path to rRNA_outs folder (result of annotation step)
    -f      Path to folder with all filtered fna files
+   -s      Initial input genomes.csv
 EOF
 }
 
 export GEO="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/continent_countries.csv"
 
-while getopts ho:p:l:n:q:y:v:i:g:r:j:c:f: option; do
+while getopts ho:p:l:n:q:y:v:i:g:r:j:c:f:s: option; do
 	case "$option" in
 		h)
             usage
@@ -69,6 +70,9 @@ while getopts ho:p:l:n:q:y:v:i:g:r:j:c:f: option; do
 		f)
 		    ALL_FNA=${OPTARG}
 		    ;;
+		s)
+		    INPUT_CSV=${OPTARG}
+		    ;;
 		?)
 		    usage
             exit
@@ -77,6 +81,7 @@ while getopts ho:p:l:n:q:y:v:i:g:r:j:c:f: option; do
 done
 
 echo "Creating yml"
+NAME="$(basename -- ${INPUT_CSV})"
 export YML_FILE=${YML}/metadata.yml
 echo \
 "
@@ -85,7 +90,7 @@ extra_weights_table:
   path: ${INTERMEDIATE_FILES}/extra_weight_table.txt
 checkm_results_table:
   class: File
-  path: ${INTERMEDIATE_FILES}/renamed_download.csv
+  path: ${INTERMEDIATE_FILES}/renamed_${NAME}
 rrna_dir:
   class: Directory
   path: ${RRNA}

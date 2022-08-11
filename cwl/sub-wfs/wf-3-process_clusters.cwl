@@ -156,8 +156,8 @@ steps:
       gunc_db_path: gunc_db_path
     out:
       - singleton_clusters      # File[][]?
-      - all_filt_sigletons_fna   # faa[]?
-      - all_filt_sigletons_faa  # fna[]?
+      - all_filt_sigletons_fna   # fna[]?
+      - all_filt_sigletons_faa  # faa[]?
       - gunc_completed
       - gunc_failed
 

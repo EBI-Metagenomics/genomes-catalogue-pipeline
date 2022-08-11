@@ -27,7 +27,7 @@ arguments:
     valueFrom: "/data"
     position: 2
   - prefix: -x
-    valueFrom: 'fa'
+    valueFrom: 'fna'
     position: 4
 
 inputs:
