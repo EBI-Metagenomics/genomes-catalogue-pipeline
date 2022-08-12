@@ -40,7 +40,7 @@ chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
 chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
 
 if [ "${DEBUG}" == "True" ]; then
-    cwltool --singularity --preserve-entire-environment --debug --leave-container --outdir ${OUTDIR}/${NAME} ${CWL} ${YML}
+    cwltool --leave-tmpdir --singularity --preserve-entire-environment --debug --leave-container --outdir ${OUTDIR}/${NAME} ${CWL} ${YML}
 else
-    cwltool --singularity --preserve-entire-environment --leave-container --outdir ${OUTDIR}/${NAME} ${CWL} ${YML}
+    cwltool --leave-tmpdir --singularity --preserve-entire-environment --leave-container --outdir ${OUTDIR}/${NAME} ${CWL} ${YML}
 fi
