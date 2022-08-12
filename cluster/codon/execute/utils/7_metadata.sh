@@ -25,7 +25,7 @@ EOF
 
 export GEO="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/continent_countries.csv"
 
-while getopts ho:p:l:n:q:y:v:i:g:r:j:c:f:s: option; do
+while getopts ho:p:l:n:q:y:v:i:g:r:j:f:s: option; do
 	case "$option" in
 		h)
             usage
@@ -63,9 +63,6 @@ while getopts ho:p:l:n:q:y:v:i:g:r:j:c:f:s: option; do
 		    ;;
 		j)
 		    JOB=${OPTARG}
-		    ;;
-		c)
-		    CONDITION_JOB=${OPTARG}
 		    ;;
 		f)
 		    ALL_FNA=${OPTARG}
@@ -121,7 +118,6 @@ export CWL=${P}/cwl/sub-wfs/5_gtdb/metadata_and_phylo_tree.cwl
 echo "Submitting GTDB-Tk metadata and phylo.tree generation"
 bsub \
     -J "${JOB}.${DIRNAME}" \
-    -w "${CONDITION_JOB}"\
     -q "${QUEUE}" \
     -e "${LOGS}"/metadata.err \
     -o "${LOGS}"/metadata.out \

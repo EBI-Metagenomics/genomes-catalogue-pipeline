@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts :o:p:l:n:q:y:i:r:j:c:b: option; do
+while getopts :o:p:l:n:q:y:i:r:j:b: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -11,7 +11,6 @@ while getopts :o:p:l:n:q:y:i:r:j:c:b: option; do
 		i) INPUT=${OPTARG};;
 		r) REPS=${OPTARG};;
 		j) JOB=${OPTARG};;
-		c) CONDITION_JOB=${OPTARG};;
 		b) ALL_FNA=${OPTARG};;
 	esac
 done
@@ -37,7 +36,6 @@ all_reps_filtered:
 echo "Submitting annotations"
 bsub \
     -J "${JOB}.${DIRNAME}" \
-    -w ${CONDITION_JOB} \
     -q ${QUEUE} \
     -e ${LOGS}/annotation.err \
     -o ${LOGS}/annotation.out \

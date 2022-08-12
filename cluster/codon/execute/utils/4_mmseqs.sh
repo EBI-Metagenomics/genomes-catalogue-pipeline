@@ -3,7 +3,7 @@
 MMSEQS_LIMIT_I=(1.0 0.95 0.90 0.50)
 MMSEQS_LIMIT_C=0.8
 
-while getopts :o:p:l:n:q:y:i:r:f:j:c:a:b: option; do
+while getopts :o:p:l:n:q:y:j:r:f:a:k:d: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -11,29 +11,28 @@ while getopts :o:p:l:n:q:y:i:r:f:j:c:a:b: option; do
 		n) DIRNAME=${OPTARG};;
 		q) QUEUE=${OPTARG};;
 		y) YML=${OPTARG};;
+		j) JOB=${OPTARG};;
 		r) REPS=${OPTARG};;
 		f) ALL_GENOMES=${OPTARG};;
-		j) JOB=${OPTARG};;
-		c) CONDITION_JOB=${OPTARG};;
 		a) REPS_FA=${OPTARG};;
-		b) ALL_FNA=${OPTARG};;
+		k) ALL_FNA=${OPTARG};;
+		d) DREP_DIR=${OPTARG};;
 	esac
 done
 
-echo "Create files and folders with reps"
+echo "Create files and folders with fna-reps"
 bsub \
-     -J "${JOB}.${DIRNAME}.files" \
-     -w "${CONDITION_JOB}" \
-     -q "${QUEUE}" \
-     -e "${LOGS}"/create_files.err \
-     -o "${LOGS}"/create_files.out \
-     bash ${P}/cluster/codon/execute/utils/4_create_files.sh \
+    -J "${JOB}.${DIRNAME}.files" \
+    -q "${QUEUE}" \
+    -e "${LOGS}"/files.err \
+    -o "${LOGS}"/files.out \
+    bash ${P}/cluster/codon/execute/utils/4_create_files.sh \
         -o ${OUT} \
         -r ${REPS} \
         -f ${ALL_GENOMES} \
         -a ${REPS_FA} \
         -n ${ALL_FNA} \
-        -d ${OUT}/${DIRNAME}_drep
+        -d ${DREP_DIR}
 
 echo "Concatenate prokka.faa-s"
 bsub \

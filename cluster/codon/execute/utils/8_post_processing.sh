@@ -20,7 +20,7 @@ OPTIONS:
 EOF
 }
 
-while getopts ho:p:l:n:q:y:j:c:b:m:a: option; do
+while getopts ho:p:l:n:q:y:j:b:m:a: option; do
 	case "$option" in
 	    h)
              usage
@@ -47,9 +47,6 @@ while getopts ho:p:l:n:q:y:j:c:b:m:a: option; do
 		j)
 		    JOB=${OPTARG}
 		    ;;
-		c)
-		    CONDITION_JOB=${OPTARG}
-		    ;;
         b)
             BIOM=${OPTARG}
 		    ;;
@@ -72,7 +69,6 @@ cp ${P}/cluster/codon/execute/utils/8_post_processing.yml ${YML_FILE}
 
 bsub \
     -J "${JOB}.${DIRNAME}.yml" \
-    -w "${CONDITION_JOB}"\
     -q "${QUEUE}" \
     -e "${LOGS}"/post-processing.yml.err \
     -o "${LOGS}"/post-processing.yml.out \

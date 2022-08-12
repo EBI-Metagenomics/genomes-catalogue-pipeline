@@ -108,9 +108,13 @@ mkdir -p ${OUT} ${LOGS} ${YML}
 
 export REPS_FILE=${OUT}/cluster_reps.txt
 export ALL_GENOMES=${OUT}/all_cluster_filt.txt
-touch ${REPS_FILE} ${ALL_GENOMES}
+
+export REPS_FA_DIR=${OUT}/reps_fa
+export ALL_FNA_DIR=${OUT}/all_fna
 
 # ------------------------- Step 4 ------------------------------
+echo "==== waiting for cluster annotations.... ===="
+
 echo "==== 4. Run mmseqs ===="
 # TODO improve for no sg or pg
 bsub \
@@ -125,12 +129,17 @@ bsub \
         -n ${NAME} \
         -q ${QUEUE} \
         -y ${YML} \
+        -j ${STEP4} \
         -r ${REPS_FILE} \
         -f ${ALL_GENOMES} \
-        -j ${STEP4} \
-        -c ${STEP3}
+        -a ${REPS_FA_DIR} \
+        -k ${ALL_FNA_DIR} \
+        -d ${OUT}/${NAME}_drep
 
 # ------------------------- Step 5 ------------------------------
+echo "==== waiting for files/folders generation.... ===="
+bwait -w "ended(${STEP4}.${NAME}.submit)"
+bwait -w "ended(${STEP4}.${NAME}.files)"
 
 echo "==== 5. Run GTDB-Tk ===="
 # TODO change queue to BIGMEM in production
@@ -149,13 +158,80 @@ bsub \
         -y ${YML} \
         -r ${REPS_FILE} \
         -j ${STEP5} \
-        -c ${STEP3}
+        -a ${REPS_FA_DIR}
+
+bwait -w "ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.yml.*)"
 
 # ------------------------- Step 6 ------------------------------
+echo "==== waiting for mmseqs 0.9.... ===="
+bwait -w "ended(${STEP4}.${NAME}.0.90)"
+
 echo "==== 6. EggNOG, IPS, rRNA ===="
+echo "Submitting annotation"
+bsub \
+    -J "${STEP6}.${NAME}.submit" \
+    -q ${QUEUE} \
+    -e ${LOGS}/submit.annotation.err \
+    -o ${LOGS}/submit.annotation.out \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/6_annotation.sh \
+        -o ${OUT} \
+        -p ${MAIN_PATH} \
+        -l ${LOGS} \
+        -n ${NAME} \
+        -q ${QUEUE} \
+        -y ${YML} \
+        -i ${OUT}/${NAME}_mmseqs_0.90/mmseqs_0.9_outdir \
+        -r ${REPS_FILE} \
+        -j ${STEP6} \
+        -b ${ALL_FNA_DIR}
 
 # ------------------------- Step 7 ------------------------------
+echo "==== waiting for GTDB-Tk.... ===="
+bwait -w "ended(${STEP5}.${NAME}.*)"
+
 echo "==== 7. Metadata and phylo.tree ===="
+echo "Submitting metadata and phylo.tree generation"
+bsub \
+    -J "${STEP7}.${NAME}.submit" \
+    -q ${QUEUE} \
+    -e ${LOGS}/submit.metadata.err \
+    -o ${LOGS}/submit.metadata.out \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/7_metadata.sh \
+        -o ${OUT} \
+        -p ${MAIN_PATH} \
+        -l ${LOGS} \
+        -n ${NAME} \
+        -q ${QUEUE} \
+        -y ${YML} \
+        -v ${CATALOGUE_VERSION} \
+        -i ${OUT}/${NAME}_drep/intermediate_files \
+        -g ${OUT}/gtdbtk/gtdbtk.summary.tsv \
+        -r ${OUT}/${NAME}_annotations/rRNA_outs \
+        -j ${STEP7} \
+        -f ${ALL_FNA_DIR} \
+        -s ${ENA_CSV}
 
 # ------------------------- Step 8 ------------------------------
+echo "==== waiting for metadata and protein annotations.... ===="
+bwait -w "ended(${STEP6}.${NAME}.*) && ended(${STEP7}.${NAME}.*)"
+
 echo "==== 8. Post-processing ===="
+echo "Submitting post-processing"
+bsub \
+    -J "${STEP8}.${NAME}.submit" \
+    -q ${QUEUE} \
+    -e ${LOGS}/submit.post-processing.err \
+    -o ${LOGS}/submit.post-processing.out \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/8_post_processing.sh \
+        -o ${OUT} \
+        -p ${MAIN_PATH} \
+        -l ${LOGS} \
+        -n ${NAME} \
+        -q ${QUEUE} \
+        -y ${YML} \
+        -j ${STEP8} \
+        -b "${BIOM}" \
+        -m ${OUT}/${NAME}_metadata/genomes-all_metadata.tsv \
+        -a ${OUT}/${NAME}_annotations
+
+echo "==== Final. Exit ===="

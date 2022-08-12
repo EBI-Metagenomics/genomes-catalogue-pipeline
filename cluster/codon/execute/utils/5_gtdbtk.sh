@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts :o:p:l:n:q:y:r:j:c:a: option; do
+while getopts :o:p:l:n:q:y:r:j:a: option; do
 	case "${option}" in
 		o) OUT=${OPTARG};;
 		p) P=${OPTARG};;
@@ -10,7 +10,6 @@ while getopts :o:p:l:n:q:y:r:j:c:a: option; do
 		y) YML=${OPTARG};;
 		r) REPS=${OPTARG};;
 		j) JOB=${OPTARG};;
-		c) CONDITION_JOB=${OPTARG};;
 		a) REPS_FA=${OPTARG};;
 	esac
 done
@@ -29,9 +28,10 @@ refdata:
   path: ${REFDATA}
 " > ${YML}/gtdbtk.yml
 
-echo "Running ${DIRNAME} gtdb with"
-bsub -J "${JOB}.${DIRNAME}" \
-     -w ${CONDITION_JOB} \
+echo "Running ${DIRNAME} gtdb with ${YML}/gtdbtk.yml"
+
+bsub \
+     -J "${JOB}.${DIRNAME}" \
      -q ${QUEUE} \
      -e ${LOGS}/gtdbtk.err \
      -o ${LOGS}/gtdbtk.out \

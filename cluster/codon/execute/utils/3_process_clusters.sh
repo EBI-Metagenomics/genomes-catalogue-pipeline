@@ -2,7 +2,7 @@
 
 export GUNC_DB="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd"
 
-while getopts :i:o:p:t:l:n:q:y:j:c:s: option; do
+while getopts :i:o:p:t:l:n:q:y:j:s: option; do
 	case "${option}" in
 	    i) INPUT=${OPTARG};;
 		o) OUTDIR=${OPTARG};;
@@ -13,7 +13,6 @@ while getopts :i:o:p:t:l:n:q:y:j:c:s: option; do
 		q) QUEUE=${OPTARG};;
 		y) YML_FOLDER=${OPTARG};;
 		j) JOB=${OPTARG};;
-		c) CONDITION_JOB=${OPTARG};;
 		s) INPUT_CSV=${OPTARG};;
 	esac
 done
@@ -53,8 +52,8 @@ csv:
     fi
 
     echo "Running ${i} ${TYPE} with ${YML}"
-    bsub -J "${JOB}.${DIRNAME}.${TYPE}.${i}" \
-         -w ${CONDITION_JOB} \
+    bsub \
+         -J "${JOB}.${DIRNAME}.${TYPE}.${i}" \
          -e ${LOGS}/${TYPE}_${i}.err \
          -o ${LOGS}/${TYPE}_${i}.out \
          -q ${QUEUE} \

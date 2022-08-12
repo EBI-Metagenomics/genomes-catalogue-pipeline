@@ -18,7 +18,7 @@ OPTIONS:
 EOF
 }
 
-while getopts ho:p:m:l:n:q:y:j:c: option; do
+while getopts ho:p:m:l:n:q:y:j: option; do
 	case "$option" in
 		h)
              usage
@@ -48,9 +48,6 @@ while getopts ho:p:m:l:n:q:y:j:c: option; do
 		j)
 		    JOB=${OPTARG}
 		    ;;
-		c)
-		    CONDITION_JOB=${OPTARG}
-		    ;;
 		?)
             usage
             exit
@@ -67,7 +64,6 @@ for i in $(ls ${MASH}); do
 
     echo "Running ${NAME} mash with ${YML_FILE}"
     bsub -J "${JOB}.${DIRNAME}.${i}" \
-         -w "${CONDITION_JOB}" \
          -q "${QUEUE}" \
          -e "${LOGS}"/"${i}".mash.err \
          -o "${LOGS}"/"${i}".mash.out \
