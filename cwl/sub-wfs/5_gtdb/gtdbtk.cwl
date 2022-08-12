@@ -22,7 +22,11 @@ outputs:
 
   taxonomy:
     type: File?
-    outputSource: cat_tables/result
+    outputSource:
+     - cat_tables/result
+     - rename_bac/renamed_file
+     - rename_arc/renamed_file
+    pickValue: first_non_null
 
 
 steps:
@@ -40,18 +44,37 @@ steps:
       - gtdbtk_arc
 
   cat_tables:
-    when: $(Boolean(inputs.file1) || Boolean(inputs.file2))
+    when: $(Boolean(inputs.file1) && Boolean(inputs.file2))
     run: ../../utils/concatenate.cwl
     in:
       file1: gtdbtk/gtdbtk_bac
       file2: gtdbtk/gtdbtk_arc
       files:
-        source:
-          - gtdbtk/gtdbtk_bac
-          - gtdbtk/gtdbtk_arc
-        pickValue: all_non_null
+        - gtdbtk/gtdbtk_bac
+        - gtdbtk/gtdbtk_arc
       outputFileName: {default: "gtdbtk.summary.tsv" }
     out: [result]
+
+  rename_bac:
+    when: $(Boolean(inputs.file1) && !Boolean(inputs.file2))
+    run: ../../utils/move.cwl
+    in:
+      file1: gtdbtk/gtdbtk_bac
+      file2: gtdbtk/gtdbtk_arc
+      initial_file: gtdbtk/gtdbtk_bac
+      out_file_name: {default: "gtdbtk.summary.tsv" }
+    out: [renamed_file]
+
+  rename_arc:
+    when: $(!Boolean(inputs.file1) && Boolean(inputs.file2))
+    run: ../../utils/move.cwl
+    in:
+      file1: gtdbtk/gtdbtk_bac
+      file2: gtdbtk/gtdbtk_arc
+      initial_file: gtdbtk/gtdbtk_arc
+      out_file_name: {default: "gtdbtk.summary.tsv" }
+    out: [renamed_file]
+
 
   # tar:
   #  run: ../../utils/tar.cwl
