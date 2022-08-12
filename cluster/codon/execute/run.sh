@@ -147,7 +147,7 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP2} \
-        -c ${STEP1}
+        -c "ended(${STEP1}.${NAME})"
 
 # ------------------------- Step 3 ------------------------------
 mkdir -p ${OUT}/sg ${OUT}/pg
@@ -155,7 +155,7 @@ echo "==== 3. Run cluster annotation ===="
 echo "Submitting pan-genomes"
 bsub \
     -J "${STEP3}.${NAME}.pg" \
-    -w "ended(${STEP2}.${NAME}.*)" \
+    -w "ended(${STEP1}.${NAME}) && ended(${STEP2}.${NAME}.*)" \
     -q ${QUEUE} \
     -e ${LOGS}/submit.pg.err \
     -o ${LOGS}/submit.pg.out \
@@ -169,13 +169,13 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP3} \
-        -c ${STEP2} \
+        -c "ended(${STEP1}.${NAME}) && ended(${STEP2}.${NAME}.*)" \
         -s ${ENA_CSV}
 
 echo "Submitting singletons"
 bsub \
     -J "${STEP3}.${NAME}.sg" \
-    -w "ended(${STEP2}.${NAME}.*)" \
+    -w "ended(${STEP1}.${NAME}) && ended(${STEP2}.${NAME}.*)" \
     -q ${QUEUE} \
     -e ${LOGS}/submit.sg.err \
     -o ${LOGS}/submit.sg.out \
@@ -189,7 +189,7 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP3} \
-        -c ${STEP2} \
+        -c "ended(${STEP1}.${NAME}) && ended(${STEP2}.${NAME}.*)" \
         -s ${ENA_CSV}
 
 # ------------------------- Step 4 ------------------------------
@@ -211,7 +211,7 @@ bsub \
         -r ${REPS_FILE} \
         -f ${ALL_GENOMES} \
         -j ${STEP4} \
-        -c ${STEP3} \
+        -c "ended(${STEP3}.${NAME}.*" \
         -a ${REPS_FA_DIR} \
         -b ${ALL_FNA_DIR}
 
@@ -222,7 +222,7 @@ echo "==== 5. Run GTDB-Tk ===="
 echo "Submitting GTDB-Tk"
 bsub \
     -J "${STEP5}.${NAME}.submit" \
-    -w "ended(${STEP3}.${NAME}.*)" \
+    -w "ended(${STEP3}.${NAME}.*) && ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.files)" \
     -q ${QUEUE} \
     -o ${LOGS}/submit.gtdbtk.out \
     -e ${LOGS}/submit.gtdbtk.err \
@@ -235,7 +235,7 @@ bsub \
         -y ${YML} \
         -r ${REPS_FILE} \
         -j ${STEP5} \
-        -c ${STEP3} \
+        -c "ended(${STEP3}.${NAME}.*) && ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.files)" \
         -a ${REPS_FA_DIR}
 
 # ------------------------- Step 6 ------------------------------
@@ -257,7 +257,7 @@ bsub \
         -i ${OUT}/${NAME}_mmseqs_0.90/mmseqs_0.9_outdir \
         -r ${REPS_FILE} \
         -j ${STEP6} \
-        -c ${STEP4} \
+        -c "ended(${STEP4}.${NAME}.*)" \
         -b ${ALL_FNA_DIR}
 
 # ------------------------- Step 7 ------------------------------
@@ -290,7 +290,7 @@ echo "==== 8. Post-processing ===="
 echo "Submitting post-processing"
 bsub \
     -J "${STEP8}.${NAME}.submit" \
-    -w "ended(${STEP7}.${NAME}.*)" \
+    -w "ended(${STEP6}.${NAME}.*) && ended(${STEP7}.${NAME}.*)" \
     -q ${QUEUE} \
     -e ${LOGS}/submit.post-processing.err \
     -o ${LOGS}/submit.post-processing.out \

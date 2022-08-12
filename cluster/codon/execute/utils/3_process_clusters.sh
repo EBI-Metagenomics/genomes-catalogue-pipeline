@@ -54,7 +54,7 @@ csv:
 
     echo "Running ${i} ${TYPE} with ${YML}"
     bsub -J "${JOB}.${DIRNAME}.${TYPE}.${i}" \
-         -w "ended(${CONDITION_JOB}.${DIRNAME}.*)" \
+         -w ${CONDITION_JOB} \
          -e ${LOGS}/${TYPE}_${i}.err \
          -o ${LOGS}/${TYPE}_${i}.out \
          -q ${QUEUE} \

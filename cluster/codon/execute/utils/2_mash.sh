@@ -67,7 +67,7 @@ for i in $(ls ${MASH}); do
 
     echo "Running ${NAME} mash with ${YML_FILE}"
     bsub -J "${JOB}.${DIRNAME}.${i}" \
-         -w "ended(${CONDITION_JOB}.${DIRNAME})" \
+         -w "${CONDITION_JOB}" \
          -q "${QUEUE}" \
          -e "${LOGS}"/"${i}".mash.err \
          -o "${LOGS}"/"${i}".mash.out \

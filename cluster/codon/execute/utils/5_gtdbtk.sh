@@ -31,7 +31,7 @@ refdata:
 
 echo "Running ${DIRNAME} gtdb with"
 bsub -J "${JOB}.${DIRNAME}" \
-     -w "ended(${CONDITION_JOB}.${DIRNAME}.*)" \
+     -w ${CONDITION_JOB} \
      -q ${QUEUE} \
      -e ${LOGS}/gtdbtk.err \
      -o ${LOGS}/gtdbtk.out \

@@ -23,7 +23,7 @@ done
 echo "Create files and folders with reps"
 bsub \
      -J "${JOB}.${DIRNAME}.files" \
-     -w "ended(${CONDITION_JOB}.${DIRNAME}.*)" \
+     -w "${CONDITION_JOB}" \
      -q "${QUEUE}" \
      -e "${LOGS}"/create_files.err \
      -o "${LOGS}"/create_files.out \
