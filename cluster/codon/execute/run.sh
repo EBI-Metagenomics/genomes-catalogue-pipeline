@@ -169,13 +169,13 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP3} \
-        -c "ended(${STEP1}.${NAME}) && ended(${STEP2}.${NAME}.*)" \
+        -c "ended(${STEP2}.${NAME}.*)" \
         -s ${ENA_CSV}
 
 echo "Submitting singletons"
 bsub \
     -J "${STEP3}.${NAME}.sg" \
-    -w "ended(${STEP1}.${NAME}) && ended(${STEP2}.${NAME}.*)" \
+    -w "ended(${STEP1}.${NAME})" \
     -q ${QUEUE} \
     -e ${LOGS}/submit.sg.err \
     -o ${LOGS}/submit.sg.out \
@@ -189,7 +189,7 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP3} \
-        -c "ended(${STEP1}.${NAME}) && ended(${STEP2}.${NAME}.*)" \
+        -c "ended(${STEP1}.${NAME})" \
         -s ${ENA_CSV}
 
 # ------------------------- Step 4 ------------------------------
@@ -222,7 +222,7 @@ echo "==== 5. Run GTDB-Tk ===="
 echo "Submitting GTDB-Tk"
 bsub \
     -J "${STEP5}.${NAME}.submit" \
-    -w "ended(${STEP3}.${NAME}.*) && ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.files)" \
+    -w "ended(${STEP3}.${NAME}.*)" \
     -q ${QUEUE} \
     -o ${LOGS}/submit.gtdbtk.out \
     -e ${LOGS}/submit.gtdbtk.err \
@@ -243,7 +243,7 @@ echo "==== 6. EggNOG, IPS, rRNA ===="
 echo "Submitting annotation"
 bsub \
     -J "${STEP6}.${NAME}.submit" \
-    -w "ended(${STEP4}.${NAME}.*)" \
+    -w "ended(${STEP1}.${NAME}) && ended(${STEP2}.${NAME}.*) && ended(${STEP3}.${NAME}.*) && ended(${STEP4}.${NAME}.*)" \
     -q ${QUEUE} \
     -e ${LOGS}/submit.annotation.err \
     -o ${LOGS}/submit.annotation.out \
