@@ -14,11 +14,12 @@ OPTIONS:
    -q      LSF queue to run in
    -y      Path to folder to save yml file
    -j      LSF step Job name to submit
-   -c      LSF Job name dependent on
+   -z      memory in Gb
+   -t      number of threads
 EOF
 }
 
-while getopts ho:p:m:l:n:q:y:j: option; do
+while getopts ho:p:m:l:n:q:y:j:z:t: option; do
 	case "$option" in
 		h)
              usage
@@ -48,6 +49,12 @@ while getopts ho:p:m:l:n:q:y:j: option; do
 		j)
 		    JOB=${OPTARG}
 		    ;;
+		z)
+		    MEM=${OPTARG}
+		    ;;
+		t)
+		    THREADS=${OPTARG}
+		    ;;
 		?)
             usage
             exit
@@ -67,6 +74,8 @@ for i in $(ls ${MASH}); do
          -q "${QUEUE}" \
          -e "${LOGS}"/"${i}".mash.err \
          -o "${LOGS}"/"${i}".mash.out \
+         -M "${MEM}" \
+         -n "${THREADS}" \
          bash "${P}"/cluster/codon/run-cwltool.sh \
             -d False \
             -p "${P}" \

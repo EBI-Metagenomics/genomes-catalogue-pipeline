@@ -9,13 +9,6 @@ mitload miniconda
 module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
 conda activate toil-5.4.0
 
-#export SINGULARITY_HOME=/hps/nobackup/rdf/metagenomics/singularity_cache
-#export SINGULARITY_CACHEDIR=$SINGULARITY_HOME
-#export SINGULARITY_TMPDIR=$SINGULARITY_HOME/tmp
-#export SINGULARITY_LOCALCACHEDIR=$SINGULARITY_HOME/local_tmp
-#export SINGULARITY_PULLFOLDER=$SINGULARITY_HOME/pull
-#export SINGULARITY_BINDPATH=$SINGULARITY_HOME/scratch
-
 export OUTDIR=result
 
 MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
@@ -40,7 +33,20 @@ chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
 chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
 
 if [ "${DEBUG}" == "True" ]; then
-    cwltool --leave-tmpdir --singularity --preserve-entire-environment --debug --leave-container --outdir ${OUTDIR}/${NAME} ${CWL} ${YML}
+    cwltool \
+        --debug \
+        --leave-tmpdir \
+        --singularity \
+        --preserve-entire-environment \
+        --leave-container \
+        --outdir ${OUTDIR}/${NAME} \
+        ${CWL} ${YML}
 else
-    cwltool --leave-tmpdir --singularity --preserve-entire-environment --leave-container --outdir ${OUTDIR}/${NAME} ${CWL} ${YML}
+    cwltool \
+        --leave-tmpdir \
+        --singularity \
+        --preserve-entire-environment \
+        --leave-container \
+        --outdir ${OUTDIR}/${NAME} \
+        ${CWL} ${YML}
 fi

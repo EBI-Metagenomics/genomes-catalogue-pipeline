@@ -17,10 +17,12 @@ OPTIONS:
    -m      Max MGYG
    -x      Min MGYG
    -j      LSF step Job name to submit
+   -z      memory to execute
+   -t      number of threads
 EOF
 }
 
-while getopts ho:p:l:n:q:y:i:c:m:x:j: option; do
+while getopts ho:p:l:n:q:y:i:c:m:x:j:z:t: option; do
 	case "$option" in
 	    h)
              usage
@@ -59,6 +61,12 @@ while getopts ho:p:l:n:q:y:i:c:m:x:j: option; do
 		j)
 		    JOB_NAME=${OPTARG}
 		    ;;
+		z)
+		    MEM=${OPTARG}
+		    ;;
+		t)
+		    THREADS=${OPTARG}
+		    ;;
 		?)
 		    usage
             exit
@@ -89,6 +97,8 @@ bsub \
     -q "${QUEUE}" \
     -o "${LOGS}"/drep.out \
     -e "${LOGS}"/drep.err \
+    -M "${MEM}" \
+    -n "${THREADS}" \
     bash "${P}"/cluster/codon/run-cwltool.sh \
         -d False \
         -p "${P}" \

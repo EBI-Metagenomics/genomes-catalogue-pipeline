@@ -12,6 +12,24 @@ STEP6="Step6.annotation"
 STEP7="Step7.metadata"
 STEP8="Step8.postprocessing"
 
+MEM_STEP1="50G"
+MEM_STEP2="10G"
+MEM_STEP3="50G"
+MEM_STEP4="150G"
+MEM_STEP5="500G"
+MEM_STEP6="50G"
+MEM_STEP7="5G"
+MEM_STEP8="5G"
+
+THREADS_STEP1="16"
+THREADS_STEP2="4"
+THREADS_STEP3="8"
+THREADS_STEP4="32"
+THREADS_STEP5="2"
+THREADS_STEP6="16"
+THREADS_STEP7="1"
+THREADS_STEP8="1"
+
 usage()
 {
 cat << EOF
@@ -112,6 +130,9 @@ touch ${REPS_FILE} ${ALL_GENOMES}
 export REPS_FA_DIR=${OUT}/reps_fa
 export ALL_FNA_DIR=${OUT}/all_fna
 
+export MEM="10G"
+export THREADS="2"
+
 # ------------------------- Step 1 ------------------------------
 echo "==== 1. Run preparation and dRep steps with cwltool ===="
 # TODO improve for NCBI
@@ -127,7 +148,9 @@ bash ${MAIN_PATH}/cluster/codon/execute/utils/1_drep.sh \
     -c "${ENA_CSV}" \
     -m "${MAX_MGYG}" \
     -x "${MIN_MGYG}" \
-    -j ${STEP1}
+    -j ${STEP1} \
+    -z ${MEM} \
+    -t ${THREADS}
 
 echo "==== waiting for drep.... ===="
 bwait -w "ended(${STEP1}.${NAME})"
@@ -148,7 +171,9 @@ bsub \
         -n ${NAME} \
         -q ${QUEUE} \
         -y ${YML} \
-        -j ${STEP2}
+        -j ${STEP2} \
+        -z ${MEM} \
+        -t ${THREADS}
 
 # ------------------------- Step 3 ------------------------------
 mkdir -p ${OUT}/sg ${OUT}/pg
@@ -171,7 +196,9 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP3} \
-        -s ${ENA_CSV}
+        -s ${ENA_CSV} \
+        -z ${MEM} \
+        -w ${THREADS}
 
 echo "==== waiting for mash2nwk.... ===="
 bwait -w "ended(${STEP2}.${NAME}.*)"
@@ -193,7 +220,9 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP3} \
-        -s ${ENA_CSV}
+        -s ${ENA_CSV} \
+        -z ${MEM} \
+        -w ${THREADS}
 
 # ------------------------- Step 4 ------------------------------
 echo "==== waiting for cluster annotations.... ===="

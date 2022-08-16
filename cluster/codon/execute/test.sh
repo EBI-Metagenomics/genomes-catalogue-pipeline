@@ -112,34 +112,6 @@ export ALL_GENOMES=${OUT}/all_cluster_filt.txt
 export REPS_FA_DIR=${OUT}/reps_fa
 export ALL_FNA_DIR=${OUT}/all_fna
 
-# ------------------------- Step 4 ------------------------------
-echo "==== waiting for cluster annotations.... ===="
-
-echo "==== 4. Run mmseqs ===="
-# TODO improve for no sg or pg
-bsub \
-    -J "${STEP4}.${NAME}.submit" \
-    -q ${QUEUE} \
-    -e ${LOGS}/submit.mmseq.err \
-    -o ${LOGS}/submit.mmseq.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/4_mmseqs.sh \
-        -o ${OUT} \
-        -p ${MAIN_PATH} \
-        -l ${LOGS} \
-        -n ${NAME} \
-        -q ${QUEUE} \
-        -y ${YML} \
-        -j ${STEP4} \
-        -r ${REPS_FILE} \
-        -f ${ALL_GENOMES} \
-        -a ${REPS_FA_DIR} \
-        -k ${ALL_FNA_DIR} \
-        -d ${OUT}/${NAME}_drep
-
-# ------------------------- Step 5 ------------------------------
-echo "==== waiting for files/folders generation.... ===="
-bwait -w "ended(${STEP4}.${NAME}.submit)"
-bwait -w "ended(${STEP4}.${NAME}.files)"
 
 echo "==== 5. Run GTDB-Tk ===="
 # TODO change queue to BIGMEM in production
@@ -160,11 +132,7 @@ bsub \
         -j ${STEP5} \
         -a ${REPS_FA_DIR}
 
-bwait -w "ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.yml.*)"
-
 # ------------------------- Step 6 ------------------------------
-echo "==== waiting for mmseqs 0.9.... ===="
-bwait -w "ended(${STEP4}.${NAME}.0.90)"
 
 echo "==== 6. EggNOG, IPS, rRNA ===="
 echo "Submitting annotation"

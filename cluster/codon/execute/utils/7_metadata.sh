@@ -117,7 +117,7 @@ all_fna_dir:
 export CWL=${P}/cwl/sub-wfs/5_gtdb/metadata_and_phylo_tree.cwl
 echo "Submitting GTDB-Tk metadata and phylo.tree generation"
 bsub \
-    -J "${JOB}.${DIRNAME}" \
+    -J "${JOB}.${DIRNAME}.run" \
     -q "${QUEUE}" \
     -e "${LOGS}"/metadata.err \
     -o "${LOGS}"/metadata.out \

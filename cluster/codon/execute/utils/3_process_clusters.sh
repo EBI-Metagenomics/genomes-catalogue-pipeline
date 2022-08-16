@@ -2,18 +2,72 @@
 
 export GUNC_DB="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd"
 
-while getopts :i:o:p:t:l:n:q:y:j:s: option; do
+usage()
+{
+cat << EOF
+usage: $0 options
+Run genomes-pipeline preparation and dRep part
+OPTIONS:
+   -o      Path to general output catalogue directory
+   -p      Path to installed pipeline location
+   -l      Path to logs folder
+   -n      Catalogue name
+   -q      LSF queue to run in
+   -y      Path to folder to save yml file
+   -i      Path to input folder with clusters(sg or pg)
+   -s      Renamed CSV with completeness and contamination
+   -j      LSF step Job name to submit
+   -z      memory to execute
+   -w      number of threads
+EOF
+}
+
+while getopts hi:o:p:t:l:n:q:y:j:s:z:w: option; do
 	case "${option}" in
-	    i) INPUT=${OPTARG};;
-		o) OUTDIR=${OPTARG};;
-		p) P=${OPTARG};;
-		t) TYPE=${OPTARG};;
-		l) LOGS=${OPTARG};;
-		n) DIRNAME=${OPTARG};;
-		q) QUEUE=${OPTARG};;
-		y) YML_FOLDER=${OPTARG};;
-		j) JOB=${OPTARG};;
-		s) INPUT_CSV=${OPTARG};;
+		h)
+             usage
+             exit 1
+             ;;
+	    i)
+	        INPUT=${OPTARG}
+	        ;;
+		o)
+		    OUTDIR=${OPTARG}
+		    ;;
+		p)
+		    P=${OPTARG}
+		    ;;
+		t)
+		    TYPE=${OPTARG}
+		    ;;
+		l)
+		    LOGS=${OPTARG}
+		    ;;
+		n)
+		    DIRNAME=${OPTARG}
+		    ;;
+		q)
+		    QUEUE=${OPTARG}
+		    ;;
+		y)
+		    YML_FOLDER=${OPTARG}
+		    ;;
+		j)
+		    JOB=${OPTARG}
+		    ;;
+		s)
+		    INPUT_CSV=${OPTARG}
+		    ;;
+		z)
+		    MEM=${OPTARG}
+		    ;;
+		w)
+		    THREADS=${OPTARG}
+		    ;;
+		?)
+		    usage
+            exit
+            ;;
 	esac
 done
 
@@ -57,6 +111,8 @@ csv:
          -e ${LOGS}/${TYPE}_${i}.err \
          -o ${LOGS}/${TYPE}_${i}.out \
          -q ${QUEUE} \
+         -M "${MEM}" \
+         -n "${THREADS}" \
          bash ${P}/cluster/codon/run-cwltool.sh \
             -d False \
             -p ${P} \

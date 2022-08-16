@@ -31,7 +31,7 @@ refdata:
 echo "Running ${DIRNAME} gtdb with ${YML}/gtdbtk.yml"
 
 bsub \
-     -J "${JOB}.${DIRNAME}" \
+     -J "${JOB}.${DIRNAME}.run" \
      -q ${QUEUE} \
      -e ${LOGS}/gtdbtk.err \
      -o ${LOGS}/gtdbtk.out \

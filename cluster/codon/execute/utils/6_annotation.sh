@@ -35,7 +35,7 @@ all_reps_filtered:
 
 echo "Submitting annotations"
 bsub \
-    -J "${JOB}.${DIRNAME}" \
+    -J "${JOB}.${DIRNAME}.run" \
     -q ${QUEUE} \
     -e ${LOGS}/annotation.err \
     -o ${LOGS}/annotation.out \

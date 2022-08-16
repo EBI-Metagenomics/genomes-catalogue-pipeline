@@ -3,20 +3,81 @@
 MMSEQS_LIMIT_I=(1.0 0.95 0.90 0.50)
 MMSEQS_LIMIT_C=0.8
 
-while getopts :o:p:l:n:q:y:j:r:f:a:k:d: option; do
+usage()
+{
+cat << EOF
+usage: $0 options
+Run genomes-pipeline preparation and dRep part
+OPTIONS:
+   -o      Path to general output catalogue directory
+   -p      Path to installed pipeline location
+   -l      Path to logs folder
+   -n      Catalogue name
+   -q      LSF queue to run in
+   -y      Path to folder to save yml file
+   -j      LSF step Job name to submit
+   -r      Path to file with cluster representatives (filtered after GUNC)
+   -f      Path to file with all genomes (filtered after GUNC)
+   -a      Path to folder with fasta.fna representatives (filtered after GUNC)
+   -k      Path to folder with all fasta.fna (filtered after GUNC)
+   -d      Path to dRep output folder
+   -z      memory to execute
+   -t      number of threads
+EOF
+}
+
+while getopts ho:p:l:n:q:y:j:r:f:a:k:d:z:t: option; do
 	case "${option}" in
-		o) OUT=${OPTARG};;
-		p) P=${OPTARG};;
-		l) LOGS=${OPTARG};;
-		n) DIRNAME=${OPTARG};;
-		q) QUEUE=${OPTARG};;
-		y) YML=${OPTARG};;
-		j) JOB=${OPTARG};;
-		r) REPS=${OPTARG};;
-		f) ALL_GENOMES=${OPTARG};;
-		a) REPS_FA=${OPTARG};;
-		k) ALL_FNA=${OPTARG};;
-		d) DREP_DIR=${OPTARG};;
+		h)
+             usage
+             exit 1
+             ;;
+		o)
+		    OUT=${OPTARG}
+		    ;;
+		p)
+		    P=${OPTARG}
+		    ;;
+		l)
+		    LOGS=${OPTARG}
+		    ;;
+		n)
+		    DIRNAME=${OPTARG}
+		    ;;
+		q)
+		    QUEUE=${OPTARG}
+		    ;;
+		y)
+		    YML=${OPTARG}
+		    ;;
+		j)
+		    JOB=${OPTARG}
+		    ;;
+		r)
+		    REPS=${OPTARG}
+		    ;;
+		f)
+		    ALL_GENOMES=${OPTARG}
+		    ;;
+		a)
+		    REPS_FA=${OPTARG}
+		    ;;
+		k)
+		    ALL_FNA=${OPTARG}
+		    ;;
+		d)
+		    DREP_DIR=${OPTARG}
+		    ;;
+		z)
+		    MEM=${OPTARG}
+		    ;;
+		t)
+		    THREADS=${OPTARG}
+		    ;;
+		?)
+		    usage
+            exit
+            ;;
 	esac
 done
 
