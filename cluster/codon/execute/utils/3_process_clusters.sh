@@ -6,7 +6,7 @@ usage()
 {
 cat << EOF
 usage: $0 options
-Run genomes-pipeline preparation and dRep part
+Run genomes-pipeline cluster processing steps
 OPTIONS:
    -o      Path to general output catalogue directory
    -p      Path to installed pipeline location
@@ -71,8 +71,10 @@ while getopts hi:o:p:t:l:n:q:y:j:s:z:w: option; do
 	esac
 done
 
-for i in $(ls ${INPUT}); do
+ls "${INPUT}" > input_list.txt
 
+while IFS= read -r i
+do
     export YML=${YML_FOLDER}/${i}.${TYPE}.cluster.yml
 
     if [ "${TYPE}" == "pg" ]; then
@@ -86,10 +88,10 @@ cluster:
 mash_files:
   - class: File
     path: ${MASH}
-     " > ${YML}
+     " > "${YML}"
     else
         CWL=${P}/cwl/sub-wfs/3_process_clusters/singletons/sub-wf-singleton.cwl
-        NAME="$(basename -- ${INPUT_CSV})"
+        NAME="$(basename -- "${INPUT_CSV}")"
         CSV=${OUTDIR}/${DIRNAME}_drep/intermediate_files/renamed_${NAME}
         echo \
          "
@@ -102,22 +104,24 @@ gunc_db_path:
 csv:
   class: File
   path: ${CSV}
-     " > ${YML}
+     " > "${YML}"
     fi
 
     echo "Running ${i} ${TYPE} with ${YML}"
     bsub \
          -J "${JOB}.${DIRNAME}.${TYPE}.${i}" \
-         -e ${LOGS}/${TYPE}_${i}.err \
-         -o ${LOGS}/${TYPE}_${i}.out \
-         -q ${QUEUE} \
+         -e "${LOGS}"/"${TYPE}"_"${i}".err \
+         -o "${LOGS}"/"${TYPE}"_"${i}".out \
+         -q "${QUEUE}" \
          -M "${MEM}" \
          -n "${THREADS}" \
-         bash ${P}/cluster/codon/run-cwltool.sh \
+         bash "${P}"/cluster/codon/run-cwltool.sh \
             -d False \
-            -p ${P} \
-            -o ${OUTDIR}/${TYPE} \
-            -n ${i}_cluster \
-            -c ${CWL} \
-            -y ${YML}
-done
+            -p "${P}" \
+            -o "${OUTDIR}"/"${TYPE}" \
+            -n "${i}"_cluster \
+            -c "${CWL}" \
+            -y "${YML}"
+done < input_list.txt
+
+rm input_list.txt

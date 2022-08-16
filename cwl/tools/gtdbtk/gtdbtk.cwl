@@ -30,6 +30,9 @@ arguments:
     valueFrom: 'fna'
     position: 4
 
+stdout: stdout_gtdbtk.txt
+stderr: stderr_gtdbtk.txt
+
 inputs:
   drep_folder: Directory
   gtdb_outfolder:
@@ -40,6 +43,9 @@ inputs:
   refdata: Directory
 
 outputs:
+  stderr: stderr
+  stdout: stdout
+
   gtdbtk_folder:
     type: Directory
     outputBinding:

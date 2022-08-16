@@ -7,7 +7,7 @@ usage()
 {
 cat << EOF
 usage: $0 options
-Run genomes-pipeline preparation and dRep part
+Run genomes-pipeline mmseqs annotations
 OPTIONS:
    -o      Path to general output catalogue directory
    -p      Path to installed pipeline location
@@ -87,13 +87,13 @@ bsub \
     -q "${QUEUE}" \
     -e "${LOGS}"/files.err \
     -o "${LOGS}"/files.out \
-    bash ${P}/cluster/codon/execute/utils/4_create_files.sh \
-        -o ${OUT} \
-        -r ${REPS} \
-        -f ${ALL_GENOMES} \
-        -a ${REPS_FA} \
-        -n ${ALL_FNA} \
-        -d ${DREP_DIR}
+    bash "${P}"/cluster/codon/execute/utils/4_create_files.sh \
+        -o "${OUT}" \
+        -r "${REPS}" \
+        -f "${ALL_GENOMES}" \
+        -a "${REPS_FA}" \
+        -n "${ALL_FNA}" \
+        -d "${DREP_DIR}"
 
 echo "Concatenate prokka.faa-s"
 bsub \
@@ -130,6 +130,8 @@ for i in ${MMSEQS_LIMIT_I[@]}; do
         -q "${QUEUE}" \
         -e "${LOGS}"/mmseqs."${i}".err \
         -o "${LOGS}"/mmseqs."${i}".out \
+        -M "${MEM}" \
+        -n "${THREADS}" \
         bash "${P}"/cluster/codon/run-cwltool.sh \
             -d False \
             -p "${P}" \

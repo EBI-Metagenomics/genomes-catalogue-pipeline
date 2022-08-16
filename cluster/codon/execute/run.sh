@@ -196,7 +196,7 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP3} \
-        -s ${ENA_CSV} \
+        -s "${ENA_CSV}" \
         -z ${MEM} \
         -w ${THREADS}
 
@@ -220,7 +220,7 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP3} \
-        -s ${ENA_CSV} \
+        -s "${ENA_CSV}" \
         -z ${MEM} \
         -w ${THREADS}
 
@@ -248,7 +248,9 @@ bsub \
         -f ${ALL_GENOMES} \
         -a ${REPS_FA_DIR} \
         -k ${ALL_FNA_DIR} \
-        -d ${OUT}/${NAME}_drep
+        -d ${OUT}/${NAME}_drep \
+        -z ${MEM} \
+        -t ${THREADS}
 
 # ------------------------- Step 5 ------------------------------
 echo "==== waiting for files/folders generation.... ===="
@@ -270,9 +272,10 @@ bsub \
         -l ${LOGS} \
         -n ${NAME} \
         -y ${YML} \
-        -r ${REPS_FILE} \
         -j ${STEP5} \
-        -a ${REPS_FA_DIR}
+        -a ${REPS_FA_DIR} \
+        -z ${MEM} \
+        -t ${THREADS}
 
 bwait -w "ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.yml.*)"
 
@@ -297,7 +300,9 @@ bsub \
         -i ${OUT}/${NAME}_mmseqs_0.90/mmseqs_0.9_outdir \
         -r ${REPS_FILE} \
         -j ${STEP6} \
-        -b ${ALL_FNA_DIR}
+        -b ${ALL_FNA_DIR} \
+        -z ${MEM} \
+        -t ${THREADS}
 
 # ------------------------- Step 7 ------------------------------
 echo "==== waiting for GTDB-Tk.... ===="
@@ -323,7 +328,9 @@ bsub \
         -r ${OUT}/${NAME}_annotations/rRNA_outs \
         -j ${STEP7} \
         -f ${ALL_FNA_DIR} \
-        -s ${ENA_CSV}
+        -s "${ENA_CSV}" \
+        -z ${MEM} \
+        -t ${THREADS}
 
 # ------------------------- Step 8 ------------------------------
 echo "==== waiting for metadata and protein annotations.... ===="
@@ -346,6 +353,8 @@ bsub \
         -j ${STEP8} \
         -b "${BIOM}" \
         -m ${OUT}/${NAME}_metadata/genomes-all_metadata.tsv \
-        -a ${OUT}/${NAME}_annotations
+        -a ${OUT}/${NAME}_annotations \
+        -z ${MEM} \
+        -t ${THREADS}
 
 echo "==== Final. Exit ===="

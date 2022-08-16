@@ -17,10 +17,12 @@ OPTIONS:
    -b      Catalogue biom
    -m      GTDB-Tk metadata
    -a      Path to directory with EggNOG and InterProScan separated files
+   -z      Memory in Gb
+   -t      Threads
 EOF
 }
 
-while getopts ho:p:l:n:q:y:j:b:m:a: option; do
+while getopts ho:p:l:n:q:y:j:b:m:a:z:t: option; do
 	case "$option" in
 	    h)
              usage
@@ -56,6 +58,12 @@ while getopts ho:p:l:n:q:y:j:b:m:a: option; do
 		a)
 		    ANNOTATIONS=${OPTARG}
 		    ;;
+        z)
+		    MEM=${OPTARG}
+		    ;;
+		t)
+		    THREADS=${OPTARG}
+		    ;;
 		?)
 		    usage
             exit
@@ -64,22 +72,22 @@ while getopts ho:p:l:n:q:y:j:b:m:a: option; do
 done
 
 echo "Generating yml file"
-export YML_FILE=${YML}/post-processing.yml
-cp ${P}/cluster/codon/execute/utils/8_post_processing.yml ${YML_FILE}
+export YML_FILE="${YML}"/post-processing.yml
+cp "${P}"/cluster/codon/execute/utils/8_post_processing.yml "${YML_FILE}"
 
 bsub \
     -J "${JOB}.${DIRNAME}.yml" \
     -q "${QUEUE}" \
     -e "${LOGS}"/post-processing.yml.err \
     -o "${LOGS}"/post-processing.yml.out \
-    bash ${P}/cluster/codon/execute/utils/8_generate_yml.sh \
-        -b ${BIOM} \
-        -m ${METADATA} \
-        -y ${YML_FILE} \
-        -o ${OUT} \
-        -a ${ANNOTATIONS}
+    bash "${P}"/cluster/codon/execute/utils/8_generate_yml.sh \
+        -b "${BIOM}" \
+        -m "${METADATA}" \
+        -y "${YML_FILE}" \
+        -o "${OUT}" \
+        -a "${ANNOTATIONS}"
 
-export CWL=${P}/cwl/sub-wfs/wf-6-post-processing.cwl
+export CWL="${P}"/cwl/sub-wfs/wf-6-post-processing.cwl
 echo "Submitting cluster post-processing"
 bsub \
     -J "${JOB}.${DIRNAME}" \
@@ -87,10 +95,12 @@ bsub \
     -q "${QUEUE}" \
     -e "${LOGS}"/post-processing.err \
     -o "${LOGS}"/post-processing.out \
-    bash ${P}/cluster/codon/run-cwltool.sh \
+    -M "${MEM}" \
+    -n "${THREADS}" \
+    bash "${P}"/cluster/codon/run-cwltool.sh \
         -d False \
-        -p ${P} \
-        -o ${OUT} \
+        -p "${P}" \
+        -o "${OUT}" \
         -n "${DIRNAME}_metadata" \
-        -c ${CWL} \
-        -y ${YML_FILE}
+        -c "${CWL}" \
+        -y "${YML_FILE}"

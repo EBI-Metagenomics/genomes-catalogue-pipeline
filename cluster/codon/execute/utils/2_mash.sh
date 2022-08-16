@@ -62,7 +62,10 @@ while getopts ho:p:m:l:n:q:y:j:z:t: option; do
 	esac
 done
 
-for i in $(ls ${MASH}); do
+ls "${MASH}" > list_mash.txt
+
+while IFS= read -r i
+do
     NAME="$(basename -- "${MASH}"/"${i}")"
     export YML_FILE=${YML}/${NAME}.yml
     echo "input_mash: " > "${YML_FILE}"
@@ -83,4 +86,6 @@ for i in $(ls ${MASH}); do
             -n "mash2nwk" \
             -c "${P}"/cwl/tools/mash2nwk/mash2nwk.cwl \
             -y "${YML_FILE}"
-done
+done < list_mash.txt
+
+rm list_mash.txt
