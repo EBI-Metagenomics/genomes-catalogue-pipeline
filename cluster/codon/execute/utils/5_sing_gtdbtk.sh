@@ -20,6 +20,8 @@ OPTIONS:
 EOF
 }
 
+set -e
+
 export REFDATA="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/release202"
 export TOIL=False
 
@@ -69,49 +71,40 @@ while getopts ho:p:l:n:q:y:j:a:z:t:r: option; do
 	esac
 done
 
-echo "Create gtdb-tk yml"
-echo \
-"
-drep_folder:
-  class: Directory
-  path: ${REPS_FA}
-gtdb_outfolder: gtdbtk-outdir
-refdata:
-  class: Directory
-  path: ${REFDATA}
-" > "${YML}"/gtdbtk.yml
+. /hps/software/users/rdf/metagenomics/service-team/repos/mi-automation/team_environments/codon/mitrc.sh
+mitload miniconda
+module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
+export TMPDIR="/hps/scratch/rdf/metagenomics/pipelines-tmp"
 
-
-if [ "${TOIL}" == "True" ]; then
-
-    echo "Running ${DIRNAME} gtdb with ${YML}/gtdbtk.yml with Toil"
-    bsub \
-         -J "${JOB}.${DIRNAME}.run" \
-         -e "${LOGS}"/${JOB}.err \
-         -o "${LOGS}"/${JOB}.out \
-         bash "${P}"/cluster/codon/Toil/run-toil.sh \
-            -n "gtdbtk" \
-            -q "${QUEUE}" \
-            -b "True" \
-            -p "${P}" \
-            -o "${OUT}" \
-            -m "${MEM}" \
-            -c "${P}"/cwl/sub-wfs/5_gtdb/gtdbtk.cwl \
-            -y "${YML}"/gtdbtk.yml
-else
-    echo "Running ${DIRNAME} gtdb with ${YML}/gtdbtk.yml"
-    bsub \
-         -J "${JOB}.${DIRNAME}.run" \
-         -e "${LOGS}"/${JOB}.err \
-         -o "${LOGS}"/${JOB}.out \
-         -M "${MEM}" \
-         -n "${THREADS}" \
-         -q "${QUEUE}"  \
-         bash "${P}"/cluster/codon/run-cwltool.sh \
-            -d False \
-            -p "${P}" \
-            -o "${OUT}" \
-            -n "gtdbtk" \
-            -c "${P}"/cwl/sub-wfs/5_gtdb/gtdbtk.cwl \
-            -y "${YML}"/gtdbtk.yml
-fi
+mkdir -p ${OUT}/gtdbtk
+bsub \
+    -J "${JOB}.${DIRNAME}.run" \
+    -e "${LOGS}"/${JOB}.err \
+    -o "${LOGS}"/${JOB}.out \
+    -M "${MEM}" \
+    -n "${THREADS}" \
+    -q "${QUEUE}"  \
+    singularity \
+        --quiet \
+        exec \
+        --contain \
+        --ipc \
+        --pid \
+        --bind \
+        ${OUT}/gtdbtk:/tmp:rw \
+        --bind \
+        ${REFDATA}:/refdata:ro \
+        --bind \
+        ${REPS_FA}:/data:ro \
+        --pwd \
+        /GFpZec \
+        /hps/nobackup/rdf/metagenomics/singularity_cache/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tk:v1.sif \
+        gtdbtk \
+        classify_wf \
+        --cpus \
+        2 \
+        --genome_dir \
+        /data \
+        --out_dir \
+        /tmp/gtdbtk-outdir \
+        -x fna

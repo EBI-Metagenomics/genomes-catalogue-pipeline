@@ -110,8 +110,8 @@ csv:
     echo "Running ${i} ${TYPE} with ${YML}"
     bsub \
          -J "${JOB}.${DIRNAME}.${TYPE}.${i}" \
-         -e "${LOGS}"/"${TYPE}"_"${i}".err \
-         -o "${LOGS}"/"${TYPE}"_"${i}".out \
+         -e "${LOGS}"/"${JOB}"."${TYPE}"_"${i}".err \
+         -o "${LOGS}"/"${JOB}"."${TYPE}"_"${i}".out \
          -q "${QUEUE}" \
          -M "${MEM}" \
          -n "${THREADS}" \

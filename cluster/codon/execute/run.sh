@@ -149,8 +149,8 @@ bash ${MAIN_PATH}/cluster/codon/execute/utils/1_drep.sh \
     -m "${MAX_MGYG}" \
     -x "${MIN_MGYG}" \
     -j ${STEP1} \
-    -z ${MEM} \
-    -t ${THREADS}
+    -z ${MEM_STEP1} \
+    -t ${THREADS_STEP1}
 
 echo "==== waiting for drep.... ===="
 bwait -w "ended(${STEP1}.${NAME})"
@@ -161,8 +161,8 @@ bsub \
      -J "${STEP2}.${NAME}.submit" \
      -w "ended(${STEP1}.${NAME})" \
      -q ${QUEUE} \
-     -e ${LOGS}/submit.mash.err \
-     -o ${LOGS}/submit.mash.out \
+     -e ${LOGS}/submit."${STEP2}".err \
+     -o ${LOGS}/submit."${STEP2}".out \
      bash ${MAIN_PATH}/cluster/codon/execute/utils/2_mash.sh \
         -m ${OUT}/${NAME}_drep/mash \
         -o ${OUT} \
@@ -172,8 +172,8 @@ bsub \
         -q ${QUEUE} \
         -y ${YML} \
         -j ${STEP2} \
-        -z ${MEM} \
-        -t ${THREADS}
+        -z ${MEM_STEP2} \
+        -t ${THREADS_STEP2}
 
 # ------------------------- Step 3 ------------------------------
 mkdir -p ${OUT}/sg ${OUT}/pg
@@ -184,8 +184,8 @@ bsub \
     -J "${STEP3}.${NAME}.sg" \
     -w "ended(${STEP1}.${NAME})" \
     -q ${QUEUE} \
-    -e ${LOGS}/submit.sg.err \
-    -o ${LOGS}/submit.sg.out \
+    -e ${LOGS}/submit."${STEP3}".sg.err \
+    -o ${LOGS}/submit."${STEP3}".sg.out \
     bash ${MAIN_PATH}/cluster/codon/execute/utils/3_process_clusters.sh \
         -i ${OUT}/${NAME}_drep/singletons \
         -o ${OUT} \
@@ -197,8 +197,8 @@ bsub \
         -y ${YML} \
         -j ${STEP3} \
         -s "${ENA_CSV}" \
-        -z ${MEM} \
-        -w ${THREADS}
+        -z ${MEM_STEP3} \
+        -w ${THREADS_STEP3}
 
 echo "==== waiting for mash2nwk.... ===="
 bwait -w "ended(${STEP2}.${NAME}.*)"
@@ -208,8 +208,8 @@ bsub \
     -J "${STEP3}.${NAME}.pg" \
     -w "ended(${STEP2}.${NAME}.*)" \
     -q ${QUEUE} \
-    -e ${LOGS}/submit.pg.err \
-    -o ${LOGS}/submit.pg.out \
+    -e ${LOGS}/submit."${STEP3}".pg.err \
+    -o ${LOGS}/submit."${STEP3}".pg.out \
     bash ${MAIN_PATH}/cluster/codon/execute/utils/3_process_clusters.sh \
         -i ${OUT}/${NAME}_drep/pan-genomes \
         -o ${OUT} \
@@ -221,8 +221,8 @@ bsub \
         -y ${YML} \
         -j ${STEP3} \
         -s "${ENA_CSV}" \
-        -z ${MEM} \
-        -w ${THREADS}
+        -z ${MEM_STEP3} \
+        -w ${THREADS_STEP3}
 
 # ------------------------- Step 4 ------------------------------
 echo "==== waiting for cluster annotations.... ===="
@@ -234,8 +234,8 @@ bsub \
     -J "${STEP4}.${NAME}.submit" \
     -w "ended(${STEP3}.${NAME}.*)" \
     -q ${QUEUE} \
-    -e ${LOGS}/submit.mmseq.err \
-    -o ${LOGS}/submit.mmseq.out \
+    -e ${LOGS}/submit."${STEP4}".err \
+    -o ${LOGS}/submit."${STEP4}".out \
     bash ${MAIN_PATH}/cluster/codon/execute/utils/4_mmseqs.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
@@ -249,8 +249,8 @@ bsub \
         -a ${REPS_FA_DIR} \
         -k ${ALL_FNA_DIR} \
         -d ${OUT}/${NAME}_drep \
-        -z ${MEM} \
-        -t ${THREADS}
+        -z ${MEM_STEP4} \
+        -t ${THREADS_STEP4}
 
 # ------------------------- Step 5 ------------------------------
 echo "==== waiting for files/folders generation.... ===="
@@ -263,10 +263,10 @@ echo "Submitting GTDB-Tk"
 bsub \
     -J "${STEP5}.${NAME}.submit" \
     -q ${QUEUE} \
-    -o ${LOGS}/submit.gtdbtk.out \
-    -e ${LOGS}/submit.gtdbtk.err \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/5_gtdbtk.sh \
-        -q ${QUEUE} \
+    -o ${LOGS}/submit."${STEP5}".out \
+    -e ${LOGS}/submit."${STEP5}".err \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/5_sing_gtdbtk.sh \
+        -q ${BIGQUEUE} \
         -p ${MAIN_PATH} \
         -o ${OUT} \
         -l ${LOGS} \
@@ -274,8 +274,8 @@ bsub \
         -y ${YML} \
         -j ${STEP5} \
         -a ${REPS_FA_DIR} \
-        -z ${MEM} \
-        -t ${THREADS}
+        -z ${MEM_STEP5} \
+        -t ${THREADS_STEP5}
 
 bwait -w "ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.yml.*)"
 
@@ -288,8 +288,8 @@ echo "Submitting annotation"
 bsub \
     -J "${STEP6}.${NAME}.submit" \
     -q ${QUEUE} \
-    -e ${LOGS}/submit.annotation.err \
-    -o ${LOGS}/submit.annotation.out \
+    -e ${LOGS}/submit."${STEP6}".err \
+    -o ${LOGS}/submit."${STEP6}".out \
     bash ${MAIN_PATH}/cluster/codon/execute/utils/6_annotation.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
@@ -301,20 +301,22 @@ bsub \
         -r ${REPS_FILE} \
         -j ${STEP6} \
         -b ${ALL_FNA_DIR} \
-        -z ${MEM} \
-        -t ${THREADS}
+        -z ${MEM_STEP6} \
+        -t ${THREADS_STEP6} \
+        -w "False"
 
 # ------------------------- Step 7 ------------------------------
 echo "==== waiting for GTDB-Tk.... ===="
-bwait -w "ended(${STEP5}.${NAME}.*)"
+bwait -w "ended(${STEP5}.${NAME}.submit) && ended(${STEP6}.${NAME}.submit) "
+bwait -w "ended(${STEP5}.${NAME}.run) && ended(${STEP6}.${NAME}.run)"
 
 echo "==== 7. Metadata and phylo.tree ===="
 echo "Submitting metadata and phylo.tree generation"
 bsub \
     -J "${STEP7}.${NAME}.submit" \
     -q ${QUEUE} \
-    -e ${LOGS}/submit.metadata.err \
-    -o ${LOGS}/submit.metadata.out \
+    -e ${LOGS}/submit."${STEP7}".err \
+    -o ${LOGS}/submit."${STEP7}".out \
     bash ${MAIN_PATH}/cluster/codon/execute/utils/7_metadata.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
@@ -324,25 +326,26 @@ bsub \
         -y ${YML} \
         -v ${CATALOGUE_VERSION} \
         -i ${OUT}/${NAME}_drep/intermediate_files \
-        -g ${OUT}/gtdbtk/gtdbtk.summary.tsv \
+        -g ${OUT}/gtdbtk/gtdbtk-outdir \
         -r ${OUT}/${NAME}_annotations/rRNA_outs \
         -j ${STEP7} \
         -f ${ALL_FNA_DIR} \
         -s "${ENA_CSV}" \
-        -z ${MEM} \
-        -t ${THREADS}
+        -z ${MEM_STEP7} \
+        -t ${THREADS_STEP7}
 
 # ------------------------- Step 8 ------------------------------
 echo "==== waiting for metadata and protein annotations.... ===="
-bwait -w "ended(${STEP6}.${NAME}.*) && ended(${STEP7}.${NAME}.*)"
+bwait -w "ended(${STEP6}.${NAME}.submit) && ended(${STEP7}.${NAME}.submit)"
+bwait -w "ended(${STEP6}.${NAME}.run) && ended(${STEP7}.${NAME}.run)"
 
 echo "==== 8. Post-processing ===="
 echo "Submitting post-processing"
 bsub \
     -J "${STEP8}.${NAME}.submit" \
     -q ${QUEUE} \
-    -e ${LOGS}/submit.post-processing.err \
-    -o ${LOGS}/submit.post-processing.out \
+    -e ${LOGS}/submit."${STEP8}".err \
+    -o ${LOGS}/submit."${STEP8}".out \
     bash ${MAIN_PATH}/cluster/codon/execute/utils/8_post_processing.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
@@ -354,7 +357,7 @@ bsub \
         -b "${BIOM}" \
         -m ${OUT}/${NAME}_metadata/genomes-all_metadata.tsv \
         -a ${OUT}/${NAME}_annotations \
-        -z ${MEM} \
-        -t ${THREADS}
+        -z ${MEM_STEP8} \
+        -t ${THREADS_STEP8}
 
 echo "==== Final. Exit ===="

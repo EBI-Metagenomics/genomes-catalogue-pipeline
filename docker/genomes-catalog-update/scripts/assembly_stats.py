@@ -12,7 +12,7 @@ def run_assembly_stats(infilename):
 
 
 def fasta_iter(fasta_file):
-    fh = open(fasta_file)
+    fh = open(fasta_file, 'r')
     fa_iter = (x[1] for x in groupby(fh, lambda line: line[0] == ">"))
     for header in fa_iter:
         # drop the ">"

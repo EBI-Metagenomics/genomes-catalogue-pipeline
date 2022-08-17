@@ -75,8 +75,8 @@ do
     echo "Running ${NAME} mash with ${YML_FILE}"
     bsub -J "${JOB}.${DIRNAME}.${i}" \
          -q "${QUEUE}" \
-         -e "${LOGS}"/"${i}".mash.err \
-         -o "${LOGS}"/"${i}".mash.out \
+         -e "${LOGS}"/"${JOB}"."${i}".err \
+         -o "${LOGS}"/"${JOB}"."${i}".out \
          -M "${MEM}" \
          -n "${THREADS}" \
          bash "${P}"/cluster/codon/run-cwltool.sh \

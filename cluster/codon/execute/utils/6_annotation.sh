@@ -21,7 +21,9 @@ OPTIONS:
 EOF
 }
 
-while getopts ho:p:l:n:q:y:i:r:j:b:z:t: option; do
+export TOIL="False"
+
+while getopts ho:p:l:n:q:y:i:r:j:b:z:t:w: option; do
 	case "${option}" in
 	    h)
              usage
@@ -63,6 +65,9 @@ while getopts ho:p:l:n:q:y:i:r:j:b:z:t: option; do
 		t)
 		    THREADS=${OPTARG}
 		    ;;
+		w)
+		    TOIL=${OPTARG}
+		    ;;
 		?)
             usage
             exit
@@ -88,18 +93,34 @@ all_reps_filtered:
   path: ${REPS}
 " >> "${YML}"/annotation.yml
 
-echo "Submitting annotations"
-bsub \
-    -J "${JOB}.${DIRNAME}.run" \
-    -q "${QUEUE}" \
-    -e "${LOGS}"/annotation.err \
-    -o "${LOGS}"/annotation.out \
-    -M "${MEM}" \
-    -n "${THREADS}" \
-    bash "${P}"/cluster/codon/run-cwltool.sh \
-        -d False \
-        -p "${P}" \
-        -o "${OUT}" \
-        -n "${DIRNAME}_annotations" \
-        -c "${P}"/cwl/sub-wfs/wf-4-annotation.cwl \
-        -y "${YML}"/annotation.yml
+if [ "${TOIL}" == "True" ]; then
+    echo "Running annotations with Toil"
+    bsub \
+         -J "${JOB}.${DIRNAME}.run" \
+         -e "${LOGS}"/"${JOB}".err \
+         -o "${LOGS}"/"${JOB}".out \
+         bash "${P}"/cluster/codon/Toil/run-toil.sh \
+            -n "${DIRNAME}_annotations" \
+            -q "${QUEUE}" \
+            -p "${P}" \
+            -o "${OUT}" \
+            -m "${MEM}" \
+            -c "${P}"/cwl/sub-wfs/wf-4-annotation.cwl \
+            -y "${YML}"/annotation.yml
+else
+    echo "Running annotations with cwltool"
+    bsub \
+        -J "${JOB}.${DIRNAME}.run" \
+        -q "${QUEUE}" \
+        -e "${LOGS}"/"${JOB}".err \
+        -o "${LOGS}"/"${JOB}".out \
+        -M "${MEM}" \
+        -n "${THREADS}" \
+        bash "${P}"/cluster/codon/run-cwltool.sh \
+            -d False \
+            -p "${P}" \
+            -o "${OUT}" \
+            -n "${DIRNAME}_annotations" \
+            -c "${P}"/cwl/sub-wfs/wf-4-annotation.cwl \
+            -y "${YML}"/annotation.yml
+fi

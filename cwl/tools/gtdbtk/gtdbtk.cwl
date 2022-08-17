@@ -29,22 +29,18 @@ arguments:
   - prefix: -x
     valueFrom: 'fna'
     position: 4
+  - prefix: --out_dir
+    valueFrom: $(runtime.outdir)/$(inputs.gtdb_outfolder)
+    #$(runtime.outdir)/$(inputs.gtdb_outfolder)
 
-stdout: stdout_gtdbtk.txt
-stderr: stderr_gtdbtk.txt
 
 inputs:
   drep_folder: Directory
   gtdb_outfolder:
     type: string
-    inputBinding:
-      position: 3
-      prefix: '--out_dir'
   refdata: Directory
 
 outputs:
-  stderr: stderr
-  stdout: stdout
 
   gtdbtk_folder:
     type: Directory

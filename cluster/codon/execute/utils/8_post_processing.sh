@@ -78,8 +78,8 @@ cp "${P}"/cluster/codon/execute/utils/8_post_processing.yml "${YML_FILE}"
 bsub \
     -J "${JOB}.${DIRNAME}.yml" \
     -q "${QUEUE}" \
-    -e "${LOGS}"/post-processing.yml.err \
-    -o "${LOGS}"/post-processing.yml.out \
+    -e "${LOGS}"/"${JOB}".post-processing.yml.err \
+    -o "${LOGS}"/"${JOB}".post-processing.yml.out \
     bash "${P}"/cluster/codon/execute/utils/8_generate_yml.sh \
         -b "${BIOM}" \
         -m "${METADATA}" \
@@ -93,8 +93,8 @@ bsub \
     -J "${JOB}.${DIRNAME}" \
     -w "${JOB}.${DIRNAME}.yml"\
     -q "${QUEUE}" \
-    -e "${LOGS}"/post-processing.err \
-    -o "${LOGS}"/post-processing.out \
+    -e "${LOGS}"/"${JOB}".err \
+    -o "${LOGS}"/"${JOB}".out \
     -M "${MEM}" \
     -n "${THREADS}" \
     bash "${P}"/cluster/codon/run-cwltool.sh \

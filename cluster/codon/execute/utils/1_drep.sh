@@ -95,8 +95,8 @@ echo "Running dRep"
 bsub \
     -J "${JOB_NAME}.${DIRNAME}" \
     -q "${QUEUE}" \
-    -o "${LOGS}"/drep.out \
-    -e "${LOGS}"/drep.err \
+    -o "${LOGS}"/"${JOB_NAME}".out \
+    -e "${LOGS}"/"${JOB_NAME}".err \
     -M "${MEM}" \
     -n "${THREADS}" \
     bash "${P}"/cluster/codon/run-cwltool.sh \

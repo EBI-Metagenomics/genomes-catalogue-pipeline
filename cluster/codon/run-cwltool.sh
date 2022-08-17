@@ -43,7 +43,6 @@ if [ "${DEBUG}" == "True" ]; then
         ${CWL} ${YML}
 else
     cwltool \
-        --leave-tmpdir \
         --singularity \
         --preserve-entire-environment \
         --leave-container \

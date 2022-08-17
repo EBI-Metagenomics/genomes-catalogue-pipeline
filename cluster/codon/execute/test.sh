@@ -12,6 +12,24 @@ STEP6="Step6.annotation"
 STEP7="Step7.metadata"
 STEP8="Step8.postprocessing"
 
+MEM_STEP1="50G"
+MEM_STEP2="10G"
+MEM_STEP3="50G"
+MEM_STEP4="150G"
+MEM_STEP5="500G"
+MEM_STEP6="50G"
+MEM_STEP7="5G"
+MEM_STEP8="5G"
+
+THREADS_STEP1="16"
+THREADS_STEP2="4"
+THREADS_STEP3="8"
+THREADS_STEP4="32"
+THREADS_STEP5="2"
+THREADS_STEP6="16"
+THREADS_STEP7="1"
+THREADS_STEP8="1"
+
 usage()
 {
 cat << EOF
@@ -108,33 +126,13 @@ mkdir -p ${OUT} ${LOGS} ${YML}
 
 export REPS_FILE=${OUT}/cluster_reps.txt
 export ALL_GENOMES=${OUT}/all_cluster_filt.txt
-
+touch ${REPS_FILE} ${ALL_GENOMES}
 export REPS_FA_DIR=${OUT}/reps_fa
 export ALL_FNA_DIR=${OUT}/all_fna
 
+export MEM="10G"
+export THREADS="2"
 
-echo "==== 5. Run GTDB-Tk ===="
-# TODO change queue to BIGMEM in production
-echo "Submitting GTDB-Tk"
-bsub \
-    -J "${STEP5}.${NAME}.submit" \
-    -q ${QUEUE} \
-    -o ${LOGS}/submit.gtdbtk.out \
-    -e ${LOGS}/submit.gtdbtk.err \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/5_gtdbtk.sh \
-        -q ${QUEUE} \
-        -p ${MAIN_PATH} \
-        -o ${OUT} \
-        -l ${LOGS} \
-        -n ${NAME} \
-        -y ${YML} \
-        -r ${REPS_FILE} \
-        -j ${STEP5} \
-        -a ${REPS_FA_DIR}
-
-# ------------------------- Step 6 ------------------------------
-
-echo "==== 6. EggNOG, IPS, rRNA ===="
 echo "Submitting annotation"
 bsub \
     -J "${STEP6}.${NAME}.submit" \
@@ -151,11 +149,15 @@ bsub \
         -i ${OUT}/${NAME}_mmseqs_0.90/mmseqs_0.9_outdir \
         -r ${REPS_FILE} \
         -j ${STEP6} \
-        -b ${ALL_FNA_DIR}
+        -b ${ALL_FNA_DIR} \
+        -z ${MEM_STEP6} \
+        -t ${THREADS_STEP6} \
+        -w "False"
 
 # ------------------------- Step 7 ------------------------------
 echo "==== waiting for GTDB-Tk.... ===="
-bwait -w "ended(${STEP5}.${NAME}.*)"
+bwait -w "ended(${STEP6}.${NAME}.submit) "
+bwait -w "ended(${STEP6}.${NAME}.run)"
 
 echo "==== 7. Metadata and phylo.tree ===="
 echo "Submitting metadata and phylo.tree generation"
@@ -173,15 +175,18 @@ bsub \
         -y ${YML} \
         -v ${CATALOGUE_VERSION} \
         -i ${OUT}/${NAME}_drep/intermediate_files \
-        -g ${OUT}/gtdbtk/gtdbtk.summary.tsv \
+        -g ${OUT}/gtdbtk/gtdbtk-outdir \
         -r ${OUT}/${NAME}_annotations/rRNA_outs \
         -j ${STEP7} \
         -f ${ALL_FNA_DIR} \
-        -s ${ENA_CSV}
+        -s "${ENA_CSV}" \
+        -z ${MEM_STEP7} \
+        -t ${THREADS_STEP7}
 
 # ------------------------- Step 8 ------------------------------
 echo "==== waiting for metadata and protein annotations.... ===="
-bwait -w "ended(${STEP6}.${NAME}.*) && ended(${STEP7}.${NAME}.*)"
+bwait -w "ended(${STEP6}.${NAME}.submit) && ended(${STEP7}.${NAME}.submit)"
+bwait -w "ended(${STEP6}.${NAME}.run) && ended(${STEP7}.${NAME}.run)"
 
 echo "==== 8. Post-processing ===="
 echo "Submitting post-processing"
@@ -200,6 +205,8 @@ bsub \
         -j ${STEP8} \
         -b "${BIOM}" \
         -m ${OUT}/${NAME}_metadata/genomes-all_metadata.tsv \
-        -a ${OUT}/${NAME}_annotations
+        -a ${OUT}/${NAME}_annotations \
+        -z ${MEM_STEP8} \
+        -t ${THREADS_STEP8}
 
 echo "==== Final. Exit ===="

@@ -85,8 +85,8 @@ echo "Create files and folders with fna-reps"
 bsub \
     -J "${JOB}.${DIRNAME}.files" \
     -q "${QUEUE}" \
-    -e "${LOGS}"/files.err \
-    -o "${LOGS}"/files.out \
+    -e "${LOGS}"/"${JOB}".files.err \
+    -o "${LOGS}"/"${JOB}".files.out \
     bash "${P}"/cluster/codon/execute/utils/4_create_files.sh \
         -o "${OUT}" \
         -r "${REPS}" \
@@ -100,8 +100,8 @@ bsub \
     -J "${JOB}.${DIRNAME}.cat" \
     -w "ended(${JOB}.${DIRNAME}.files)" \
     -q "${QUEUE}" \
-    -e "${LOGS}"/cat.err \
-    -o "${LOGS}"/cat.out \
+    -e "${LOGS}"/"${JOB}".cat.err \
+    -o "${LOGS}"/"${JOB}".cat.out \
     "cat ${OUT}/pg/MGYG*_cluster/MGYG*.faa ${OUT}/pg/MGYG*_cluster/MGYG*/MGYG*.faa ${OUT}/sg/MGYG*_cluster/MGYG*/MGYG*.faa > ${OUT}/prokka.cat.faa"
 
 echo "Prepare yml for mmseqs"
@@ -110,8 +110,8 @@ for i in ${MMSEQS_LIMIT_I[@]}; do
         -J "${JOB}.${DIRNAME}.yml.${i}" \
         -w "ended(${JOB}.${DIRNAME}.cat)" \
         -q "${QUEUE}" \
-        -e "${LOGS}"/mmseqs.yml.err \
-        -o "${LOGS}"/mmseqs.yml.out \
+        -e "${LOGS}"/"${JOB}".mmseqs.yml.err \
+        -o "${LOGS}"/"${JOB}".mmseqs.yml.out \
         "echo \
         '
 input_fasta:
@@ -128,8 +128,8 @@ for i in ${MMSEQS_LIMIT_I[@]}; do
         -J "${JOB}.${DIRNAME}.${i}" \
         -w "ended(${JOB}.${DIRNAME}.yml.*)" \
         -q "${QUEUE}" \
-        -e "${LOGS}"/mmseqs."${i}".err \
-        -o "${LOGS}"/mmseqs."${i}".out \
+        -e "${LOGS}"/"${JOB}"."${i}".err \
+        -o "${LOGS}"/"${JOB}"."${i}".out \
         -M "${MEM}" \
         -n "${THREADS}" \
         bash "${P}"/cluster/codon/run-cwltool.sh \
