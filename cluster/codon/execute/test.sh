@@ -11,6 +11,7 @@ STEP5="Step5.gtdbtk"
 STEP6="Step6.annotation"
 STEP7="Step7.metadata"
 STEP8="Step8.postprocessing"
+STEP9="Step9.restructure"
 
 MEM_STEP1="50G"
 MEM_STEP2="10G"
@@ -125,10 +126,10 @@ export YML=${OUT}/ymls
 mkdir -p ${OUT} ${LOGS} ${YML}
 
 export REPS_FILE=${OUT}/cluster_reps.txt
-export ALL_GENOMES=${OUT}/all_cluster_filt.txt
+export ALL_GENOMES=${OUT}/drep-filt-list.txt
 touch ${REPS_FILE} ${ALL_GENOMES}
 export REPS_FA_DIR=${OUT}/reps_fa
-export ALL_FNA_DIR=${OUT}/all_fna
+export ALL_FNA_DIR=${OUT}/mgyg_genomes
 
 export MEM="10G"
 export THREADS="2"
@@ -208,5 +209,22 @@ bsub \
         -a ${OUT}/${NAME}_annotations \
         -z ${MEM_STEP8} \
         -t ${THREADS_STEP8}
+
+# ------------------------- Step 9 ------------------------------
+
+echo "==== waiting for post-processing ===="
+bwait -w "ended(${STEP8}.${NAME}.submit)"
+bwait -w "ended(${STEP8}.${NAME}.run)"
+
+echo "==== 9. Re-structure ===="
+echo "Running restructure"
+bsub \
+    -J "${STEP9}.${NAME}.submit" \
+    -q ${QUEUE} \
+    -e ${LOGS}/submit."${STEP9}".err \
+    -o ${LOGS}/submit."${STEP9}".out \
+    bash ${MAIN_PATH}/cluster/codon/execute/utils/9_restructure.sh \
+        -o ${OUT} \
+        -n ${NAME}
 
 echo "==== Final. Exit ===="
