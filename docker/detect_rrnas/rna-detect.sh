@@ -67,18 +67,14 @@ echo "Create .out results folder"
 mkdir "${FILENAME}_out-results"
 
 for OUT_FILE in "${RESULTS_FOLDER}"/*.out; do
-  # if [ -s "${RESULTS_FOLDER}/${OUT_FILE}" ]; then
     echo "Moving ${OUT_FILE}"
     mv "${OUT_FILE}" "${FILENAME}_out-results/"
-  # fi
 done
 
 echo "Create fasta results folder"
 mkdir "${FILENAME}_fasta-results"
 
 for OUT_FASTA in "${RESULTS_FOLDER}"/*.fasta; do
-  # if [ -s "${RESULTS_FOLDER}/${OUT_FASTA}" ]; then
     echo "Moving ${OUT_FASTA}"
     mv "${OUT_FASTA}" "${FILENAME}_fasta-results/"
-  # fi
 done
