@@ -30,11 +30,14 @@ arguments:
   - prefix: --cpus
     valueFrom: $(runtime.cores)
     position: 1
+  - prefix: --pplacer_cpus
+    valueFrom: $(runtime.cores)
+    position: 2
   - prefix: --genome_dir
     valueFrom: "/data"
-    position: 2
+    position: 3
   - prefix: -x
-    valueFrom: 'fna'
+    valueFrom: "fna"
     position: 4
   - prefix: --out_dir
     valueFrom: $(runtime.outdir)/$(inputs.gtdb_outfolder)

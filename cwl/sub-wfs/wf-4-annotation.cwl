@@ -8,6 +8,10 @@ doc: |
   - filter drep genomes + filtered by GUNC
   - detect rRNA
 
+requirements:
+  SubworkflowFeatureRequirement: {}
+  MultipleInputFeatureRequirement: {}
+
 inputs:
   mmseqs_faa: File
   mmseqs_tsv: File
@@ -24,30 +28,7 @@ inputs:
 
   cm_models: Directory
 
-outputs:
-
-# ------- functional annotation ----------
-  ips_eggnog_annotations:
-    type: File[]
-    outputSource: functional_annotation/per_genome_annotations
-  ips_tsv:
-    type: File
-    outputSource: functional_annotation/ips_result
-  eggnog_tsv:
-    type: File
-    outputSource: functional_annotation/eggnog_annotations
-
-# ---------- rRNA -------------
-  rrna_out:
-    type: Directory
-    outputSource: detect_rrna/rrna_outs
-
-  rrna_fasta:
-    type: Directory
-    outputSource: detect_rrna/rrna_fastas
-
 steps:
-
 # ----------- << functional annotation >> ------
   functional_annotation:
     run: 4_annotation/functional_annotation.cwl
@@ -74,6 +55,28 @@ steps:
       filtered_genomes_folder: all_fnas_dir
       cm_models: cm_models
     out: [rrna_outs, rrna_fastas]
+
+outputs:
+
+# ------- functional annotation ----------
+  ips_eggnog_annotations:
+    type: File[]
+    outputSource: functional_annotation/per_genome_annotations
+  ips_tsv:
+    type: File
+    outputSource: functional_annotation/ips_result
+  eggnog_tsv:
+    type: File
+    outputSource: functional_annotation/eggnog_annotations
+
+# ---------- rRNA -------------
+  rrna_out:
+    type: Directory
+    outputSource: detect_rrna/rrna_outs
+
+  rrna_fasta:
+    type: Directory
+    outputSource: detect_rrna/rrna_fastas
 
 $namespaces:
  s: http://schema.org/
