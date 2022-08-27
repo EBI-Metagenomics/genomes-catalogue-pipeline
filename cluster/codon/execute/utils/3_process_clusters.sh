@@ -122,6 +122,7 @@ csv:
             -n "${i}"_cluster \
             -c "${CWL}" \
             -y "${YML}"
+
 done < input_list.txt
 
 rm input_list.txt

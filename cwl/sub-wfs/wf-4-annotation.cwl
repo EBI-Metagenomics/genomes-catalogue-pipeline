@@ -8,14 +8,6 @@ doc: |
   - filter drep genomes + filtered by GUNC
   - detect rRNA
 
-
-requirements:
-  SubworkflowFeatureRequirement: {}
-  MultipleInputFeatureRequirement: {}
-  InlineJavascriptRequirement: {}
-  StepInputExpressionRequirement: {}
-  ScatterFeatureRequirement: {}
-
 inputs:
   mmseqs_faa: File
   mmseqs_tsv: File
@@ -83,4 +75,12 @@ steps:
       cm_models: cm_models
     out: [rrna_outs, rrna_fastas]
 
-
+$namespaces:
+ s: http://schema.org/
+$schemas:
+ - https://schema.org/version/latest/schemaorg-current-http.rdf
+s:license: "https://www.apache.org/licenses/LICENSE-2.0"
+s:copyrightHolder:
+  - class: s:Organization
+    s:name: "EMBL - European Bioinformatics Institute"
+    s:url: "https://www.ebi.ac.uk"

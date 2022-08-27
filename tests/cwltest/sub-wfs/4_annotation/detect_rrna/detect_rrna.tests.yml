@@ -1,51 +1,51 @@
 #cwltest
 
 - job: detect_rrna.yml
-  tool: ../../../../cwl/workflows/sub-wf/detect_rrna_subwf.cwl
+  tool: ../../../../../cwl/sub-wfs/4_annotation/detect_rrna_subwf.cwl
   short_name: detect_rrna_subwf.cwl
   doc: "detect rRNA"
   output:
     rrna_fastas:
-      class: Directory
       basename: rRNA_fastas
+      class: Directory
       listing:
-        - basename: CAJKRY01_fasta-results
-          class: Directory
-          listing:
-            - class: File
-              basename: CAJKRY01_rRNAs.fasta
-              checksum: sha1$6e393974f193c969695150d187569f76abaeac7d
-              size: 2985
         - basename: CAJKXZ01_fasta-results
           class: Directory
           listing:
-            - class: File
-              basename: CAJKXZ01_rRNAs.fasta
-              checksum: sha1$86a26d565fd9d658fb0875c8efb518e991a89a96
-              size: 2988
-    rrna_outs:
-      class: Directory
-      basename: rRNA_outs
-      listing:
-        - basename: CAJKRY01_out-results
+            - basename: CAJKXZ01_rRNAs.fasta
+              checksum: sha1$40685d691dc92a53ead4d7caed6618797b57edf5
+              class: File
+              size: 2992
+        - basename: CAJKRY01_fasta-results
           class: Directory
           listing:
-            - class: File
-              basename: CAJKRY01_rRNAs.out
-              checksum: sha1$adc3fdde82cb42fc0676bd353cfd16a040a28ea7
-              size: 87
-            - class: File
-              basename: CAJKRY01_tRNA_20aa.out
-              checksum: sha1$ec64af14c27bc2d811a54e02f7cdb3ceb9b2d676
-              size: 12
+            - basename: CAJKRY01_rRNAs.fasta
+              checksum: sha1$9b361e7519ade5333ff3231eae668e7c24666e69
+              class: File
+              size: 2989
+    rrna_outs:
+      basename: rRNA_outs
+      class: Directory
+      listing:
         - basename: CAJKXZ01_out-results
           class: Directory
           listing:
-            - class: File
-              basename: CAJKXZ01_rRNAs.out
-              checksum: sha1$ccd1c758dda9fa78f30d67f02324a40818bd3344
+            - basename: CAJKXZ01_rRNAs.out
+              checksum: sha1$042408e42be59100f46a48a354fa8d0cbdd3bbb5
+              class: File
               size: 87
-            - class: File
-              basename: CAJKXZ01_tRNA_20aa.out
+            - basename: CAJKXZ01_tRNA_20aa.out
               checksum: sha1$b89c6a020c1e50a876f37a71307527406e1a13c3
+              class: File
               size: 12
+        - basename: CAJKRY01_out-results
+          class: Directory
+          listing:
+            - basename: CAJKRY01_tRNA_20aa.out
+              checksum: sha1$ec64af14c27bc2d811a54e02f7cdb3ceb9b2d676
+              class: File
+              size: 12
+            - basename: CAJKRY01_rRNAs.out
+              checksum: sha1$30053e4f1612e40542ce54a2a9d7fb6e8fccef7e
+              class: File
+              size: 87

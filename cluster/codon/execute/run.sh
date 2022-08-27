@@ -155,6 +155,7 @@ bash ${MAIN_PATH}/cluster/codon/execute/utils/1_drep.sh \
 
 echo "==== waiting for drep.... ===="
 bwait -w "ended(${STEP1}.${NAME})"
+
 # ------------------------- Step 2 ------------------------------
 echo "==== 2. Run mash2nwk ===="
 echo "Submitting mash"
@@ -362,7 +363,6 @@ bsub \
         -t ${THREADS_STEP8}
 
 # ------------------------- Step 9 ------------------------------
-
 echo "==== waiting for post-processing ===="
 bwait -w "ended(${STEP8}.${NAME}.submit)"
 bwait -w "ended(${STEP8}.${NAME}.run)"

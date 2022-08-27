@@ -19,7 +19,6 @@ doc: |
       ------------ tRNA.out
       ----- MGYG...M_out-results
 
-
 requirements:
   SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
@@ -75,3 +74,13 @@ steps:
       directory_array: detect/fasta_seq
       newname: {default: "rRNA_fastas"}
     out: [pool_directory]
+
+$namespaces:
+ s: http://schema.org/
+$schemas:
+ - https://schema.org/version/latest/schemaorg-current-http.rdf
+s:license: "https://www.apache.org/licenses/LICENSE-2.0"
+s:copyrightHolder:
+  - class: s:Organization
+    s:name: "EMBL - European Bioinformatics Institute"
+    s:url: "https://www.ebi.ac.uk"
