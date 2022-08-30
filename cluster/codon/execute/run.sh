@@ -305,7 +305,7 @@ bsub \
         -b ${ALL_FNA_DIR} \
         -z ${MEM_STEP6} \
         -t ${THREADS_STEP6} \
-        -w "False"
+        -w "True"
 
 # ------------------------- Step 7 ------------------------------
 echo "==== waiting for GTDB-Tk.... ===="

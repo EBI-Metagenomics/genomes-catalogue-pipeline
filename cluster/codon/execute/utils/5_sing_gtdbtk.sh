@@ -102,7 +102,7 @@ bsub \
         gtdbtk \
         classify_wf \
         --cpus \
-        2 \
+        32 \
         --genome_dir \
         /data \
         --out_dir \
