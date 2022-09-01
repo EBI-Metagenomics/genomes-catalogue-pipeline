@@ -3,7 +3,7 @@ cwlVersion: v1.2
 
 requirements:
   ResourceRequirement:
-    ramMin: 1000
+    ramMin: 2000
     coresMin: 4
   InlineJavascriptRequirement: {}
 

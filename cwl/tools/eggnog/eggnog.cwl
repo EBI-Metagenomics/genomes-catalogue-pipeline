@@ -80,6 +80,8 @@ inputs:
     inputBinding:
       prefix: -o
 
+arguments: [ "--dbmem" ]
+
 outputs:
 
   output_annotations:
