@@ -112,7 +112,7 @@ clusters_split:
   path: ${INTERMEDIATE_FILES}/clusters_split.txt
 metadata_outname: genomes-all_metadata.tsv
 ftp_name_catalogue: ${DIRNAME}
-ftp_version_catalogue: ${VERSION}
+ftp_version_catalogue: \"${VERSION}\"
 geo_file:
   class: File
   path: ${GEO}
