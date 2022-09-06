@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import time
+import sys
 import argparse
 
 from subprocess import run, CalledProcessError
@@ -72,11 +73,11 @@ if __name__ == "__main__":
     while attempt < retries:
         try:
             run_output = run(" ".join(bwait_args), check=True, shell=True)
-            exit(run_output.returncode)
+            sys.exit(run_output.returncode)
         except CalledProcessError as exception:
             if exception.returncode == 3:
                 # Job not found
-                exit(exception.returncode)
+                sys.exit(exception.returncode)
             logging.exception(exception)
             attempt += 1
             logging.info(f"bwait attempt {attempt}")
