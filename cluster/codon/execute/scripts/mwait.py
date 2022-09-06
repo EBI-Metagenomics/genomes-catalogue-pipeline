@@ -53,7 +53,7 @@ if __name__ == "__main__":
         "-s",
         dest="sleep",
         required=False,
-        default=2,
+        default=60,
         type=int,
         help="Sleep time (seconds) between retries.",
     )
