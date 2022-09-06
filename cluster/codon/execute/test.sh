@@ -140,7 +140,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit.annotation.err \
     -o ${LOGS}/submit.annotation.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/6_annotation.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/6_annotation.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
@@ -167,7 +167,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit.metadata.err \
     -o ${LOGS}/submit.metadata.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/7_metadata.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/7_metadata.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
@@ -196,7 +196,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit.post-processing.err \
     -o ${LOGS}/submit.post-processing.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/8_post_processing.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/8_post_processing.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
@@ -223,7 +223,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit."${STEP9}".err \
     -o ${LOGS}/submit."${STEP9}".out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/9_restructure.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/9_restructure.sh \
         -o ${OUT} \
         -n ${NAME}
 

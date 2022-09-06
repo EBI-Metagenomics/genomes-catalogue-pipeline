@@ -79,8 +79,8 @@ export TMPDIR="/hps/scratch/rdf/metagenomics/pipelines-tmp"
 mkdir -p ${OUT}/gtdbtk
 bsub \
     -J "${JOB}.${DIRNAME}.run" \
-    -e "${LOGS}"/${JOB}.err \
-    -o "${LOGS}"/${JOB}.out \
+    -e "${LOGS}"/"${JOB}".err \
+    -o "${LOGS}"/"${JOB}".out \
     -M "${MEM}" \
     -n "${THREADS}" \
     -q "${QUEUE}"  \
@@ -91,11 +91,11 @@ bsub \
         --ipc \
         --pid \
         --bind \
-        ${OUT}/gtdbtk:/tmp:rw \
+        "${OUT}"/gtdbtk:/tmp:rw \
         --bind \
-        ${REFDATA}:/refdata:ro \
+        "${REFDATA}":/refdata:ro \
         --bind \
-        ${REPS_FA}:/data:ro \
+        "${REPS_FA}":/data:ro \
         --pwd \
         /GFpZec \
         /hps/nobackup/rdf/metagenomics/singularity_cache/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tk:v1.sif \

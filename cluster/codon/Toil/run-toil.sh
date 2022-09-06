@@ -60,8 +60,8 @@ mkdir -p "${RUN_OUTDIR}" "${LOG_DIR}"
 
 echo "Log-file ${LOG_DIR}/${OUTDIRNAME}.log"
 
-echo "Toil start:"
-date
+now="$(date)"
+echo "Toil start: $now"
 
 set -x
 
@@ -107,5 +107,5 @@ else
         ${CWL} ${YML} >"${LOG_DIR}/${OUTDIRNAME}.json"
 fi
 
-echo "Toil finish:"
-date
+now="$(date)"
+echo "Toil finish: $now"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DEFAULT_QUEUE="standard"
 BIGQUEUE="bigmem"
 
@@ -134,11 +136,13 @@ export ALL_FNA_DIR=${OUT}/mgyg_genomes
 export MEM="10G"
 export THREADS="2"
 
+export PATH="${MAIN_PATH}/cluster/codon/execute/scripts:$PATH"
+
 # ------------------------- Step 1 ------------------------------
 echo "==== 1. Run preparation and dRep steps with cwltool ===="
 # TODO improve for NCBI
 echo "Submitting dRep"
-bash ${MAIN_PATH}/cluster/codon/execute/utils/1_drep.sh \
+bash ${MAIN_PATH}/cluster/codon/execute/steps/1_drep.sh \
     -o ${OUT} \
     -p ${MAIN_PATH} \
     -l ${LOGS} \
@@ -154,7 +158,7 @@ bash ${MAIN_PATH}/cluster/codon/execute/utils/1_drep.sh \
     -t ${THREADS_STEP1}
 
 echo "==== waiting for drep.... ===="
-bwait -w "ended(${STEP1}.${NAME})"
+mwait.py -w "ended(${STEP1}.${NAME})"
 
 # ------------------------- Step 2 ------------------------------
 echo "==== 2. Run mash2nwk ===="
@@ -165,7 +169,7 @@ bsub \
      -q ${QUEUE} \
      -e ${LOGS}/submit."${STEP2}".err \
      -o ${LOGS}/submit."${STEP2}".out \
-     bash ${MAIN_PATH}/cluster/codon/execute/utils/2_mash.sh \
+     bash ${MAIN_PATH}/cluster/codon/execute/steps/2_mash.sh \
         -m ${OUT}/${NAME}_drep/mash \
         -o ${OUT} \
         -p ${MAIN_PATH} \
@@ -188,7 +192,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit."${STEP3}".sg.err \
     -o ${LOGS}/submit."${STEP3}".sg.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/3_process_clusters.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/3_process_clusters.sh \
         -i ${OUT}/${NAME}_drep/singletons \
         -o ${OUT} \
         -p ${MAIN_PATH} \
@@ -203,7 +207,7 @@ bsub \
         -w ${THREADS_STEP3}
 
 echo "==== waiting for mash2nwk.... ===="
-bwait -w "ended(${STEP2}.${NAME}.*)"
+mwait.py -w "ended(${STEP2}.${NAME}.*)"
 
 echo "Submitting pan-genomes"
 bsub \
@@ -212,7 +216,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit."${STEP3}".pg.err \
     -o ${LOGS}/submit."${STEP3}".pg.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/3_process_clusters.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/3_process_clusters.sh \
         -i ${OUT}/${NAME}_drep/pan-genomes \
         -o ${OUT} \
         -p ${MAIN_PATH} \
@@ -228,7 +232,7 @@ bsub \
 
 # ------------------------- Step 4 ------------------------------
 echo "==== waiting for cluster annotations.... ===="
-bwait -w "ended(${STEP3}.${NAME}.*)"
+mwait.py -w "ended(${STEP3}.${NAME}.*)"
 
 echo "==== 4. Run mmseqs ===="
 # TODO improve for no sg or pg
@@ -238,7 +242,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit."${STEP4}".err \
     -o ${LOGS}/submit."${STEP4}".out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/4_mmseqs.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/4_mmseqs.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
@@ -256,8 +260,8 @@ bsub \
 
 # ------------------------- Step 5 ------------------------------
 echo "==== waiting for files/folders generation.... ===="
-bwait -w "ended(${STEP4}.${NAME}.submit)"
-bwait -w "ended(${STEP4}.${NAME}.files)"
+mwait.py -w "ended(${STEP4}.${NAME}.submit)"
+mwait.py -w "ended(${STEP4}.${NAME}.files)"
 
 echo "==== 5. Run GTDB-Tk ===="
 # TODO change queue to BIGMEM in production
@@ -267,7 +271,7 @@ bsub \
     -q ${QUEUE} \
     -o ${LOGS}/submit."${STEP5}".out \
     -e ${LOGS}/submit."${STEP5}".err \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/5_sing_gtdbtk.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/5_sing_gtdbtk.sh \
         -q ${BIGQUEUE} \
         -p ${MAIN_PATH} \
         -o ${OUT} \
@@ -279,11 +283,11 @@ bsub \
         -z ${MEM_STEP5} \
         -t ${THREADS_STEP5}
 
-bwait -w "ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.yml.*)"
+mwait.py -w "ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.yml.*)"
 
 # ------------------------- Step 6 ------------------------------
 echo "==== waiting for mmseqs 0.9.... ===="
-bwait -w "ended(${STEP4}.${NAME}.0.90)"
+mwait.py -w "ended(${STEP4}.${NAME}.0.90)"
 
 echo "==== 6. EggNOG, IPS, rRNA ===="
 echo "Submitting annotation"
@@ -292,7 +296,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit."${STEP6}".err \
     -o ${LOGS}/submit."${STEP6}".out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/6_annotation.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/6_annotation.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
@@ -309,8 +313,8 @@ bsub \
 
 # ------------------------- Step 7 ------------------------------
 echo "==== waiting for GTDB-Tk.... ===="
-bwait -w "ended(${STEP5}.${NAME}.submit) && ended(${STEP6}.${NAME}.submit) "
-bwait -w "ended(${STEP5}.${NAME}.run) && ended(${STEP6}.${NAME}.run)"
+mwait.py -w "ended(${STEP5}.${NAME}.submit) && ended(${STEP6}.${NAME}.submit)"
+mwait.py -w "ended(${STEP5}.${NAME}.run) && ended(${STEP6}.${NAME}.run)"
 
 echo "==== 7. Metadata and phylo.tree ===="
 echo "Submitting metadata and phylo.tree generation"
@@ -319,7 +323,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit."${STEP7}".err \
     -o ${LOGS}/submit."${STEP7}".out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/7_metadata.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/7_metadata.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
@@ -338,8 +342,8 @@ bsub \
 
 # ------------------------- Step 8 ------------------------------
 echo "==== waiting for metadata and protein annotations.... ===="
-bwait -w "ended(${STEP6}.${NAME}.submit) && ended(${STEP7}.${NAME}.submit)"
-bwait -w "ended(${STEP6}.${NAME}.run) && ended(${STEP7}.${NAME}.run)"
+mwait.py -w "ended(${STEP6}.${NAME}.submit) && ended(${STEP7}.${NAME}.submit)"
+mwait.py -w "ended(${STEP6}.${NAME}.run) && ended(${STEP7}.${NAME}.run)"
 
 echo "==== 8. Post-processing ===="
 echo "Submitting post-processing"
@@ -348,7 +352,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit."${STEP8}".err \
     -o ${LOGS}/submit."${STEP8}".out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/8_post_processing.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/8_post_processing.sh \
         -o ${OUT} \
         -p ${MAIN_PATH} \
         -l ${LOGS} \
@@ -364,8 +368,8 @@ bsub \
 
 # ------------------------- Step 9 ------------------------------
 echo "==== waiting for post-processing ===="
-bwait -w "ended(${STEP8}.${NAME}.submit)"
-bwait -w "ended(${STEP8}.${NAME}.run)"
+mwait.py -w "ended(${STEP8}.${NAME}.submit)"
+mwait.py -w "ended(${STEP8}.${NAME}.run)"
 
 echo "==== 9. Re-structure ===="
 echo "Running restructure"
@@ -374,7 +378,7 @@ bsub \
     -q ${QUEUE} \
     -e ${LOGS}/submit."${STEP9}".err \
     -o ${LOGS}/submit."${STEP9}".out \
-    bash ${MAIN_PATH}/cluster/codon/execute/utils/9_restructure.sh \
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/9_restructure.sh \
         -o ${OUT} \
         -n ${NAME}
 

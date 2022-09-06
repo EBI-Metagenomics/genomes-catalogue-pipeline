@@ -76,7 +76,7 @@ while getopts ho:p:l:n:q:y:i:r:j:b:z:t:w: option; do
 done
 
 echo "Creating yml"
-cp "${P}"/cluster/codon/execute/utils/6_annotation.yml "${YML}"/annotation.yml
+cp "${P}"/cluster/codon/execute/steps/6_annotation.yml "${YML}"/annotation.yml
 echo \
 "
 mmseqs_faa:

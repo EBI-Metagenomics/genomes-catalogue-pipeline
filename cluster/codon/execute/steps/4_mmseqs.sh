@@ -87,7 +87,7 @@ bsub \
     -q "${QUEUE}" \
     -e "${LOGS}"/"${JOB}".files.err \
     -o "${LOGS}"/"${JOB}".files.out \
-    bash "${P}"/cluster/codon/execute/utils/4_create_files.sh \
+    bash "${P}"/cluster/codon/execute/steps/4_create_files.sh \
         -o "${OUT}" \
         -r "${REPS}" \
         -f "${ALL_GENOMES}" \
