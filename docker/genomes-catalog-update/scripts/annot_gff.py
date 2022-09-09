@@ -261,4 +261,3 @@ if __name__ == "__main__":
         with open(outfile, "w") as fout:
             fout.write("\n".join(res))
         add_ncrnas_to_gff(outfile, ncRNAs, res)
-        
