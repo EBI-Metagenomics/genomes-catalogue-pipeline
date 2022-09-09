@@ -40,6 +40,11 @@ inputs:
     inputBinding:
       prefix: -a
 
+  emerald:
+    type: File
+    inputBinding:
+      prefix: -e
+
 outputs:
   annotated_gff:
     type: File
