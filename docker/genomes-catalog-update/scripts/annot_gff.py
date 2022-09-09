@@ -13,7 +13,7 @@ def get_iprs(ipr_annot):
             cols = line.strip().split("\t")
             protein = cols[0]
             if protein not in iprs:
-                iprs[protein] = [set(),set()]
+                iprs[protein] = [set(), set()]
             if cols[3] == "Pfam":
                 pfam = cols[4]
                 iprs[protein][0].add(pfam)
@@ -23,9 +23,9 @@ def get_iprs(ipr_annot):
     return iprs
 
 
-def get_eggnog(eggnot_annot):
+def get_eggnog(eggnog_annot):
     eggnogs = {}
-    with open(eggnot_annot, "r") as f:
+    with open(eggnog_annot, "r") as f:
         for line in f:
             line = line.rstrip()
             cols = line.split("\t")
@@ -46,6 +46,51 @@ def get_eggnog(eggnot_annot):
     return eggnogs
 
 
+def get_emerald(emerald_file, prokka_gff):
+    cluster_positions = dict()
+    emerald_result = dict()
+    bgc_annotations = dict()
+    # save positions of each BGC cluster annotated by Emerald to dictionary cluster_positions
+    # and save the annotations to dictionary emerald_result
+    with open(emerald_file, "r") as emerald_in:
+        for line in emerald_in:
+            if not line.startswith("#"):
+                cols = line.strip().split("\t")
+                contig= cols[0]
+                for a in cols[8].split(';'):  # go through all parts of the Emerald annotation field
+                    if a.startswith("nearest_MiBIG_class="):
+                        class_value = a.split("=")[1]
+                    elif a.startswith("nearest_MiBIG="):
+                        mibig_value = a.split("=")[1]
+                # save cluster positions to a dictionary where key = contig name,
+                # value = list of position pairs (list of lists)
+                cluster_positions.setdefault(contig, list()).append([int(cols[3]), int(cols[4])])
+                # save emerald annotations to dictionary where key = contig, value = dictionary, where
+                # key = 'start_end' of BGC, value = dictionary, where key = feature type, value = description
+                emerald_result.setdefault(contig, dict()).setdefault("_".join([cols[3], cols[4]]),
+                                                                     {"nearest_MiBIG_class": class_value,
+                                                                      "nearest_MiBIG": mibig_value})
+    # identify CDSs that fall into each of the clusters annotated by Emerald
+    with open(prokka_gff, "r") as gff_in:
+        for line in gff_in:
+            if not line.startswith("#"):
+                matching_interval = ""
+                cols = line.strip().split("\t")
+                if cols[0] in cluster_positions:
+                    for i in cluster_positions[cols[0]]:
+                        if int(cols[3]) in range(i[0], i[1] + 1) and int(cols[4]) in range(i[0], i[1] + 1):
+                            matching_interval = "_".join([str(i[0]), str(i[1])])
+                            break
+                # if the CDS is in an interval, save cluster's annotation to this CDS
+                if matching_interval:
+                    cds_id = cols[8].split(";")[0].split("=")[1]
+                    bgc_annotations.setdefault(cds_id, {
+                        "nearest_MiBIG": emerald_result[cols[0]][matching_interval]["nearest_MiBIG"],
+                        "nearest_MiBIG_class": emerald_result[cols[0]][matching_interval]["nearest_MiBIG_class"],
+                    })
+    return bgc_annotations
+
+
 def get_eggnog_fields(line):
     cols = line.strip().split("\t")
     if cols[8] == "KEGG_ko" and cols[15] == "CAZy":
@@ -57,9 +102,10 @@ def get_eggnog_fields(line):
     return eggnog_fields
 
 
-def add_gff(in_gff, eggnog_file, ipr_file):
+def add_gff(in_gff, eggnog_file, ipr_file, emerald_file):
     eggnogs = get_eggnog(eggnog_file)
     iprs = get_iprs(ipr_file)
+    emerald_bgcs = get_emerald(emerald_file, in_gff)
     added_annot = {}
     out_gff = []
     with open(in_gff, "r") as f:
@@ -98,6 +144,12 @@ def add_gff(in_gff, eggnog_file, ipr_file):
                                     added_annot[protein]["InterPro"] = a
                     except:
                         pass
+                    try:
+                        emerald_bgcs[protein]
+                        for key, value in emerald_bgcs[protein].items():
+                            added_annot[protein][key] = value
+                    except:
+                        pass
                     for a in added_annot[protein]:
                         value = added_annot[protein][a]
                         if type(value) is list:
@@ -128,10 +180,6 @@ def get_rnas(ncrnas_file):
                     start = int(cols[10])
                     end = int(cols[9])
                 ncrnas.setdefault(contig, list()).append([locus, start, end, product, model, strand])
-                #if contig not in ncrnas:
-                #    ncrnas[contig] = [[locus, start, end, product, model, strand]]
-                #else:
-                #    ncrnas[contig].append([locus, start, end, product, model, strand])
     return ncrnas
 
 
@@ -175,7 +223,6 @@ def add_ncrnas_to_gff(gff_outfile, ncrnas, res):
     gff_out.close()
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='''
     Add functional annotation to GFF file''', formatter_class=RawTextHelpFormatter)
@@ -183,6 +230,7 @@ if __name__ == "__main__":
                         help='Directory with faa, fna, gff,.. and ips, eggnog if -a is not presented')
     parser.add_argument('-a', dest='annotations', help='IPS and EggNOG files', required=False, nargs='+')
     parser.add_argument('-r', dest='rfam', help='Rfam results', required=True)
+    parser.add_argument('-e', dest='emerald', help='emerald result gff', required=True)
     parser.add_argument('-o', dest='outfile', help='Outfile name', required=False)
     if len(sys.argv) == 1:
         parser.print_help()
@@ -203,7 +251,8 @@ if __name__ == "__main__":
         gff = [cur_file for cur_file in input_files if cur_file.endswith(".gff")][0]
         res = add_gff(in_gff=os.path.join(args.input_dir, gff),
                       eggnog_file=eggnog_results,
-                      ipr_file=ipr_results)
+                      ipr_file=ipr_results,
+                      emerald_file=args.emerald)
         ncRNAs = get_rnas(args.rfam)
         if not args.outfile:
             outfile = gff.split(".gff")[0]+"_annotated.gff"
@@ -212,3 +261,4 @@ if __name__ == "__main__":
         with open(outfile, "w") as fout:
             fout.write("\n".join(res))
         add_ncrnas_to_gff(outfile, ncRNAs, res)
+        
