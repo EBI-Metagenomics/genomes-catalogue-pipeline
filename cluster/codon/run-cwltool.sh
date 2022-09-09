@@ -16,14 +16,18 @@ CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
 YML=${MAIN_PATH}/tests/cluster/wf-main_ena_small.yml
 
 while getopts :o:n:y:c:p:d: option; do
-	case "${option}" in
-		o) OUTDIR=${OPTARG};;
-		n) NAME=${OPTARG};;
-		y) YML=${OPTARG};;
-		c) CWL=${OPTARG};;
-		p) MAIN_PATH=${OPTARG};;
-	    d) DEBUG=${OPTARG};;
-	esac
+    case "${option}" in
+    o) OUTDIR=${OPTARG} ;;
+    n) NAME=${OPTARG} ;;
+    y) YML=${OPTARG} ;;
+    c) CWL=${OPTARG} ;;
+    p) MAIN_PATH=${OPTARG} ;;
+    d) DEBUG=${OPTARG} ;;
+    *)
+        echo "Invalid usage"
+        exit 1
+        ;;
+    esac
 done
 
 export PATH=$PATH:${MAIN_PATH}/docker/python3_scripts/

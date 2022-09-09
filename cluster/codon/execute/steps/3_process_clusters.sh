@@ -2,9 +2,8 @@
 
 export GUNC_DB="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd"
 
-usage()
-{
-cat << EOF
+usage() {
+    cat <<EOF
 usage: $0 options
 Run genomes-pipeline cluster processing steps
 OPTIONS:
@@ -23,78 +22,77 @@ EOF
 }
 
 while getopts hi:o:p:t:l:n:q:y:j:s:z:w: option; do
-	case "${option}" in
-		h)
-             usage
-             exit 1
-             ;;
-	  i)
-	      INPUT=${OPTARG}
-	      ;;
-		o)
-		    OUTDIR=${OPTARG}
-		    ;;
-		p)
-		    P=${OPTARG}
-		    ;;
-		t)
-		    TYPE=${OPTARG}
-		    ;;
-		l)
-		    LOGS=${OPTARG}
-		    ;;
-		n)
-		    DIRNAME=${OPTARG}
-		    ;;
-		q)
-		    QUEUE=${OPTARG}
-		    ;;
-		y)
-		    YML_FOLDER=${OPTARG}
-		    ;;
-		j)
-		    JOB=${OPTARG}
-		    ;;
-		s)
-		    INPUT_CSV=${OPTARG}
-		    ;;
-		z)
-		    MEM=${OPTARG}
-		    ;;
-		w)
-		    THREADS=${OPTARG}
-		    ;;
-		?)
-		    usage
-            exit
-            ;;
-	esac
+    case "${option}" in
+    h)
+        usage
+        exit 1
+        ;;
+    i)
+        INPUT=${OPTARG}
+        ;;
+    o)
+        OUTDIR=${OPTARG}
+        ;;
+    p)
+        P=${OPTARG}
+        ;;
+    t)
+        TYPE=${OPTARG}
+        ;;
+    l)
+        LOGS=${OPTARG}
+        ;;
+    n)
+        DIRNAME=${OPTARG}
+        ;;
+    q)
+        QUEUE=${OPTARG}
+        ;;
+    y)
+        YML_FOLDER=${OPTARG}
+        ;;
+    j)
+        JOB=${OPTARG}
+        ;;
+    s)
+        INPUT_CSV=${OPTARG}
+        ;;
+    z)
+        MEM=${OPTARG}
+        ;;
+    w)
+        THREADS=${OPTARG}
+        ;;
+    ?)
+        usage
+        exit
+        ;;
+    esac
 done
 
-ls "${INPUT}" > input_list.txt
+ls "${INPUT}" >input_list.txt
 
-while IFS= read -r i
-do
+while IFS= read -r i; do
     export YML=${YML_FOLDER}/${i}.${TYPE}.cluster.yml
 
     if [ "${TYPE}" == "pg" ]; then
         CWL=${P}/cwl/sub-wfs/3_process_clusters/pan-genomes/sub-wf-pan-genomes.cwl
         MASH=${OUTDIR}/mash2nwk/${i}_mashtree.nwk
         echo \
-         "
+            "
 cluster:
   class: Directory
   path: ${INPUT}/${i}
 mash_files:
   - class: File
     path: ${MASH}
-     " > "${YML}"
+     " >"${YML}"
     else
         CWL=${P}/cwl/sub-wfs/3_process_clusters/singletons/sub-wf-singleton.cwl
         NAME="$(basename -- "${INPUT_CSV}")"
         CSV=${OUTDIR}/${DIRNAME}_drep/intermediate_files/renamed_${NAME}
         echo \
-         "
+            "
 cluster:
   class: Directory
   path: ${INPUT}/${i}
@@ -104,18 +102,18 @@ gunc_db_path:
 csv:
   class: File
   path: ${CSV}
-     " > "${YML}"
+     " >"${YML}"
     fi
 
     echo "Running ${i} ${TYPE} with ${YML}"
     bsub \
-         -J "${JOB}.${DIRNAME}.${TYPE}.${i}" \
-         -e "${LOGS}"/"${JOB}"."${TYPE}"_"${i}".err \
-         -o "${LOGS}"/"${JOB}"."${TYPE}"_"${i}".out \
-         -q "${QUEUE}" \
-         -M "${MEM}" \
-         -n "${THREADS}" \
-         bash "${P}"/cluster/codon/run-cwltool.sh \
+        -J "${JOB}.${DIRNAME}.${TYPE}.${i}" \
+        -e "${LOGS}"/"${JOB}"."${TYPE}"_"${i}".err \
+        -o "${LOGS}"/"${JOB}"."${TYPE}"_"${i}".out \
+        -q "${QUEUE}" \
+        -M "${MEM}" \
+        -n "${THREADS}" \
+        bash "${P}"/cluster/codon/run-cwltool.sh \
             -d False \
             -p "${P}" \
             -o "${OUTDIR}"/"${TYPE}" \
@@ -123,6 +121,6 @@ csv:
             -c "${CWL}" \
             -y "${YML}"
 
-done < input_list.txt
+done <input_list.txt
 
 rm input_list.txt

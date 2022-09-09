@@ -180,8 +180,6 @@ echo "==== 2. mash2nwk submission script [${SUBMIT_SCRIPTS}/step2.${NAME}.sh] ==
 cat <<EOF >${SUBMIT_SCRIPTS}/step2.${NAME}.sh
 #!/bin/bash
 
-# -w "ended(${STEP1}.${NAME})" \\ TODO: remove
-
 bsub \\
     -J "${STEP2}.${NAME}.submit" \\
     -q ${QUEUE} \\
@@ -212,8 +210,6 @@ echo "==== 3. Cluster annotation [${SUBMIT_SCRIPTS}/step3.${NAME}.sh] ===="
 cat <<EOF >${SUBMIT_SCRIPTS}/step3.${NAME}.sh
 #!/bin/bash
 
-# -w "ended(${STEP1}.${NAME})" TODO: remove
-
 bsub \\
     -J "${STEP3}.${NAME}.sg" \\
     -q ${QUEUE} \\
@@ -231,27 +227,25 @@ bsub \\
         -j ${STEP3} \\
         -s "${ENA_CSV}" \\
         -z ${MEM_STEP3} \\
-        -w ${THREADS_STEP3}\
-
-# -w "ended(${STEP2}.${NAME}.*)" TODO: remove
+        -w ${THREADS_STEP3}
 
 bsub \\
-    -J "${STEP3}.${NAME}.pg" \
-    -q ${QUEUE} \
-    -e ${LOGS}/submit.${STEP3}.pg.err \
-    -o ${LOGS}/submit.${STEP3}.pg.out \
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/3_process_clusters.sh \
-        -i ${OUT}/${NAME}_drep/pan-genomes \
-        -o ${OUT} \
-        -p ${MAIN_PATH} \
-        -t "pg" \
-        -l ${LOGS} \
-        -n ${NAME} \
-        -q ${QUEUE} \
-        -y ${YML} \
-        -j ${STEP3} \
-        -s "${ENA_CSV}" \
-        -z ${MEM_STEP3} \
+    -J "${STEP3}.${NAME}.pg" \\
+    -q ${QUEUE} \\
+    -e ${LOGS}/submit.${STEP3}.pg.err \\
+    -o ${LOGS}/submit.${STEP3}.pg.out \\
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/3_process_clusters.sh \\
+        -i ${OUT}/${NAME}_drep/pan-genomes \\
+        -o ${OUT} \\
+        -p ${MAIN_PATH} \\
+        -t "pg" \\
+        -l ${LOGS} \\
+        -n ${NAME} \\
+        -q ${QUEUE} \\
+        -y ${YML} \\
+        -j ${STEP3} \\
+        -s "${ENA_CSV}" \\
+        -z ${MEM_STEP3} \\
         -w ${THREADS_STEP3}
 EOF
 
@@ -271,7 +265,6 @@ cat <<EOF >${SUBMIT_SCRIPTS}/step4.${NAME}.sh
 
 bsub \\
     -J "${STEP4}.${NAME}.submit" \\
-    -w "ended(${STEP3}.${NAME}.*)" \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP4}.err \\
     -o ${LOGS}/submit.${STEP4}.out \
@@ -354,20 +347,19 @@ bsub \\
     -e ${LOGS}/submit.${STEP6}.err \\
     -o ${LOGS}/submit.${STEP6}.out \\
     bash ${MAIN_PATH}/cluster/codon/execute/steps/6_annotation.sh \\
-    -o ${OUT} \\
-    -p ${MAIN_PATH} \\
-    -l ${LOGS} \\
-    -n ${NAME} \\
-    -q ${QUEUE} \\
-    -y ${YML} \\
-    -i ${OUT}/${NAME}_mmseqs_0.90/mmseqs_0.9_outdir \\
-    -r ${REPS_FILE} \\
-    -j ${STEP6} \\
-    -b ${ALL_FNA_DIR} \\
-    -z ${MEM_STEP6} \\
-    -t ${THREADS_STEP6} \\
-    -w "True"
-
+        -o ${OUT} \\
+        -p ${MAIN_PATH} \\
+        -l ${LOGS} \\
+        -n ${NAME} \\
+        -q ${QUEUE} \\
+        -y ${YML} \\
+        -i ${OUT}/${NAME}_mmseqs_0.90/mmseqs_0.9_outdir \\
+        -r ${REPS_FILE} \\
+        -j ${STEP6} \\
+        -b ${ALL_FNA_DIR} \\
+        -z ${MEM_STEP6} \\
+        -t ${THREADS_STEP6} \\
+        -w "True"
 EOF
 
 if [[ $RUN == 1 ]]; then
@@ -414,22 +406,21 @@ bsub \\
     -e ${LOGS}/submit.${STEP7}.err \\
     -o ${LOGS}/submit.${STEP7}.out \\
     bash ${MAIN_PATH}/cluster/codon/execute/steps/7_metadata.sh \\
-    -o ${OUT} \\
-    -p ${MAIN_PATH} \\
-    -l ${LOGS} \\
-    -n ${NAME} \\
-    -q ${QUEUE} \\
-    -y ${YML} \\
-    -v ${CATALOGUE_VERSION} \\
-    -i ${OUT}/${NAME}_drep/intermediate_files \\
-    -g ${OUT}/gtdbtk/gtdbtk-outdir \\
-    -r ${OUT}/${NAME}_annotations/rRNA_outs \\
-    -j ${STEP7} \\
-    -f ${ALL_FNA_DIR} \\
-    -s "${ENA_CSV}" \\
-    -z ${MEM_STEP7} \\
-    -t ${THREADS_STEP7}
-
+        -o ${OUT} \\
+        -p ${MAIN_PATH} \\
+        -l ${LOGS} \\
+        -n ${NAME} \\
+        -q ${QUEUE} \\
+        -y ${YML} \\
+        -v ${CATALOGUE_VERSION} \\
+        -i ${OUT}/${NAME}_drep/intermediate_files \\
+        -g ${OUT}/gtdbtk/gtdbtk-outdir \\
+        -r ${OUT}/${NAME}_annotations/rRNA_outs \\
+        -j ${STEP7} \\
+        -f ${ALL_FNA_DIR} \\
+        -s "${ENA_CSV}" \\
+        -z ${MEM_STEP7} \\
+        -t ${THREADS_STEP7}
 EOF
 
 if [[ $RUN == 1 ]]; then
@@ -465,7 +456,6 @@ bsub \\
         -a ${OUT}/${NAME}_annotations \\
         -z ${MEM_STEP8} \\
         -t ${THREADS_STEP8}
-
 EOF
 
 if [[ $RUN == 1 ]]; then
@@ -490,9 +480,8 @@ bsub \\
     -e ${LOGS}/submit.${STEP9}.err \\
     -o ${LOGS}/submit.${STEP9}.out \\
     bash ${MAIN_PATH}/cluster/codon/execute/steps/9_restructure.sh \\
-    -o ${OUT} \\
-    -n ${NAME}
-
+        -o ${OUT} \\
+        -n ${NAME}
 EOF
 
 if [[ $RUN == 1 ]]; then
