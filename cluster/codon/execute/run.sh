@@ -264,7 +264,7 @@ bsub \\
     -J "${STEP4}.${NAME}.submit" \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP4}.err \\
-    -o ${LOGS}/submit.${STEP4}.out \
+    -o ${LOGS}/submit.${STEP4}.out \\
     bash ${MAIN_PATH}/cluster/codon/execute/steps/4_mmseqs.sh \\
         -o ${OUT} \\
         -p ${MAIN_PATH} \\

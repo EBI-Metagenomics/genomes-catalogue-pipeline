@@ -70,7 +70,7 @@ while getopts hi:o:p:t:l:n:q:y:j:s:z:w: option; do
     esac
 done
 
-ls "${INPUT}" >input_list.txt
+ls "${INPUT}" >"step3_input_list_${TYPE}.txt"
 
 while IFS= read -r i; do
     export YML=${YML_FOLDER}/${i}.${TYPE}.cluster.yml
@@ -121,6 +121,6 @@ csv:
             -c "${CWL}" \
             -y "${YML}"
 
-done <input_list.txt
+done <"step3_input_list_${TYPE}.txt"
 
-rm input_list.txt
+rm "step3_input_list_${TYPE}.txt"
