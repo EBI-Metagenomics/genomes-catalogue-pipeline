@@ -12,6 +12,8 @@ requirements:
     listing:
       - class: File
         location: ../../../../docker/genomes-catalog-update/scripts/create_metadata_table.py
+  NetworkAccess:
+    networkAccess: true
 
 hints:
   DockerRequirement:
