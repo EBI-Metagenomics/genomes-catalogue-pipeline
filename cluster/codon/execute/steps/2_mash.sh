@@ -1,8 +1,7 @@
 #!/bin/bash
 
-usage()
-{
-cat << EOF
+usage() {
+    cat <<EOF
 usage: $0 options
 Run genomes-pipeline mash2nwk step
 OPTIONS:
@@ -20,72 +19,70 @@ EOF
 }
 
 while getopts ho:p:m:l:n:q:y:j:z:t: option; do
-	case "$option" in
-		h)
-             usage
-             exit 1
-             ;;
-		o)
-		    OUT=${OPTARG}
-		    ;;
-		p)
-		    P=${OPTARG}
-		    ;;
-		m)
-		    MASH=${OPTARG}
-		    ;;
-		l)
-		    LOGS=${OPTARG}
-		    ;;
-		n)
-		    DIRNAME=${OPTARG}
-		    ;;
-		q)
-		    QUEUE=${OPTARG}
-		    ;;
-		y)
-		    YML=${OPTARG}
-		    ;;
-		j)
-		    JOB=${OPTARG}
-		    ;;
-		z)
-		    MEM=${OPTARG}
-		    ;;
-		t)
-		    THREADS=${OPTARG}
-		    ;;
-		?)
-            usage
-            exit
-            ;;
-	esac
+    case "$option" in
+    h)
+        usage
+        exit 1
+        ;;
+    o)
+        OUT=${OPTARG}
+        ;;
+    p)
+        P=${OPTARG}
+        ;;
+    m)
+        MASH=${OPTARG}
+        ;;
+    l)
+        LOGS=${OPTARG}
+        ;;
+    n)
+        DIRNAME=${OPTARG}
+        ;;
+    q)
+        QUEUE=${OPTARG}
+        ;;
+    y)
+        YML=${OPTARG}
+        ;;
+    j)
+        JOB=${OPTARG}
+        ;;
+    z)
+        MEM=${OPTARG}
+        ;;
+    t)
+        THREADS=${OPTARG}
+        ;;
+    ?)
+        usage
+        exit
+        ;;
+    esac
 done
 
-ls "${MASH}" > list_mash.txt
+ls "${MASH}" >list_mash.txt
 
-while IFS= read -r i
-do
+while IFS= read -r i; do
     NAME="$(basename -- "${MASH}"/"${i}")"
     export YML_FILE=${YML}/${NAME}.yml
-    echo "input_mash: " > "${YML_FILE}"
-    echo "  class: File" >> "${YML_FILE}"
-    echo "  path: ${MASH}/${i}" >> "${YML_FILE}"
-
+    echo "input_mash: " >"${YML_FILE}"
+    echo "  class: File" >>"${YML_FILE}"
+    echo "  path: ${MASH}/${i}" >>"${YML_FILE}"
     echo "Running ${NAME} mash with ${YML_FILE}"
     bsub -J "${JOB}.${DIRNAME}.${i}" \
-         -q "${QUEUE}" \
-         -e "${LOGS}"/"${JOB}"."${i}".err \
-         -o "${LOGS}"/"${JOB}"."${i}".out \
-         -M "${MEM}" \
-         -n "${THREADS}" \
-         bash "${P}"/cluster/codon/run-cwltool.sh \
+        -q "${QUEUE}" \
+        -e "${LOGS}"/"${JOB}"."${i}".err \
+        -o "${LOGS}"/"${JOB}"."${i}".out \
+        -M "${MEM}" \
+        -n "${THREADS}" \
+        bash "${P}"/cluster/codon/run-cwltool.sh \
             -d False \
             -p "${P}" \
             -o "${OUT}" \
             -n "mash2nwk" \
             -c "${P}"/cwl/tools/mash2nwk/mash2nwk.cwl \
             -y "${YML_FILE}"
-done < list_mash.txt
+done <list_mash.txt
 
 rm list_mash.txt
