@@ -77,12 +77,10 @@ ls "${OUT}"/sg | tr '_' '\t' | cut -f1 > "${REPS}".sg
 ls "${OUT}"/pg | tr '_' '\t' | cut -f1 > "${REPS}".pg
 cat "${REPS}".sg "${REPS}".pg > "${REPS}"
 
-
 echo "Create gunc-failed list of genomes"
 ls "${DREP_DIR}"/singletons > singletons.txt
-grep -v -f "${REPS}".sg singletons.txt > "${OUT}"/gunc-failed.txt
+grep -v -f "${REPS}".sg singletons.txt > "${OUT}"/gunc-failed.txt || true
 rm singletons.txt
-
 
 echo "Create folder with all filtered fa-s ${REPS_FA}"
 mkdir -p "${REPS_FA}"

@@ -142,7 +142,7 @@ THREADS="2"
 export PATH="${MAIN_PATH}/cluster/codon/execute/scripts:$PATH"
 
 # ------------------------- Step 1 -------------------------------------------------
-echo "==== 1. dRep steps with cwltool [step1.${NAME}.sh] ===="
+echo "==== 1. dRep steps with cwltool [${SUBMIT_SCRIPTS}/step1.${NAME}.sh] ===="
 
 # TODO improve for NCBI
 cat <<EOF >${SUBMIT_SCRIPTS}/step1.${NAME}.sh
