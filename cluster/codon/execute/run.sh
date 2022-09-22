@@ -51,7 +51,7 @@ OPTIONS:
    -c      ENA genomes csv
    -x      Min MGYG
    -m      Max MGYG
-   -v      Catalogue version
+   -v      Catalogue version    
    -b      Catalogue Biome
    -r      Run the generated bsub scripts
 EOF
@@ -446,7 +446,7 @@ fi
 
 echo "==== 9. Re-structure [${SUBMIT_SCRIPTS}/step9.${NAME}.sh] ===="
 
-cat <<EOF >${SUBMIT_SCRIPTS}/step8.${NAME}.sh
+cat <<EOF >${SUBMIT_SCRIPTS}/step9.${NAME}.sh
 #!/bin/bash
 
 bsub \\
