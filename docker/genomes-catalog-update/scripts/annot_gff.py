@@ -258,6 +258,4 @@ if __name__ == "__main__":
             outfile = gff.split(".gff")[0]+"_annotated.gff"
         else:
             outfile = args.outfile
-        with open(outfile, "w") as fout:
-            fout.write("\n".join(res))
         add_ncrnas_to_gff(outfile, ncRNAs, res)
