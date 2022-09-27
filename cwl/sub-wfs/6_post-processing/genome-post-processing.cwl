@@ -5,6 +5,7 @@ class: Workflow
 doc: |
   - kegg, cog, cazy annotations
   - ncRNA
+  - emerald
   - annotate gff
 
   Input:
@@ -23,6 +24,7 @@ doc: |
                ----- fna, fna.fai, faa, gff (annotated)
                ----- kegg, cog, cazy,...
                ----- IPS, eggNOG
+               ----- Emerald
        ----- genome.json [ if metadata presented]
        ----- pan-genome
                ----- pan-genome.fna
@@ -112,6 +114,9 @@ steps:
     in:
       fasta: get_fna/file_pattern
     out: [ fasta_index ]
+
+# --------- run Emerald ----------
+
 
 # --------- annotate GFF ----------
 
