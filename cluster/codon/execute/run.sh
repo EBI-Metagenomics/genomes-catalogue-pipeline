@@ -29,7 +29,7 @@ THREADS_STEP1="16"
 THREADS_STEP2="4"
 THREADS_STEP3="8"
 THREADS_STEP4="32"
-THREADS_STEP5="2"
+THREADS_STEP5="32"
 THREADS_STEP6="16"
 THREADS_STEP7="1"
 THREADS_STEP8="1"
@@ -56,6 +56,8 @@ OPTIONS:
    -r      Run the generated bsub scripts
 EOF
 }
+
+mkdir -p ${RUN_OUTDIR}
 
 while getopts "h:p:n:f:c:m:x:v:b:o:q:r" OPTION; do
     case $OPTION in
