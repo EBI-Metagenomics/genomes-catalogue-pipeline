@@ -31,7 +31,7 @@ folders=(
 containers_versions=(
         'bash:v1'
         'checkm:v1'
-        'detect_rrna:v3'
+        'detect_rrna:v3.1'
         'drep:v2'
         'eggnog-mapper:v1'
         'genomes-catalog-update:v1'
@@ -45,8 +45,7 @@ containers_versions=(
         'python3_scripts:v4'
 )
 
-for ((i=0;i<${num_containers};i++)) do
-    echo ${i}
-    cd ${folders[${i}]} && docker build -t ${STORAGE}/${REPO}.${containers_versions[${i}]} .
+for ((i = 0; i < ${num_containers}; i++)); do
+        echo "${i}"
+        cd "${folders[${i}]}" && docker build -t "${STORAGE}/${REPO}.${containers_versions[${i}]}" .
 done
-

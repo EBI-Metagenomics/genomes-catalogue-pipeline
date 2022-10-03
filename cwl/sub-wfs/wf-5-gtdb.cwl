@@ -30,15 +30,15 @@ outputs:
 
   gtdbtk_outdir:
     type: Directory
-    outputSource: gtdbtk/gtdbtk_folder
+    outputSource: gtdbtk/gtdbtk_outdir
 
   metadata:
     type: File
-    outputSource: metadata/metadata_table
+    outputSource: metadata_and_tree/metadata
 
   phylo_tree:
     type: File
-    outputSource: phylo_json/phylo_tree_json
+    outputSource: metadata_and_tree/phylo_tree
 
 steps:
 # ----------- << GTDB - Tk >> -----------
@@ -55,73 +55,43 @@ steps:
     out: [out]
 
   gtdbtk:
-    run: ../tools/gtdbtk/gtdbtk.cwl
+    run: 5_gtdb/gtdbtk.cwl
     in:
       drep_folder: create_folder_reps/out
       gtdb_outfolder: { default: 'gtdb-tk_output' }
       refdata: gtdbtk_data
     out:
-      - gtdbtk_folder
-      - gtdbtk_bac
-      - gtdbtk_arc
+      - gtdbtk_outdir
+      - taxonomy
 
-  cat_tables:
-    when: $(Boolean(inputs.file1) || Boolean(inputs.file2))
-    run: ../utils/concatenate.cwl
+  create_all_fna_dir:
+    run: ../utils/return_directory.cwl
     in:
-      file1: gtdbtk/gtdbtk_bac
-      file2: gtdbtk/gtdbtk_arc
-      files:
-        source:
-          - gtdbtk/gtdbtk_bac
-          - gtdbtk/gtdbtk_arc
-        pickValue: all_non_null
-      outputFileName: {default: "gtdbtk.summary.tsv" }
-    out: [result]
-
-  # tar:
-  #  run: ../utils/tar.cwl
-  #  in:
-  #    folder: gtdbtk/gtdbtk_folder
-  #  out: [ folder_tar ]
-
-# ----------- << Metadata >> -----------
-  metadata:
-    run: ../tools/genomes-catalog-update/generate_metadata/create_metadata.cwl
-    in:
-      input_dir:
+      list:
         source:
           - reps_pangenomes_fna
           - other_pangenomes_fna
           - singletons_fna
         linkMerge: merge_flattened
-      extra_weights: extra_weights_table
-      checkm_results: checkm_results_table
-      rrna: rrna_dir
+      dir_name: {default: "all_fna"}
+    out: [out]
+
+# ----------- << Metadata and phylo.tree >> -----------
+  metadata_and_tree:
+    run: 5_gtdb/metadata_and_phylo_tree.cwl
+    in:
+      all_fna_dir: create_all_fna_dir/out
+      extra_weights_table: extra_weights_table
+      checkm_results_table: checkm_results_table
+      rrna_dir: rrna_dir
       naming_table: naming_table
       clusters_split: clusters_split
-      gtdb_taxonomy:
-        source:
-          - cat_tables/result
-          - gtdbtk/gtdbtk_bac
-          - gtdbtk/gtdbtk_arc
-        pickValue: first_non_null
-      outfile_name: metadata_outname
-      ftp_name: ftp_name_catalogue
-      ftp_version: ftp_version_catalogue
-      geo: geo_file
-      gunc_failed: gunc_failed_genomes
-    out: [ metadata_table ]
-
-# ----------- << phylo_json >> -----------
-  phylo_json:
-    run: ../tools/post-processing/generate_phylo_json/phylo_json.cwl
-    in:
-      table:
-        source:
-          - cat_tables/result
-          - gtdbtk/gtdbtk_bac
-          - gtdbtk/gtdbtk_arc
-        pickValue: first_non_null
-      outname: { default: "phylo_tree.json" }
-    out: [phylo_tree_json]
+      gtdb_taxonomy: gtdbtk/taxonomy
+      metadata_outname: metadata_outname
+      ftp_name_catalogue: ftp_name_catalogue
+      ftp_version_catalogue: ftp_version_catalogue
+      geo_file: geo_file
+      gunc_failed_genomes: gunc_failed_genomes
+    out:
+      - metadata
+      - phylo_tree

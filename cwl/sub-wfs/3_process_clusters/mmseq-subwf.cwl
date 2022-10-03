@@ -114,4 +114,3 @@ steps:
       - outdir
       - faa
       - mmseq_cluster_tsv
-

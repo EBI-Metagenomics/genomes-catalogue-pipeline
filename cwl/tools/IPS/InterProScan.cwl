@@ -33,7 +33,7 @@ arguments:
     valueFrom: 'TSV'
     prefix: '-f'
   - position: 8
-    valueFrom: $(inputs.inputFile.nameroot).IPS.tsv
+    valueFrom: $(runtime.outdir)/$(inputs.inputFile.nameroot).IPS.tsv
     prefix: '-o'
 
 inputs:

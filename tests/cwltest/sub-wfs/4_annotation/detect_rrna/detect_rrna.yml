@@ -1,6 +1,6 @@
-filtered_genomes:
+filtered_genomes_folder:
   class: Directory
-  path: ../../../../input_example/small_set/singletons/
+  path: ../../../../../input_example/small_set/singletons/
 cm_models:
   class: Directory
-  path: ../../tools/detect_rRNA/models
+  path: ../../../tools/detect_rRNA/models

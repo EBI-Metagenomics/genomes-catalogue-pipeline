@@ -3,17 +3,13 @@ cwlVersion: v1.2
 
 requirements:
   ResourceRequirement:
-    ramMin: 1000
-    coresMax: 1
+    ramMin: 2000
+    coresMin: 4
   InlineJavascriptRequirement: {}
-  InitialWorkDirRequirement:
-    listing:
-      - class: File
-        location: ../../../docker/detect_rrnas/rna-detect.sh
 
 hints:
   DockerRequirement:
-    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3"
+    dockerPull: "quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3.1"
 
 baseCommand: [ rna-detect.sh ]
 
@@ -21,11 +17,15 @@ inputs:
   fasta:
     type: File
     inputBinding:
-      position: 1
+      position: 2
   cm_models:
     type: Directory
     inputBinding:
-      position: 2
+      position: 3
+
+arguments:
+  - valueFrom: $(runtime.outdir)
+    position: 1
 
 outputs:
   out_counts:

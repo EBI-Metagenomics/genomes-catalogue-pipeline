@@ -6,7 +6,7 @@ class: ExpressionTool
 requirements:
   InlineJavascriptRequirement: {}
   ResourceRequirement:
-    ramMin: 200
+    ramMin: 1000
     coresMin: 1
 
 inputs:
@@ -28,3 +28,13 @@ expression: |
 outputs:
   files: File[]?
   file: File?
+
+$namespaces:
+ s: http://schema.org/
+$schemas:
+ - https://schema.org/version/latest/schemaorg-current-http.rdf
+s:license: "https://www.apache.org/licenses/LICENSE-2.0"
+s:copyrightHolder:
+  - class: s:Organization
+    s:name: "EMBL - European Bioinformatics Institute"
+    s:url: "https://www.ebi.ac.uk"

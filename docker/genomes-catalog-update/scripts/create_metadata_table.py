@@ -23,10 +23,10 @@ def main(genomes_dir, extra_weight_table, checkm_results, rna_results, naming_fi
     #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
     #           'Species_rep', 'MGnify_accession', 'Lineage', 'Sample_accession', 'Study_accession', 'Country',
     #           'Continent', 'FTP_download']
-    genome_list = load_genome_list(genomes_dir, gunc_failed)
+    genome_list, genomes_ext = load_genome_list(genomes_dir, gunc_failed)
     df = pd.DataFrame(genome_list, columns=['Genome'])
     df = add_genome_type(df, extra_weight_table)
-    df = add_stats(df, genomes_dir)
+    df = add_stats(df, genomes_dir, genomes_ext)
     df = add_checkm(df, checkm_results)
     df = add_rna(df, genome_list, rna_results)
     df, original_accessions = add_original_accession(df, naming_file)
@@ -234,15 +234,15 @@ def add_checkm(df, checkm_results):
     return df
 
 
-def add_stats(df, genomes_dir):
-    new_df = df.apply(lambda x: calc_assembly_stats(genomes_dir, x['Genome']), axis=1)
+def add_stats(df, genomes_dir, genomes_ext):
+    new_df = df.apply(lambda x: calc_assembly_stats(genomes_dir, x['Genome'], genomes_ext), axis=1)
     return pd.concat([df, new_df], axis=1)
 
 
-def calc_assembly_stats(genomes_dir, acc):
-    file_path = os.path.join(genomes_dir, '{}.fa'.format(acc))
+def calc_assembly_stats(genomes_dir, acc, ext):
+    file_path = os.path.join(genomes_dir, '{}.{}'.format(acc, ext))
     stats = run_assembly_stats(file_path)
-    return pd.Series([int(stats['Length']), int(stats['N_contigs']), int(stats['N50']), str(round(stats['GC_content'],2))],
+    return pd.Series([int(stats['Length']), int(stats['N_contigs']), int(stats['N50']), str(round(stats['GC_content'], 2))],
                      index=['Length', 'N_contigs', 'N50', 'GC_content'])
 
 
@@ -265,6 +265,7 @@ def add_genome_type(df, extra_weight_table):
 
 def load_genome_list(genomes_dir, gunc_file):
     genome_list = [filename.rsplit('.', 1)[0] for filename in os.listdir(genomes_dir)]
+    genomes_ext = os.listdir(genomes_dir)[0].rsplit('.', 1)[1]
     if gunc_file:
         with open(gunc_file, 'r') as gunc_in:
             for line in gunc_in:
@@ -273,7 +274,7 @@ def load_genome_list(genomes_dir, gunc_file):
                     genome_list.remove(acc)
                 except:
                     logging.info('Genome {} failed GUNC and is not present in the genomes directory'.format(acc))
-    return sorted(genome_list)
+    return sorted(genome_list), genomes_ext
 
 
 def parse_args():

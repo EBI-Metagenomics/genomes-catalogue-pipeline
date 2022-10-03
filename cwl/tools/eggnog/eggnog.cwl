@@ -14,7 +14,7 @@ hints:
 
 requirements:
   ResourceRequirement:
-    ramMin: 10000
+    ramMin: 50000
     coresMin: 16
 
 baseCommand: [emapper.py]
@@ -79,6 +79,8 @@ inputs:
     type: string?
     inputBinding:
       prefix: -o
+
+arguments: [ "--dbmem" ]
 
 outputs:
 

@@ -4,7 +4,7 @@ class: CommandLineTool
 requirements:
   ResourceRequirement:
     coresMax: 1
-    ramMin: 200  # just a default, could be lowered
+    ramMin: 1000
   InitialWorkDirRequirement:
     listing:
       - class: File

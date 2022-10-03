@@ -3,11 +3,8 @@ cwlVersion: v1.2
 class: Workflow
 
 requirements:
-  SubworkflowFeatureRequirement: {}
   MultipleInputFeatureRequirement: {}
   InlineJavascriptRequirement: {}
-  StepInputExpressionRequirement: {}
-  ScatterFeatureRequirement: {}
 
 inputs:
   input_faa: File
@@ -83,3 +80,13 @@ steps:
       cores: { default: 16 }
       outdirname: {default: per-genome-annotations }
     out: [ per_genome_annotations ]  # File[]
+
+$namespaces:
+ s: http://schema.org/
+$schemas:
+ - https://schema.org/version/latest/schemaorg-current-http.rdf
+s:license: "https://www.apache.org/licenses/LICENSE-2.0"
+s:copyrightHolder:
+  - class: s:Organization
+    s:name: "EMBL - European Bioinformatics Institute"
+    s:url: "https://www.ebi.ac.uk"
