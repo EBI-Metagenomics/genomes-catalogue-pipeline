@@ -51,7 +51,7 @@ inputs:
 
 
 outputs:
-  pan_genome_reference-fa:
+  pan_genome_reference:
     type: File
     outputBinding:
       glob: $(inputs.panaroo_outfolder)/pan_genome_reference.fa

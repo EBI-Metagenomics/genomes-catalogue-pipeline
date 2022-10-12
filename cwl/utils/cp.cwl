@@ -8,23 +8,23 @@ requirements:
     ramMin: 1000
 
 inputs:
-  initial_file:
+  source_file:
     type: File
     inputBinding:
       position: 1
 
-  out_file_name:
+  destination_file_name:
     type: string
     inputBinding:
       position: 2
 
-baseCommand: [ mv ]
+baseCommand: [ cp ]
 
 outputs:
-  renamed_file:
+  copied_file:
     type: File
     outputBinding:
-      glob: $(inputs.out_file_name)
+      glob: $(inputs.destination_file_name)
 
 $namespaces:
  edam: http://edamontology.org/
