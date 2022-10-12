@@ -54,6 +54,15 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.outdirname)/$(inputs.fa_file.nameroot).fna
+  gbk:
+    type: File
+    outputBinding:
+      glob: $(inputs.outdirname)/$(inputs.fa_file.nameroot).gbk
+  ffn:
+    type: File
+    outputBinding:
+      glob: $(inputs.outdirname)/$(inputs.fa_file.nameroot).ffn
+
   #outdir:
   #  type: Directory
   #  outputBinding:
