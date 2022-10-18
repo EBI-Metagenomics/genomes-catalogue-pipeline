@@ -49,6 +49,18 @@ outputs:
     type: File[]
     outputSource: get_pangenome_fnas/left_files
 
+  pangenome_other_gffs:
+    type: File[]
+    outputSource: get_pangenome_gffs/left_files
+
+  pangenome_other_ffns:
+    type: File[]
+    outputSource: get_pangenome_ffns/left_files
+
+  pangenome_other_gbks:
+    type: File[]
+    outputSource: get_pangenome_gbks/left_files
+
   all_pangenome_faa:
     type: File[]
     outputSource: prokka/faa
@@ -56,10 +68,6 @@ outputs:
   pangenome_cluster:
     type: Directory
     outputSource: cluster_folder/out
-
-  pangenome_other_gffs:
-    type: File[]
-    outputSource: get_pangenome_gffs/left_files
 
   main_rep_fna:
     type: File
