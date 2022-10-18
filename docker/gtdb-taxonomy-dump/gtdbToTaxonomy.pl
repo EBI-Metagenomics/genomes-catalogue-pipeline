@@ -33,8 +33,12 @@ sub main{
   $$settings{infile} ||= die "ERROR: need --infile";
   $$settings{outputdir} ||= die "ERROR: need --outputdir";
   $$settings{'sequence-dir'}//="library";
-  
+
   my $outputdir = $$settings{outputdir};
+
+  if (!-d $outputdir){
+    mkdir $outputdir;
+  }
 
   mkdir "${outputdir}/taxonomy";
   mkdir $$settings{'sequence-dir'};
@@ -58,6 +62,9 @@ sub main{
   my $taxonCounter=1;
   my %taxon=(root=>\%root);
 
+  print $nodesFh join("\t|\t", $root{taxid}, $root{parent}, $root{rank}, "", 0, 1, 11, 1, 0, 1, 1, 0)."\t|\n";
+  print $namesFh join("\t|\t", $root{taxid}, $root{scientificName}, "", "scientific name")."\t|\n";
+
   open(my $inFh, "<", $$settings{infile}) or die "ERROR: could not read $$settings{infile}: $!";
   while(my $line=<$inFh>){
     next if($line=~/^\s*#/);
@@ -67,7 +74,7 @@ sub main{
 
     $assemblyId=~s/^RS_//;   # remove prefix RS_
     $assemblyId=~s/^GB_//;   # remove prefix RS_
-    # $assemblyId=~s/\.\d+$//; # remove version
+    $assemblyId=~s/\.\d+$//; # remove version
 
     logmsgBg "Loading ". $assemblyId.", ".substr($lineageStr,0,20)."...".substr($lineageStr,-40,40)."\n";
     my @lineage=split(/;/, $lineageStr);
