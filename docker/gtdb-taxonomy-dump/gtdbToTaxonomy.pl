@@ -74,7 +74,7 @@ sub main{
 
     $assemblyId=~s/^RS_//;   # remove prefix RS_
     $assemblyId=~s/^GB_//;   # remove prefix RS_
-    $assemblyId=~s/\.\d+$//; # remove version
+    #$assemblyId=~s/\.\d+$//; # remove version
 
     logmsgBg "Loading ". $assemblyId.", ".substr($lineageStr,0,20)."...".substr($lineageStr,-40,40)."\n";
     my @lineage=split(/;/, $lineageStr);
