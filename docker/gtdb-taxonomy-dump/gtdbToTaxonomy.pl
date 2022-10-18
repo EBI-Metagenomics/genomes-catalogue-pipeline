@@ -28,13 +28,13 @@ exit main();
 sub main{
 
   my $settings={};
-  GetOptions($settings, qw(infile=s --sequence-dir=s --outputdir=s help)) or die $!;
+  GetOptions($settings, qw(infile=s --sequence-dir=s --output-dir=s help)) or die $!;
   die usage() if($$settings{help});
   $$settings{infile} ||= die "ERROR: need --infile";
-  $$settings{outputdir} ||= die "ERROR: need --outputdir";
+  $$settings{'output-dir'} ||= die "ERROR: need --output-dir";
   $$settings{'sequence-dir'}//="library";
 
-  my $outputdir = $$settings{outputdir};
+  my $outputdir = $$settings{'output-dir'};
 
   if (!-d $outputdir){
     mkdir $outputdir;
@@ -179,7 +179,7 @@ sub fastaIndex{
 }
 
 sub usage{
-  "Usage: perl [--sequence-dir fasta] --infile gtdb.txt $0
+  "Usage: perl [--sequence-dir fasta] --infile gtdb.txt --output-dir <results_dir>
   Where gtdb.txt is a two column file with assembly ID and semicolon-delimited lineage
   Outputs two folders for taxonomy and library of fasta files.
 
