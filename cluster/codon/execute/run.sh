@@ -57,8 +57,6 @@ OPTIONS:
 EOF
 }
 
-mkdir -p ${RUN_OUTDIR}
-
 while getopts "h:p:n:f:c:m:x:v:b:o:q:r" OPTION; do
     case $OPTION in
     h)
