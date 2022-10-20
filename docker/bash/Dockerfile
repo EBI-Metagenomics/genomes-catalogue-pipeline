@@ -12,8 +12,6 @@ RUN mkdir /samtools && \
     tar -xjf samtools-$SAMTOOLS_VERSION.tar.bz2 && rm samtools-$SAMTOOLS_VERSION.tar.bz2 && \
     cd samtools-$SAMTOOLS_VERSION && ./configure --prefix=/samtools && make && make install install-htslib
 
-
-
 FROM alpine:3.7
 
 RUN apk add --no-cache pigz nodejs coreutils bash zlib bzip2 ncurses  \

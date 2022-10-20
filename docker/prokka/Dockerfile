@@ -22,9 +22,11 @@ RUN apt update && \
         wget
 RUN cpan Bio::Perl
 
+ENV PROKKA_VERSION=1.14.6
+
 # Install Prokka from source
 WORKDIR /opt
-RUN git clone https://github.com/tseemann/prokka.git && \
+RUN git clone https://github.com/tseemann/prokka.git --depth=1 --branch=v${PROKKA_VERSION} && \
     /opt/prokka/bin/prokka --setupdb
 
 # Adding tbl2asn
