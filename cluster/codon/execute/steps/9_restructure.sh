@@ -69,7 +69,7 @@ echo "Compressing gff"
 ls "${RESULTS}"/GFF > gffs
 while IFS= read -r i
 do
-    gzip "${OUT}"/GFF/"${i}"
+    gzip "${RESULTS}"/GFF/"${i}"
 done < gffs
 rm gffs
 
