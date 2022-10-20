@@ -9,7 +9,7 @@ export QUAY_NAME="quay.io/microbiome-informatics"
 
 export STORAGE=${QUAY_NAME}
 
-num_containers=14
+NUM_CONTAINERS=15
 
 folders=(
         'bash'
@@ -18,7 +18,8 @@ folders=(
         'drep'
         'eggnog-mapper'
         'genomes-catalog-update'
-        'gtdb-tk'
+        'gtdb-tk/v1.5.1'
+        'gtdb-tk/v2.1.0'
         'gunc'
         'ips'
         'mash2nwk'
@@ -36,6 +37,7 @@ containers_versions=(
         'eggnog-mapper:v1'
         'genomes-catalog-update:v1'
         'gtdb-tk:v1'
+        'gtdb-tk:v2.1.0'
         'gunc:v4'
         'ips:v1'
         'mash2nwk:v1'
@@ -45,7 +47,10 @@ containers_versions=(
         'python3_scripts:v4'
 )
 
-for ((i = 0; i < ${num_containers}; i++)); do
-        echo "${i}"
-        cd "${folders[${i}]}" && docker build -t "${STORAGE}/${REPO}.${containers_versions[${i}]}" .
+for ((i = 0; i < NUM_CONTAINERS; i++)); do
+        echo "########"
+        echo "Building container ${REPO}.${containers_versions[${i}]}"
+        FOLDER=${folders[${i}]}
+        docker build -t "${STORAGE}/${REPO}.${containers_versions[${i}]}" --file "${FOLDER}/Dockerfile" "${FOLDER}"
+        echo "########"
 done
