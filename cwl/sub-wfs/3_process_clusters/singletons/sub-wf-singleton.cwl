@@ -8,6 +8,8 @@ doc: |
         --- fna
         --- gff
         --- faa
+        --- gbk
+        --- ffn
       or null
 
 requirements:
@@ -40,6 +42,14 @@ outputs:
     type: File?
     outputSource: prokka/faa
 
+  prokka_gbk:
+    type: File?
+    outputSource: prokka/gbk
+
+  prokka_ffn:
+    type: File?
+    outputSource: prokka/ffn
+
 steps:
   preparation:
     run: ../../../utils/get_files_from_dir.cwl
@@ -66,6 +76,8 @@ steps:
       - faa
       - gff
       - fna
+      - gbk
+      - ffn
 
   filter_nulls:
     when: $(inputs.flag.includes("complete.txt"))
@@ -76,6 +88,8 @@ steps:
         - prokka/gff
         - prokka/faa
         - prokka/fna
+        - prokka/gbk
+        - prokka/ffn
     out: [out_files]
 
   cluster_folder:
