@@ -26,7 +26,6 @@ doc: |
     FNAs (all) File[]
     FAAs (all) File[]
     FFNs (all) File[]
-    GBKs (all) File[]
     gffs / main_rep.gff
 
 requirements:
@@ -56,10 +55,6 @@ outputs:
   pangenome_other_ffns:
     type: File[]
     outputSource: get_pangenome_ffns/left_files
-
-  pangenome_other_gbks:
-    type: File[]
-    outputSource: get_pangenome_gbks/left_files
 
   all_pangenome_faa:
     type: File[]
@@ -162,15 +157,6 @@ steps:
     run: ../../../utils/exclude_file_pattern.cwl
     in:
       list_files: prokka/ffn
-      pattern:
-        source: cluster
-        valueFrom: $(self.basename)
-    out: [ left_files ]
-
-  get_pangenome_gbks:
-    run: ../../../utils/exclude_file_pattern.cwl
-    in:
-      list_files: prokka/gbk
       pattern:
         source: cluster
         valueFrom: $(self.basename)
