@@ -20,7 +20,7 @@ MEM_STEP1="50G"
 MEM_STEP2="10G"
 MEM_STEP3="50G"
 MEM_STEP4="150G"
-MEM_STEP5="500G"
+MEM_STEP5="150G"
 MEM_STEP6="50G"
 MEM_STEP7="5G"
 MEM_STEP8="5G"
@@ -308,7 +308,7 @@ bsub \\
     -o ${LOGS}/submit.${STEP5}.out \\
     -e ${LOGS}/submit.${STEP5}.err \\
     bash ${MAIN_PATH}/cluster/codon/execute/steps/5_sing_gtdbtk.sh \\
-        -q ${BIGQUEUE} \\
+        -q ${DEFAULT_QUEUE} \\
         -p ${MAIN_PATH} \\
         -o ${OUT} \\
         -l ${LOGS} \\

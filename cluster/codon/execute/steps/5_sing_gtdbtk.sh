@@ -22,7 +22,7 @@ EOF
 
 set -e
 
-export REFDATA="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/release202"
+export REFDATA="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/release207_v2"
 export TOIL=False
 
 while getopts ho:p:l:n:q:y:j:a:z:t:r: option; do
@@ -98,7 +98,7 @@ bsub \
         "${REPS_FA}":/data:ro \
         --pwd \
         /GFpZec \
-        /hps/nobackup/rdf/metagenomics/singularity_cache/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tk:v1.sif \
+        /hps/nobackup/rdf/metagenomics/singularity_cache/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tk:v2.1.0.sif \
         gtdbtk \
         classify_wf \
         --cpus \
