@@ -65,9 +65,9 @@ do
       -M "${MEM}" \
       -n "${THREADS}" \
       singularity run $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_emerald-bgc:v0.2.4.1_genomes-pipeline.sif \
-      emeraldbgc --ip-file "${OUT}"/"${DIRNAME}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
-      --outdir "${OUT}"/"${DIRNAME}"/pg/"${i}"_cluster/"${i}" "${OUT}"/"${DIRNAME}"/pg/"${i}"_cluster/"${i}"/"${i}".gbk
-done < "${OUT}"/"${DIRNAME}"/cluster_reps.txt.pg
+      emeraldbgc --ip-file "${OUT}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
+      --outdir "${OUT}"/pg/"${i}"_cluster/"${i}" "${OUT}"/pg/"${i}"_cluster/"${i}"/"${i}".gbk
+done < "${OUT}"/cluster_reps.txt.pg
 
 # Run Emerald on singleton cluster reps
 while IFS= read -r i
@@ -79,6 +79,6 @@ do
       -M "${MEM}" \
       -n "${THREADS}" \
       singularity run $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_emerald-bgc:v0.2.4.1_genomes-pipeline.sif \
-      emeraldbgc --ip-file "${OUT}"/"${DIRNAME}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
-      --outdir "${OUT}"/"${DIRNAME}"/sg/"${i}"_cluster/"${i}" "${OUT}"/"${DIRNAME}"/sg/"${i}"_cluster/"${i}"/"${i}".gbk
-done < "${OUT}"/"${DIRNAME}"/cluster_reps.txt.sg
+      emeraldbgc --ip-file "${OUT}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
+      --outdir "${OUT}"/sg/"${i}"_cluster/"${i}" "${OUT}"/sg/"${i}"_cluster/"${i}"/"${i}".gbk
+done < "${OUT}"/cluster_reps.txt.sg
