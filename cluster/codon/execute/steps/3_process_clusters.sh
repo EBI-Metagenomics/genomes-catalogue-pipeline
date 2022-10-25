@@ -28,9 +28,9 @@ while getopts hi:o:p:t:l:n:q:y:j:s:z:w: option; do
              usage
              exit 1
              ;;
-	    i)
-	        INPUT=${OPTARG}
-	        ;;
+	  i)
+	      INPUT=${OPTARG}
+	      ;;
 		o)
 		    OUTDIR=${OPTARG}
 		    ;;
