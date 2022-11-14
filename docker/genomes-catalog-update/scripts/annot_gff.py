@@ -227,9 +227,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='''
     Add functional annotation to GFF file''', formatter_class=RawTextHelpFormatter)
     parser.add_argument('-i', dest='input_dir', required=True,
-                        help='Directory with faa, fna, gff,.. and ips, eggnog if -a is not presented and sanntis '
-                             'if -s is not presented')
-    parser.add_argument('-a', dest='annotations', help='IPS and EggNOG files', required=False, nargs='+')
+                        help='Directory with faa, fna, gff,.. and ips, eggnog if -a is not presented')
+    parser.add_argument('-a', dest='annotations', help='IPS, EggNOG and SanntiS files', required=False, nargs='+')
     parser.add_argument('-r', dest='rfam', help='Rfam results', required=True)
     parser.add_argument('-s', dest='sanntis', help='Sanntis result gff', required=False)
     parser.add_argument('-o', dest='outfile', help='Outfile name', required=False)
@@ -248,14 +247,13 @@ if __name__ == "__main__":
         eggnog_results = eggnog_name if args.annotations else os.path.join(args.input_dir, eggnog_name)
         ips_name = [cur_file for cur_file in annotations_list if cur_file.endswith('InterProScan.tsv')][0]
         ipr_results = ips_name if args.annotations else os.path.join(args.input_dir, ips_name)
-        sanntis_result = args.sanntis if args.sanntis else os.path.join(
-            args.input_dir, '{}.gbk.sanntis'.format(args.input_dir.split('/')[-1]),
-            '{}.gbk.sanntis.full.gff'.format(args.input_dir.split('/')[-1]))
+        sanntis_name = [cur_file for cur_file in annotations_list if cur_file.endswith('sanntis.full.gff')][0]
+        sanntis_results = sanntis_name if args.annotations else args.sanntis
         gff = [cur_file for cur_file in input_files if cur_file.endswith(".gff")][0]
         res = add_gff(in_gff=os.path.join(args.input_dir, gff),
                       eggnog_file=eggnog_results,
                       ipr_file=ipr_results,
-                      sanntis_file=sanntis_result)
+                      sanntis_file=sanntis_results)
         ncRNAs = get_rnas(args.rfam)
         if not args.outfile:
             outfile = gff.split(".gff")[0]+"_annotated.gff"
