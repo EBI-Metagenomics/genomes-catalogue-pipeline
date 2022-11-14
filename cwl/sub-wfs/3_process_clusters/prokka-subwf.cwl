@@ -42,6 +42,5 @@ steps:
     in:
       fa_file: change_headers/created_file
       outdirname: outdirname
-    out: [ gff, faa, fna, gbk ]
     out: [ gff, faa, fna, gbk, ffn ]
 
