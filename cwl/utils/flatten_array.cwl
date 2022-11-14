@@ -8,7 +8,7 @@ requirements:
   StepInputExpressionRequirement: {}
   ScatterFeatureRequirement: {}
   ResourceRequirement:
-    ramMin: 200
+    ramMin: 1000
     coresMin: 1
 
 

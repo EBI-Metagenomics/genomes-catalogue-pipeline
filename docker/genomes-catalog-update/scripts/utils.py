@@ -29,7 +29,7 @@ from retry import retry
 
 
 def download_fasta(url, folder, accession, unzip, checksum):
-    if not url.lower().startswith('ftp'):
+    if not url.lower().startswith(('ftp', 'http')):
         print(url, 'is not an URL\n')
         return False
     else:

@@ -6,7 +6,9 @@ LABEL description="A toolkit for assigning objective taxonomic classifications t
 LABEL website="https://github.com/Ecogenomics/GTDBTk"
 LABEL license="GPLv3"
 
-RUN conda install -c conda-forge -c bioconda -c defaults gtdbtk && conda clean -afy
+ENV VERSION=1.5.1
+
+RUN conda install -c conda-forge -c bioconda -c defaults gtdbtk=${VERSION} && conda clean -afy
 
 # Workdir
 RUN mkdir /data

@@ -21,7 +21,7 @@ MEM_STEP1="50G"
 MEM_STEP2="10G"
 MEM_STEP3="50G"
 MEM_STEP4="150G"
-MEM_STEP5="500G"
+MEM_STEP5="150G"
 MEM_STEP6="50G"
 MEM_STEP6a="5G"
 MEM_STEP7="5G"
@@ -31,7 +31,7 @@ THREADS_STEP1="16"
 THREADS_STEP2="4"
 THREADS_STEP3="8"
 THREADS_STEP4="32"
-THREADS_STEP5="2"
+THREADS_STEP5="32"
 THREADS_STEP6="16"
 THREADS_STEP6a="1"
 THREADS_STEP7="1"
@@ -54,7 +54,7 @@ OPTIONS:
    -c      ENA genomes csv
    -x      Min MGYG
    -m      Max MGYG
-   -v      Catalogue version
+   -v      Catalogue version    
    -b      Catalogue Biome
    -r      Run the generated bsub scripts
 EOF
@@ -311,7 +311,7 @@ bsub \\
     -o ${LOGS}/submit.${STEP5}.out \\
     -e ${LOGS}/submit.${STEP5}.err \\
     bash ${MAIN_PATH}/cluster/codon/execute/steps/5_sing_gtdbtk.sh \\
-        -q ${BIGQUEUE} \\
+        -q ${DEFAULT_QUEUE} \\
         -p ${MAIN_PATH} \\
         -o ${OUT} \\
         -l ${LOGS} \\

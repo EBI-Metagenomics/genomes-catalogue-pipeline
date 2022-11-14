@@ -16,7 +16,7 @@ doc: |
     cluster: File[]
          --- core_genes                 [ pangenome ]
          --- mash-file.nwk              [ pangenome ]
-         --- pan_genome_reference-fa    [ pangenome ]
+         --- pan_genome_reference       [ pangenome ]
          --- gene_presence_absence      [ pangenome ]
          --- rep.faa                    [ genome ]
          --- rep.gff                    [ genome ]
@@ -104,13 +104,20 @@ steps:
       panaroo_folder_name:
         source: cluster
         valueFrom: "$(self.basename)_panaroo"
-      panaroo_fna_name:
-        source: cluster
-        valueFrom: "$(self.basename).pan-genome.fna"
     out:
       - gene_presence_absence
       - panaroo_fna
       - panaroo_dir
+
+  rename_panaroo_fna:
+    # For some reason move.cwl (mv) doesn't work to rename the file 
+    run: ../../../utils/cp.cwl
+    in:
+      source_file: panaroo/panaroo_fna
+      destination_file_name:
+        source: cluster
+        valueFrom: "$(self.basename).pan-genome.fna"
+    out: [ copied_file ]
 
   get_core_genes:
     run: ../../../tools/genomes-catalog-update/get_core_genes/get_core_genes.cwl
@@ -215,7 +222,7 @@ steps:
     run: ../../../utils/return_directory.cwl
     in:
       list:
-        - panaroo/panaroo_fna
+        - rename_panaroo_fna/copied_file # renamed: panaroo/pan_genome_reference.fa 
         - panaroo/gene_presence_absence
         - get_core_genes/core_genes
         - get_mash_file/file_pattern

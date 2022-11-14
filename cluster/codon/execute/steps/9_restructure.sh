@@ -4,7 +4,7 @@ usage()
 {
 cat << EOF
 usage: $0 options
-Run genomes-pipeline post-processing steps: kegg, cog, ncRNA, populate GFF, generate genome.json
+Restructure output folders
 OPTIONS:
    -o      Path to general output catalogue directory
    -p      Path to installed pipeline location
@@ -69,7 +69,7 @@ echo "Compressing gff"
 ls "${RESULTS}"/GFF > gffs
 while IFS= read -r i
 do
-    gzip "${OUT}"/GFF/"${i}"
+    gzip "${RESULTS}"/GFF/"${i}"
 done < gffs
 rm gffs
 

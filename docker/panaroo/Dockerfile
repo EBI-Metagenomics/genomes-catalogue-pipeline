@@ -1,10 +1,13 @@
 FROM ubuntu:latest
 
 LABEL software="panaroo"
-LABEL software.version="1.2.7"
+LABEL software.version="1.2.8"
 LABEL description="A Bacterial Pangenome Analysis Pipeline."
 LABEL website="https://github.com/gtonkinhill/panaroo"
 LABEL license="MIT"
+
+ENV PROKKA_VERSION=1.14.6
+ENV PANAROO_VERSION=1.2.8
 
 # Deps
 ARG DEBIAN_FRONTEND=noninteractive
@@ -22,7 +25,6 @@ RUN apt update && \
         python3-networkx \
         python3-gffutils \
         python3-edlib \
-        python3-joblib \
         libdatetime-perl \
         libxml-simple-perl \
         libdigest-md5-perl \
@@ -38,7 +40,7 @@ RUN cpan Bio::Perl
 
 # Install Prokka from source
 WORKDIR /opt
-RUN git clone https://github.com/tseemann/prokka.git && \
+RUN git clone https://github.com/tseemann/prokka.git --depth=1 --branch=v${PROKKA_VERSION} && \
     /opt/prokka/bin/prokka --setupdb
 
 # Adding tbl2asn
@@ -49,7 +51,7 @@ RUN wget -q -O tbl2asn.gz https://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters
 
 # Install panaroo
 WORKDIR /opt
-RUN git clone https://github.com/gtonkinhill/panaroo && \
+RUN git clone https://github.com/gtonkinhill/panaroo --depth=1 --branch=v${PANAROO_VERSION} && \
     cd panaroo && \
     python3 setup.py install
 

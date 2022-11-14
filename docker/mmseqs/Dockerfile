@@ -5,10 +5,11 @@ LABEL maintainer="Microbiome Informatics Team www.ebi.ac.uk/metagenomics"
 LABEL base_image="continuumio/miniconda3"
 LABEL version="1"
 LABEL software="mmseqs"
-LABEL software.version="113e3212c137d026e297c7540e1fcd039f6812b1"
+LABEL software.version="13.45111"
 
-RUN conda install -c bioconda mmseqs2 --yes --freeze-installed && conda clean -afy
+ENV VERSION=13.45111
 
+RUN conda install -c bioconda mmseqs2=${VERSION} --yes --freeze-installed && conda clean -afy
 
 COPY mmseqs_wf_without_symlinks.sh /tools/mmseqs_wf.sh
 RUN chmod a+x /tools/*
