@@ -65,8 +65,8 @@ do
       -M "${MEM}" \
       -n "${THREADS}" \
       singularity run $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_sanntis:0.1.0.sif \
-      sanntis --ip-file "${OUT}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
-      --outdir "${OUT}"/pg/"${i}"_cluster/"${i}" "${OUT}"/pg/"${i}"_cluster/"${i}"/"${i}".gbk
+      sanntis --ip-file "${OUT}"/"${DIRNAME}"_annotations/"${i}"_InterProScan.tsv \
+      --outdir "${OUT}"/"${DIRNAME}"_annotations "${OUT}"/pg/"${i}"_cluster/"${i}"/"${i}".gbk
 done < "${OUT}"/cluster_reps.txt.pg
 
 # Run SanntiS on singleton cluster reps
@@ -79,6 +79,6 @@ do
       -M "${MEM}" \
       -n "${THREADS}" \
       singularity run $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_sanntis:0.1.0.sif \
-      sanntis --ip-file "${OUT}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
-      --outdir "${OUT}"/sg/"${i}"_cluster/"${i}" "${OUT}"/sg/"${i}"_cluster/"${i}"/"${i}".gbk
+      sanntis --ip-file "${OUT}"/"${DIRNAME}"_annotations/"${i}"_InterProScan.tsv \
+      --outdir "${OUT}"/"${DIRNAME}"_annotations "${OUT}"/sg/"${i}"_cluster/"${i}"/"${i}".gbk
 done < "${OUT}"/cluster_reps.txt.sg
