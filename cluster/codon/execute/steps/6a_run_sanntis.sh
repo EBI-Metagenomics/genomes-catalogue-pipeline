@@ -55,7 +55,7 @@ if [[ -z $OUT ]] || [[ -z $DIRNAME ]] || [[ -z $LOGS ]]; then
   usage
 fi
 
-# Run Emerald on non-singleton cluster reps
+# Run SanntiS on non-singleton cluster reps
 while IFS= read -r i
 do
   bsub -J "${JOB}.${DIRNAME}.${i}" \
@@ -69,7 +69,7 @@ do
       --outdir "${OUT}"/pg/"${i}"_cluster/"${i}" "${OUT}"/pg/"${i}"_cluster/"${i}"/"${i}".gbk
 done < "${OUT}"/cluster_reps.txt.pg
 
-# Run Emerald on singleton cluster reps
+# Run SanntiS on singleton cluster reps
 while IFS= read -r i
 do
   bsub -J "${JOB}.${DIRNAME}.${i}" \

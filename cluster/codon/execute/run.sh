@@ -12,7 +12,7 @@ STEP3="Step3.clusters"
 STEP4="Step4.mmseqs"
 STEP5="Step5.gtdbtk"
 STEP6="Step6.annotation"
-STEP6a="Step6a.emerald"
+STEP6a="Step6a.sanntis"
 STEP7="Step7.metadata"
 STEP8="Step8.postprocessing"
 STEP9="Step9.restructure"
@@ -367,7 +367,7 @@ if [[ $RUN == 1 ]]; then
 fi
 
 # ------------------------- Step 6a ------------------------------
-echo "==== 6a. Emerald [${SUBMIT_SCRIPTS}/step6a.${NAME}.sh] ===="
+echo "==== 6a. Sanntis [${SUBMIT_SCRIPTS}/step6a.${NAME}.sh] ===="
 
 cat <<EOF >${SUBMIT_SCRIPTS}/step6a.${NAME}.sh
 #!/bin/bash
@@ -377,7 +377,7 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP6a}.err \\
     -o ${LOGS}/submit.${STEP6a}.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/6a_run_emerald.sh \\
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/6a_run_sanntis.sh \\
     -o ${OUT} \\
     -l ${LOGS} \\
     -n ${NAME} \\
@@ -471,7 +471,7 @@ fi
 
 echo "==== 9. Re-structure [${SUBMIT_SCRIPTS}/step9.${NAME}.sh] ===="
 
-cat <<EOF >${SUBMIT_SCRIPTS}/step8.${NAME}.sh
+cat <<EOF >${SUBMIT_SCRIPTS}/step9.${NAME}.sh
 #!/bin/bash
 
 bsub \\

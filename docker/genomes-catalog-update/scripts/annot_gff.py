@@ -46,18 +46,18 @@ def get_eggnog(eggnog_annot):
     return eggnogs
 
 
-def get_emerald(emerald_file, prokka_gff):
+def get_sanntis(sanntis_file, prokka_gff):
     cluster_positions = dict()
-    emerald_result = dict()
+    sanntis_result = dict()
     bgc_annotations = dict()
-    # save positions of each BGC cluster annotated by Emerald to dictionary cluster_positions
-    # and save the annotations to dictionary emerald_result
-    with open(emerald_file, "r") as emerald_in:
-        for line in emerald_in:
+    # save positions of each BGC cluster annotated by SanntiS to dictionary cluster_positions
+    # and save the annotations to dictionary sanntis_result
+    with open(sanntis_file, "r") as sanntis_in:
+        for line in sanntis_in:
             if not line.startswith("#"):
                 cols = line.strip().split("\t")
                 contig= cols[0]
-                for a in cols[8].split(';'):  # go through all parts of the Emerald annotation field
+                for a in cols[8].split(';'):  # go through all parts of the Sanntis annotation field
                     if a.startswith("nearest_MiBIG_class="):
                         class_value = a.split("=")[1]
                     elif a.startswith("nearest_MiBIG="):
@@ -65,12 +65,12 @@ def get_emerald(emerald_file, prokka_gff):
                 # save cluster positions to a dictionary where key = contig name,
                 # value = list of position pairs (list of lists)
                 cluster_positions.setdefault(contig, list()).append([int(cols[3]), int(cols[4])])
-                # save emerald annotations to dictionary where key = contig, value = dictionary, where
+                # save SanntiS annotations to dictionary where key = contig, value = dictionary, where
                 # key = 'start_end' of BGC, value = dictionary, where key = feature type, value = description
-                emerald_result.setdefault(contig, dict()).setdefault("_".join([cols[3], cols[4]]),
+                sanntis_result.setdefault(contig, dict()).setdefault("_".join([cols[3], cols[4]]),
                                                                      {"nearest_MiBIG_class": class_value,
                                                                       "nearest_MiBIG": mibig_value})
-    # identify CDSs that fall into each of the clusters annotated by Emerald
+    # identify CDSs that fall into each of the clusters annotated by SanntiS
     with open(prokka_gff, "r") as gff_in:
         for line in gff_in:
             if not line.startswith("#"):
@@ -85,8 +85,8 @@ def get_emerald(emerald_file, prokka_gff):
                 if matching_interval:
                     cds_id = cols[8].split(";")[0].split("=")[1]
                     bgc_annotations.setdefault(cds_id, {
-                        "nearest_MiBIG": emerald_result[cols[0]][matching_interval]["nearest_MiBIG"],
-                        "nearest_MiBIG_class": emerald_result[cols[0]][matching_interval]["nearest_MiBIG_class"],
+                        "nearest_MiBIG": sanntis_result[cols[0]][matching_interval]["nearest_MiBIG"],
+                        "nearest_MiBIG_class": sanntis_result[cols[0]][matching_interval]["nearest_MiBIG_class"],
                     })
     return bgc_annotations
 
@@ -102,10 +102,10 @@ def get_eggnog_fields(line):
     return eggnog_fields
 
 
-def add_gff(in_gff, eggnog_file, ipr_file, emerald_file):
+def add_gff(in_gff, eggnog_file, ipr_file, sanntis_file):
     eggnogs = get_eggnog(eggnog_file)
     iprs = get_iprs(ipr_file)
-    emerald_bgcs = get_emerald(emerald_file, in_gff)
+    sanntis_bgcs = get_sanntis(sanntis_file, in_gff)
     added_annot = {}
     out_gff = []
     with open(in_gff, "r") as f:
@@ -145,8 +145,8 @@ def add_gff(in_gff, eggnog_file, ipr_file, emerald_file):
                     except:
                         pass
                     try:
-                        emerald_bgcs[protein]
-                        for key, value in emerald_bgcs[protein].items():
+                        sanntis_bgcs[protein]
+                        for key, value in sanntis_bgcs[protein].items():
                             added_annot[protein][key] = value
                     except:
                         pass
@@ -227,10 +227,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='''
     Add functional annotation to GFF file''', formatter_class=RawTextHelpFormatter)
     parser.add_argument('-i', dest='input_dir', required=True,
-                        help='Directory with faa, fna, gff,.. and ips, eggnog if -a is not presented')
+                        help='Directory with faa, fna, gff,.. and ips, eggnog if -a is not presented and sanntis '
+                             'if -s is not presented')
     parser.add_argument('-a', dest='annotations', help='IPS and EggNOG files', required=False, nargs='+')
     parser.add_argument('-r', dest='rfam', help='Rfam results', required=True)
-    parser.add_argument('-e', dest='emerald', help='emerald result gff', required=True)
+    parser.add_argument('-s', dest='sanntis', help='Sanntis result gff', required=False)
     parser.add_argument('-o', dest='outfile', help='Outfile name', required=False)
     if len(sys.argv) == 1:
         parser.print_help()
@@ -247,12 +248,14 @@ if __name__ == "__main__":
         eggnog_results = eggnog_name if args.annotations else os.path.join(args.input_dir, eggnog_name)
         ips_name = [cur_file for cur_file in annotations_list if cur_file.endswith('InterProScan.tsv')][0]
         ipr_results = ips_name if args.annotations else os.path.join(args.input_dir, ips_name)
-
+        sanntis_result = args.sanntis if args.sanntis else os.path.join(
+            args.input_dir, '{}.gbk.sanntis'.format(args.input_dir.split('/')[-1]),
+            '{}.gbk.sanntis.full.gff'.format(args.input_dir.split('/')[-1]))
         gff = [cur_file for cur_file in input_files if cur_file.endswith(".gff")][0]
         res = add_gff(in_gff=os.path.join(args.input_dir, gff),
                       eggnog_file=eggnog_results,
                       ipr_file=ipr_results,
-                      emerald_file=args.emerald)
+                      sanntis_file=sanntis_result)
         ncRNAs = get_rnas(args.rfam)
         if not args.outfile:
             outfile = gff.split(".gff")[0]+"_annotated.gff"
