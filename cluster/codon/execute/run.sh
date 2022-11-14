@@ -384,7 +384,7 @@ bsub \\
     -q ${QUEUE} \\
     -j ${STEP6a} \\
     -z ${MEM_STEP6a} \\
-    -t ${THREADS_STEP6a} \\
+    -t ${THREADS_STEP6a}
 
 EOF
 
