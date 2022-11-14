@@ -22,7 +22,6 @@ doc: |
          --- rep.gff                    [ genome ]
          --- rep.fna                    [ genome ]
          --- rep.gbk                    [ genome ]
-         --- rep.fna                    [ genome ]
          --- rep.ffn                    [ genome ]
     FNAs (all) File[]
     FAAs (all) File[]
