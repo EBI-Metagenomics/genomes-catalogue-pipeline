@@ -45,7 +45,7 @@ steps:
 
   choose_annotations:
     doc: |
-      input: list of all IPS and EggNOGs
+      input: list of all IPS, EggNOGs and SanntiS
       ex: MGYG000296485_InterProScan.tsv, MGYG000296486_eggNOG.tsv, ....)
       goal: get corresponding annotations for each MGYG cluster
     run: ../utils/get_file_pattern.cwl
