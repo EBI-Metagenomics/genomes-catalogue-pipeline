@@ -4,7 +4,7 @@ usage()
 {
 cat << EOF
 usage: $0 options
-Run Emerald. Temporary script to replace emerald.cwl.
+Run SanntiS. Temporary script to replace emerald.cwl.
 OPTIONS:
    -o      Path to general output catalogue directory
    -l      Path to logs folder
@@ -64,8 +64,8 @@ do
       -o "${LOGS}"/"${JOB}"."${i}".out \
       -M "${MEM}" \
       -n "${THREADS}" \
-      singularity run $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_emerald-bgc:v0.2.4.1_genomes-pipeline.sif \
-      emeraldbgc --ip-file "${OUT}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
+      singularity run $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_sanntis:0.1.0.sif \
+      sanntis --ip-file "${OUT}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
       --outdir "${OUT}"/pg/"${i}"_cluster/"${i}" "${OUT}"/pg/"${i}"_cluster/"${i}"/"${i}".gbk
 done < "${OUT}"/cluster_reps.txt.pg
 
@@ -78,7 +78,7 @@ do
       -o "${LOGS}"/"${JOB}"."${i}".out \
       -M "${MEM}" \
       -n "${THREADS}" \
-      singularity run $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_emerald-bgc:v0.2.4.1_genomes-pipeline.sif \
-      emeraldbgc --ip-file "${OUT}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
+      singularity run $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_sanntis:0.1.0.sif \
+      sanntis --ip-file "${OUT}"/Foldertest_annotations/"${i}"_InterProScan.tsv \
       --outdir "${OUT}"/sg/"${i}"_cluster/"${i}" "${OUT}"/sg/"${i}"_cluster/"${i}"/"${i}".gbk
 done < "${OUT}"/cluster_reps.txt.sg
