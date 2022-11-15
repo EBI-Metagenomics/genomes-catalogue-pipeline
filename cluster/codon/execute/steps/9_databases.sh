@@ -8,6 +8,7 @@ OPTIONS:
    -o      Path to general output catalogue directory
    -p      Path to installed pipeline location
    -n      Catalogue name
+   -l      Path to logs folder
    -v      Catalogue version
    -q      LSF queue to run in
    -j      LSF step Job name to submit
@@ -16,7 +17,7 @@ OPTIONS:
 EOF
 }
 
-while getopts ho:p:n:v:q:j:z:t: option; do
+while getopts ho:p:n:l:v:q:j:z:t: option; do
     case "$option" in
     h)
         usage
@@ -30,6 +31,9 @@ while getopts ho:p:n:v:q:j:z:t: option; do
 		    ;;
     n)
         DIRNAME=${OPTARG}
+        ;;
+    l)
+        LOGS=${OPTARG}
         ;;
     v)
         VERSION=${OPTARG}
@@ -59,6 +63,18 @@ if [[ -z $DIRNAME ]] || [[ -z $VERSION ]] || [[ -z $OUT ]] || [[ -z JOB ]]; then
 fi
 
 . "/hps/software/users/rdf/metagenomics/service-team/repos/mi-automation/team_environments/codon/mitrc.sh"
+
+#------------------- Make a mash sketch -------------------#
+cd "${OUT}"/mgyg_genomes
+bsub -q "${QUEUE}" -M 100G -o "${LOGS}"/mash_sketch.log \
+"/hps/software/users/rdf/metagenomics/service-team/software/mash/mash-2.3/mash sketch -o "${OUT}"/all_genomes.msh *fna"
+cd "${OUT}"
+
+#------------------- Generate a tree -------------------#
+
+#------------------- Run virify -------------------#
+
+#------------------- Make kraken and bracken dbs -------------------#
 
 export KRAKENDB=$(echo 'kraken2_db_'${DIRNAME}'_'${VERSION} | tr '[:upper:]' '[:lower:]')
 
@@ -133,3 +149,5 @@ echo "Cleaning up"
 rm "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv
 rm -r "${OUT}"/Kraken_intermediate
 rm -r "${OUT}"/reps_fa/gtdb
+
+#------------------- Make a gene db -------------------#
