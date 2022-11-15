@@ -96,13 +96,12 @@ cd ..
 for R in $REPS; do
   NAME=$(echo $R | cut -d '.' -f1)
   bsub -J "${NAME}"_virify -q "${QUEUE}" -o "${LOGS}"/Virify/"${NAME}".virify.log -M 5G bash virify.sh \
-  --fasta reps_fa/$R --output "${OUT}"/Virify/
+  --fasta "${OUT}"/reps_fa/$R --output "${OUT}"/Virify/
   bsub -w "ended("${NAME}"_virify)" -J "${NAME}"_parse_virify -q "${QUEUE}" \
   -o "${LOGS}"/Virify/"${NAME}".parse_virify.log -M 5G \
   python3 /hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/genomes-pipeline-catalogues/write_viral_gff.py \
   -v "${OUT}"/Virify/"${NAME}"/08-final/annotation -c "${OUT}"/Virify/"${NAME}"/07-checkv \
-  -t "${OUT}"/Virify/"${NAME}"/06-taxonomy -sv "${OUT}"/Virify/"${NAME}".virify_annotation.tsv \
-  -sc "${OUT}"/Virify/"${NAME}".virify_quality_summary.tsv -st "${OUT}"/Virify/"${NAME}".virify_annotation_taxonomy.tsv \
+  -t "${OUT}"/Virify/"${NAME}"/06-taxonomy -sv annotation.tsv -sc quality_summary.tsv -st annotation_taxonomy.tsv \
   -s "${NAME}"
 done
 
@@ -182,5 +181,36 @@ rm "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv
 rm -r "${OUT}"/Kraken_intermediate
 rm -r "${OUT}"/reps_fa/gtdb
 
-#------------------- Make a gene db -------------------#
+#------------------- Make a gene catalogue -------------------#
 
+# Prepare the input file
+mkdir "${OUT}"/gene_catalogue "${OUT}"/gene_catalogue/ffn_files
+find "${OUT}"/sg/ -type f -name "*ffn" > "${OUT}"/gene_catalogue/sg_ffn_list.txt
+find "${OUT}"/pg/ -type f -name "*ffn" > "${OUT}"/gene_catalogue/pg_ffn_list.txt
+
+while read line
+do
+  mv $line "${OUT}"/gene_catalogue/ffn_files/
+done < "${OUT}"/gene_catalogue/sg_ffn_list.txt
+
+while read line
+do
+  mv $line "${OUT}"/gene_catalogue/ffn_files/
+done < "${OUT}"/gene_catalogue/pg_ffn_list.txt
+
+find "${OUT}"/gene_catalogue/ffn_files/ -type f -exec cat {} \+ > "${OUT}"/gene_catalogue/concatenated.ffn
+
+# Get the cluster rep list
+cut -f1 "${OUT}"/"${DIRNAME}"_mmseqs_1.0/mmseqs_1.0_outdir/mmseqs_cluster.tsv | sort -u > "${OUT}"/gene_catalogue/rep_list.txt
+cp "${OUT}"/"${DIRNAME}"_mmseqs_1.0/mmseqs_1.0_outdir/mmseqs_cluster.tsv "${OUT}"/gene_catalogue/clusters.tsv
+
+# Make the catalogue
+/hps/software/users/rdf/metagenomics/service-team/software/seqtk/seqtk-1.3/seqtk subseq \
+"${OUT}"/gene_catalogue/concatenated.ffn "${OUT}"/gene_catalogue/rep_list.txt > \
+"${OUT}"/gene_catalogue/gene_catalogue-100.ffn
+
+# Cleanup
+rm -r "${OUT}"/gene_catalogue/ffn_files/
+rm "${OUT}"/gene_catalogue/concatenated.ffn
+rm "${OUT}"/gene_catalogue/*_ffn_list.txt
+rm "${OUT}"/gene_catalogue/rep_list.txt
