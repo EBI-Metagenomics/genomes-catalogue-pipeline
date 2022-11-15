@@ -96,10 +96,10 @@ cd ..
 for R in $REPS; do
   NAME=$(echo $R | cut -d '.' -f1)
   bsub -J "${NAME}"_virify -q "${QUEUE}" -o "${LOGS}"/Virify/"${NAME}".virify.log -M 5G bash virify.sh \
-  --fasta reps_fa/$R --output "${OUT}"/Virify/${NAME}
+  --fasta reps_fa/$R --output "${OUT}"/Virify/
   bsub -w "ended("${NAME}"_virify)" -J "${NAME}"_parse_virify -q "${QUEUE}" \
   -o "${LOGS}"/Virify/"${NAME}".parse_virify.log -M 5G \
-  /nfs/production/rdf/metagenomics/projects/holofood/scripts/write_viral_gff.py \
+  python3 /hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/genomes-pipeline-catalogues/write_viral_gff.py \
   -v "${OUT}"/Virify/"${NAME}"/08-final/annotation -c "${OUT}"/Virify/"${NAME}"/07-checkv \
   -t "${OUT}"/Virify/"${NAME}"/06-taxonomy -sv "${OUT}"/Virify/"${NAME}".virify_annotation.tsv \
   -sc "${OUT}"/Virify/"${NAME}".virify_quality_summary.tsv -st "${OUT}"/Virify/"${NAME}".virify_annotation_taxonomy.tsv \
@@ -183,3 +183,4 @@ rm -r "${OUT}"/Kraken_intermediate
 rm -r "${OUT}"/reps_fa/gtdb
 
 #------------------- Make a gene db -------------------#
+
