@@ -65,12 +65,26 @@ fi
 . "/hps/software/users/rdf/metagenomics/service-team/repos/mi-automation/team_environments/codon/mitrc.sh"
 
 #------------------- Make a mash sketch -------------------#
+
 cd "${OUT}"/mgyg_genomes
 bsub -q "${QUEUE}" -M 100G -o "${LOGS}"/mash_sketch.log \
 "/hps/software/users/rdf/metagenomics/service-team/software/mash/mash-2.3/mash sketch -o "${OUT}"/all_genomes.msh *fna"
 cd "${OUT}"
 
 #------------------- Generate a tree -------------------#
+
+mkdir "${OUT}"/IQtree
+if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.user_msa.fasta ]; then
+  bsub -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-bacteria.log \
+  "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
+  -s "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.bacteria"
+fi
+
+if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar122.user_msa.fasta ]; then
+  bsub -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-archaea.log \
+  "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
+  -s "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar122.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.archaea"
+fi
 
 #------------------- Run virify -------------------#
 
