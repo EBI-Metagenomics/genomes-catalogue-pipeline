@@ -86,7 +86,7 @@ bsub \
     -q "${QUEUE}"  \
     singularity \
         --quiet \
-        exec \
+        run \
         --contain \
         --ipc \
         --pid \
