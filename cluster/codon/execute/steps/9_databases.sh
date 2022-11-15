@@ -67,7 +67,7 @@ fi
 #------------------- Make a mash sketch -------------------#
 
 cd "${OUT}"/mgyg_genomes
-bsub -q "${QUEUE}" -M 100G -o "${LOGS}"/mash_sketch.log \
+bsub -J "${DIRNAME}"_mash_sketch -q "${QUEUE}" -M 100G -o "${LOGS}"/mash_sketch.log \
 "/hps/software/users/rdf/metagenomics/service-team/software/mash/mash-2.3/mash sketch -o "${OUT}"/all_genomes.msh *fna"
 cd "${OUT}"
 
@@ -75,18 +75,36 @@ cd "${OUT}"
 
 mkdir "${OUT}"/IQtree
 if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.user_msa.fasta ]; then
-  bsub -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-bacteria.log \
+  bsub -J "${DIRNAME}"_iqtree_bact -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-bacteria.log \
   "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
   -s "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.bacteria"
 fi
 
 if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar122.user_msa.fasta ]; then
-  bsub -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-archaea.log \
+  bsub -J "${DIRNAME}"_iqtree_arch -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-archaea.log \
   "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
   -s "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar122.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.archaea"
 fi
 
 #------------------- Run virify -------------------#
+
+mkdir "${OUT}"/Virify "${LOGS}"/Virify
+cd "${OUT}"/reps_fa
+REPS=$(ls *fna)
+cd ..
+
+for R in $REPS; do
+  NAME=$(echo $R | cut -d '.' -f1)
+  bsub -J "${NAME}"_virify -q "${QUEUE}" -o "${LOGS}"/Virify/"${NAME}".virify.log -M 5G bash virify.sh \
+  --fasta reps_fa/$R --output "${OUT}"/Virify/${NAME}
+  bsub -w "ended("${NAME}"_virify)" -J "${NAME}"_parse_virify -q "${QUEUE}" \
+  -o "${LOGS}"/Virify/"${NAME}".parse_virify.log -M 5G \
+  /nfs/production/rdf/metagenomics/projects/holofood/scripts/write_viral_gff.py \
+  -v "${OUT}"/Virify/"${NAME}"/08-final/annotation -c "${OUT}"/Virify/"${NAME}"/07-checkv \
+  -t "${OUT}"/Virify/"${NAME}"/06-taxonomy -sv "${OUT}"/Virify/"${NAME}".virify_annotation.tsv \
+  -sc "${OUT}"/Virify/"${NAME}".virify_quality_summary.tsv -st "${OUT}"/Virify/"${NAME}".virify_annotation_taxonomy.tsv \
+  -s "${NAME}"
+done
 
 #------------------- Make kraken and bracken dbs -------------------#
 
