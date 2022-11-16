@@ -74,16 +74,18 @@ cd "${OUT}"
 #------------------- Generate a tree -------------------#
 
 mkdir "${OUT}"/IQtree
-if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.user_msa.fasta ]; then
+if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta.gz ]; then
+  gunzip "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta.gz
   bsub -J "${DIRNAME}"_iqtree_bact -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-bacteria.log \
   "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
-  -s "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.bacteria"
+  -s "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.bacteria"
 fi
 
-if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar122.user_msa.fasta ]; then
+if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar122.user_msa.fasta.gz ]; then
+  gunzip "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar122.user_msa.fasta.gz
   bsub -J "${DIRNAME}"_iqtree_arch -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-archaea.log \
   "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
-  -s "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar122.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.archaea"
+  -s "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar122.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.archaea"
 fi
 
 #------------------- Run virify -------------------#
