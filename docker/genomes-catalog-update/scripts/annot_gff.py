@@ -55,19 +55,18 @@ def get_sanntis(sanntis_file, prokka_gff):
     with open(sanntis_file, "r") as sanntis_in:
         for line in sanntis_in:
             if not line.startswith("#"):
-                cols = line.strip().split("\t")
-                contig= cols[0]
-                for a in cols[8].split(';'):  # go through all parts of the Sanntis annotation field
+                contig, _, _, start_pos, end_pos, _, _, _, annotations = line.strip().split("\t")
+                for a in annotations.split(';'):  # go through all parts of the Sanntis annotation field
                     if a.startswith("nearest_MiBIG_class="):
                         class_value = a.split("=")[1]
                     elif a.startswith("nearest_MiBIG="):
                         mibig_value = a.split("=")[1]
                 # save cluster positions to a dictionary where key = contig name,
                 # value = list of position pairs (list of lists)
-                cluster_positions.setdefault(contig, list()).append([int(cols[3]), int(cols[4])])
+                cluster_positions.setdefault(contig, list()).append([int(start_pos), int(end_pos)])
                 # save SanntiS annotations to dictionary where key = contig, value = dictionary, where
                 # key = 'start_end' of BGC, value = dictionary, where key = feature type, value = description
-                sanntis_result.setdefault(contig, dict()).setdefault("_".join([cols[3], cols[4]]),
+                sanntis_result.setdefault(contig, dict()).setdefault("_".join([start_pos, end_pos]),
                                                                      {"nearest_MiBIG_class": class_value,
                                                                       "nearest_MiBIG": mibig_value})
     # identify CDSs that fall into each of the clusters annotated by SanntiS
@@ -75,18 +74,18 @@ def get_sanntis(sanntis_file, prokka_gff):
         for line in gff_in:
             if not line.startswith("#"):
                 matching_interval = ""
-                cols = line.strip().split("\t")
-                if cols[0] in cluster_positions:
-                    for i in cluster_positions[cols[0]]:
-                        if int(cols[3]) in range(i[0], i[1] + 1) and int(cols[4]) in range(i[0], i[1] + 1):
+                contig, _, _, start_pos, end_pos, _, _, _, annotations = line.strip().split("\t")
+                if contig in cluster_positions:
+                    for i in cluster_positions[contig]:
+                        if int(start_pos) in range(i[0], i[1] + 1) and int(end_pos) in range(i[0], i[1] + 1):
                             matching_interval = "_".join([str(i[0]), str(i[1])])
                             break
                 # if the CDS is in an interval, save cluster's annotation to this CDS
                 if matching_interval:
-                    cds_id = cols[8].split(";")[0].split("=")[1]
+                    cds_id = annotations.split(";")[0].split("=")[1]
                     bgc_annotations.setdefault(cds_id, {
-                        "nearest_MiBIG": sanntis_result[cols[0]][matching_interval]["nearest_MiBIG"],
-                        "nearest_MiBIG_class": sanntis_result[cols[0]][matching_interval]["nearest_MiBIG_class"],
+                        "nearest_MiBIG": sanntis_result[contig][matching_interval]["nearest_MiBIG"],
+                        "nearest_MiBIG_class": sanntis_result[contig][matching_interval]["nearest_MiBIG_class"],
                     })
     return bgc_annotations
 
