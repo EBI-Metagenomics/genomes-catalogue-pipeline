@@ -73,27 +73,32 @@ cd "${OUT}"
 
 #------------------- Generate a tree -------------------#
 
-mkdir "${OUT}"/IQtree
+mkdir -p "${OUT}"/IQtree
 if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta.gz ]; then
-  gunzip "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta.gz
+  cp "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta.gz "${OUT}"/IQtree && gunzip \
+  "${OUT}"/IQtree/gtdbtk.bac120.user_msa.fasta.gz
   bsub -J "${DIRNAME}"_iqtree_bact -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-bacteria.log \
   "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
-  -s "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.bacteria"
+  -s "${OUT}"/IQtree/gtdbtk.bac120.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.bacteria"
 fi
 
-if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar122.user_msa.fasta.gz ]; then
-  gunzip "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar122.user_msa.fasta.gz
+if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta.gz ]; then
+  cp "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta.gz "${OUT}"/IQtree && gunzip \
+  "${OUT}"/IQtree/gtdbtk.ar53.user_msa.fasta.gz
+  gunzip "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta.gz
   bsub -J "${DIRNAME}"_iqtree_arch -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-archaea.log \
   "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
-  -s "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar122.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.archaea"
+  -s "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.archaea"
 fi
 
 #------------------- Run virify -------------------#
 
-mkdir "${OUT}"/Virify "${LOGS}"/Virify
+mkdir -p "${OUT}"/Virify "${LOGS}"/Virify
 cd "${OUT}"/reps_fa
 REPS=$(ls *fna)
 cd ..
+
+mitload assembly_pipeline
 
 for R in $REPS; do
   NAME=$(echo $R | cut -d '.' -f1)
@@ -104,25 +109,30 @@ for R in $REPS; do
   python3 /hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/genomes-pipeline-catalogues/write_viral_gff.py \
   -v "${OUT}"/Virify/"${NAME}"/08-final/annotation -c "${OUT}"/Virify/"${NAME}"/07-checkv \
   -t "${OUT}"/Virify/"${NAME}"/06-taxonomy -sv annotation.tsv -sc quality_summary.tsv -st annotation_taxonomy.tsv \
-  -s "${NAME}"
+  -s "${OUT}"/Virify/"${NAME}"
 done
 
 #------------------- Make kraken and bracken dbs -------------------#
 
-export KRAKENDB=$(echo 'kraken2_db_'${DIRNAME}'_'${VERSION} | tr '[:upper:]' '[:lower:]')
+export KRAKENDB=$(echo 'kraken2_db_'${DIRNAME}'_v'${VERSION} | tr '[:upper:]' '[:lower:]')
 
 echo "Kraken DB ${KRAKENDB}\n"
 
 # Prepare GTDB input
-cat "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar122.summary.tsv "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.summary.tsv | \
-grep -v "user_genome" | cut -f1-2 | sed "s/o__;/o__Unknown order;/g" | sed "s/f__;/f__Unknown family;/g" | \
-sed "s/g__;/g__Unknown genus;/g" | sed "s/s__$/s__Unknown species/g" > "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv
+cat "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar53.summary.tsv "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.summary.tsv | \
+grep -v "user_genome" | cut -f1-2 > "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy_temp.tsv
+while read line; do NAME=$(echo $line | cut -d ' ' -f1 | cut -d '.' -f1); echo $line | sed "s/__\;/__$NAME\;/g" | \
+sed "s/s__$/s__$NAME/g"; done < "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy_temp.tsv  > "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv
+sed -i "s/ /\t/" "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv
 
 # Make dmp files
 echo "Making dmp files"
-singularity exec $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tax-dump:1.0.sif perl \
+bsub -J "${KRAKENDB}"_dmp -q "${QUEUE}" -o "${LOGS}"/"${KRAKENDB}".dmp.log -M 5G singularity exec \
+$SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tax-dump:1.0.sif perl \
 /opt/gtdbToTaxonomy.pl --infile "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv --sequence-dir "${OUT}"/reps_fa/ \
 --output-dir "${OUT}"/Kraken_intermediate
+
+python3 "${P}"/cluster/codon/execute/scripts/mwait.py -w "ended(${KRAKENDB}_dmp)"
 
 # Generate kraken2 db
 echo "Generating kraken2 db"
@@ -138,44 +148,48 @@ $i --db "${KRAKENDB}"; done
 mv -v Kraken_intermediate/taxonomy "${KRAKENDB}"
 
 echo "Building library"
+bsub -J "${KRAKENDB}"_build -q "${QUEUE}" -o "${LOGS}"/"${KRAKENDB}".build.log -M ${MEM} \
 /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/kraken2-build --build \
 --db "${KRAKENDB}" --threads "${THREADS}"
 
+python3 "${P}"/cluster/codon/execute/scripts/mwait.py -w "ended(${KRAKENDB}_build)"
+
 echo "Making Braken dbs"
-bsub -J "bracken_${KRAKENDB}_50" -q production -n "${THREADS}" -M "${MEM}" -o bracken-build50.log \
+bsub -J "bracken_${KRAKENDB}_50" -q "${QUEUE}" -n "${THREADS}" -M "${MEM}" -o "${LOGS}"/bracken-build50.log \
 /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
 -d "${KRAKENDB}" -l 50 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
 
-bsub -J "bracken_${KRAKENDB}_100" -q production -n "${THREADS}" -M "${MEM}" -o bracken-build100.log \
+bsub -J "bracken_${KRAKENDB}_100" -q "${QUEUE}" -n "${THREADS}" -M "${MEM}" -o "${LOGS}"/bracken-build100.log \
 /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
 -d "${KRAKENDB}" -l 100 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
 
-bsub -J "bracken_${KRAKENDB}_150" -q production -n "${THREADS}" -M "${MEM}" -o bracken-build150.log \
+bsub -J "bracken_${KRAKENDB}_150" -q "${QUEUE}" -n "${THREADS}" -M "${MEM}" -o "${LOGS}"/bracken-build150.log \
 /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
 -d "${KRAKENDB}" -l 150 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
 
-bsub -J "bracken_${KRAKENDB}_200" -q production -n "${THREADS}" -M "${MEM}" -o bracken-build200.log \
+bsub -J "bracken_${KRAKENDB}_200" -q "${QUEUE}" -n "${THREADS}" -M "${MEM}" -o "${LOGS}"/bracken-build200.log \
 /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
 -d "${KRAKENDB}" -l 200 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
 
-bsub -J "bracken_${KRAKENDB}_250" -q production -n "${THREADS}" -M "${MEM}" -o bracken-build250.log \
+bsub -J "bracken_${KRAKENDB}_250" -q "${QUEUE}" -n "${THREADS}" -M "${MEM}" -o "${LOGS}"/bracken-build250.log \
 /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
 -d "${KRAKENDB}" -l 250 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
 
 # Wait for jobs to finish
-python3 "${P}"/cluster/codon/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_50)"
-python3 "${P}"/cluster/codon/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_100)"
-python3 "${P}"/cluster/codon/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_150)"
-python3 "${P}"/cluster/codon/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_200)"
-python3 "${P}"/cluster/codon/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_250)"
+python3 "${P}"/cluster/codon/execute/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_50)"
+python3 "${P}"/cluster/codon/execute/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_100)"
+python3 "${P}"/cluster/codon/execute/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_150)"
+python3 "${P}"/cluster/codon/execute/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_200)"
+python3 "${P}"/cluster/codon/execute/scripts/mwait.py -w "ended(bracken_${KRAKENDB}_250)"
 
 echo "Post processing"
 # change the library directory contents
-cd "${KRAKENDB}"/library/added
+cd "${OUT}"/"${KRAKENDB}"/library/added
 cat *.fna > ../library.fna
 cd ..
 rm -r added
-cp "${KRAKENDB}"/taxonomy/prelim_map.txt .
+cp "${OUT}"/"${KRAKENDB}"/taxonomy/prelim_map.txt .
+cd "${OUT}"
 
 # Cleanup
 echo "Cleaning up"
@@ -212,7 +226,5 @@ cp "${OUT}"/"${DIRNAME}"_mmseqs_1.0/mmseqs_1.0_outdir/mmseqs_cluster.tsv "${OUT}
 "${OUT}"/gene_catalogue/gene_catalogue-100.ffn
 
 # Cleanup
-rm -r "${OUT}"/gene_catalogue/ffn_files/
 rm "${OUT}"/gene_catalogue/concatenated.ffn
 rm "${OUT}"/gene_catalogue/*_ffn_list.txt
-rm "${OUT}"/gene_catalogue/rep_list.txt
