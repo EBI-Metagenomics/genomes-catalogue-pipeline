@@ -70,6 +70,9 @@ while getopts ho:p:l:n:q:y:j:b:m:a:z:t: option; do
     esac
 done
 
+# Restructure SanntiS output
+bash "${P}"/cluster/codon/execute/scripts/restructure_sanntis.sh -o "${OUT}" -n "${DIRNAME}"
+
 echo "Generating yml file"
 export YML_FILE="${YML}"/post-processing.yml
 cp "${P}"/cluster/codon/execute/steps/8_post_processing.yml "${YML_FILE}"

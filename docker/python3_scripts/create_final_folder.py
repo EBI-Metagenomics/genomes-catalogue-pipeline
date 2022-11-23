@@ -30,8 +30,11 @@ def create_folder(name, dir, kegg_files, index, gff, annotations=None):
     eggnog_results = eggnog_name if args.annotations else os.path.join(dir, eggnog_name)
     ips_name = [cur_file for cur_file in annotations_list if cur_file.endswith('InterProScan.tsv')][0]
     ipr_results = ips_name if args.annotations else os.path.join(dir, ips_name)
+    sanntis_name = [cur_file for cur_file in annotations_list if cur_file.endswith('sanntis.full.gff')][0]
+    sanntis_results = sanntis_name if args.annotations else os.path.join(dir, sanntis_name)
     copy(eggnog_results, os.path.join(genome_folder, os.path.basename(eggnog_results)))
     copy(ipr_results, os.path.join(genome_folder, os.path.basename(ipr_results)))
+    copy(sanntis_results, os.path.join(genome_folder, os.path.basename(sanntis_results)))
 
     # fna, faa, gff
     fna = [cur_file for cur_file in input_files if cur_file.endswith(name + '.fna')][0]
@@ -93,7 +96,7 @@ if __name__ == '__main__':
       ''', formatter_class=RawTextHelpFormatter)
     parser.add_argument('-i', dest='input_dir', required=True,
                         help='Directory with protein.fasta, fna, gff (IPS, Eggnog if -a is not presented')
-    parser.add_argument('-a', dest='annotations', help='IPS and EggNOG files', required=False, nargs='+')
+    parser.add_argument('-a', dest='annotations', help='IPS, EggNOG and SanntiS files', required=False, nargs='+')
     parser.add_argument('-k', dest='kegg_files', help='KEGG annotation files', required=True, nargs='+')
     parser.add_argument('--index', dest='index', help='fna.fai', required=True)
     parser.add_argument('-g', dest='annotated_gff', help='Annotated gff', required=True)
