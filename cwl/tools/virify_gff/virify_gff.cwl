@@ -67,13 +67,13 @@ inputs:
     inputBinding:
       prefix: --rename-contigs
       position: 8
-  ena-contigs:
+  ena_contigs:
     type: boolean
     default: False
     doc: |
       "Path to ENA contig file if renaming needed"
     inputBinding:
-      prefix: --rename-contigs
+      prefix: --ena-contigs
       position: 9
 
 outputs:
