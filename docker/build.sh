@@ -9,7 +9,7 @@ export QUAY_NAME="quay.io/microbiome-informatics"
 
 export STORAGE=${QUAY_NAME}
 
-NUM_CONTAINERS=15
+NUM_CONTAINERS=16
 
 folders=(
         'bash'
@@ -54,3 +54,6 @@ for ((i = 0; i < NUM_CONTAINERS; i++)); do
         docker build -t "${STORAGE}/${REPO}.${containers_versions[${i}]}" --file "${FOLDER}/Dockerfile" "${FOLDER}"
         echo "########"
 done
+
+# Special case
+docker build ../cwl/tools/virify_gff -f virify_gff/Dockerfile -t "quay.io/microbiome-informatics/genomes-pipeline.virify-gff:v1"
