@@ -1,0 +1,4 @@
+contig_id	contig_length	total_genes	viral_genes	host_genes	provirus	proviral_length	host_length	region_types	region_lengths	region_coords_bp	region_coords_genes	region_viral_genes	region_host_genes
+MGYG000000003_55	12364	16	7	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+MGYG000000003_63	4996	7	4	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+MGYG000000003_66	4310	4	2	0	No	NA	NA	NA	NA	NA	NA	NA	NA

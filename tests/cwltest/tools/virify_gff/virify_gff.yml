@@ -1,0 +1,15 @@
+virify_folder:
+  class: Directory
+  path: input/virify_annotations
+checkv_folder:
+  class: Directory
+  path: input/virify_checkv
+taxonomy_folder:
+  class: Directory
+  path: input/virify_taxonomy
+
+suffix_virify: annotation.tsv
+suffix_checkv: quality_summary.tsv
+suffix_taxonomy: annotation_taxonomy.tsv
+
+sample_id: MGYG000000003

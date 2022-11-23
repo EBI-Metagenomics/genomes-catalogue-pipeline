@@ -1,0 +1,17 @@
+#cwltest
+
+- job: virify_gff.yml
+  tool: ../../../../cwl/tools/virify_gff/virify_gff.cwl
+  short_name: virify_gff.cwl
+  doc: VIRify GFF file creation
+  output:
+    virify_gff:
+      basename: MGYG000000003_virify.gff
+      checksum: sha1$3065dc959d2bdf5ad0fdf714b12cb88305a6bec8
+      class: File
+      size: 145
+    metadata_tsv:
+      basename: MGYG000000003_virify_gff_metadata.tsv
+      checksum: sha1$a5bc17517166ea4734348df407888cca18a167fe
+      class: File
+      size: 215

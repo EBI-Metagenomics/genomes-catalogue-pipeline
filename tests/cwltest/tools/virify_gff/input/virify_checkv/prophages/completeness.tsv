@@ -1,0 +1,2 @@
+contig_id	contig_length	proviral_length	aai_expected_length	aai_completeness	aai_confidence	aai_error	aai_num_hits	aai_top_hit	aai_id	aai_af	hmm_completeness_lower	hmm_completeness_upper	hmm_num_hits	kmer_freq
+MGYG000000003_19	20828	NA	NA	NA	NA	NA	0	NA	NA	NA	NA	NA	0	1.0
