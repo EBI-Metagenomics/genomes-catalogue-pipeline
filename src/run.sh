@@ -4,6 +4,11 @@ set -e
 
 DEFAULT_QUEUE="standard"
 BIGQUEUE="bigmem"
+if [[ -z ${MAIN_PATH} ]]; then
+    MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
+fi
+
+
 RUN=0
 
 STEP1="Step1.drep"
@@ -44,27 +49,23 @@ Use the -r option to generate and run the scripts (using bwait between steps).
 OPTIONS:
    -h      Show help message
    -t      Threads. Default=4 [OPTIONAL]
-   -p      Path to installed pipeline location
    -n      Catalogue name
    -o      Output location
    -f      Folder with ENA genomes
    -c      ENA genomes csv
    -x      Min MGYG
    -m      Max MGYG
-   -v      Catalogue version    
+   -v      Catalogue version
    -b      Catalogue Biome
    -r      Run the generated bsub scripts
 EOF
 }
 
-while getopts "h:p:n:f:c:m:x:v:b:o:q:r" OPTION; do
+while getopts "h:n:f:c:m:x:v:b:o:q:r" OPTION; do
     case $OPTION in
     h)
         usage
         exit 1
-        ;;
-    p)
-        MAIN_PATH=${OPTARG}
         ;;
     n)
         NAME=${OPTARG}
@@ -103,12 +104,8 @@ while getopts "h:p:n:f:c:m:x:v:b:o:q:r" OPTION; do
     esac
 done
 
-if [[ -z ${MAIN_PATH} ]]; then
-    MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
-fi
-
 if [[ -z ${NAME} ]]; then
-    NAME="test"
+    NAME="genomes-annontation-test"
 fi
 
 if [[ -z ${OUTPUT} ]]; then
@@ -125,12 +122,16 @@ fi
 
 OUT=${OUTPUT}/${NAME}
 LOGS=${OUT}/logs/
+
 YML=${OUT}/ymls
+
 SUBMIT_SCRIPTS=${OUT}/scripts
+
 mkdir -p ${OUT} ${LOGS} ${YML} ${SUBMIT_SCRIPTS}
 
 REPS_FILE=${OUT}/cluster_reps.txt
 ALL_GENOMES=${OUT}/drep-filt-list.txt
+
 touch ${REPS_FILE} ${ALL_GENOMES}
 
 REPS_FA_DIR=${OUT}/reps_fa
@@ -138,6 +139,10 @@ ALL_FNA_DIR=${OUT}/mgyg_genomes
 
 MEM="10G"
 THREADS="2"
+
+# Scripts and other required utils.
+
+# TODO
 
 export PATH="${MAIN_PATH}/cluster/codon/execute/scripts:$PATH"
 
@@ -148,7 +153,7 @@ echo "==== 1. dRep steps with cwltool [${SUBMIT_SCRIPTS}/step1.${NAME}.sh] ===="
 cat <<EOF >${SUBMIT_SCRIPTS}/step1.${NAME}.sh
 #!/bin/bash
 
-bash ${MAIN_PATH}/cluster/codon/execute/steps/1_drep.sh \\
+bash ${MAIN_PATH}/src/steps/1_drep.sh \\
     -o ${OUT} \\
     -p ${MAIN_PATH} \\
     -l ${LOGS} \\
@@ -168,7 +173,7 @@ if [[ $RUN == 1 ]]; then
     echo "Running dRep [${SUBMIT_SCRIPTS}/step1.${NAME}.sh]"
     bash ${SUBMIT_SCRIPTS}/step1.${NAME}.sh
     sleep 10 # let's give LSF time to catch up
-    mwait.py -w "ended(${STEP1}.${NAME})"
+    bwait -w "ended(${STEP1}.${NAME})"
 fi
 
 # ------------------------- Step 2 ------------------------------------
