@@ -87,6 +87,8 @@ def get_sanntis(sanntis_file, prokka_gff):
                         "nearest_MiBIG": sanntis_result[contig][matching_interval]["nearest_MiBIG"],
                         "nearest_MiBIG_class": sanntis_result[contig][matching_interval]["nearest_MiBIG_class"],
                     })
+            elif line.startswith("##FASTA"):
+                break
     return bgc_annotations
 
 
