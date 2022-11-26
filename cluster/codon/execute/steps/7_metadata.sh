@@ -87,7 +87,7 @@ done
 export GTDB_TAXONOMY=${GTDB}/gtdbtk.summary.tsv
 touch ${GTDB_TAXONOMY}
 [ -f ${GTDB}/classify/gtdbtk.bac120.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.bac120.summary.tsv >> ${GTDB_TAXONOMY}
-[ -f ${GTDB}/classify/gtdbtk.ar122.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.ar122.summary.tsv >> ${GTDB_TAXONOMY}
+[ -f ${GTDB}/classify/gtdbtk.ar53.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.ar53.summary.tsv >> ${GTDB_TAXONOMY}
 
 
 echo "Creating yml"
