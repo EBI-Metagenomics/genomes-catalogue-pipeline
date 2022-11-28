@@ -66,21 +66,15 @@ done
 # Clean and move VIRify output
 for R in ${REPS}
 do
-  if [ -d "${OUT}"/Virify/"${R}" ]; then
-    rm -r -d "${OUT}"/Virify/"${R}"
-  fi
-  if [ -s "${OUT}"/Virify/"${R}"_virify.gff ]; then
-    cp "${OUT}"/Virify/"${R}"_virify.gff "${OUT}"/"${NAME}"_metadata/"${R}"/genome/
-    cp "${OUT}"/Virify/"${R}"_virify.gff "${OUT}"/"${NAME}"_annotations/
-    cp "${OUT}"/Virify/"${R}"_virify_contig_viewer_metadata.tsv "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}"_virify_metadata.tsv
-    cp "${OUT}"/Virify/"${R}"_virify_contig_viewer_metadata.tsv "${OUT}"/"${NAME}"_annotations/"${R}"_virify_metadata.tsv
-  else
-    rm "${OUT}"/Virify/"${R}"_virify.gff
-    rm "${OUT}"/Virify/"${R}"*tsv
+  if [ -d "${OUT}"/Virify/"${R}"/08-final/gff ]; then
+    if [ -s "${OUT}"/Virify/"${R}"/08-final/gff/"${R}"_virify.gff ]; then
+      cp "${OUT}"/Virify/"${R}"/08-final/gff/"${R}"_virify.gff "${OUT}"/"${NAME}"_metadata/"${R}"/genome/
+      cp "${OUT}"/Virify/"${R}"/08-final/gff/"${R}"_virify.gff "${OUT}"/"${NAME}"_annotations/
+      cp "${OUT}"/Virify/"${R}"/08-final/gff/"${R}"_virify_contig_viewer_metadata.tsv "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}"_virify_metadata.tsv
+      cp "${OUT}"/Virify/"${R}"/08-final/gff/"${R}"_virify_contig_viewer_metadata.tsv "${OUT}"/"${NAME}"_annotations/"${R}"_virify_metadata.tsv
+    fi
   fi
 done
-
-rm -r "${OUT}"/Virify
 
 # Modify pan-genome folders inside the metadata folder
 PGS=$(cat "${OUT}"/cluster_reps.txt.pg)
@@ -95,7 +89,7 @@ done
 # Add a gff to be used on the website (without a fasta sequence at the end)
 for R in ${REPS}
 do
-  while read line; do if [[ ${line} == "##FASTA" ]]; then break; else echo $line; fi; done < "${OUT}"/"${NAME}"_metadata/"${R}".gff > "${OUT}"/"${NAME}"_metadata/"${R}".gff.noseq
+  while read line; do if [[ ${line} == "##FASTA" ]]; then break; else echo "$line"; fi; done < "${OUT}"/"${NAME}"_metadata/"${R}".gff > "${OUT}"/"${NAME}"_metadata/"${R}".gff.noseq
 done
 
 echo "Creating ${RESULTS}"
