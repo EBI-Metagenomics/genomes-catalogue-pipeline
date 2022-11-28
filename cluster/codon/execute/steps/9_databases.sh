@@ -98,19 +98,27 @@ cd "${OUT}"/reps_fa
 REPS=$(ls *fna)
 cd ..
 
-mitload assembly_pipeline
+mkdir -p "${OUT}"/Virify_starts/
 
 for R in $REPS; do
   NAME=$(echo $R | cut -d '.' -f1)
-  bsub -J "${NAME}"_virify -q "${QUEUE}" -o "${LOGS}"/Virify/"${NAME}".virify.log -M 5G bash virify.sh \
-  --fasta "${OUT}"/reps_fa/$R --output "${OUT}"/Virify/
-  bsub -w "ended("${NAME}"_virify)" -J "${NAME}"_parse_virify -q "${QUEUE}" \
-  -o "${LOGS}"/Virify/"${NAME}".parse_virify.log -M 5G \
-  python3 /hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/genomes-pipeline-catalogues/write_viral_gff.py \
-  -v "${OUT}"/Virify/"${NAME}"/08-final/annotation -c "${OUT}"/Virify/"${NAME}"/07-checkv \
-  -t "${OUT}"/Virify/"${NAME}"/06-taxonomy -sv annotation.tsv -sc quality_summary.tsv -st annotation_taxonomy.tsv \
-  -s "${OUT}"/Virify/"${NAME}"
+  mkdir -p "${OUT}"/Virify_starts/"${NAME}"
+  cd "${OUT}"/Virify_starts/"${NAME}"
+
+  export TOWER_ACCESS_TOKEN="eyJ0aWQiOiA2NzEyfS4xYzgwMTc1ZjViNzVlYTQxMDgwMjUyYjNmYjBhZDk4NWFjMzlmMTdi"
+  export TOWER_WORKSPACE_ID=273731614854417
+  export NXF_VER=21.10.0
+  bsub -J "${NAME}"_virify -q "${QUEUE}" -o "${LOGS}"/Virify/"${NAME}".virify.log -M 50G nextflow run \
+  /hps/nobackup/rdf/metagenomics/service-team/users/mbc/virify-testing/emg-viral-pipeline/virify.nf \
+  -profile ebi,singularity \
+  -with-tower \
+  --fasta "${OUT}"/reps_fa/"${NAME}".fna \
+  --output "${OUT}"/Virify/
+
+  sleep 3
 done
+
+cd "${OUT}"
 
 #------------------- Make kraken and bracken dbs -------------------#
 
