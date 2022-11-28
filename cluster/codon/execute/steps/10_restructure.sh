@@ -7,11 +7,7 @@ usage: $0 options
 Restructure output folders
 OPTIONS:
    -o      Path to general output catalogue directory
-   -p      Path to installed pipeline location
-   -l      Path to logs folder
    -n      Catalogue name
-   -q      LSF queue to run in
-   -j      LSF step Job name to submit
 EOF
 }
 
@@ -33,19 +29,86 @@ while getopts ho:n: option; do
             ;;
 	esac
 done
+
 export RESULTS="${OUT}"/results
 mkdir -p "${RESULTS}"
+
+cd "${OUT}"/reps_fa
+REPS=$(ls *fna | cut -d '.' -f1)
+cd "${OUT}"
+
+# Rename SanntiS files in the annotations folder
+for R in ${REPS}
+do
+  if [ -s "${OUT}"/"${NAME}"_annotations/"${R}".gbk.sanntis.full.gff ]; then
+    mv "${OUT}"/"${NAME}"_annotations/"${R}".gbk.sanntis.full.gff "${OUT}"/"${NAME}"_annotations/"${R}"_sanntis.gff
+    if [[ "$(wc -l < ${OUT}/${NAME}_annotations/${R}_sanntis.gff)" -eq 1 ]]; then
+      rm ${OUT}/${NAME}_annotations/${R}_sanntis.gff
+    fi
+  else
+     echo "ERROR: file ${R}.gbk.sanntis.full.gff does not exist in the annotations folder"
+  fi
+done
+
+# Rename Sanntis files in the metadata folder
+for R in ${REPS}
+do
+  if [ -s "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}".gbk.sanntis.full.gff ]; then
+    mv "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}".gbk.sanntis.full.gff "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}"_sanntis.gff
+    if [[ "$(wc -l < ${OUT}/${NAME}_metadata/"${R}"/genome/${R}_sanntis.gff)" -eq 1 ]]; then
+      rm ${OUT}/${NAME}_metadata/"${R}"/genome/${R}_sanntis.gff
+    fi
+  else
+     echo "ERROR: file ${R}.gbk.sanntis.full.gff does not exist in the _metadata folder"
+  fi
+done
+
+# Clean and move VIRify output
+for R in ${REPS}
+do
+  if [ -d "${OUT}"/Virify/"${R}" ]; then
+    rm -r -d "${OUT}"/Virify/"${R}"
+  fi
+  if [ -s "${OUT}"/Virify/"${R}"_virify.gff ]; then
+    cp "${OUT}"/Virify/"${R}"_virify.gff "${OUT}"/"${NAME}"_metadata/"${R}"/genome/
+    cp "${OUT}"/Virify/"${R}"_virify.gff "${OUT}"/"${NAME}"_annotations/
+    cp "${OUT}"/Virify/"${R}"_virify_contig_viewer_metadata.tsv "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}"_virify_metadata.tsv
+    cp "${OUT}"/Virify/"${R}"_virify_contig_viewer_metadata.tsv "${OUT}"/"${NAME}"_annotations/"${R}"_virify_metadata.tsv
+  else
+    rm "${OUT}"/Virify/"${R}"_virify.gff
+    rm "${OUT}"/Virify/"${R}"*tsv
+  fi
+done
+
+rm -r "${OUT}"/Virify
+
+# Modify pan-genome folders inside the metadata folder
+PGS=$(cat "${OUT}"/cluster_reps.txt.pg)
+for PG in ${PGS}
+do
+  mv "${OUT}"/"${NAME}"_metadata/"${PG}"/pan-genome/"${PG}".core_genes.txt "${OUT}"/"${NAME}"_metadata/"${PG}"/pan-genome/core_genes.txt
+  mv "${OUT}"/"${NAME}"_metadata/"${PG}"/pan-genome/"${PG}"_mashtree.nwk "${OUT}"/"${NAME}"_metadata/"${PG}"/pan-genome/mashtree.nwk
+  mv "${OUT}"/"${NAME}"_metadata/"${PG}"/pan-genome/"${PG}".pan-genome.fna "${OUT}"/"${NAME}"_metadata/"${PG}"/pan-genome/pan-genome.fna
+  cp "${OUT}"/pg/"${PG}"_cluster/"${PG}"_panaroo/gene_presence_absence.Rtab "${OUT}"/"${NAME}"_metadata/"${PG}"/pan-genome/
+done
+
+# Add a gff to be used on the website (without a fasta sequence at the end)
+for R in ${REPS}
+do
+  while read line; do if [[ ${line} == "##FASTA" ]]; then break; else echo $line; fi; done < "${OUT}"/"${NAME}"_metadata/"${R}".gff > "${OUT}"/"${NAME}"_metadata/"${R}".gff.noseq
+done
+
 echo "Creating ${RESULTS}"
 # --- PROTEIN CATALOGUE ---
 # move mmseqs
 echo "Creating protein_catalogue"
 mkdir -p "${RESULTS}"/protein_catalogue
-ls "${OUT}" | grep "${NAME}_mmseqs" > mmseqs_list
+ls "${OUT}" | grep "${NAME}_mmseqs" > "${OUT}"/mmseqs_list
 while IFS= read -r i
 do
     mv "${OUT}"/"${i}"/*_outdir "${RESULTS}"/protein_catalogue/
-done < mmseqs_list
-rm mmseqs_list
+done < "${OUT}"/mmseqs_list
+rm "${OUT}"/mmseqs_list
 
 # move EggNOG and IPS annotations
 echo "moving EggNOG and IPS annotations"
@@ -65,13 +128,13 @@ mv "${OUT}"/"${NAME}"_metadata/*.gff "${RESULTS}"/GFF
 # move non-cluster reps for pan-genomes
 mv "${OUT}"/pg/*/*.gff "${RESULTS}"/GFF
 # compress
-echo "Compressing gff"
-ls "${RESULTS}"/GFF > gffs
+echo "Compressing gff" ### STOPPED HERE £££
+ls "${RESULTS}"/GFF > "${OUT}"/gffs
 while IFS= read -r i
 do
     gzip "${RESULTS}"/GFF/"${i}"
-done < gffs
-rm gffs
+done < "${OUT}"/gffs
+rm "${OUT}"/gffs
 
 # --- PANAROO ---
 echo "Creating panaroo_output"
@@ -109,13 +172,24 @@ mv "${OUT}"/"${NAME}"_metadata/phylo_tree.json "${RESULTS}"/
 echo "Moving singletons and pan-genomes"
 mkdir -p "${RESULTS}"/clusters
 mv "${OUT}"/"${NAME}"_metadata/* "${RESULTS}"/clusters/
+
+# --- gene catalogue ---
+echo "Organising gene catalogue"
+mv "${OUT}"/gene_catalogue/ffn_files "${RESULTS}"/intermediate_files/
+rm "${OUT}"/gene_catalogue/rep_list.txt
+mv "${OUT}"/gene_catalogue/ "${RESULTS}"/
+
+# --- phylogeny ---
+echo "Moving phylogenetic trees"
+
+
 # --- pan-genomes add panaroo ---
-echo "Adding panaroo files"
-for i in $(ls "${RESULTS}"/panaroo_output);
-do
-    CLUSTER="$(basename -- "${i}" | tr '_' '\t' | cut -f1)"
-    cp "${RESULTS}"/panaroo_output/"${i}"/gene_presence_absence.Rtab "${RESULTS}"/clusters/"${CLUSTER}"/pan-genome/gene_presence_absence.Rtab
-    cp "${RESULTS}"/panaroo_output/"${i}"/pan_genome_reference.fa "${RESULTS}"/clusters/"${CLUSTER}"/pan-genome/"${CLUSTER}".pan_genome_reference.fa
-done
+#echo "Adding panaroo files"
+#for i in $(ls "${RESULTS}"/panaroo_output);
+#do
+#    CLUSTER="$(basename -- "${i}" | tr '_' '\t' | cut -f1)"
+#    cp "${RESULTS}"/panaroo_output/"${i}"/gene_presence_absence.Rtab "${RESULTS}"/clusters/"${CLUSTER}"/pan-genome/gene_presence_absence.Rtab
+#    cp "${RESULTS}"/panaroo_output/"${i}"/pan_genome_reference.fa "${RESULTS}"/clusters/"${CLUSTER}"/pan-genome/"${CLUSTER}".pan_genome_reference.fa
+#done
 
 echo "Done. Bye"
