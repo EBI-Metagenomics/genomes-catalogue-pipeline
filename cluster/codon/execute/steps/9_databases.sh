@@ -82,8 +82,8 @@ if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta.gz ]; t
   -s "${OUT}"/IQtree/gtdbtk.bac120.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.bacteria"
 fi
 
-if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta.gz ]; then
-  cp "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta.gz "${OUT}"/IQtree && gunzip \
+if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta* ]; then
+  cp "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta* "${OUT}"/IQtree && gunzip \
   "${OUT}"/IQtree/gtdbtk.ar53.user_msa.fasta.gz
   gunzip "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta.gz
   bsub -J "${DIRNAME}"_iqtree_arch -q "${QUEUE}" -n 16 -M 50000 -o "${LOGS}"/iqtree-archaea.log \
@@ -124,7 +124,7 @@ cd "${OUT}"
 
 export KRAKENDB=$(echo 'kraken2_db_'${DIRNAME}'_v'${VERSION} | tr '[:upper:]' '[:lower:]')
 
-echo "Kraken DB ${KRAKENDB}\n"
+echo "Kraken DB ${KRAKENDB}"
 
 # Prepare GTDB input
 cat "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.ar53.summary.tsv "${OUT}"/gtdbtk/gtdbtk-outdir/gtdbtk.bac120.summary.tsv | \
@@ -156,7 +156,7 @@ $i --db "${KRAKENDB}"; done
 mv -v Kraken_intermediate/taxonomy "${KRAKENDB}"
 
 echo "Building library"
-bsub -J "${KRAKENDB}"_build -q "${QUEUE}" -o "${LOGS}"/"${KRAKENDB}".build.log -M ${MEM} \
+bsub -J "${KRAKENDB}"_build -q "${QUEUE}" -o "${LOGS}"/"${KRAKENDB}".build.log -M "${MEM}" -n "${THREADS}" \
 /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/kraken2-build --build \
 --db "${KRAKENDB}" --threads "${THREADS}"
 
