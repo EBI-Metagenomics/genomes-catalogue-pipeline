@@ -187,14 +187,35 @@ then
   gzip "${RESULTS}"/phylogenies/ar53_alignment.faa
 fi
 
+# --- Make the all_genomes file ---
+mkdir -p "${RESULTS}"/all_genomes
+# Add singleton genomes
+while read line
+do
+  mkdir -p "${RESULTS}"/all_genomes/${line::-2} "${RESULTS}"/all_genomes/${line::-2}/${line} \
+  "${RESULTS}"/all_genomes/${line::-2}/${line}/genomes1
+  cp "${RESULTS}"/GFF/${line}.gff.gz "${RESULTS}"/all_genomes/${line::-2}/${line}/genomes1/
+done < "${OUT}"/cluster_reps.txt.sg
 
-# --- pan-genomes add panaroo ---
-#echo "Adding panaroo files"
-#for i in $(ls "${RESULTS}"/panaroo_output);
-#do
-#    CLUSTER="$(basename -- "${i}" | tr '_' '\t' | cut -f1)"
-#    cp "${RESULTS}"/panaroo_output/"${i}"/gene_presence_absence.Rtab "${RESULTS}"/clusters/"${CLUSTER}"/pan-genome/gene_presence_absence.Rtab
-#    cp "${RESULTS}"/panaroo_output/"${i}"/pan_genome_reference.fa "${RESULTS}"/clusters/"${CLUSTER}"/pan-genome/"${CLUSTER}".pan_genome_reference.fa
-#done
+# Add genomes that have pan-genomes
+while read line
+do
+  mkdir -p "${RESULTS}"/all_genomes/${line::-2} "${RESULTS}"/all_genomes/${line::-2}/${line} \
+  "${RESULTS}"/all_genomes/${line::-2}/${line}/genomes1
+  CLUSTER=$(grep $line "${RESULTS}"/intermediate_files/clusters_split.txt | cut -d ':' -f3 | sed "s/\.fa//g" | sed "s/\,/ /g")
+  for C in $CLUSTER
+  do
+    cp "${RESULTS}"/GFF/${C}.gff.gz "${RESULTS}"/all_genomes/${line::-2}/${line}/genomes1/
+  done
+done < "${OUT}"/cluster_reps.txt.pg
+
+# --- Make species catalogue ---
+mkdir -p "${RESULTS}"/species_catalogue
+while read line
+do
+  mkdir -p "${RESULTS}"/species_catalogue/"${line::-2}"
+  cp -r "${RESULTS}"/clusters/"${line}" "${RESULTS}"/species_catalogue/"${line::-2}"/
+  cp "${RESULTS}"/rRNA_fastas/"${line}"_fasta-results/"${line}"_rRNAs.fasta "${RESULTS}"/species_catalogue/"${line::-2}"/"${line}"/genome/
+done < "${OUT}"/cluster_reps.txt
 
 echo "Done. Bye"
