@@ -218,4 +218,19 @@ do
   cp "${RESULTS}"/rRNA_fastas/"${line}"_fasta-results/"${line}"_rRNAs.fasta "${RESULTS}"/species_catalogue/"${line::-2}"/"${line}"/genome/
 done < "${OUT}"/cluster_reps.txt
 
+# --- Put in empty files for SanntiS and Virify if there is no output ---
+while read line
+do
+  if [ ! -f  "${RESULTS}"/species_catalogue/"${line::-2}"/"${line}"/genome/"${line}"_sanntis.gff ]
+  then
+    touch "${RESULTS}"/species_catalogue/"${line::-2}"/"${line}"/genome/"${line}"_sanntis.gff
+  fi
+
+    if [ ! -f  "${RESULTS}"/species_catalogue/"${line::-2}"/"${line}"/genome/"${line}"_virify.gff ]
+  then
+    touch "${RESULTS}"/species_catalogue/"${line::-2}"/"${line}"/genome/"${line}"_virify.gff
+    touch "${RESULTS}"/species_catalogue/"${line::-2}"/"${line}"/genome/"${line}"_virify_metadata.tsv
+  fi
+done < "${OUT}"/cluster_reps.txt
+
 echo "Done. Bye"
