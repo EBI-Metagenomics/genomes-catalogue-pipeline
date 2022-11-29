@@ -151,6 +151,12 @@ mv "${OUT}"/gtdbtk/gtdbtk-outdir "${RESULTS}"/gtdb-tk_output
 echo "Creating metadata.txt"
 mv "${OUT}"/"${NAME}"_metadata/genomes-all_metadata.tsv "${RESULTS}"/
 
+# --- mash ---
+mv "${OUT}"/all_genomes.msh "${RESULTS}"/
+
+# --- kraken ---
+mv "${OUT}"/kraken2* "${RESULTS}"/
+
 # --- intermediate files ---
 echo "Creating intermediate files"
 mv "${OUT}"/"${NAME}"_drep/intermediate_files "${RESULTS}"/
