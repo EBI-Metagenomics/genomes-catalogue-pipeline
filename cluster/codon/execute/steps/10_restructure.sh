@@ -122,7 +122,7 @@ mv "${OUT}"/"${NAME}"_metadata/*.gff "${RESULTS}"/GFF
 # move non-cluster reps for pan-genomes
 mv "${OUT}"/pg/*/*.gff "${RESULTS}"/GFF
 # compress
-echo "Compressing gff" ### STOPPED HERE £££
+echo "Compressing gff"
 ls "${RESULTS}"/GFF > "${OUT}"/gffs
 while IFS= read -r i
 do
@@ -149,7 +149,7 @@ mv "${OUT}"/gtdbtk/gtdbtk-outdir "${RESULTS}"/gtdb-tk_output
 
 # --- metadata ---
 echo "Creating metadata.txt"
-mv "${OUT}"/"${NAME}"_metadata/genomes-all_metadata.tsv "${RESULTS}"/metadata.txt
+mv "${OUT}"/"${NAME}"_metadata/genomes-all_metadata.tsv "${RESULTS}"/
 
 # --- intermediate files ---
 echo "Creating intermediate files"
@@ -175,6 +175,17 @@ mv "${OUT}"/gene_catalogue/ "${RESULTS}"/
 
 # --- phylogeny ---
 echo "Moving phylogenetic trees"
+mkdir -p "${RESULTS}"/phylogenies
+mv "${OUT}"/IQtree/gtdbtk.bac120.user_msa.fasta "${RESULTS}"/phylogenies/bac120_alignment.faa
+mv "${OUT}"/IQtree/iqtree.bacteria.treefile "${RESULTS}"/phylogenies/bac120_iqtree.nwk
+gzip "${RESULTS}"/phylogenies/bac120_alignment.faa
+
+if [ -f "${OUT}"/IQtree/gtdbtk.ar53.user_msa.fasta ]
+then
+  mv "${OUT}"/IQtree/gtdbtk.ar53.user_msa.fasta "${RESULTS}"/phylogenies/ar53_alignment.faa
+  mv "${OUT}"/IQtree/iqtree.archaea.treefile "${RESULTS}"/phylogenies/ar53_iqtree.nwk
+  gzip "${RESULTS}"/phylogenies/ar53_alignment.faa
+fi
 
 
 # --- pan-genomes add panaroo ---
