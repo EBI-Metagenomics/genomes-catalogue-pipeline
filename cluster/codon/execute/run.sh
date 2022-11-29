@@ -487,10 +487,4 @@ bsub \\
         -n ${NAME}
 EOF
 
-if [[ $RUN == 1 ]]; then
-    echo "==== Running step 10 [${SUBMIT_SCRIPTS}/step10.${NAME}.sh] ===="
-    bash ${SUBMIT_SCRIPTS}/step10.${NAME}.sh
-    sleep 10
-fi
-
 echo "==== Final. Exit ===="
