@@ -1,8 +1,7 @@
 #!/bin/bash
 
-usage()
-{
-cat << EOF
+usage() {
+    cat <<EOF
 usage: $0 options
 Run genomes-pipeline mash2nwk step
 OPTIONS:
@@ -21,64 +20,64 @@ OPTIONS:
 EOF
 }
 
-export TOIL="False"
+TOIL="False"
 
 while getopts ho:p:l:n:q:y:i:r:j:b:z:t:w: option; do
-	case "${option}" in
-	    h)
-             usage
-             exit 1
-             ;;
-		o)
-		    OUT=${OPTARG}
-		    ;;
-		p)
-		    P=${OPTARG}
-		    ;;
-		l)
-		    LOGS=${OPTARG}
-		    ;;
-		n)
-		    DIRNAME=${OPTARG}
-		    ;;
-		q)
-		    QUEUE=${OPTARG}
-		    ;;
-		y)
-		    YML=${OPTARG}
-		    ;;
-		i)
-		    INPUT=${OPTARG}
-		    ;;
-		r)
-		    REPS=${OPTARG}
-		    ;;
-		j)
-		    JOB=${OPTARG}
-		    ;;
-		b)
-		    ALL_FNA=${OPTARG}
-		    ;;
-        z)
-		    MEM=${OPTARG}
-		    ;;
-		t)
-		    THREADS=${OPTARG}
-		    ;;
-		w)
-		    TOIL=${OPTARG}
-		    ;;
-		?)
-            usage
-            exit
-            ;;
-	esac
+    case "${option}" in
+    h)
+        usage
+        exit 1
+        ;;
+    o)
+        OUT=${OPTARG}
+        ;;
+    p)
+        PIPELINE_DIRECTORY=${OPTARG}
+        ;;
+    l)
+        LOGS=${OPTARG}
+        ;;
+    n)
+        DIRNAME=${OPTARG}
+        ;;
+    q)
+        QUEUE=${OPTARG}
+        ;;
+    y)
+        YML=${OPTARG}
+        ;;
+    i)
+        INPUT=${OPTARG}
+        ;;
+    r)
+        REPS=${OPTARG}
+        ;;
+    j)
+        JOB=${OPTARG}
+        ;;
+    b)
+        ALL_FNA=${OPTARG}
+        ;;
+    z)
+        MEM=${OPTARG}
+        ;;
+    t)
+        THREADS=${OPTARG}
+        ;;
+    w)
+        TOIL=${OPTARG}
+        ;;
+    ?)
+        usage
+        exit
+        ;;
+    esac
 done
 
 echo "Creating yml"
-cp "${P}"/cluster/codon/execute/steps/6_annotation.yml "${YML}"/annotation.yml
+cp "${PIPELINE_DIRECTORY}"/src/templates/6_annotation.yml "${YML}"/annotation.yml
 echo \
-"
+    "
 mmseqs_faa:
   class: File
   path: ${INPUT}/mmseqs_cluster_rep.fa
@@ -91,22 +90,22 @@ all_fnas_dir:
 all_reps_filtered:
   class: File
   path: ${REPS}
-" >> "${YML}"/annotation.yml
+" >>" ${YML}"/annotation.yml
 
 if [ "${TOIL}" == "True" ]; then
     echo "Running annotations with Toil"
     bsub \
-         -J "${JOB}.${DIRNAME}.run" \
-         -e "${LOGS}"/"${JOB}".err \
-         -o "${LOGS}"/"${JOB}".out \
-         bash "${P}"/cluster/codon/Toil/run-toil.sh \
-            -n "${DIRNAME}_annotations" \
-            -q "${QUEUE}" \
-            -p "${P}" \
-            -o "${OUT}" \
-            -m "${MEM}" \
-            -c "${P}"/cwl/sub-wfs/wf-4-annotation.cwl \
-            -y "${YML}"/annotation.yml
+        -J "${JOB}.${DIRNAME}.run" \
+        -e "${LOGS}"/"${JOB}".err \
+        -o "${LOGS}"/"${JOB}".out \
+        bash "${PIPELINE_DIRECTORY}"/bin/run-toil.sh \
+        -n "${DIRNAME}_annotations" \
+        -q "${QUEUE}" \
+        -p "${PIPELINE_DIRECTORY}" \
+        -o "${OUT}" \
+        -m "${MEM}" \
+        -c "${PIPELINE_DIRECTORY}"/src/cwl/sub-wfs/wf-4-annotation.cwl \
+        -y "${YML}"/annotation.yml
 else
     echo "Running annotations with cwltool"
     bsub \
@@ -116,11 +115,11 @@ else
         -o "${LOGS}"/"${JOB}".out \
         -M "${MEM}" \
         -n "${THREADS}" \
-        bash "${P}"/cluster/codon/run-cwltool.sh \
+        bash "${PIPELINE_DIRECTORY}"/bin/run-cwltool.sh \
             -d False \
-            -p "${P}" \
+            -p "${PIPELINE_DIRECTORY}" \
             -o "${OUT}" \
             -n "${DIRNAME}_annotations" \
-            -c "${P}"/cwl/sub-wfs/wf-4-annotation.cwl \
+            -c "${PIPELINE_DIRECTORY}"/src/cwl/sub-wfs/wf-4-annotation.cwl \
             -y "${YML}"/annotation.yml
 fi

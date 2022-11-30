@@ -2,12 +2,7 @@
 
 set -e
 
-DEFAULT_QUEUE="standard"
-BIGQUEUE="bigmem"
-if [[ -z ${MAIN_PATH} ]]; then
-    MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
-fi
-
+. .gp-env
 
 RUN=0
 
@@ -127,24 +122,18 @@ YML=${OUT}/ymls
 
 SUBMIT_SCRIPTS=${OUT}/scripts
 
-mkdir -p ${OUT} ${LOGS} ${YML} ${SUBMIT_SCRIPTS}
+mkdir -p "${OUT}" "${LOGS}" "${YML}" "${SUBMIT_SCRIPTS}"
 
 REPS_FILE=${OUT}/cluster_reps.txt
 ALL_GENOMES=${OUT}/drep-filt-list.txt
 
-touch ${REPS_FILE} ${ALL_GENOMES}
+touch "${REPS_FILE}" "${ALL_GENOMES}"
 
 REPS_FA_DIR=${OUT}/reps_fa
 ALL_FNA_DIR=${OUT}/mgyg_genomes
 
 MEM="10G"
 THREADS="2"
-
-# Scripts and other required utils.
-
-# TODO
-
-export PATH="${MAIN_PATH}/cluster/codon/execute/scripts:$PATH"
 
 # ------------------------- Step 1 -------------------------------------------------
 echo "==== 1. dRep steps with cwltool [${SUBMIT_SCRIPTS}/step1.${NAME}.sh] ===="
@@ -171,7 +160,7 @@ EOF
 
 if [[ $RUN == 1 ]]; then
     echo "Running dRep [${SUBMIT_SCRIPTS}/step1.${NAME}.sh]"
-    bash ${SUBMIT_SCRIPTS}/step1.${NAME}.sh
+    bash "${SUBMIT_SCRIPTS}"/step1.${NAME}.sh
     sleep 10 # let's give LSF time to catch up
     bwait -w "ended(${STEP1}.${NAME})"
 fi
@@ -187,7 +176,7 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP2}.err \\
     -o ${LOGS}/submit.${STEP2}.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/2_mash.sh \\
+    bash ${MAIN_PATH}/src/steps/2_mash.sh \\
         -m ${OUT}/${NAME}_drep/mash \\
         -o ${OUT} \\
         -p ${MAIN_PATH} \\
@@ -209,6 +198,12 @@ fi
 mkdir -p ${OUT}/sg ${OUT}/pg
 echo "==== 3. Cluster annotation [${SUBMIT_SCRIPTS}/step3.${NAME}.sh] ===="
 
+#########
+## ENV ##
+####################################
+# GUNC_DB needs to be set in .gpenv
+####################################
+
 cat <<EOF >${SUBMIT_SCRIPTS}/step3.${NAME}.sh
 #!/bin/bash
 
@@ -217,7 +212,7 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP3}.sg.err \\
     -o ${LOGS}/submit.${STEP3}.sg.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/3_process_clusters.sh \\
+    bash ${MAIN_PATH}/src/steps/3_process_clusters.sh \\
         -i ${OUT}/${NAME}_drep/singletons \\
         -o ${OUT} \\
         -p ${MAIN_PATH} \\
@@ -229,14 +224,15 @@ bsub \\
         -j ${STEP3} \\
         -s "${ENA_CSV}" \\
         -z ${MEM_STEP3} \\
-        -w ${THREADS_STEP3}
+        -w ${THREADS_STEP3} \\
+        -g ${GUNC_DB}
 
 bsub \\
     -J "${STEP3}.${NAME}.pg" \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP3}.pg.err \\
     -o ${LOGS}/submit.${STEP3}.pg.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/3_process_clusters.sh \\
+    bash ${MAIN_PATH}/src/steps/3_process_clusters.sh \\
         -i ${OUT}/${NAME}_drep/pan-genomes \\
         -o ${OUT} \\
         -p ${MAIN_PATH} \\
@@ -248,12 +244,13 @@ bsub \\
         -j ${STEP3} \\
         -s "${ENA_CSV}" \\
         -z ${MEM_STEP3} \\
-        -w ${THREADS_STEP3}
+        -w ${THREADS_STEP3} \\
+        -g ${GUNC_DB}
 EOF
 
 if [[ $RUN == 1 ]]; then
     echo "==== Running step 3 ===="
-    mwait.py -w "ended(${STEP2}.${NAME}.*)"
+    bwait -w "ended(${STEP2}.${NAME}.*)"
     echo "Running Cluster annotation [${SUBMIT_SCRIPTS}/step3.${NAME}.sh]"
     bash ${SUBMIT_SCRIPTS}/step3.${NAME}.sh
 fi
@@ -261,7 +258,7 @@ fi
 # ------------------------- Step 4 ------------------------------
 
 echo "==== 4. mmseqs [${SUBMIT_SCRIPTS}/step4.${NAME}.sh] ===="
-# TODO improve for no sg or pg
+
 cat <<EOF >${SUBMIT_SCRIPTS}/step4.${NAME}.sh
 #!/bin/bash
 
@@ -270,7 +267,7 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP4}.err \\
     -o ${LOGS}/submit.${STEP4}.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/4_mmseqs.sh \\
+    bash ${MAIN_PATH}/src/steps/4_mmseqs.sh \\
         -o ${OUT} \\
         -p ${MAIN_PATH} \\
         -l ${LOGS} \\
@@ -290,7 +287,7 @@ EOF
 if [[ $RUN == 1 ]]; then
     echo "==== Running step 4 [${SUBMIT_SCRIPTS}/step4.${NAME}.sh] ===="
     echo "===== waiting for cluster annotations (step3).... ===="
-    mwait.py -w "ended(${STEP3}.${NAME}.*)"
+    bwait -w "ended(${STEP3}.${NAME}.*)"
     bash ${SUBMIT_SCRIPTS}/step4.${NAME}.sh
 fi
 
@@ -299,9 +296,15 @@ echo "==== 5. GTDB-Tk [${SUBMIT_SCRIPTS}/step5.${NAME}.sh] ===="
 
 if [[ $RUN == 1 ]]; then
     echo "==== waiting for files/folders generation.... ===="
-    mwait.py -w "ended(${STEP4}.${NAME}.submit)"
-    mwait.py -w "ended(${STEP4}.${NAME}.files)"
+    bwait -w "ended(${STEP4}.${NAME}.submit)"
+    bwait -w "ended(${STEP4}.${NAME}.files)"
 fi
+
+#########
+## ENV ##
+#######################################
+# GTDBTK_REF needs to be set in .gpenv
+########################################
 
 # TODO change queue to BIGMEM in production
 cat <<EOF >${SUBMIT_SCRIPTS}/step5.${NAME}.sh
@@ -312,7 +315,7 @@ bsub \\
     -q ${QUEUE} \\
     -o ${LOGS}/submit.${STEP5}.out \\
     -e ${LOGS}/submit.${STEP5}.err \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/5_sing_gtdbtk.sh \\
+    bash ${MAIN_PATH}/src/steps/5_gtdbtk.sh \\
         -q ${BIGQUEUE} \\
         -p ${MAIN_PATH} \\
         -o ${OUT} \\
@@ -322,20 +325,21 @@ bsub \\
         -j ${STEP5} \\
         -a ${REPS_FA_DIR} \\
         -z ${MEM_STEP5} \\
-        -t ${THREADS_STEP5}
+        -t ${THREADS_STEP5} \\
+        -r ${GTDBTK_REF}
 
 EOF
 
 if [[ $RUN == 1 ]]; then
     echo "==== Running step 5 [${SUBMIT_SCRIPTS}/step5.${NAME}.sh] ===="
     bash ${SUBMIT_SCRIPTS}/step5.${NAME}.sh
-    mwait.py -w "ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.yml.*)"
+    bwait -w "ended(${STEP4}.${NAME}.cat) && ended(${STEP4}.${NAME}.yml.*)"
 fi
 
 # ------------------------- Step 6 ------------------------------
 if [[ $RUN == 1 ]]; then
     echo "==== waiting for mmseqs 0.9.... ===="
-    mwait.py -w "ended(${STEP4}.${NAME}.0.90)"
+    bwait -w "ended(${STEP4}.${NAME}.0.90)"
 fi
 
 echo "==== 6. EggNOG, IPS, rRNA [${SUBMIT_SCRIPTS}/step6.${NAME}.sh] ===="
@@ -348,7 +352,7 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP6}.err \\
     -o ${LOGS}/submit.${STEP6}.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/6_annotation.sh \\
+    bash ${MAIN_PATH}/src/steps/6_annotation.sh \\
         -o ${OUT} \\
         -p ${MAIN_PATH} \\
         -l ${LOGS} \\
@@ -371,8 +375,8 @@ fi
 # ------------------------- Step 7 ------------------------------
 if [[ $RUN == 1 ]]; then
     echo "==== waiting for GTDB-Tk.... ===="
-    mwait.py -w "ended(${STEP5}.${NAME}.submit) && ended(${STEP6}.${NAME}.submit)"
-    mwait.py -w "ended(${STEP5}.${NAME}.run) && ended(${STEP6}.${NAME}.run)"
+    bwait -w "ended(${STEP5}.${NAME}.submit) && ended(${STEP6}.${NAME}.submit)"
+    bwait -w "ended(${STEP5}.${NAME}.run) && ended(${STEP6}.${NAME}.run)"
 fi
 
 echo "==== 7. Metadata and phylo.tree [${SUBMIT_SCRIPTS}/step7.${NAME}.sh] ===="
@@ -385,7 +389,7 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP7}.err \\
     -o ${LOGS}/submit.${STEP7}.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/7_metadata.sh \\
+    bash ${MAIN_PATH}/src/steps/7_metadata.sh \\
         -o ${OUT} \\
         -p ${MAIN_PATH} \\
         -l ${LOGS} \\
@@ -408,8 +412,8 @@ if [[ $RUN == 1 ]]; then
     bash ${SUBMIT_SCRIPTS}/step7.${NAME}.sh
     sleep 10
     echo "==== waiting for metadata and protein annotations.... ===="
-    mwait.py -w "ended(${STEP6}.${NAME}.submit) && ended(${STEP7}.${NAME}.submit)"
-    mwait.py -w "ended(${STEP6}.${NAME}.run) && ended(${STEP7}.${NAME}.run)"
+    bwait -w "ended(${STEP6}.${NAME}.submit) && ended(${STEP7}.${NAME}.submit)"
+    bwait -w "ended(${STEP6}.${NAME}.run) && ended(${STEP7}.${NAME}.run)"
 fi
 
 # ------------------------- Step 8 ------------------------------
@@ -423,7 +427,7 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP8}.err \\
     -o ${LOGS}/submit.${STEP8}.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/8_post_processing.sh \\
+    bash ${MAIN_PATH}/src/steps/8_post_processing.sh \\
         -o ${OUT} \\
         -p ${MAIN_PATH} \\
         -l ${LOGS} \\
@@ -443,8 +447,8 @@ if [[ $RUN == 1 ]]; then
     bash ${SUBMIT_SCRIPTS}/step8.${NAME}.sh
     sleep 10
     echo "==== waiting for post-processing ===="
-    mwait.py -w "ended(${STEP8}.${NAME}.submit)"
-    mwait.py -w "ended(${STEP8}.${NAME}.run)"
+    bwait -w "ended(${STEP8}.${NAME}.submit)"
+    bwait -w "ended(${STEP8}.${NAME}.run)"
 fi
 
 # ------------------------- Step 9 ------------------------------
@@ -459,7 +463,7 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP9}.err \\
     -o ${LOGS}/submit.${STEP9}.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/9_restructure.sh \\
+    bash ${MAIN_PATH}/src/steps/9_restructure.sh \\
         -o ${OUT} \\
         -n ${NAME}
 EOF

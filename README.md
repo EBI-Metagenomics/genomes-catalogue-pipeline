@@ -6,12 +6,6 @@ A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, E S
 
 Detail information about existing MGnify catalogues: https://docs.mgnify.org/en/latest/genome-viewer.html#
 
-## Pipeline
-
-![Pipeline overview](pipeline_overview.png)
-
-UPDATE
-
 ## Setup 
 
 ### Environment
@@ -56,13 +50,9 @@ cd containers && bash build.sh
 export PATH=${PATH}:docker/python3_scripts:docker/genomes-catalog-update/scripts
 ``` -->
 
-## Run
+## Running the pipeline
 
-**Note 1**: You can manually change parameters of MMseqs2 for protein clustering in your YML file (arguments mmseqs_limit_i, mmseq_limit_annotation, mmseqs_limit_c)</b>
-
-**Note 2**: Pipeline currently doesn't support GTDB-Tk and will skip this step. 
-
-1. You need to pre-download your data to directory/ies and make sure that all genomes are not compressed. If you have downloaded genomes from ENA and NCBI put them into different folders. If you've downloaded genomes from ENA save output CSV file with ENA genomes.
+1. You need to pre-download your data to directoryes and make sure that all genomes are not compressed. If you have downloaded genomes from ENA and NCBI put them into different folders. If you've downloaded genomes from ENA save output CSV file with ENA genomes.
 
 2. You will need the following information to create YML:
  - catalogue name (for example, GUT)
@@ -71,12 +61,13 @@ export PATH=${PATH}:docker/python3_scripts:docker/genomes-catalog-update/scripts
  - min amd max number of accessions (only MGnify specific). Max - Min = #total number of genomes (NCBI+ENA)
 
 
-# Instructions how to run genomes-pipeline with bash script on CODON
+# Instructions how to run genomes-pipeline
 
 ### Description
 
 Bash script *run.sh* runs basic steps as depending lsf jobs.
-There are 8 steps:
+
+There are 9 steps:
 - data preparation + dRep
 - mash2nwk
 - process clusters (in parallel by each cluster)
@@ -90,14 +81,17 @@ Each step runs submit job first. Each submit job generates input yml-file and ru
 
 ### How to run
 
-1) Prepare folder with genomes 
+1) Prepare the input files and configuration files
+  a) Download the databases using the [download_db.sh](installation/download_db.sh)
+  b) Remove the .tpl from the templates in [src/templates](src/templates) and replace the paths accordigly
+  c) Create a .gpenv file in the root of the folder that contains this repo. Use [.gpenv.tpl](.gpenv.tpl) as a template
 2) Prepare genomes.csv file (make sure it has a header: genome,completeness,contamination)
-3) Fill in command
-(no need to run this as separate bsub)
+3) Run the [run.sh](src/run.sh) script
+
 ```
 bash run.sh \
-  -p <path to genomes pipeline installation (make sure that branch is correct)> \
-  -n test_oral \
+  -p <path to genomes pipeline source code> \
+  -n catalogue_name \
   -o <path to output directory> \
   -f <path to genomes folder> \
   -c <path to genomes.csv> \
@@ -106,41 +100,3 @@ bash run.sh \
   -v <version ex. "v1.0"> \
   -b <biom ex. "Test:test">
 ```
-
-### Logging
-
-Basic run.sh logging:
-```
-==== 1. Run preparation and dRep steps with cwltool ====
-Submitting dRep
-Creating yml for drep
-Running dRep
-Job <> is submitted to queue <>.
-==== 2. Run mash2nwk ====
-Submitting mash
-Job <> is submitted to queue <>.
-==== 3. Run cluster annotation ====
-Submitting pan-genomes
-Job <> is submitted to queue <>.
-Submitting singletons
-Job <> is submitted to queue <>.
-==== 4. Run mmseqs ====
-Job <> is submitted to queue <>.
-==== 5. Run GTDB-Tk ====
-Submitting GTDB-Tk
-Job <> is submitted to queue <>.
-==== 6. EggNOG, IPS, rRNA ====
-Submitting annotation
-Job <> is submitted to queue <>.
-==== 7. Metadata and phylo.tree ====
-Submitting metadata and phylo.tree generation
-Job <> is submitted to queue <>.
-==== 8. Post-processing ====
-Submitting post-processing
-Job <> is submitted to queue <>.
-==== Final ====
-```
-
-Log files: < path to output directory >/logs
-  
-Yml files: < path to output directory >/ymls

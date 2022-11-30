@@ -1,0 +1,8 @@
+.vscode/
+
+.gpenv
+
+# templates
+src/templates/*.yml
+
+.pyc

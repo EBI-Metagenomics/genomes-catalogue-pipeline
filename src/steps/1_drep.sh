@@ -32,7 +32,7 @@ while getopts ho:p:l:n:q:y:i:c:m:x:j:z:t: option; do
 		    OUT=${OPTARG}
 		    ;;
 		p)
-		    P=${OPTARG}
+		    PIPELINE_DIRECTORY=${OPTARG}
 		    ;;
 		l)
 		    LOGS=${OPTARG}
@@ -74,7 +74,7 @@ while getopts ho:p:l:n:q:y:i:c:m:x:j:z:t: option; do
 	esac
 done
 
-export CWL=${P}/cluster/codon/execute/cwl/1_drep.cwl
+export CWL=${PIPELINE_DIRECTORY}/src/cwl/1_drep.cwl
 export YML_FILE=${YML}/drep.yml
 
 echo "Creating yml for drep"
@@ -99,9 +99,9 @@ bsub \
     -e "${LOGS}"/"${JOB_NAME}".err \
     -M "${MEM}" \
     -n "${THREADS}" \
-    bash "${P}"/cluster/codon/run-cwltool.sh \
+    bash "${PIPELINE_DIRECTORY}"/bin/run-cwltool.sh \
         -d False \
-        -p "${P}" \
+        -p "${PIPELINE_DIRECTORY}" \
         -o "${OUT}" \
         -n "${DIRNAME}_drep" \
         -c "${CWL}" \

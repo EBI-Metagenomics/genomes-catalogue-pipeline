@@ -28,7 +28,7 @@ while getopts ho:p:m:l:n:q:y:j:z:t: option; do
         OUT=${OPTARG}
         ;;
     p)
-        P=${OPTARG}
+        PIPELINE_DIRECTORY=${OPTARG}
         ;;
     m)
         MASH=${OPTARG}
@@ -61,11 +61,11 @@ while getopts ho:p:m:l:n:q:y:j:z:t: option; do
     esac
 done
 
-ls "${MASH}" >list_mash.txt
+ls "${MASH}" > list_mash.txt
 
 while IFS= read -r i; do
     NAME="$(basename -- "${MASH}"/"${i}")"
-    export YML_FILE=${YML}/${NAME}.yml
+    YML_FILE=${YML}/${NAME}.yml
     echo "input_mash: " >"${YML_FILE}"
     echo "  class: File" >>"${YML_FILE}"
     echo "  path: ${MASH}/${i}" >>"${YML_FILE}"
@@ -76,12 +76,12 @@ while IFS= read -r i; do
         -o "${LOGS}"/"${JOB}"."${i}".out \
         -M "${MEM}" \
         -n "${THREADS}" \
-        bash "${P}"/cluster/codon/run-cwltool.sh \
+        bash "${PIPELINE_DIRECTORY}"/bin/run-cwltool.sh \
             -d False \
-            -p "${P}" \
+            -p "${PIPELINE_DIRECTORY}" \
             -o "${OUT}" \
             -n "mash2nwk" \
-            -c "${P}"/cwl/tools/mash2nwk/mash2nwk.cwl \
+            -c "${PIPELINE_DIRECTORY}"/src/cwl/tools/mash2nwk/mash2nwk.cwl \
             -y "${YML_FILE}"
 done <list_mash.txt
 

@@ -8,7 +8,6 @@ mitload miniconda
 
 module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
 conda activate toil-5.4.0
-#conda activate toil-5.6.0
 
 MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
 
@@ -20,22 +19,24 @@ MEMORY=100G
 QUEUE="production"
 BIG_MEM="False"
 
-
 while getopts :n:y:c:m:q:b:s:p:o:t: option; do
-        case "${option}" in
-                n) OUTDIRNAME=${OPTARG};;
-                y) YML=${OPTARG};;
-                c) CWL=${OPTARG};;
-                m) MEMORY=${OPTARG};;
-                q) QUEUE=${OPTARG};;
-                b) BIG_MEM=${OPTARG};;
-                s) SINGULARUTY_ON=${OPTARG};;
-                p) MAIN_PATH=${OPTARG};;
-                o) OUTDIR=${OPTARG};;
-                t) TMPDIR=${OPTARG};;
-        esac
+    case "${option}" in
+    n) OUTDIRNAME=${OPTARG} ;;
+    y) YML=${OPTARG} ;;
+    c) CWL=${OPTARG} ;;
+    m) MEMORY=${OPTARG} ;;
+    q) QUEUE=${OPTARG} ;;
+    b) BIG_MEM=${OPTARG} ;;
+    s) SINGULARUTY_ON=${OPTARG} ;;
+    p) MAIN_PATH=${OPTARG} ;;
+    o) OUTDIR=${OPTARG} ;;
+    t) TMPDIR=${OPTARG} ;;
+    *)
+        echo "Invalid option"
+        exit 1
+        ;;
+    esac
 done
-
 
 export PATH=$PATH:${MAIN_PATH}/docker/python3_scripts/
 export PATH=$PATH:${MAIN_PATH}/docker/genomes-catalog-update/scripts/
@@ -45,7 +46,6 @@ chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
 
 CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
 YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
-
 
 export TOIL_LSF_ARGS="-q ${QUEUE}"
 if [ "${BIG_MEM}" == "True" ]; then
@@ -59,7 +59,8 @@ export RUN_JOBSTORE=${JOBSTORE}/${OUTDIRNAME}
 
 echo "Log-file ${LOG_DIR}/${OUTDIRNAME}.log"
 
-echo "Toil restart start:"; date;
+echo "Toil restart start:"
+date
 
 set -x
 
@@ -80,8 +81,6 @@ if [ "${SINGULARUTY_ON}" == "True" ]; then
         --jobStore ${RUN_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        --beta-conda-dependencies \
-        --beta-dependencies-directory /hps/nobackup/rdf/metagenomics/service-team/toil-conda-envs \
         ${CWL} ${YML}
 else
     toil-cwl-runner \
@@ -100,9 +99,8 @@ else
         --jobStore ${RUN_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        --beta-conda-dependencies \
-        --beta-dependencies-directory /hps/nobackup/rdf/metagenomics/service-team/toil-conda-envs \
         ${CWL} ${YML}
 fi
 
-echo "Toil restart finish:"; date;
+echo "Toil restart finish:"
+date

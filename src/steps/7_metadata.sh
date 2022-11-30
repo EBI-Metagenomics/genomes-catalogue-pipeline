@@ -26,17 +26,17 @@ EOF
 
 export GEO="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/continent_countries.csv"
 
-while getopts ho:p:l:n:q:y:v:i:g:r:j:f:s:z:t: option; do
+while getopts ho:p:l:n:q:y:v:i:g:r:j:f:s:z:t:d: option; do
 	case "$option" in
 		h)
-            usage
-            exit 1
-            ;;
+        usage
+        exit 1
+        ;;
 		o)
 		    OUT=${OPTARG}
 		    ;;
 		p)
-		    P=${OPTARG}
+		    PIPELINE_DIRECTORY=${OPTARG}
 		    ;;
 		l)
 		    LOGS=${OPTARG}
@@ -77,14 +77,17 @@ while getopts ho:p:l:n:q:y:v:i:g:r:j:f:s:z:t: option; do
 		t)
 		    THREADS=${OPTARG}
 		    ;;
+    d)
+      
 		?)
 		    usage
-            exit
-            ;;
+        exit 1
+        ;;
 	esac
 done
 
-export GTDB_TAXONOMY=${GTDB}/gtdbtk.summary.tsv
+GTDB_TAXONOMY=${GTDB}/gtdbtk.summary.tsv
+
 touch ${GTDB_TAXONOMY}
 [ -f ${GTDB}/classify/gtdbtk.bac120.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.bac120.summary.tsv >> ${GTDB_TAXONOMY}
 [ -f ${GTDB}/classify/gtdbtk.ar122.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.ar122.summary.tsv >> ${GTDB_TAXONOMY}
@@ -92,7 +95,8 @@ touch ${GTDB_TAXONOMY}
 
 echo "Creating yml"
 NAME="$(basename -- "${INPUT_CSV}")"
-export YML_FILE="${YML}"/metadata.yml
+YML_FILE="${YML}"/metadata.yml
+
 echo \
 "
 extra_weights_table:
@@ -127,7 +131,8 @@ all_fna_dir:
   path: ${ALL_FNA}
 " > "${YML_FILE}"
 
-export CWL=${P}/cwl/sub-wfs/5_gtdb/metadata_and_phylo_tree.cwl
+CWL=${PIPELINE_DIRECTORY}/src/cwl/sub-wfs/5_gtdb/metadata_and_phylo_tree.cwl
+
 echo "Submitting GTDB-Tk metadata and phylo.tree generation"
 bsub \
     -J "${JOB}.${DIRNAME}.run" \
@@ -136,9 +141,9 @@ bsub \
     -o "${LOGS}"/"${JOB}".out \
     -M "${MEM}" \
     -n "${THREADS}" \
-    bash "${P}"/cluster/codon/run-cwltool.sh \
+    bash "${PIPELINE_DIRECTORY}"/bin/run-cwltool.sh \
         -d False \
-        -p "${P}" \
+        -p "${PIPELINE_DIRECTORY}" \
         -o "${OUT}" \
         -n "${DIRNAME}_metadata" \
         -c "${CWL}" \

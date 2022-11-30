@@ -31,7 +31,7 @@ while getopts ho:p:l:n:q:y:j:b:m:a:z:t: option; do
         OUT=${OPTARG}
         ;;
     p)
-        P=${OPTARG}
+        PIPELINE_DIRECTORY=${OPTARG}
         ;;
     l)
         LOGS=${OPTARG}
@@ -71,22 +71,23 @@ while getopts ho:p:l:n:q:y:j:b:m:a:z:t: option; do
 done
 
 echo "Generating yml file"
-export YML_FILE="${YML}"/post-processing.yml
-cp "${P}"/cluster/codon/execute/steps/8_post_processing.yml "${YML_FILE}"
+YML_FILE="${YML}"/post-processing.yml
+
+cp "${PIPELINE_DIRECTORY}"/src/templates/8_post_processing.yml "${YML_FILE}"
 
 bsub \
     -J "${JOB}.${DIRNAME}.yml" \
     -q "${QUEUE}" \
     -e "${LOGS}"/"${JOB}".post-processing.yml.err \
     -o "${LOGS}"/"${JOB}".post-processing.yml.out \
-    bash "${P}"/cluster/codon/execute/steps/8_generate_yml.sh \
-    -b "${BIOM}" \
-    -m "${METADATA}" \
-    -y "${YML_FILE}" \
-    -o "${OUT}" \
-    -a "${ANNOTATIONS}"
+    bash "${PIPELINE_DIRECTORY}"/src/steps/8_generate_yml.sh \
+        -b "${BIOM}" \
+        -m "${METADATA}" \
+        -y "${YML_FILE}" \
+        -o "${OUT}" \
+        -a "${ANNOTATIONS}"
 
-export CWL="${P}"/cwl/sub-wfs/wf-6-post-processing.cwl
+CWL="${PIPELINE_DIRECTORY}"/src/cwl/sub-wfs/wf-6-post-processing.cwl
 
 echo "Submitting cluster post-processing"
 
@@ -98,10 +99,10 @@ bsub \
     -o "${LOGS}"/"${JOB}".out \
     -M "${MEM}" \
     -n "${THREADS}" \
-    bash "${P}"/cluster/codon/Toil/run-toil.sh \
-    -n "${DIRNAME}_metadata" \
-    -q "${QUEUE}" \
-    -p "${P}" \
-    -o "${OUT}" \
-    -c "${CWL}" \
-    -y "${YML_FILE}"
+    bash "${PIPELINE_DIRECTORY}"/bin/run-toil.sh \
+        -n "${DIRNAME}_metadata" \
+        -q "${QUEUE}" \
+        -p "${PIPELINE_DIRECTORY}" \
+        -o "${OUT}" \
+        -c "${CWL}" \
+        -y "${YML_FILE}"

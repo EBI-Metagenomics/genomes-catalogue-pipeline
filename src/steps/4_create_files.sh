@@ -103,19 +103,16 @@ while IFS= read -r i
 do
     NAME="$(basename -- "${i}" | tr '_' '\t' | cut -f1)"
     cp "${OUT}"/sg/"${i}"/"${NAME}"/"${NAME}".fna "${ALL_FNA}"/"${NAME}".fna
-    #ln -s "${OUT}"/sg/"${i}"/"${NAME}"/"${NAME}".fna "${ALL_FNA}"/"${NAME}".fna
 done < list_sg.txt
 
 while IFS= read -r i
 do
     NAME="$(basename -- "${i}" | tr '_' '\t' | cut -f1)"
     cp "${OUT}"/pg/"${i}"/"${NAME}"/"${NAME}".fna "${ALL_FNA}"/"${NAME}".fna
-    #ln -s "${OUT}"/pg/"${i}"/"${NAME}"/"${NAME}".fna "${ALL_FNA}"/"${NAME}".fna
     ls "${OUT}"/pg/"${i}" | grep '.fna' | tr '.' '\t' | cut -f1 > list.txt
     while IFS= read -r j
     do
         cp "${OUT}"/pg/"${i}"/"${j}".fna "${ALL_FNA}"/"${j}".fna;
-        #ln -s "${OUT}"/pg/"${i}"/"${j}".fna "${ALL_FNA}"/"${j}".fna;
     done < list.txt
 done < list_pg.txt
 

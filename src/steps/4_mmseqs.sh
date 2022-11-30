@@ -3,9 +3,8 @@
 MMSEQS_LIMIT_I=(1.0 0.95 0.90 0.50)
 MMSEQS_LIMIT_C=0.8
 
-usage()
-{
-cat << EOF
+usage() {
+    cat <<EOF
 usage: $0 options
 Run genomes-pipeline mmseqs annotations
 OPTIONS:
@@ -27,58 +26,58 @@ EOF
 }
 
 while getopts ho:p:l:n:q:y:j:r:f:a:k:d:z:t: option; do
-	case "${option}" in
-		h)
-             usage
-             exit 1
-             ;;
-		o)
-		    OUT=${OPTARG}
-		    ;;
-		p)
-		    P=${OPTARG}
-		    ;;
-		l)
-		    LOGS=${OPTARG}
-		    ;;
-		n)
-		    DIRNAME=${OPTARG}
-		    ;;
-		q)
-		    QUEUE=${OPTARG}
-		    ;;
-		y)
-		    YML=${OPTARG}
-		    ;;
-		j)
-		    JOB=${OPTARG}
-		    ;;
-		r)
-		    REPS=${OPTARG}
-		    ;;
-		f)
-		    ALL_GENOMES=${OPTARG}
-		    ;;
-		a)
-		    REPS_FA=${OPTARG}
-		    ;;
-		k)
-		    ALL_FNA=${OPTARG}
-		    ;;
-		d)
-		    DREP_DIR=${OPTARG}
-		    ;;
-		z)
-		    MEM=${OPTARG}
-		    ;;
-		t)
-		    THREADS=${OPTARG}
-		    ;;
-		?)
-		    usage
-            exit
-            ;;
-	esac
+    case "${option}" in
+    h)
+        usage
+        exit 1
+        ;;
+    o)
+        OUT=${OPTARG}
+        ;;
+    p)
+        PIPELINE_DIRECTORY=${OPTARG}
+        ;;
+    l)
+        LOGS=${OPTARG}
+        ;;
+    n)
+        DIRNAME=${OPTARG}
+        ;;
+    q)
+        QUEUE=${OPTARG}
+        ;;
+    y)
+        YML=${OPTARG}
+        ;;
+    j)
+        JOB=${OPTARG}
+        ;;
+    r)
+        REPS=${OPTARG}
+        ;;
+    f)
+        ALL_GENOMES=${OPTARG}
+        ;;
+    a)
+        REPS_FA=${OPTARG}
+        ;;
+    k)
+        ALL_FNA=${OPTARG}
+        ;;
+    d)
+        DREP_DIR=${OPTARG}
+        ;;
+    z)
+        MEM=${OPTARG}
+        ;;
+    t)
+        THREADS=${OPTARG}
+        ;;
+    ?)
+        usage
+        exit
+        ;;
+    esac
 done
 
 echo "Create files and folders with fna-reps"
@@ -87,7 +86,7 @@ bsub \
     -q "${QUEUE}" \
     -e "${LOGS}"/"${JOB}".files.err \
     -o "${LOGS}"/"${JOB}".files.out \
-    bash "${P}"/cluster/codon/execute/steps/4_create_files.sh \
+    bash "${PIPELINE_DIRECTORY}"/src/steps/4_create_files.sh \
         -o "${OUT}" \
         -r "${REPS}" \
         -f "${ALL_GENOMES}" \
@@ -132,11 +131,11 @@ for i in ${MMSEQS_LIMIT_I[@]}; do
         -o "${LOGS}"/"${JOB}"."${i}".out \
         -M "${MEM}" \
         -n "${THREADS}" \
-        bash "${P}"/cluster/codon/run-cwltool.sh \
+        bash "${PIPELINE_DIRECTORY}"/bin/run-cwltool.sh \
             -d False \
-            -p "${P}" \
+            -p "${PIPELINE_DIRECTORY}" \
             -o "${OUT}" \
             -n "${DIRNAME}_mmseqs_${i}" \
-            -c "${P}"/cwl/tools/mmseqs/mmseqs.cwl \
+            -c "${PIPELINE_DIRECTORY}"/cwl/tools/mmseqs/mmseqs.cwl \
             -y "${YML}"/"${i}".mmseqs.yml
 done

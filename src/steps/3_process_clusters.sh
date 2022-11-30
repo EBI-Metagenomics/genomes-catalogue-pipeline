@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export GUNC_DB="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd"
-
 usage() {
     cat <<EOF
 usage: $0 options
@@ -18,10 +16,11 @@ OPTIONS:
    -j      LSF step Job name to submit
    -z      memory to execute
    -w      number of threads
+   -g      path to GUNC DB (gunc_db_2.0.4.dmnd)
 EOF
 }
 
-while getopts hi:o:p:t:l:n:q:y:j:s:z:w: option; do
+while getopts hi:o:p:t:l:n:q:y:j:s:z:w:g: option; do
     case "${option}" in
     h)
         usage
@@ -34,7 +33,7 @@ while getopts hi:o:p:t:l:n:q:y:j:s:z:w: option; do
         OUTDIR=${OPTARG}
         ;;
     p)
-        P=${OPTARG}
+        PIPELINE_DIRECTORY=${OPTARG}
         ;;
     t)
         TYPE=${OPTARG}
@@ -63,6 +62,9 @@ while getopts hi:o:p:t:l:n:q:y:j:s:z:w: option; do
     w)
         THREADS=${OPTARG}
         ;;
+    g) 
+        GUNC_DB=${OPTARG}
+        ;;
     ?)
         usage
         exit
@@ -73,10 +75,10 @@ done
 ls "${INPUT}" >"step3_input_list_${TYPE}.txt"
 
 while IFS= read -r i; do
-    export YML=${YML_FOLDER}/${i}.${TYPE}.cluster.yml
+    YML=${YML_FOLDER}/${i}.${TYPE}.cluster.yml
 
     if [ "${TYPE}" == "pg" ]; then
-        CWL=${P}/cwl/sub-wfs/3_process_clusters/pan-genomes/sub-wf-pan-genomes.cwl
+        CWL=${PIPELINE_DIRECTORY}/src/cwl/sub-wfs/3_process_clusters/pan-genomes/sub-wf-pan-genomes.cwl
         MASH=${OUTDIR}/mash2nwk/${i}_mashtree.nwk
         echo \
             "
@@ -88,7 +90,7 @@ mash_files:
     path: ${MASH}
      " >"${YML}"
     else
-        CWL=${P}/cwl/sub-wfs/3_process_clusters/singletons/sub-wf-singleton.cwl
+        CWL=${PIPELINE_DIRECTORY}/src/cwl/sub-wfs/3_process_clusters/singletons/sub-wf-singleton.cwl
         NAME="$(basename -- "${INPUT_CSV}")"
         CSV=${OUTDIR}/${DIRNAME}_drep/intermediate_files/renamed_${NAME}
         echo \
@@ -113,9 +115,9 @@ csv:
         -q "${QUEUE}" \
         -M "${MEM}" \
         -n "${THREADS}" \
-        bash "${P}"/cluster/codon/run-cwltool.sh \
+        bash "${PIPELINE_DIRECTORY}"/bin/run-cwltool.sh \
             -d False \
-            -p "${P}" \
+            -p "${PIPELINE_DIRECTORY}" \
             -o "${OUTDIR}"/"${TYPE}" \
             -n "${i}"_cluster \
             -c "${CWL}" \
