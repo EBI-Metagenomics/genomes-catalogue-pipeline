@@ -5,11 +5,12 @@ class: Workflow
 doc: |
   - kegg, cog, cazy annotations
   - ncRNA
+  - sanntis  # temporarily replaced by bash step 6a
   - annotate gff
 
   Input:
   - Directory with files:
-    - fna, faa, gff
+    - fna, faa, gff, gbk, ffn
     - pan-genome.fna (panaroo.fna), core_genes.txt [for pangenomes]
     - mash.nwk, panaroo.gene_presence_absence [for pangenomes not in use]
   - kegg db
@@ -23,6 +24,7 @@ doc: |
                ----- fna, fna.fai, faa, gff (annotated)
                ----- kegg, cog, cazy,...
                ----- IPS, eggNOG
+               ----- Sanntis
        ----- genome.json [ if metadata presented]
        ----- pan-genome
                ----- pan-genome.fna
@@ -112,6 +114,9 @@ steps:
     in:
       fasta: get_fna/file_pattern
     out: [ fasta_index ]
+
+# --------- run Sanntis ----------
+  # step temporarily replaced by bash step 6a
 
 # --------- annotate GFF ----------
 

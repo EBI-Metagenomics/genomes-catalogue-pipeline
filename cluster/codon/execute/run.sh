@@ -12,6 +12,7 @@ STEP3="Step3.clusters"
 STEP4="Step4.mmseqs"
 STEP5="Step5.gtdbtk"
 STEP6="Step6.annotation"
+STEP6a="Step6a.sanntis"
 STEP7="Step7.metadata"
 STEP8="Step8.postprocessing"
 STEP9="Step9.databases"
@@ -21,10 +22,11 @@ MEM_STEP1="50G"
 MEM_STEP2="10G"
 MEM_STEP3="50G"
 MEM_STEP4="150G"
-MEM_STEP5="500G"
+MEM_STEP5="150G"
 MEM_STEP6="50G"
+MEM_STEP6a="5G"
 MEM_STEP7="5G"
-MEM_STEP8="5G"
+MEM_STEP8="50G"
 MEM_STEP9="150G"
 # kraken needs 150G
 
@@ -34,6 +36,7 @@ THREADS_STEP3="8"
 THREADS_STEP4="32"
 THREADS_STEP5="32"
 THREADS_STEP6="16"
+THREADS_STEP6a="1"
 THREADS_STEP7="1"
 THREADS_STEP8="1"
 THREADS_STEP9="16"
@@ -312,7 +315,7 @@ bsub \\
     -o ${LOGS}/submit.${STEP5}.out \\
     -e ${LOGS}/submit.${STEP5}.err \\
     bash ${MAIN_PATH}/cluster/codon/execute/steps/5_sing_gtdbtk.sh \\
-        -q ${BIGQUEUE} \\
+        -q ${DEFAULT_QUEUE} \\
         -p ${MAIN_PATH} \\
         -o ${OUT} \\
         -l ${LOGS} \\
@@ -366,6 +369,28 @@ EOF
 if [[ $RUN == 1 ]]; then
     echo "==== Running step 6 [${SUBMIT_SCRIPTS}/step6.${NAME}.sh] ===="
 fi
+
+# ------------------------- Step 6a ------------------------------
+echo "==== 6a. Sanntis [${SUBMIT_SCRIPTS}/step6a.${NAME}.sh] ===="
+
+cat <<EOF >${SUBMIT_SCRIPTS}/step6a.${NAME}.sh
+#!/bin/bash
+
+bsub \\
+    -J "${STEP6a}.${NAME}.submit" \\
+    -q ${QUEUE} \\
+    -e ${LOGS}/submit.${STEP6a}.err \\
+    -o ${LOGS}/submit.${STEP6a}.out \\
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/6a_run_sanntis.sh \\
+    -o ${OUT} \\
+    -l ${LOGS} \\
+    -n ${NAME} \\
+    -q ${QUEUE} \\
+    -j ${STEP6a} \\
+    -z ${MEM_STEP6a} \\
+    -t ${THREADS_STEP6a}
+
+EOF
 
 # ------------------------- Step 7 ------------------------------
 if [[ $RUN == 1 ]]; then
