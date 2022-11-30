@@ -15,7 +15,8 @@ STEP6="Step6.annotation"
 STEP6a="Step6a.sanntis"
 STEP7="Step7.metadata"
 STEP8="Step8.postprocessing"
-STEP9="Step9.restructure"
+STEP9="Step9.databases"
+STEP10="Step10.restructure"
 
 MEM_STEP1="50G"
 MEM_STEP2="10G"
@@ -26,6 +27,8 @@ MEM_STEP6="50G"
 MEM_STEP6a="5G"
 MEM_STEP7="5G"
 MEM_STEP8="50G"
+MEM_STEP9="150G"
+# kraken needs 150G
 
 THREADS_STEP1="16"
 THREADS_STEP2="4"
@@ -36,6 +39,7 @@ THREADS_STEP6="16"
 THREADS_STEP6a="1"
 THREADS_STEP7="1"
 THREADS_STEP8="1"
+THREADS_STEP9="16"
 
 usage() {
     cat <<EOF
@@ -467,9 +471,8 @@ if [[ $RUN == 1 ]]; then
     mwait.py -w "ended(${STEP8}.${NAME}.run)"
 fi
 
-# ------------------------- Step 9 ------------------------------
-
-echo "==== 9. Re-structure [${SUBMIT_SCRIPTS}/step9.${NAME}.sh] ===="
+# ------------------------- Step 9 -------------------------------
+echo "==== 9. Databases [${SUBMIT_SCRIPTS}/step9.${NAME}.sh] ===="
 
 cat <<EOF >${SUBMIT_SCRIPTS}/step9.${NAME}.sh
 #!/bin/bash
@@ -479,15 +482,34 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP9}.err \\
     -o ${LOGS}/submit.${STEP9}.out \\
-    bash ${MAIN_PATH}/cluster/codon/execute/steps/9_restructure.sh \\
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/9_databases.sh \\
+        -o ${OUT} \\
+        -p ${MAIN_PATH} \\
+        -l ${LOGS} \\
+        -n ${NAME} \\
+        -q ${QUEUE} \\
+        -j ${STEP9} \\
+        -v ${CATALOGUE_VERSION} \\
+        -z ${MEM_STEP9} \\
+        -t ${THREADS_STEP9}
+
+EOF
+
+# ------------------------- Step 10 ------------------------------
+
+echo "==== 10. Re-structure [${SUBMIT_SCRIPTS}/step10.${NAME}.sh] ===="
+
+cat <<EOF >${SUBMIT_SCRIPTS}/step10.${NAME}.sh
+#!/bin/bash
+
+bsub \\
+    -J "${STEP10}.${NAME}.submit" \\
+    -q ${QUEUE} \\
+    -e ${LOGS}/submit.${STEP10}.err \\
+    -o ${LOGS}/submit.${STEP10}.out \\
+    bash ${MAIN_PATH}/cluster/codon/execute/steps/10_restructure.sh \\
         -o ${OUT} \\
         -n ${NAME}
 EOF
-
-if [[ $RUN == 1 ]]; then
-    echo "==== Running step 9 [${SUBMIT_SCRIPTS}/step9.${NAME}.sh] ===="
-    bash ${SUBMIT_SCRIPTS}/step9.${NAME}.sh
-    sleep 10
-fi
 
 echo "==== Final. Exit ===="

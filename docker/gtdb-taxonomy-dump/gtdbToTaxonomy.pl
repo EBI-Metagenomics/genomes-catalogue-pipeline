@@ -83,7 +83,6 @@ sub main{
       my ($rank,$scientificName) = split(/__/, $name);
 
       # If the taxon has not been defined yet, then write it up
-      if(!defined($taxon{$name})){
         my $taxid = ++$taxonCounter;
         my $rank   = $rank{lc($rank)};
 
@@ -111,7 +110,7 @@ sub main{
     # Download the genome with the last taxid
     my $taxid = $taxon{$lineage[-1]}{taxid};
     my $filename = $$settings{'sequence-dir'}."/gtdb/$assemblyId.fna";
-    my $before = $$settings{'sequence-dir'}."/$assemblyId.fa";
+    my $before = $$settings{'sequence-dir'}."/$assemblyId.fna";
 
     print "Renaming $before $filename \n";
 
