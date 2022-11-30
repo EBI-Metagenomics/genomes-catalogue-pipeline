@@ -1,8 +1,7 @@
 #!/bin/bash
 
-usage()
-{
-cat << EOF
+usage() {
+  cat <<EOF
 usage: $0 options
 Run genomes-pipeline metadata generation and phylo.tree
 OPTIONS:
@@ -24,81 +23,79 @@ OPTIONS:
 EOF
 }
 
-export GEO="/hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/continent_countries.csv"
-
 while getopts ho:p:l:n:q:y:v:i:g:r:j:f:s:z:t:d: option; do
-	case "$option" in
-		h)
-        usage
-        exit 1
-        ;;
-		o)
-		    OUT=${OPTARG}
-		    ;;
-		p)
-		    PIPELINE_DIRECTORY=${OPTARG}
-		    ;;
-		l)
-		    LOGS=${OPTARG}
-		    ;;
-		n)
-		    DIRNAME=${OPTARG}
-		    ;;
-		q)
-		    QUEUE=${OPTARG}
-		    ;;
-		y)
-		    YML=${OPTARG}
-		    ;;
-		v)
-		    VERSION=${OPTARG}
-		    ;;
-		i)
-		    INTERMEDIATE_FILES=${OPTARG}
-		    ;;
-		g)
-		    GTDB=${OPTARG}
-		    ;;
-		r)
-		    RRNA=${OPTARG}
-		    ;;
-		j)
-		    JOB=${OPTARG}
-		    ;;
-		f)
-		    ALL_FNA=${OPTARG}
-		    ;;
-		s)
-		    INPUT_CSV=${OPTARG}
-		    ;;
-        z)
-		    MEM=${OPTARG}
-		    ;;
-		t)
-		    THREADS=${OPTARG}
-		    ;;
-    d)
-      
-		?)
-		    usage
-        exit 1
-        ;;
-	esac
+  case "$option" in
+  h)
+    usage
+    exit 1
+    ;;
+  o)
+    OUT=${OPTARG}
+    ;;
+  p)
+    PIPELINE_DIRECTORY=${OPTARG}
+    ;;
+  l)
+    LOGS=${OPTARG}
+    ;;
+  n)
+    DIRNAME=${OPTARG}
+    ;;
+  q)
+    QUEUE=${OPTARG}
+    ;;
+  y)
+    YML=${OPTARG}
+    ;;
+  v)
+    VERSION=${OPTARG}
+    ;;
+  i)
+    INTERMEDIATE_FILES=${OPTARG}
+    ;;
+  g)
+    GTDB=${OPTARG}
+    ;;
+  r)
+    RRNA=${OPTARG}
+    ;;
+  j)
+    JOB=${OPTARG}
+    ;;
+  f)
+    ALL_FNA=${OPTARG}
+    ;;
+  s)
+    INPUT_CSV=${OPTARG}
+    ;;
+  z)
+    MEM=${OPTARG}
+    ;;
+  t)
+    THREADS=${OPTARG}
+    ;;
+  d)
+    GEO=${OPTARG}
+    ;;
+  ?)
+    usage
+    exit 1
+    ;;
+  esac
 done
 
 GTDB_TAXONOMY=${GTDB}/gtdbtk.summary.tsv
 
 touch ${GTDB_TAXONOMY}
-[ -f ${GTDB}/classify/gtdbtk.bac120.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.bac120.summary.tsv >> ${GTDB_TAXONOMY}
-[ -f ${GTDB}/classify/gtdbtk.ar122.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.ar122.summary.tsv >> ${GTDB_TAXONOMY}
-
+[ -f ${GTDB}/classify/gtdbtk.bac120.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.bac120.summary.tsv >>${GTDB_TAXONOMY}
+[ -f ${GTDB}/classify/gtdbtk.ar122.summary.tsv ] && cat ${GTDB}/classify/gtdbtk.ar122.summary.tsv >>${GTDB_TAXONOMY}
 
 echo "Creating yml"
 NAME="$(basename -- "${INPUT_CSV}")"
 YML_FILE="${YML}"/metadata.yml
 
 echo \
-"
+  "
 extra_weights_table:
   class: File
   path: ${INTERMEDIATE_FILES}/extra_weight_table.txt
@@ -129,22 +126,22 @@ gtdb_taxonomy:
 all_fna_dir:
   class: Directory
   path: ${ALL_FNA}
-" > "${YML_FILE}"
+" >"${YML_FILE}"
 
 CWL=${PIPELINE_DIRECTORY}/src/cwl/sub-wfs/5_gtdb/metadata_and_phylo_tree.cwl
 
 echo "Submitting GTDB-Tk metadata and phylo.tree generation"
 bsub \
-    -J "${JOB}.${DIRNAME}.run" \
-    -q "${QUEUE}" \
-    -e "${LOGS}"/"${JOB}".err \
-    -o "${LOGS}"/"${JOB}".out \
-    -M "${MEM}" \
-    -n "${THREADS}" \
-    bash "${PIPELINE_DIRECTORY}"/bin/run-cwltool.sh \
-        -d False \
-        -p "${PIPELINE_DIRECTORY}" \
-        -o "${OUT}" \
-        -n "${DIRNAME}_metadata" \
-        -c "${CWL}" \
-        -y "${YML_FILE}"
+  -J "${JOB}.${DIRNAME}.run" \
+  -q "${QUEUE}" \
+  -e "${LOGS}"/"${JOB}".err \
+  -o "${LOGS}"/"${JOB}".out \
+  -M "${MEM}" \
+  -n "${THREADS}" \
+  bash "${PIPELINE_DIRECTORY}"/bin/run-cwltool.sh \
+    -d False \
+    -p "${PIPELINE_DIRECTORY}" \
+    -o "${OUT}" \
+    -n "${DIRNAME}_metadata" \
+    -c "${CWL}" \
+    -y "${YML_FILE}"

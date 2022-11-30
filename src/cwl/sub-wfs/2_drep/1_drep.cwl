@@ -52,7 +52,7 @@ steps:
 # - assign MGYGs
 
   preparation:
-    run: ../../cwl/sub-wfs/wf-1-preparation.cwl
+    run: ../wf-1-preparation.cwl
     in:
       genomes_ena: genomes_ena
       ena_csv: ena_csv
@@ -74,7 +74,7 @@ steps:
 # - classify to pangenomes and singletons
 
   drep_subwf:
-    run: ../../cwl/sub-wfs/wf-2-drep.cwl
+    run: ../wf-2-drep.cwl
     in:
       genomes_folder: preparation/assign_mgygs_renamed_genomes
       input_csv: preparation/assign_mgygs_renamed_csv
@@ -94,21 +94,21 @@ steps:
       - mdb
 
   wrap_pan_genomes:
-    run: ../../cwl/utils/return_dir_of_dir.cwl
+    run: ../../utils/return_dir_of_dir.cwl
     in:
       directory_array: drep_subwf/many_genomes
       newname: {default: "pan-genomes"}
     out: [ pool_directory ]
 
   wrap_singletons:
-    run: ../../cwl/utils/return_dir_of_dir.cwl
+    run: ../../utils/return_dir_of_dir.cwl
     in:
       directory_array: drep_subwf/one_genome
       newname: {default: "singletons"}
     out: [ pool_directory ]
 
   wrap_mash:
-    run: ../../cwl/utils/return_directory.cwl
+    run: ../..//utils/return_directory.cwl
     in:
       list: drep_subwf/mash_files
       dir_name: {default: "mash"}
@@ -116,7 +116,7 @@ steps:
 
 # ---------- << create intermediate_files for FTP>> ----------
   folder_with_intermediate_files:
-    run: ../../cwl/utils/return_directory.cwl
+    run: ../../utils/return_directory.cwl
     in:
       list:
         source:

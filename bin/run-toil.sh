@@ -2,60 +2,42 @@
 
 set -e
 
-. /hps/software/users/rdf/metagenomics/service-team/repos/mi-automation/team_environments/codon/mitrc.sh
+. "${PIPELINE_DIRECTORY}"/.gpenv
 
-mitload miniconda
+CWL="${PIPELINE_DIRECTORY}"/cwl/workflows/wf-main.cwl
+YML="${PIPELINE_DIRECTORY}"/tests/cluster/wf-main_ena_verysmall.yml
 
-module load singularity-3.7.0-gcc-9.3.0-dp5ffrp
+SINGULARITY_ON="True"
 
-conda activate toil-5.7.1
-
-MAIN_PATH="/nfs/production/rdf/metagenomics/pipelines/dev/genomes-pipeline/"
-
-CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
-YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
-
-JOBSTORE="/hps/nobackup/rdf/metagenomics/toil-jobstore/genomes-pipeline-test"
-OUTDIR="/hps/nobackup/rdf/metagenomics/test-folder/genomes-pipeline"
-TMPDIR="/hps/scratch/rdf/metagenomics/pipelines-tmp"
-OUTDIRNAME="test"
-MEMORY=100G
-QUEUE="production"
-BIG_MEM="False"
-SINGULARUTY_ON="True"
-
-while getopts :n:y:c:m:q:b:s:p:o:t: option; do
+while getopts :n:y:c:m:q:b:s:o:t: option; do
     case "${option}" in
-    n) OUTDIRNAME=${OPTARG} ;;
     y) YML=${OPTARG} ;;
     c) CWL=${OPTARG} ;;
     m) MEMORY=${OPTARG} ;;
     q) QUEUE=${OPTARG} ;;
-    b) BIG_MEM=${OPTARG} ;;
-    s) SINGULARUTY_ON=${OPTARG} ;;
-    p) MAIN_PATH=${OPTARG} ;;
+    s) SINGULARITY_ON=${OPTARG} ;;
     o) OUTDIR=${OPTARG} ;;
+    n) OUTDIRNAME=${OPTARG} ;;
     t) TMPDIR=${OPTARG} ;;
+    *)
+        echo "Invalid option"
+        exit 1
+        ;;
     esac
 done
 
-export PATH=$PATH:${MAIN_PATH}/docker/python3_scripts/
-export PATH=$PATH:${MAIN_PATH}/docker/genomes-catalog-update/scripts/
-
-chmod a+x "${MAIN_PATH}"/docker/python3_scripts/*
-chmod a+x "${MAIN_PATH}"/docker/genomes-catalog-update/scripts/*
+export PATH=$PATH:"${PIPELINE_DIRECTORY}"/containers/python3_scripts/
+export PATH=$PATH:"${PIPELINE_DIRECTORY}"/containers/genomes-catalog-update/scripts/
 
 export TOIL_LSF_ARGS="-q ${QUEUE}"
-if [ "${BIG_MEM}" == "True" ]; then
-    export TOIL_LSF_ARGS="-q ${QUEUE} -P bigmem"
-fi
-echo ${TOIL_LSF_ARGS}
+
+echo "${TOIL_LSF_ARGS}"
 
 export RUN_OUTDIR=${OUTDIR}/${OUTDIRNAME}
 export LOG_DIR=${OUTDIR}/logs/${OUTDIRNAME}
-export RUN_JOBSTORE=${JOBSTORE}/${OUTDIRNAME}
+export RUN_TOIL_JOBSTORE=${TOIL_JOBSTORE}/${OUTDIRNAME}
 
-rm -rf "${RUN_JOBSTORE}" || true
+rm -rf "${RUN_TOIL_JOBSTORE}" || true
 mkdir -p "${RUN_OUTDIR}" "${LOG_DIR}"
 
 echo "Log-file ${LOG_DIR}/${OUTDIRNAME}.log"
@@ -65,7 +47,7 @@ echo "Toil start: $now"
 
 set -x
 
-if [ "${SINGULARUTY_ON}" == "True" ]; then
+if [ "${SINGULARITY_ON}" == "True" ]; then
     toil-cwl-runner \
         --logWarning \
         --stats \
@@ -79,11 +61,9 @@ if [ "${SINGULARUTY_ON}" == "True" ]; then
         --batchSystem lsf \
         --bypass-file-store \
         --disableCaching \
-        --jobStore ${RUN_JOBSTORE} \
+        --TOIL_JOBSTORE ${RUN_TOIL_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        --beta-conda-dependencies \
-        --beta-dependencies-directory /hps/nobackup/rdf/metagenomics/service-team/toil-conda-envs \
         ${CWL} ${YML} >"${LOG_DIR}/${OUTDIRNAME}.json"
 else
     toil-cwl-runner \
@@ -99,11 +79,9 @@ else
         --batchSystem lsf \
         --bypass-file-store \
         --disableCaching \
-        --jobStore ${RUN_JOBSTORE} \
+        --TOIL_JOBSTORE ${RUN_TOIL_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        --beta-conda-dependencies \
-        --beta-dependencies-directory /hps/nobackup/rdf/metagenomics/service-team/toil-conda-envs \
         ${CWL} ${YML} >"${LOG_DIR}/${OUTDIRNAME}.json"
 fi
 

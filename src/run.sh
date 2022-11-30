@@ -2,8 +2,6 @@
 
 set -e
 
-. .gp-env
-
 RUN=0
 
 STEP1="Step1.drep"
@@ -14,7 +12,8 @@ STEP5="Step5.gtdbtk"
 STEP6="Step6.annotation"
 STEP7="Step7.metadata"
 STEP8="Step8.postprocessing"
-STEP9="Step9.restructure"
+STEP9="Step9.databases"
+STEP10="Step10.restructure"
 
 MEM_STEP1="50G"
 MEM_STEP2="10G"
@@ -24,6 +23,7 @@ MEM_STEP5="500G"
 MEM_STEP6="50G"
 MEM_STEP7="5G"
 MEM_STEP8="5G"
+MEM_STEP9="150G" # kraken needs 150G
 
 THREADS_STEP1="16"
 THREADS_STEP2="4"
@@ -33,6 +33,7 @@ THREADS_STEP5="32"
 THREADS_STEP6="16"
 THREADS_STEP7="1"
 THREADS_STEP8="1"
+THREADS_STEP9="16"
 
 usage() {
     cat <<EOF
@@ -104,7 +105,7 @@ if [[ -z ${NAME} ]]; then
 fi
 
 if [[ -z ${OUTPUT} ]]; then
-    OUTPUT=${MAIN_PATH}
+    OUTPUT=${PIPELINE_DIRECTORY}
 fi
 
 if [[ -z ${CATALOGUE_VERSION} ]]; then
@@ -142,9 +143,9 @@ echo "==== 1. dRep steps with cwltool [${SUBMIT_SCRIPTS}/step1.${NAME}.sh] ===="
 cat <<EOF >${SUBMIT_SCRIPTS}/step1.${NAME}.sh
 #!/bin/bash
 
-bash ${MAIN_PATH}/src/steps/1_drep.sh \\
+bash ${PIPELINE_DIRECTORY}/src/steps/1_drep.sh \\
     -o ${OUT} \\
-    -p ${MAIN_PATH} \\
+    -p ${PIPELINE_DIRECTORY} \\
     -l ${LOGS} \\
     -n ${NAME} \\
     -q ${QUEUE} \\
@@ -176,10 +177,10 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP2}.err \\
     -o ${LOGS}/submit.${STEP2}.out \\
-    bash ${MAIN_PATH}/src/steps/2_mash.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/2_mash.sh \\
         -m ${OUT}/${NAME}_drep/mash \\
         -o ${OUT} \\
-        -p ${MAIN_PATH} \\
+        -p ${PIPELINE_DIRECTORY} \\
         -l ${LOGS} \\
         -n ${NAME} \\
         -q ${QUEUE} \\
@@ -212,10 +213,10 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP3}.sg.err \\
     -o ${LOGS}/submit.${STEP3}.sg.out \\
-    bash ${MAIN_PATH}/src/steps/3_process_clusters.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/3_process_clusters.sh \\
         -i ${OUT}/${NAME}_drep/singletons \\
         -o ${OUT} \\
-        -p ${MAIN_PATH} \\
+        -p ${PIPELINE_DIRECTORY} \\
         -t "sg" \\
         -l ${LOGS} \\
         -n ${NAME} \\
@@ -232,10 +233,10 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP3}.pg.err \\
     -o ${LOGS}/submit.${STEP3}.pg.out \\
-    bash ${MAIN_PATH}/src/steps/3_process_clusters.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/3_process_clusters.sh \\
         -i ${OUT}/${NAME}_drep/pan-genomes \\
         -o ${OUT} \\
-        -p ${MAIN_PATH} \\
+        -p ${PIPELINE_DIRECTORY} \\
         -t "pg" \\
         -l ${LOGS} \\
         -n ${NAME} \\
@@ -267,9 +268,9 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP4}.err \\
     -o ${LOGS}/submit.${STEP4}.out \\
-    bash ${MAIN_PATH}/src/steps/4_mmseqs.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/4_mmseqs.sh \\
         -o ${OUT} \\
-        -p ${MAIN_PATH} \\
+        -p ${PIPELINE_DIRECTORY} \\
         -l ${LOGS} \\
         -n ${NAME} \\
         -q ${QUEUE} \\
@@ -315,9 +316,9 @@ bsub \\
     -q ${QUEUE} \\
     -o ${LOGS}/submit.${STEP5}.out \\
     -e ${LOGS}/submit.${STEP5}.err \\
-    bash ${MAIN_PATH}/src/steps/5_gtdbtk.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/5_gtdbtk.sh \\
         -q ${BIGQUEUE} \\
-        -p ${MAIN_PATH} \\
+        -p ${PIPELINE_DIRECTORY} \\
         -o ${OUT} \\
         -l ${LOGS} \\
         -n ${NAME} \\
@@ -352,9 +353,9 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP6}.err \\
     -o ${LOGS}/submit.${STEP6}.out \\
-    bash ${MAIN_PATH}/src/steps/6_annotation.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/6_annotation.sh \\
         -o ${OUT} \\
-        -p ${MAIN_PATH} \\
+        -p ${PIPELINE_DIRECTORY} \\
         -l ${LOGS} \\
         -n ${NAME} \\
         -q ${QUEUE} \\
@@ -389,9 +390,9 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP7}.err \\
     -o ${LOGS}/submit.${STEP7}.out \\
-    bash ${MAIN_PATH}/src/steps/7_metadata.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/7_metadata.sh \\
         -o ${OUT} \\
-        -p ${MAIN_PATH} \\
+        -p ${PIPELINE_DIRECTORY} \\
         -l ${LOGS} \\
         -n ${NAME} \\
         -q ${QUEUE} \\
@@ -427,9 +428,9 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP8}.err \\
     -o ${LOGS}/submit.${STEP8}.out \\
-    bash ${MAIN_PATH}/src/steps/8_post_processing.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/8_post_processing.sh \\
         -o ${OUT} \\
-        -p ${MAIN_PATH} \\
+        -p ${PIPELINE_DIRECTORY} \\
         -l ${LOGS} \\
         -n ${NAME} \\
         -q ${QUEUE} \\
@@ -451,27 +452,42 @@ if [[ $RUN == 1 ]]; then
     bwait -w "ended(${STEP8}.${NAME}.run)"
 fi
 
-# ------------------------- Step 9 ------------------------------
-
-echo "==== 9. Re-structure [${SUBMIT_SCRIPTS}/step9.${NAME}.sh] ===="
+# ------------------------- Step 9 -------------------------------
+echo "==== 9. Databases [${SUBMIT_SCRIPTS}/step9.${NAME}.sh] ===="
 
 cat <<EOF >${SUBMIT_SCRIPTS}/step9.${NAME}.sh
 #!/bin/bash
-
 bsub \\
     -J "${STEP9}.${NAME}.submit" \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP9}.err \\
     -o ${LOGS}/submit.${STEP9}.out \\
-    bash ${MAIN_PATH}/src/steps/9_restructure.sh \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/9_databases.sh \\
+        -o ${OUT} \\
+        -p ${PIPELINE_DIRECTORY} \\
+        -l ${LOGS} \\
+        -n ${NAME} \\
+        -q ${QUEUE} \\
+        -j ${STEP9} \\
+        -v ${CATALOGUE_VERSION} \\
+        -z ${MEM_STEP9} \\
+        -t ${THREADS_STEP9}
+EOF
+
+# ------------------------- Step 10 ------------------------------
+
+echo "==== 10. Re-structure [${SUBMIT_SCRIPTS}/step10.${NAME}.sh] ===="
+
+cat <<EOF >${SUBMIT_SCRIPTS}/step10.${NAME}.sh
+#!/bin/bash
+bsub \\
+    -J "${STEP10}.${NAME}.submit" \\
+    -q ${QUEUE} \\
+    -e ${LOGS}/submit.${STEP10}.err \\
+    -o ${LOGS}/submit.${STEP10}.out \\
+    bash ${PIPELINE_DIRECTORY}/src/steps/10_restructure.sh \\
         -o ${OUT} \\
         -n ${NAME}
 EOF
-
-if [[ $RUN == 1 ]]; then
-    echo "==== Running step 9 [${SUBMIT_SCRIPTS}/step9.${NAME}.sh] ===="
-    bash ${SUBMIT_SCRIPTS}/step9.${NAME}.sh
-    sleep 10
-fi
 
 echo "==== Final. Exit ===="

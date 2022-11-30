@@ -16,7 +16,7 @@ Requirements:
 - bash
 - [cwltool](https://github.com/common-workflow-language/cwltool)
 - [toil-cwl](https://toil.readthedocs.io/en/3.10.1/gettingStarted/install.html)
-- [docker](https://www.docker.com/) or (singulairty)[https://sylabs.io/docs/]
+- [docker](https://www.docker.com/) or [singulairty](https://sylabs.io/docs/)
 
 The current implementation uses CWL version 1.2.
 
