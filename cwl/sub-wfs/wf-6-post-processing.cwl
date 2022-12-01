@@ -48,14 +48,14 @@ steps:
       input: list of all IPS, EggNOGs and SanntiS
       ex: MGYG000296485_InterProScan.tsv, MGYG000296486_eggNOG.tsv, ....)
       goal: get corresponding annotations for each MGYG cluster
-    run: ../utils/get_file_pattern.cwl
+    run: ../utils/get_file_pattern_python.cwl
     scatter: pattern
     in:
       list_files: annotations
       pattern:
         source: clusters
         valueFrom: $(self.basename)
-    out: [ file_pattern ]  # File[]
+    out: [ files_pattern ]  # File[]
 
   process_folders:
     doc: |
@@ -68,7 +68,7 @@ steps:
     scatter: [annotations, cluster]
     scatterMethod: dotproduct
     in:
-      annotations: choose_annotations/file_pattern
+      annotations: choose_annotations/files_pattern
       kegg: kegg
       cluster: clusters
       biom: biom

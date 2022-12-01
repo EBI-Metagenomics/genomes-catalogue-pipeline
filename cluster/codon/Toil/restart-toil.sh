@@ -19,6 +19,10 @@ OUTDIRNAME="test"
 MEMORY=100G
 QUEUE="production"
 BIG_MEM="False"
+SINGULARUTY_ON="True"
+
+CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
+YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
 
 
 while getopts :n:y:c:m:q:b:s:p:o:t: option; do
@@ -42,9 +46,6 @@ export PATH=$PATH:${MAIN_PATH}/docker/genomes-catalog-update/scripts/
 
 chmod a+x ${MAIN_PATH}/docker/python3_scripts/*
 chmod a+x ${MAIN_PATH}/docker/genomes-catalog-update/scripts/*
-
-CWL=${MAIN_PATH}/cwl/workflows/wf-main.cwl
-YML=${MAIN_PATH}/tests/cluster/wf-main_ena_verysmall.yml
 
 
 export TOIL_LSF_ARGS="-q ${QUEUE}"
