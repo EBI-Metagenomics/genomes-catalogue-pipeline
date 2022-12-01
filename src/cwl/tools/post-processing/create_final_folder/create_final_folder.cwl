@@ -13,7 +13,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/python3_scripts/create_final_folder.py
+        location: ../../../../../containers/python3_scripts/create_final_folder.py
 
 #hints:
 #  DockerRequirement:

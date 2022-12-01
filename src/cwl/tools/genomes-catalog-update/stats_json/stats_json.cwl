@@ -9,7 +9,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/genomes-catalog-update/scripts/generate_stats_json.py
+        location: ../../../../../containers/genomes-catalog-update/scripts/generate_stats_json.py
 
 hints:
   DockerRequirement:

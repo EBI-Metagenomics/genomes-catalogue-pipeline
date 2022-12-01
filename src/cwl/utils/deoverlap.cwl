@@ -8,7 +8,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../docker/bash/remove_overlaps_cmscan.sh
+        location: ../../../containers/bash/remove_overlaps_cmscan.sh
 
 hints:
   DockerRequirement:

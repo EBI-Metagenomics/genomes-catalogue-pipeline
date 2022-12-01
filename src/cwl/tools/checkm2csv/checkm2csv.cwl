@@ -13,7 +13,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../containers/python3_scripts/checkm2csv.py
+        location: ../../../../containers/python3_scripts/checkm2csv.py
 
 hints:
   DockerRequirement:

@@ -11,7 +11,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/genomes-catalog-update/scripts/generate_annots.py
+        location: ../../../../../containers/genomes-catalog-update/scripts/generate_annots.py
 
 #hints:
 #  DockerRequirement:

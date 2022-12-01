@@ -50,7 +50,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts/split_drep.py
+        location: ../../../../containers/python3_scripts/split_drep.py
 
 hints:
   DockerRequirement:

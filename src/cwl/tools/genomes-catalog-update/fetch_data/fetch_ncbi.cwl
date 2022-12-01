@@ -13,7 +13,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/genomes-catalog-update/scripts/fetch_ncbi.py
+        location: ../../../../../containers/genomes-catalog-update/scripts/fetch_ncbi.py
 
 hints:
   DockerRequirement:

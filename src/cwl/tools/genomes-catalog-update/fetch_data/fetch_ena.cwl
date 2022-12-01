@@ -13,7 +13,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/genomes-catalog-update/scripts/fetch_ena.py
+        location: ../../../../../containers/genomes-catalog-update/scripts/fetch_ena.py
 
 hints:
   DockerRequirement:

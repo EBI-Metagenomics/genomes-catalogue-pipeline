@@ -11,7 +11,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/genomes-catalog-update/scripts/create_metadata_table.py
+        location: ../../../../../containers/genomes-catalog-update/scripts/create_metadata_table.py
   NetworkAccess:
     networkAccess: true
 

@@ -9,7 +9,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/genomes-catalog-update/scripts/make_per_genome_annotations.py
+        location: ../../../../../containers/genomes-catalog-update/scripts/make_per_genome_annotations.py
 
 hints:
   DockerRequirement:

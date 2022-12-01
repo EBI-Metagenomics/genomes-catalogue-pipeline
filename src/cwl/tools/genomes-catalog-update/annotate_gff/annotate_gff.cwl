@@ -9,7 +9,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/genomes-catalog-update/scripts/annot_gff.py
+        location: ../../../../../containers/genomes-catalog-update/scripts/annot_gff.py
 
 #hints:
 #  DockerRequirement:

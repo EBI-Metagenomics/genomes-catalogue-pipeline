@@ -13,7 +13,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts/split_to_chunks.py
+        location: ../../../../containers/python3_scripts/split_to_chunks.py
 
 hints:
   DockerRequirement:

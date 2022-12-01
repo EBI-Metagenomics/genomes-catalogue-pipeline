@@ -11,7 +11,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts/unite_ena_ncbi.py
+        location: ../../../../containers/python3_scripts/unite_ena_ncbi.py
 
 hints:
   DockerRequirement:

@@ -11,7 +11,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts/classify_dereplicated.py
+        location: ../../../../containers/python3_scripts/classify_dereplicated.py
 
 hints:
   DockerRequirement:

@@ -9,7 +9,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/python3_scripts/generate_gunc_report.py
+        location: ../../../../containers/python3_scripts/generate_gunc_report.py
 
 hints:
   DockerRequirement:

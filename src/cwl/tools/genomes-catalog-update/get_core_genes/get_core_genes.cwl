@@ -9,7 +9,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/genomes-catalog-update/scripts/get_core_genes.py
+        location: ../../../../../containers/genomes-catalog-update/scripts/get_core_genes.py
 
 hints:
   DockerRequirement:

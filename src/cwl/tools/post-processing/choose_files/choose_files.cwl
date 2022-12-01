@@ -13,7 +13,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../../docker/python3_scripts/choose_files_post_processing.py
+        location: ../../../../../containers/python3_scripts/choose_files_post_processing.py
 
 hints:
   DockerRequirement:

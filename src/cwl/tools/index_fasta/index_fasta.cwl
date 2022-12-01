@@ -8,7 +8,7 @@ requirements:
   InitialWorkDirRequirement:
     listing:
       - class: File
-        location: ../../../docker/bash/index_fasta.sh
+        location: ../../../../containers/bash/index_fasta.sh
 
 hints:
   DockerRequirement:
