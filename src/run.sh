@@ -105,6 +105,9 @@ while getopts "p:n:f:c:m:x:v:b:o:q:r:h" OPTION; do
     esac
 done
 
+# SOURCE ENV
+. "${PIPELINE_DIRECTORY}/.gpenv"
+
 if [[ -z ${NAME} ]]; then
     NAME="genomes-annontation-test"
 fi
