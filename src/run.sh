@@ -24,7 +24,6 @@ MEM_STEP5="500G"
 MEM_STEP6="50G"
 MEM_STEP6a="5G"
 MEM_STEP7="5G"
-MEM_STEP8="5G"
 MEM_STEP9="150G" # kraken needs 150G
 
 THREADS_STEP1="16"
@@ -35,7 +34,6 @@ THREADS_STEP5="32"
 THREADS_STEP6="16"
 THREADS_STEP6a="1"
 THREADS_STEP7="1"
-THREADS_STEP8="1"
 THREADS_STEP9="16"
 
 usage() {
@@ -46,6 +44,7 @@ The generated scripts will run the pipeline step by step using cwltool / toil.
 Use the -r option to generate and run the scripts (using bwait between steps).
 
 OPTIONS:
+   -p      Pipeline repo directory
    -h      Show help message
    -t      Threads. Default=4 [OPTIONAL]
    -n      Catalogue name
@@ -60,11 +59,10 @@ OPTIONS:
 EOF
 }
 
-while getopts "h:n:f:c:m:x:v:b:o:q:r" OPTION; do
+while getopts "p:n:f:c:m:x:v:b:o:q:r:h" OPTION; do
     case $OPTION in
-    h)
-        usage
-        exit 1
+    p)
+        PIPELINE_DIRECTORY=${OPTARG}
         ;;
     n)
         NAME=${OPTARG}
@@ -96,6 +94,10 @@ while getopts "h:n:f:c:m:x:v:b:o:q:r" OPTION; do
     r)
         RUN=1
         ;;
+    h)
+        usage
+        exit 1
+        ;;        
     ?)
         usage
         exit 1

@@ -82,4 +82,27 @@ $ bash run.sh \
 #### Example
 
 ```bash
+./run.sh \
+  -p $(pwd) \
+  -n test_catalogue \
+  -o $(pwd)/test_output \
+  -f $(pwd)/test_input \
+  -c $(pwd)/test_input/input_genomes.csv \
+  -x 1 \
+  -m 1000 \
+  -v "v1.0" \
+  -b "Test:test"
+
+==== 1. dRep steps with cwltool [/test_output/test_catalogue/scripts/step1.test_catalogue.sh] ====
+==== 2. mash2nwk submission script [/test_output/test_catalogue/scripts/step2.test_catalogue.sh] ====
+==== 3. Cluster annotation [/test_output/test_catalogue/scripts/step3.test_catalogue.sh] ====
+==== 4. mmseqs [/test_output/test_catalogue/scripts/step4.test_catalogue.sh] ====
+==== 5. GTDB-Tk [/test_output/test_catalogue/scripts/step5.test_catalogue.sh] ====
+==== 6. EggNOG, IPS, rRNA [/test_output/test_catalogue/scripts/step6.test_catalogue.sh] ====
+==== 6a. Sanntis [/test_output/test_catalogue/scripts/step6a.test_catalogue.sh] ====
+==== 7. Metadata and phylo.tree [/test_output/test_catalogue/scripts/step7.test_catalogue.sh] ====
+==== 8. Post-processing [/test_output/test_catalogue/scripts/step8.test_catalogue.sh] ====
+==== 9. Databases [/test_output/test_catalogue/scripts/step9.test_catalogue.sh] ====
+==== 10. Re-structure [/test_output/test_catalogue/scripts/step10.test_catalogue.sh] ====
+==== Final. Exit ====
 ```
