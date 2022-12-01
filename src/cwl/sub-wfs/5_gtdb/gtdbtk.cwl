@@ -75,12 +75,11 @@ steps:
       out_file_name: {default: "gtdbtk.summary.tsv" }
     out: [renamed_file]
 
-$namespaces:
- edam: http://edamontology.org/
- s: http://schema.org/
-$schemas:
- - http://edamontology.org/EDAM_1.16.owl
- - https://schema.org/version/latest/schemaorg-current-http.rdf
 
-s:license: "https://www.apache.org/licenses/LICENSE-2.0"
-s:copyrightHolder: "EMBL - European Bioinformatics Institute"
+  # tar:
+  #  run: ../../utils/tar.cwl
+  #  in:
+  #    folder: gtdbtk/gtdbtk_folder
+  #  out: [ folder_tar ]
+
+

@@ -43,3 +43,5 @@ if __name__ == "__main__":
             os.rename(args.output, "many")
         elif len(os.listdir(args.output)) == 1:
             os.rename(args.output, "one")
+
+

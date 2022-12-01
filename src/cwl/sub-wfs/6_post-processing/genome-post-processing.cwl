@@ -5,11 +5,12 @@ class: Workflow
 doc: |
   - kegg, cog, cazy annotations
   - ncRNA
+  - sanntis  # temporarily replaced by bash step 6a
   - annotate gff
 
   Input:
   - Directory with files:
-    - fna, faa, gff
+    - fna, faa, gff, gbk, ffn
     - pan-genome.fna (panaroo.fna), core_genes.txt [for pangenomes]
     - mash.nwk, panaroo.gene_presence_absence [for pangenomes not in use]
   - kegg db
@@ -23,6 +24,7 @@ doc: |
                ----- fna, fna.fai, faa, gff (annotated)
                ----- kegg, cog, cazy,...
                ----- IPS, eggNOG
+               ----- Sanntis
        ----- genome.json [ if metadata presented]
        ----- pan-genome
                ----- pan-genome.fna
@@ -113,6 +115,9 @@ steps:
       fasta: get_fna/file_pattern
     out: [ fasta_index ]
 
+# --------- run Sanntis ----------
+  # step temporarily replaced by bash step 6a
+
 # --------- annotate GFF ----------
 
   annotate_gff:
@@ -164,13 +169,3 @@ steps:
         source: cluster
         valueFrom: $(self.basename)
     out: [ final_folder ]
-
-$namespaces:
- edam: http://edamontology.org/
- s: http://schema.org/
-$schemas:
- - http://edamontology.org/EDAM_1.16.owl
- - https://schema.org/version/latest/schemaorg-current-http.rdf
-
-s:license: "https://www.apache.org/licenses/LICENSE-2.0"
-s:copyrightHolder: "EMBL - European Bioinformatics Institute"

@@ -21,8 +21,11 @@ doc: |
          --- rep.faa                    [ genome ]
          --- rep.gff                    [ genome ]
          --- rep.fna                    [ genome ]
+         --- rep.gbk                    [ genome ]
+         --- rep.ffn                    [ genome ]
     FNAs (all) File[]
     FAAs (all) File[]
+    FFNs (all) File[]
     gffs / main_rep.gff
 
 requirements:
@@ -45,6 +48,14 @@ outputs:
     type: File[]
     outputSource: get_pangenome_fnas/left_files
 
+  pangenome_other_gffs:
+    type: File[]
+    outputSource: get_pangenome_gffs/left_files
+
+  pangenome_other_ffns:
+    type: File[]
+    outputSource: get_pangenome_ffns/left_files
+
   all_pangenome_faa:
     type: File[]
     outputSource: prokka/faa
@@ -53,14 +64,17 @@ outputs:
     type: Directory
     outputSource: cluster_folder/out
 
-  pangenome_other_gffs:
-    type: File[]
-    outputSource: get_pangenome_gffs/left_files
-
   main_rep_fna:
     type: File
     outputSource: choose_main_rep_fna/file_pattern
 
+  main_rep_gbk:
+    type: File
+    outputSource: choose_main_rep_gbk/file_pattern
+
+  main_rep_ffn:
+    type: File
+    outputSource: choose_main_rep_ffn/file_pattern
 
 steps:
   preparation:
@@ -79,6 +93,8 @@ steps:
       - gff
       - faa
       - fna
+      - gbk
+      - ffn
 # --------------------------------------- pan-genome specific -----------------------------------------
 
   panaroo:
@@ -126,7 +142,6 @@ steps:
         valueFrom: $(self.basename)
     out: [ file_pattern ]
 
-
   get_pangenome_gffs:
     run: ../../../utils/exclude_file_pattern.cwl
     in:
@@ -140,6 +155,15 @@ steps:
     run: ../../../utils/exclude_file_pattern.cwl
     in:
       list_files: prokka/fna
+      pattern:
+        source: cluster
+        valueFrom: $(self.basename)
+    out: [ left_files ]
+
+  get_pangenome_ffns:
+    run: ../../../utils/exclude_file_pattern.cwl
+    in:
+      list_files: prokka/ffn
       pattern:
         source: cluster
         valueFrom: $(self.basename)
@@ -174,6 +198,24 @@ steps:
         valueFrom: $(self.basename)
     out: [ file_pattern ]
 
+  choose_main_rep_gbk:
+    run: ../../../utils/get_file_pattern.cwl
+    in:
+      list_files: prokka/gbk
+      pattern:
+        source: cluster
+        valueFrom: $(self.basename)
+    out: [ file_pattern ]
+
+  choose_main_rep_ffn:
+    run: ../../../utils/get_file_pattern.cwl
+    in:
+      list_files: prokka/ffn
+      pattern:
+        source: cluster
+        valueFrom: $(self.basename)
+    out: [ file_pattern ]
+
 # --------------------------------------- final folder -----------------------------------------
 
   cluster_folder:
@@ -187,17 +229,9 @@ steps:
         - choose_main_rep_gff/file_pattern
         - choose_main_rep_faa/file_pattern
         - choose_main_rep_fna/file_pattern
+        - choose_main_rep_gbk/file_pattern
+        - choose_main_rep_ffn/file_pattern
       dir_name:
         source: cluster
         valueFrom: $(self.basename)
     out: [ out ]
-
-$namespaces:
- edam: http://edamontology.org/
- s: http://schema.org/
-$schemas:
- - http://edamontology.org/EDAM_1.16.owl
- - https://schema.org/version/latest/schemaorg-current-http.rdf
-
-s:license: "https://www.apache.org/licenses/LICENSE-2.0"
-s:copyrightHolder: "EMBL - European Bioinformatics Institute"

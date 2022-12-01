@@ -22,6 +22,12 @@ outputs:
   fna:
     type: File
     outputSource: prokka/fna
+  gbk:
+    type: File
+    outputSource: prokka/gbk
+  ffn:
+    type: File
+    outputSource: prokka/ffn
 
 steps:
 
@@ -36,14 +42,5 @@ steps:
     in:
       fa_file: change_headers/created_file
       outdirname: outdirname
-    out: [ gff, faa, fna ]
+    out: [ gff, faa, fna, gbk, ffn ]
 
-$namespaces:
- edam: http://edamontology.org/
- s: http://schema.org/
-$schemas:
- - http://edamontology.org/EDAM_1.16.owl
- - https://schema.org/version/latest/schemaorg-current-http.rdf
-
-s:license: "https://www.apache.org/licenses/LICENSE-2.0"
-s:copyrightHolder: "EMBL - European Bioinformatics Institute"
