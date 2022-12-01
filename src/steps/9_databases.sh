@@ -1,12 +1,6 @@
 #!/bin/bash
 
-# SOFTWARE
-# /hps/software/users/rdf/metagenomics/service-team/software/mash/mash-2.3/
-# /hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/
-# virify.nf
-# /hps/software/users/rdf/metagenomics/service-team/software/edirect/edirect
-# /hps/software/users/rdf/metagenomics/service-team/software/ncbi-blast+/ncbi-blast-2.12.0+
-# /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/kraken2-build
+set -e
 
 usage() {
   cat <<EOF
@@ -35,7 +29,7 @@ while getopts ho:p:n:l:v:q:j:z:t: option; do
     OUT=${OPTARG}
     ;;
   p)
-    P=${OPTARG}
+    PIPELINE_DIRECTORY=${OPTARG}
     ;;
   n)
     DIRNAME=${OPTARG}
@@ -65,19 +59,33 @@ while getopts ho:p:n:l:v:q:j:z:t: option; do
   esac
 done
 
-if [[ -z $DIRNAME ]] || [[ -z $VERSION ]] || [[ -z $OUT ]] || [[ -z JOB ]]; then
+if [[ -z $DIRNAME ]] || [[ -z $VERSION ]] || [[ -z $OUT ]] || [[ -z $JOB ]]; then
   echo 'Not all of the arguments are provided'
   usage
 fi
+
+##########################
+### REQUIRED SOFTWARE  ###
+### - config .gpenv    ###
+### mash 2.3
+### enterez direct
+### iqtree 2.1.3
+### ncbi-blast-2.12.0+
+### kraken2-2.1.2
+### braken 2.6.2
+### seqtk 1.3
+##########################
+
+. "${PIPELINE_DIRECTORY}/.gpenv"
 
 #------------------- Make a mash sketch -------------------#
 
 cd "${OUT}"/mgyg_genomes
 
 bsub -J "${DIRNAME}"_mash_sketch \
--q "${QUEUE}" -M 100G \
--o "${LOGS}"/mash_sketch.log \
-"mash sketch -o "${OUT}"/all_genomes.msh *fna"
+  -q "${QUEUE}" -M 100G \
+  -o "${LOGS}"/mash_sketch.log \
+  "${MASH_2_3} sketch -o ${OUT}/all_genomes.msh *fna"
 
 cd "${OUT}"
 
@@ -90,11 +98,12 @@ if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.bac120.user_msa.fasta.gz ]; t
     "${OUT}"/IQtree/gtdbtk.bac120.user_msa.fasta.gz
 
   bsub -J "${DIRNAME}"_iqtree_bact \
-  -q "${QUEUE}" \
-  -n 16 -M 50000 \
-  -o "${LOGS}"/iqtree-bacteria.log \
-  "/hps/software/users/rdf/metagenomics/service-team/software/iqtree/iqtree-2.1.3-Linux/bin/iqtree2 -nt 16 \
-  -s "${OUT}"/IQtree/gtdbtk.bac120.user_msa.fasta --prefix "${OUT}"/IQtree/iqtree.bacteria"
+    -q "${QUEUE}" \
+    -n 16 -M 50000 \
+    -o "${LOGS}"/iqtree-bacteria.log \
+    "${IQTREE_2_1_3}" -nt 16 \
+    -s "${OUT}/IQtree/gtdbtk.bac120.user_msa.fasta" \
+    --prefix "${OUT}/IQtree/iqtree.bacteria"
 fi
 
 if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta* ]; then
@@ -104,10 +113,12 @@ if [ -f "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta* ]; then
   gunzip "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta.gz
 
   bsub -J "${DIRNAME}"_iqtree_arch \
-  -q "${QUEUE}" \
-  -n 16 -M 50000 \
-  -o "${LOGS}"/iqtree-archaea.log \
-  "iqtree2 -nt 16 -s "${OUT}"/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta --prefix ${OUT}/IQtree/iqtree.archaea"
+    -q "${QUEUE}" \
+    -n 16 -M 50000 \
+    -o "${LOGS}"/iqtree-archaea.log \
+    "${IQTREE_2_1_3}" -nt 16 \
+    -s "${OUT}/gtdbtk/gtdbtk-outdir/align/gtdbtk.ar53.user_msa.fasta" \
+    --prefix "${OUT}/IQtree/iqtree.archaea"
 fi
 
 #------------------- Run virify -------------------#
@@ -122,16 +133,16 @@ cd ..
 mkdir -p "${OUT}"/Virify_starts/
 
 for R in $REPS; do
-  NAME=$(echo $R | cut -d '.' -f1)
-  mkdir -p "${OUT}"/Virify_starts/"${NAME}"
-  cd "${OUT}"/Virify_starts/"${NAME}"
+  NAME=$(echo "${R}" | cut -d '.' -f1)
+  mkdir -p "${OUT}/Virify_starts/${NAME}"
+  cd "${OUT}/Virify_starts/${NAME}"
 
   bsub -J "${NAME}"_virify \
-  -q "${QUEUE}" \
-  -o "${LOGS}"/Virify/"${NAME}".virify.log \
-  -M 10G \
-  nextflow run \
-    virify.nf \
+    -q "${QUEUE}" \
+    -o "${LOGS}"/Virify/"${NAME}".virify.log \
+    -M 10G \
+    nextflow run \
+    "${VIRIFY_NF}" \
     -profile ebi,singularity \
     --fasta "${OUT}"/reps_fa/"${NAME}".fna \
     --output "${OUT}"/Virify/
@@ -162,26 +173,26 @@ sed -i "s/ /\t/" "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv
 # Make dmp files
 echo "Making dmp files"
 bsub -J "${KRAKENDB}"_dmp \
--q "${QUEUE}" \
--o "${LOGS}"/"${KRAKENDB}".dmp.log \
--M 5G \
+  -q "${QUEUE}" \
+  -o "${LOGS}"/"${KRAKENDB}".dmp.log \
+  -M 5G \
   singularity exec \
-  $SINGULARITY_CACHEDIR/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tax-dump:1.0.sif perl \
-  /opt/gtdbToTaxonomy.pl --infile "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv --sequence-dir "${OUT}"/reps_fa/ \
+  "${SINGULARITY_CACHEDIR}"/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tax-dump:1.0.sif perl \
+  /opt/gtdbToTaxonomy.pl \
+  --infile "${OUT}"/gtdbtk/gtdbtk-outdir/kraken_taxonomy.tsv \
+  --sequence-dir "${OUT}"/reps_fa/ \
   --output-dir "${OUT}"/Kraken_intermediate
 
 bwait -w "ended(${KRAKENDB}_dmp)"
 
 # Generate kraken2 db
 echo "Generating kraken2 db"
-# FIXME: ?
-# echo "export PATH=\${PATH}:/hps/software/users/rdf/metagenomics/service-team/software/edirect/edirect" >>$HOME/.bashrc
-# export PATH=$PATH:/hps/software/users/rdf/metagenomics/service-team/software/ncbi-blast+/ncbi-blast-2.12.0+
 
 echo "Adding files to library"
 cd "${OUT}"
+
 for i in "${OUT}"/reps_fa/gtdb/*.fna; do
-  /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/kraken2-build --add-to-library \
+  "${KRAKEN_2_1_2_FOLDER}"/kraken2-build --add-to-library \
     $i --db "${KRAKENDB}"
 done
 
@@ -189,54 +200,54 @@ mv -v Kraken_intermediate/taxonomy "${KRAKENDB}"
 
 echo "Building library"
 bsub -J "${KRAKENDB}"_build \
--q "${QUEUE}" \
--o "${LOGS}"/"${KRAKENDB}".build.log \
--M "${MEM}" -n "${THREADS}" \
-  /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/kraken2-build --build \
+  -q "${QUEUE}" \
+  -o "${LOGS}"/"${KRAKENDB}".build.log \
+  -M "${MEM}" -n "${THREADS}" \
+  "${KRAKEN_2_1_2_FOLDER}"/kraken2-build --build \
   --db "${KRAKENDB}" --threads "${THREADS}"
 
 bwait -w "ended(${KRAKENDB}_build)"
 
 echo "Making Braken dbs"
 bsub -J "bracken_${KRAKENDB}_50" \
--q "${QUEUE}" \
--n "${THREADS}" \
--M "${MEM}" \
--o "${LOGS}"/bracken-build50.log \
-  /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
-  -d "${KRAKENDB}" -l 50 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
+  -q "${QUEUE}" \
+  -n "${THREADS}" \
+  -M "${MEM}" \
+  -o "${LOGS}"/bracken-build50.log \
+  "${BRAKEN_2_6_2_FOLDER}"/bracken-build -t "${THREADS}" \
+  -d "${KRAKENDB}" -l 50 -x "${KRAKEN_2_1_2_FOLDER}"
 
 bsub -J "bracken_${KRAKENDB}_100" \
--q "${QUEUE}" -n \
-"${THREADS}" \
--M "${MEM}" \
--o "${LOGS}"/bracken-build100.log \
-  /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
-  -d "${KRAKENDB}" -l 100 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
+  -q "${QUEUE}" -n \
+  "${THREADS}" \
+  -M "${MEM}" \
+  -o "${LOGS}"/bracken-build100.log \
+  "${BRAKEN_2_6_2_FOLDER}"/bracken-build -t "${THREADS}" \
+  -d "${KRAKENDB}" -l 100 -x "${KRAKEN_2_1_2_FOLDER}"
 
 bsub -J "bracken_${KRAKENDB}_150" \
--q "${QUEUE}" \
--n "${THREADS}" \
--M "${MEM}" \
--o "${LOGS}"/bracken-build150.log \
-  /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
-  -d "${KRAKENDB}" -l 150 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
+  -q "${QUEUE}" \
+  -n "${THREADS}" \
+  -M "${MEM}" \
+  -o "${LOGS}"/bracken-build150.log \
+  "${BRAKEN_2_6_2_FOLDER}"/bracken-build -t "${THREADS}" \
+  -d "${KRAKENDB}" -l 150 -x "${KRAKEN_2_1_2_FOLDER}"
 
 bsub -J "bracken_${KRAKENDB}_200" \
--q "${QUEUE}" \
--n "${THREADS}" \
--M "${MEM}" \
--o "${LOGS}"/bracken-build200.log \
-  /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
-  -d "${KRAKENDB}" -l 200 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
+  -q "${QUEUE}" \
+  -n "${THREADS}" \
+  -M "${MEM}" \
+  -o "${LOGS}"/bracken-build200.log \
+  "${BRAKEN_2_6_2_FOLDER}"/bracken-build -t "${THREADS}" \
+  -d "${KRAKENDB}" -l 200 -x "${KRAKEN_2_1_2_FOLDER}"
 
 bsub -J "bracken_${KRAKENDB}_250" \
--q "${QUEUE}" \
--n "${THREADS}" \
--M "${MEM}" \
--o "${LOGS}"/bracken-build250.log \
-  /hps/software/users/rdf/metagenomics/service-team/software/bracken/Bracken-2.6.2/bracken-build -t "${THREADS}" \
-  -d "${KRAKENDB}" -l 250 -x /hps/software/users/rdf/metagenomics/service-team/software/kraken2/kraken2-2.1.2/
+  -q "${QUEUE}" \
+  -n "${THREADS}" \
+  -M "${MEM}" \
+  -o "${LOGS}"/bracken-build250.log \
+  "${BRAKEN_2_6_2_FOLDER}"/bracken-build -t "${THREADS}" \
+  -d "${KRAKENDB}" -l 250 -x "${KRAKEN_2_1_2_FOLDER}"
 
 # Wait for jobs to finish
 bwait -w "ended(bracken_${KRAKENDB}_50)"
@@ -283,7 +294,7 @@ cut -f1 "${OUT}"/"${DIRNAME}"_mmseqs_1.0/mmseqs_1.0_outdir/mmseqs_cluster.tsv | 
 cp "${OUT}"/"${DIRNAME}"_mmseqs_1.0/mmseqs_1.0_outdir/mmseqs_cluster.tsv "${OUT}"/gene_catalogue/clusters.tsv
 
 # Make the catalogue
-/hps/software/users/rdf/metagenomics/service-team/software/seqtk/seqtk-1.3/seqtk subseq \
+"${SEQTK_1_3}" subseq \
   "${OUT}"/gene_catalogue/concatenated.ffn "${OUT}"/gene_catalogue/rep_list.txt > \
   "${OUT}"/gene_catalogue/gene_catalogue-100.ffn
 

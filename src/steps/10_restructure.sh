@@ -29,7 +29,8 @@ while getopts ho:n: option; do
     esac
 done
 
-export RESULTS="${OUT}"/results
+RESULTS="${OUT}"/results
+
 mkdir -p "${RESULTS}"
 
 cd "${OUT}"/reps_fa
@@ -43,7 +44,7 @@ for R in ${REPS}; do
     if [ -s "${OUT}"/"${NAME}"_annotations/"${R}".gbk.sanntis.full.gff ]; then
         mv "${OUT}"/"${NAME}"_annotations/"${R}".gbk.sanntis.full.gff "${OUT}"/"${NAME}"_annotations/"${R}"_sanntis.gff
         if [[ "$(wc -l <${OUT}/${NAME}_annotations/${R}_sanntis.gff)" -eq 1 ]]; then
-            rm ${OUT}/${NAME}_annotations/${R}_sanntis.gff
+            rm "${OUT}/${NAME}_annotations/${R}_sanntis.gff"
         fi
     else
         echo "ERROR: file ${R}.gbk.sanntis.full.gff does not exist in the annotations folder"
@@ -55,7 +56,7 @@ for R in ${REPS}; do
     if [ -s "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}".gbk.sanntis.full.gff ]; then
         mv "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}".gbk.sanntis.full.gff "${OUT}"/"${NAME}"_metadata/"${R}"/genome/"${R}"_sanntis.gff
         if [[ "$(wc -l <${OUT}/${NAME}_metadata/"${R}"/genome/${R}_sanntis.gff)" -eq 1 ]]; then
-            rm ${OUT}/${NAME}_metadata/"${R}"/genome/${R}_sanntis.gff
+            rm "${OUT}/${NAME}_metadata/"${R}"/genome/${R}_sanntis.gff"
         fi
     else
         echo "ERROR: file ${R}.gbk.sanntis.full.gff does not exist in the _metadata folder"
@@ -89,14 +90,17 @@ for R in ${REPS}; do
 done
 
 echo "Creating ${RESULTS}"
+
 # --- PROTEIN CATALOGUE ---
-# move mmseqs
+
 echo "Creating protein_catalogue"
 mkdir -p "${RESULTS}"/protein_catalogue
 ls "${OUT}" | grep "${NAME}_mmseqs" >"${OUT}"/mmseqs_list
+
 while IFS= read -r i; do
     mv "${OUT}"/"${i}"/*_outdir "${RESULTS}"/protein_catalogue/
 done <"${OUT}"/mmseqs_list
+
 rm "${OUT}"/mmseqs_list
 
 # move EggNOG and IPS annotations

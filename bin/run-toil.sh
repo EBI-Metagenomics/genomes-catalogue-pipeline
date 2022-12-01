@@ -2,14 +2,13 @@
 
 set -e
 
-. "${PIPELINE_DIRECTORY}"/.gpenv
-
-CWL="${PIPELINE_DIRECTORY}"/cwl/workflows/wf-main.cwl
-YML="${PIPELINE_DIRECTORY}"/tests/cluster/wf-main_ena_verysmall.yml
+PIPELINE_DIRECTORY=""
+CWL=""
+YML=""
 
 SINGULARITY_ON="True"
 
-while getopts :n:y:c:m:q:b:s:o:t: option; do
+while getopts :n:y:c:m:q:b:s:o:t:p: option; do
     case "${option}" in
     y) YML=${OPTARG} ;;
     c) CWL=${OPTARG} ;;
@@ -19,6 +18,7 @@ while getopts :n:y:c:m:q:b:s:o:t: option; do
     o) OUTDIR=${OPTARG} ;;
     n) OUTDIRNAME=${OPTARG} ;;
     t) TMPDIR=${OPTARG} ;;
+    p) PIPELINE_DIRECTORY=${OPTARG} ;;
     *)
         echo "Invalid option"
         exit 1
@@ -26,8 +26,7 @@ while getopts :n:y:c:m:q:b:s:o:t: option; do
     esac
 done
 
-export PATH=$PATH:"${PIPELINE_DIRECTORY}"/containers/python3_scripts/
-export PATH=$PATH:"${PIPELINE_DIRECTORY}"/containers/genomes-catalog-update/scripts/
+. "${PIPELINE_DIRECTORY}/.gpenv"
 
 export TOIL_LSF_ARGS="-q ${QUEUE}"
 
@@ -64,7 +63,7 @@ if [ "${SINGULARITY_ON}" == "True" ]; then
         --TOIL_JOBSTORE ${RUN_TOIL_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        ${CWL} ${YML} >"${LOG_DIR}/${OUTDIRNAME}.json"
+        "${CWL}" "${YML}" >"${LOG_DIR}/${OUTDIRNAME}.json"
 else
     toil-cwl-runner \
         --logWarning \
@@ -82,7 +81,7 @@ else
         --TOIL_JOBSTORE ${RUN_TOIL_JOBSTORE} \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        ${CWL} ${YML} >"${LOG_DIR}/${OUTDIRNAME}.json"
+        "${CWL}" "${YML}" >"${LOG_DIR}/${OUTDIRNAME}.json"
 fi
 
 now="$(date)"

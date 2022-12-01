@@ -35,9 +35,10 @@ metadata:
   class: File
   path: ${METADATA}
 annotations:
-" >>${YML_FILE}
+" >>"${YML_FILE}"
 
-ls ${ANNOTATIONS} | grep 'MGYG' >list_annotations.txt
+ls "${ANNOTATIONS}" | grep 'MGYG' >list_annotations.txt
+
 for i in $(cat list_annotations.txt); do
 	echo \
 		"
@@ -67,5 +68,5 @@ for i in $(ls ${OUT}/pg); do
 		"
   - class: Directory
     path: ${OUT}/pg/${i}/${NAME}
-" >>${YML_FILE}
+" >>"${YML_FILE}"
 done

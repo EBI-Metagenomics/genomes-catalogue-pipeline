@@ -91,7 +91,7 @@ steps:
     out: [files]
 
   get_fna:
-    run: ../../utils/get_file_pattern.cwl
+    run: ../../utils/get_file_pattern_python.cwl
     in:
       list_files: get_list_of_files/files
       pattern:
