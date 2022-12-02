@@ -136,6 +136,6 @@ for i in ${MMSEQS_LIMIT_I[@]}; do
             -p "${PIPELINE_DIRECTORY}" \
             -o "${OUT}" \
             -n "${DIRNAME}_mmseqs_${i}" \
-            -c "${PIPELINE_DIRECTORY}"/cwl/tools/mmseqs/mmseqs.cwl \
+            -c "${PIPELINE_DIRECTORY}"/src/cwl/tools/mmseqs/mmseqs.cwl \
             -y "${YML}"/"${i}".mmseqs.yml
 done

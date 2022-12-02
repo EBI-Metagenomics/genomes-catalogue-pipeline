@@ -74,7 +74,7 @@ while getopts ho:p:l:n:q:y:i:c:m:x:j:z:t: option; do
 	esac
 done
 
-export CWL=${PIPELINE_DIRECTORY}/src/cwl/sub-wfs/2_drep/drep.cwl
+export CWL=${PIPELINE_DIRECTORY}/src/cwl/sub-wfs/2_drep/1_drep.cwl
 export YML_FILE=${YML}/drep.yml
 
 echo "Creating yml for drep"

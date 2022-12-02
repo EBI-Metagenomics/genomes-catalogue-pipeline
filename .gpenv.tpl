@@ -8,7 +8,9 @@ export GEO="<replace-path>/continent_countries.csv"
 
 # Software & Scripts #
 export SINGULARITY_CACHEDIR="<replace-path>"
-export PATH="${PIPELINE_DIRECTORY}/src/scripts:$PATH"
+export PATH="${PIPELINE_DIRECTORY}/containers/python3_scripts:$PATH"
+export PATH="${PIPELINE_DIRECTORY}/containers/genomes-catalog-update/scripts/:$PATH"
+export PATH="${PIPELINE_DIRECTORY}/containers/bash/:$PATH"
 
 export MASH_2_3=""
 export IQTREE_2_1_3=""
