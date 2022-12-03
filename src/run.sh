@@ -326,17 +326,15 @@ bsub \\
     -e ${LOGS}/submit.${STEP5}.err \\
     bash ${PIPELINE_DIRECTORY}/src/steps/5_gtdbtk.sh \\
         -q ${BIGQUEUE} \\
-        -p ${PIPELINE_DIRECTORY} \\
         -o ${OUT} \\
         -l ${LOGS} \\
         -n ${NAME} \\
-        -y ${YML} \\
         -j ${STEP5} \\
         -a ${REPS_FA_DIR} \\
         -z ${MEM_STEP5} \\
         -t ${THREADS_STEP5} \\
-        -r ${GTDBTK_REF}
-
+        -r ${GTDBTK_REF} \\
+        -p ${PIPELINE_DIRECTORY}
 EOF
 
 if [[ $RUN == 1 ]]; then
