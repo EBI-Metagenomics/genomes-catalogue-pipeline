@@ -78,25 +78,16 @@ bsub \
     -q "${QUEUE}" \
     singularity \
         --quiet \
-        exec \
-        --contain \
-        --ipc \
-        --pid \
-        --bind \
-        "${OUT}"/gtdbtk:/tmp:rw \
+        run \
         --bind \
         "${GTDBTK_REFDATA}":/refdata:ro \
-        --bind \
-        "${REPS_FA}":/data:ro \
-        --pwd \
-        /GFpZec \
-        "${SINGULARITY_CACHE}"/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tk:v1.sif \
+        "${SINGULARITY_CACHEDIR}"/quay.io_microbiome-informatics_genomes-pipeline.gtdb-tk:v2.1.0.sif \
         gtdbtk \
         classify_wf \
         --cpus \
         32 \
         --genome_dir \
-        /data \
+        "${REPS_FA}" \
         --out_dir \
-        /tmp/gtdbtk-outdir \
+        "${OUT}"/gtdbtk/gtdbtk-outdir \
         -x fna
