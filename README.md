@@ -18,8 +18,8 @@ The pipeline is partially implemented in [CWL](https://www.commonwl.org/) and ba
 
 Requirements:
 - bash
+- [toil-cwl](https://toil.readthedocs.io/l) - >= 5.7.1
 - [cwltool](https://github.com/common-workflow-language/cwltool)
-- [toil-cwl](https://toil.readthedocs.io/en/3.10.1/gettingStarted/install.html)
 - [singulairty](https://sylabs.io/docs/)
 
 The current implementation uses CWL version 1.2.

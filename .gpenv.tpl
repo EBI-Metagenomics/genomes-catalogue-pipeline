@@ -6,6 +6,12 @@ export GUNC_DB="<replace-path>/gunc_db_2.0.4.dmnd"
 export GTDBTK_REF="<replace-path>/reference207"
 export GEO="<replace-path>/continent_countries.csv"
 
+export IPS_DATA="<replace-with-path>/interproscan/data"
+export EGGNOG_DIAMOND_DB="<replace-with-path>/eggnog/data/eggnog_proteins.dmnd"
+export EGGNOG_DB="<replace-with-path>/eggnog/data/eggnog.db"
+export EGGNOG_DIR="<replace-with-path>/eggnog/data/"
+export RFAMS_CMS_DIR="<replace-with-path>/rfams_cms"
+
 # Software & Scripts #
 export SINGULARITY_CACHEDIR="<replace-path>"
 export PATH="${PIPELINE_DIRECTORY}/containers/python3_scripts:$PATH"
@@ -27,7 +33,6 @@ export GTDBTK_TMP=""
 
 # TOIL SPECIFICS #
 TOIL_JOBSTORE="<path>"
-TOIL_OUTDIR="<path>"
 OUTDIRNAME="test"
 MEMORY=100G
 QUEUE="production"

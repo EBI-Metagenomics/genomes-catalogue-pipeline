@@ -74,10 +74,30 @@ while getopts ho:p:l:n:q:y:i:r:j:b:z:t:w: option; do
     esac
 done
 
+. "${PIPELINE_DIRECTORY}/.gpenv"
+
 echo "Creating yml"
-cp "${PIPELINE_DIRECTORY}"/src/templates/6_annotation.yml "${YML}"/annotation.yml
 echo \
     "
+interproscan_databases:
+  class: Directory
+  path: ${IPS_DATA}
+chunk_size_ips: 10000
+
+# EggNOG
+chunk_size_eggnog: 100000
+db_diamond_eggnog:
+  class: File
+  path: ${EGGNOG_DIAMOND_DB}
+db_eggnog:
+  class: File
+  path: ${EGGNOG_DB}
+data_dir_eggnog:
+  class: Directory
+  path: ${EGGNOG_DIR}
+cm_models:
+  class: Directory
+  path: ${RFAMS_CMS_DIR}
 mmseqs_faa:
   class: File
   path: ${INPUT}/mmseqs_cluster_rep.fa
@@ -90,7 +110,7 @@ all_fnas_dir:
 all_reps_filtered:
   class: File
   path: ${REPS}
-" >>" ${YML}"/annotation.yml
+" > "${YML}"/annotation.yml
 
 if [ "${TOIL}" == "True" ]; then
     echo "Running annotations with Toil"
