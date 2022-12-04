@@ -60,7 +60,7 @@ if [ "${SINGULARITY_ON}" == "True" ]; then
         --batchSystem lsf \
         --bypass-file-store \
         --disableCaching \
-        --TOIL_JOBSTORE ${RUN_TOIL_JOBSTORE} \
+        --jobStore "${RUN_TOIL_JOBSTORE}" \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
         "${CWL}" "${YML}" >"${LOG_DIR}/${OUTDIRNAME}.json"
@@ -78,7 +78,7 @@ else
         --batchSystem lsf \
         --bypass-file-store \
         --disableCaching \
-        --TOIL_JOBSTORE ${RUN_TOIL_JOBSTORE} \
+        --jobStore "${RUN_TOIL_JOBSTORE}" \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
         "${CWL}" "${YML}" >"${LOG_DIR}/${OUTDIRNAME}.json"

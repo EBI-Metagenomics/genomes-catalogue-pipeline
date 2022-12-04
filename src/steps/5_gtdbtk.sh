@@ -67,6 +67,12 @@ done
 
 . "${PIPELINE_DIRECTORY}/.gpenv"
 
+######################################
+## GTDBtk needs a short TMP directory
+#####################################
+
+export TMPDIR="${GTDBTK_TMP}"
+
 mkdir -p "${OUT}"/gtdbtk
 
 bsub \

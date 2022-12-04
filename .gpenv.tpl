@@ -22,6 +22,9 @@ export SEQTK_1_3=""
 
 export TMPDIR="<replace-with-tmp>"
 
+# NEEDED for GTDBtk, it has to be a short tmp path, less than 80 chars
+export GTDBTK_TMP=""
+
 # TOIL SPECIFICS #
 TOIL_JOBSTORE="<path>"
 TOIL_OUTDIR="<path>"
