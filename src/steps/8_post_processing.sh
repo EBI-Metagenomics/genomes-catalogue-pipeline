@@ -70,12 +70,28 @@ while getopts ho:p:l:n:q:y:j:b:m:a:z:t: option; do
     esac
 done
 
+. "${PIPELINE_DIRECTORY}/.gpenv"
+
 # Restructure SanntiS output
 bash "${PIPELINE_DIRECTORY}"/bin/restructure_sanntis.sh -o "${OUT}" -n "${DIRNAME}"
 
+YML_FILE="${YML}"/post-processing.yml
+
 echo "Generating yml file"
-export YML_FILE="${YML}"/post-processing.yml
-cp "${PIPELINE_DIRECTORY}"/cluster/codon/execute/steps/8_post_processing.yml "${YML_FILE}"
+
+echo \
+    "
+kegg:
+  class: File
+  path: ${KEGG_CLASSES}
+# ncRNA
+claninfo_ncrna:
+  class: File
+  path: ${RFAM_CLANIN}
+models_ncrna:
+  class: File
+  path: ${RFAM_MODEL_NCRNA}
+" >"${YML_FILE}"
 
 bsub \
     -J "${JOB}.${DIRNAME}.yml" \
@@ -89,7 +105,7 @@ bsub \
     -o "${OUT}" \
     -a "${ANNOTATIONS}"
 
-export CWL="${PIPELINE_DIRECTORY}"/cwl/sub-wfs/wf-6-post-processing.cwl
+CWL="${PIPELINE_DIRECTORY}"/src/cwl/sub-wfs/wf-6-post-processing.cwl
 
 echo "Submitting cluster post-processing"
 
@@ -102,9 +118,9 @@ bsub \
     -M "${MEM}" \
     -n "${THREADS}" \
     bash "${PIPELINE_DIRECTORY}"/bin/run-toil.sh \
-        -n "${DIRNAME}_metadata" \
-        -q "${QUEUE}" \
-        -p "${PIPELINE_DIRECTORY}" \
-        -o "${OUT}" \
-        -c "${CWL}" \
-        -y "${YML_FILE}"
+    -n "${DIRNAME}_metadata" \
+    -q "${QUEUE}" \
+    -p "${PIPELINE_DIRECTORY}" \
+    -o "${OUT}" \
+    -c "${CWL}" \
+    -y "${YML_FILE}"

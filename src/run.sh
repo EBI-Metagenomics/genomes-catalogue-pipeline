@@ -23,6 +23,7 @@ MEM_STEP4="150G"
 MEM_STEP5="500G"
 MEM_STEP6="50G"
 MEM_STEP6a="5G"
+MEM_STEP8="50G"
 MEM_STEP7="5G"
 MEM_STEP9="150G" # kraken needs 150G
 
@@ -34,6 +35,7 @@ THREADS_STEP5="32"
 THREADS_STEP6="16"
 THREADS_STEP6a="1"
 THREADS_STEP7="1"
+THREADS_STEP8="1"
 THREADS_STEP9="16"
 
 usage() {
@@ -455,14 +457,19 @@ bsub \\
     -q ${QUEUE} \\
     -e ${LOGS}/submit.${STEP8}.err \\
     -o ${LOGS}/submit.${STEP8}.out \\
-    bash ${PIPELINE_DIRECTORY}/src/steps/8_post_processing.sh \\
+    bash ${MAIN_PATH}/src/steps/steps/8_post_processing.sh \\
         -o ${OUT} \\
-        -p ${PIPELINE_DIRECTORY} \\
+        -p ${MAIN_PATH} \\
         -l ${LOGS} \\
         -n ${NAME} \\
         -q ${QUEUE} \\
+        -y ${YML} \\
         -j ${STEP8} \\
-        -b "${BIOM}" 
+        -b "${BIOM}" \\
+        -m ${OUT}/${NAME}_metadata/genomes-all_metadata.tsv \\
+        -a ${OUT}/${NAME}_annotations \\
+        -z ${MEM_STEP8} \\
+        -t ${THREADS_STEP8}
 EOF
 
 if [[ $RUN == 1 ]]; then

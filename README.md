@@ -75,7 +75,7 @@ $ bash run.sh \
   -c <path to genomes.csv> \
   -x <min MGYG> \
   -m <max MGYG> \
-  -v <version ex. "v1.0"> \
+  -v <version ex. "1.0"> \
   -b <biom ex. "Test:test">
 ```
 

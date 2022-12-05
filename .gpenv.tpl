@@ -12,6 +12,10 @@ export EGGNOG_DB="<replace-with-path>/eggnog/data/eggnog.db"
 export EGGNOG_DIR="<replace-with-path>/eggnog/data/"
 export RFAMS_CMS_DIR="<replace-with-path>/rfams_cms"
 
+export KEGG_CLASSES="<replace-with-path>/kegg_classes.tsv"
+export RFAM_CLANIN="<replace-with-path>/ncrna_cms/Rfam.clanin"
+export RFAM_MODEL_NCRNA="<replace-with-path>/ncrna_cms/Rfam.cm"
+
 # Software & Scripts #
 export SINGULARITY_CACHEDIR="<replace-path>"
 export PATH="${PIPELINE_DIRECTORY}/containers/python3_scripts:$PATH"
