@@ -16,7 +16,7 @@ while getopts :n:y:c:m:q:b:s:o:t:p: option; do
     q) QUEUE=${OPTARG} ;;
     s) SINGULARITY_ON=${OPTARG} ;;
     o) OUTDIR=${OPTARG} ;;
-    n) OUTDIRNAME=${OPTARG} ;;
+    n) JOB_NAME=${OPTARG} ;;
     t) TMPDIR=${OPTARG} ;;
     p) PIPELINE_DIRECTORY=${OPTARG} ;;
     *)
@@ -32,14 +32,14 @@ export TOIL_LSF_ARGS="-q ${QUEUE}"
 
 echo "${TOIL_LSF_ARGS}"
 
-export RUN_OUTDIR=${OUTDIR}/${OUTDIRNAME}
-export LOG_DIR=${OUTDIR}/logs/${OUTDIRNAME}
-export RUN_TOIL_JOBSTORE=${TOIL_JOBSTORE}/${OUTDIRNAME}
+export RUN_OUTDIR=${OUTDIR}
+export LOG_DIR=${OUTDIR}/logs/${JOB_NAME}
+export RUN_TOIL_JOBSTORE=${TOIL_JOBSTORE}/${JOB_NAME}
 
 rm -rf "${RUN_TOIL_JOBSTORE}" || true
 mkdir -p "${RUN_OUTDIR}" "${LOG_DIR}"
 
-echo "Log-file ${LOG_DIR}/${OUTDIRNAME}.log"
+echo "Log-file ${LOG_DIR}/${JOB_NAME}.log"
 
 now="$(date)"
 echo "Toil start: $now"
@@ -54,7 +54,7 @@ if [ "${SINGULARITY_ON}" == "True" ]; then
         --writeLogs "${LOG_DIR}" \
         --maxLogFileSize 50000000 \
         --outdir "${RUN_OUTDIR}" \
-        --logFile "${LOG_DIR}/${OUTDIRNAME}.log" \
+        --logFile "${LOG_DIR}/${JOB_NAME}.log" \
         --rotatingLogging \
         --singularity \
         --batchSystem lsf \
@@ -63,7 +63,7 @@ if [ "${SINGULARITY_ON}" == "True" ]; then
         --jobStore "${RUN_TOIL_JOBSTORE}" \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        "${CWL}" "${YML}" >"${LOG_DIR}/${OUTDIRNAME}.json"
+        "${CWL}" "${YML}" >"${LOG_DIR}/${JOB_NAME}.json"
 else
     toil-cwl-runner \
         --logWarning \
@@ -72,7 +72,7 @@ else
         --writeLogs "${LOG_DIR}" \
         --maxLogFileSize 50000000 \
         --outdir "${RUN_OUTDIR}" \
-        --logFile "${LOG_DIR}/${OUTDIRNAME}.log" \
+        --logFile "${LOG_DIR}/${JOB_NAME}.log" \
         --rotatingLogging \
         --no-container --preserve-entire-environment \
         --batchSystem lsf \
@@ -81,7 +81,7 @@ else
         --jobStore "${RUN_TOIL_JOBSTORE}" \
         --retryCount 2 \
         --defaultMemory ${MEMORY} \
-        "${CWL}" "${YML}" >"${LOG_DIR}/${OUTDIRNAME}.json"
+        "${CWL}" "${YML}" >"${LOG_DIR}/${JOB_NAME}.json"
 fi
 
 now="$(date)"

@@ -99,11 +99,11 @@ bsub \
     -e "${LOGS}"/"${JOB}".post-processing.yml.err \
     -o "${LOGS}"/"${JOB}".post-processing.yml.out \
     bash "${PIPELINE_DIRECTORY}"/src/steps/8_generate_yml.sh \
-    -b "${BIOM}" \
-    -m "${METADATA}" \
-    -y "${YML_FILE}" \
-    -o "${OUT}" \
-    -a "${ANNOTATIONS}"
+        -b "${BIOM}" \
+        -m "${METADATA}" \
+        -y "${YML_FILE}" \
+        -o "${OUT}" \
+        -a "${ANNOTATIONS}"
 
 CWL="${PIPELINE_DIRECTORY}"/src/cwl/sub-wfs/wf-6-post-processing.cwl
 
@@ -118,9 +118,9 @@ bsub \
     -M "${MEM}" \
     -n "${THREADS}" \
     bash "${PIPELINE_DIRECTORY}"/bin/run-toil.sh \
-    -n "${DIRNAME}_metadata" \
-    -q "${QUEUE}" \
-    -p "${PIPELINE_DIRECTORY}" \
-    -o "${OUT}" \
-    -c "${CWL}" \
-    -y "${YML_FILE}"
+        -n "${DIRNAME}_metadata" \
+        -q "${QUEUE}" \
+        -p "${PIPELINE_DIRECTORY}" \
+        -o "${OUT}" \
+        -c "${CWL}" \
+        -y "${YML_FILE}"
