@@ -1,0 +1,45 @@
+nextflow_workflow {
+
+    name "Test Workflow PROCESS_MANY_GENOMES"
+    script "subworkflows/process_many_genomes.nf"
+    workflow "PROCESS_MANY_GENOMES"
+
+    test("Should run without failures") {
+
+        when {
+
+            workflow {
+                """
+                input[0] = channel.from([
+                    tuple(
+                        "CAJLGA01",
+                        file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJJTO01.fa")
+                    ),
+                    tuple(
+                        "CAJLGA01",
+                        file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJKGB01.fa")
+                    ),
+                    tuple(
+                        "CAJLGA01",
+                        file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJLGA01.fa")
+                    ),
+                ])
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(
+                workflow.out.rep_prokka_gff,
+                workflow.out.pangenome_prokka_faas,
+                workflow.out.rep_prokka_faa,
+                workflow.out.pangenome_prokka_gffs,
+                workflow.out.pangenome_prokka_fnas,
+                workflow.out.non_rep_prokka_fna,
+                workflow.out.non_rep_prokka_gff,
+                workflow.out.rep_prokka_fna
+            ).match()
+        }
+    }
+}

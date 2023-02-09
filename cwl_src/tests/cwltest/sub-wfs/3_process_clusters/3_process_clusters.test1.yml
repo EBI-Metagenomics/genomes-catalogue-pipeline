@@ -24,4 +24,3 @@ csv:
 gunc_db_path:
   class: File
   path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd
-
