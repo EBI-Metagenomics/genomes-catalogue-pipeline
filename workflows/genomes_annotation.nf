@@ -127,11 +127,11 @@ workflow GAP {
         ch_mmseq_coverage_threshold
     )
 
-    prokka_faas_output = PROCESS_MANY_GENOMES.out.rep_prokka_faa.mix(
+    cluster_reps_faas = PROCESS_MANY_GENOMES.out.rep_prokka_faa.mix(
         PROCESS_SINGLETON_GENOMES.out.prokka_faa
     )
 
-    prokka_fnas_output = PROCESS_MANY_GENOMES.out.rep_prokka_fna.mix(
+    cluster_reps_fnas = PROCESS_MANY_GENOMES.out.rep_prokka_fna.mix(
         PROCESS_SINGLETON_GENOMES.out.prokka_fna
     )
 
@@ -142,8 +142,8 @@ workflow GAP {
     ANNOTATE(
         MMSEQ_SWF.out.mmseq_cluster_rep_faa,
         MMSEQ_SWF.out.mmseq_cluster_tsv,
-        prokka_faas_output,
-        prokka_fnas_output,
+        cluster_reps_faas,
+        cluster_reps_fnas,
         species_reps_names_list,
         ch_interproscan_db,
         ch_eggnog_db,
@@ -153,7 +153,7 @@ workflow GAP {
     )
 
     fna_folder = COLLECT_IN_FOLDER(
-        prokka_fnas_output.map({ it[1]}).collect(),
+        cluster_reps_fnas.map({ it[1]}).collect(),
         channel.value("all_fna")
     )
 
@@ -213,19 +213,31 @@ workflow GAP {
         )
     )
 
-    files_for_summary = ANNONTATE_GFF.out.annotated_gff.join(
+    /* This operation will generate a list of tuples for the json generation 
+    * Example of one element on the list;
+    * tuple ( 
+        val(cluster),
+        file(annotated_gff),
+        file(coverage_summary),
+        file(cluster_faa),
+        file(pangenome_fasta), // only for many_genomes clusters otherwise empty
+        file(core_genes)       // only for many_genomes clusters otherwise empty
+    )
+    */
+    files_for_json_summary = ANNONTATE_GFF.out.annotated_gff.join(
         FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
     ).join(
         cluster_reps_faa
     ).join(
-        prokka_fnas_output
+        PROCESS_MANY_GENOMES.out.panaroo_pangenome_fna, remainder: true
     ).join(
         PROCESS_MANY_GENOMES.out.core_genes, remainder: true
     )
 
     GENOME_SUMMARY_JSON(
-        files_for_summary,
+        files_for_json_summary,
         GTDBTK_AND_METADATA.out.metadata_tsv.first(),
         ch_biome
     )
+
 }

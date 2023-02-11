@@ -15,7 +15,7 @@ process PANAROO {
     output:
     tuple val(cluster_name), path("${cluster_name}_panaroo"), emit: panaroo_folder
     tuple val(cluster_name), file("${cluster_name}_panaroo/gene_presence_absence.Rtab"), emit: panaroo_gene_presence_absence
-    tuple val(cluster_name), file("${cluster_name}_panaroo/${cluster_name}.pan-genome.fna"), emit: panaroo_fna
+    tuple val(cluster_name), file("${cluster_name}_panaroo/${cluster_name}.pan-genome.fna"), emit: panaroo_pangenome_fna
 
     script:
     """

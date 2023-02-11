@@ -8,7 +8,7 @@ process GENOME_SUMMARY_JSON {
     memory '1 GB'
 
     input:
-    tuple val(cluster), file(annotated_gff), file(coverage_summary), file(cluster_faa), file(pangenome_fasta), file(core_genes)
+    tuple val(cluster), file(annotated_gff), file(coverage_summary), file(cluster_rep_faa), file(pangenome_fasta), file(core_genes)
     file metadata
     val biome
 
@@ -16,16 +16,22 @@ process GENOME_SUMMARY_JSON {
     file "*.json"
 
     script:
+    def args = ""
+    if (core_genes) {
+        args = args + "--core-genes ${core_genes} "
+    }
+    if (pangenome_fasta) {
+        args = args + "--pangenome-fna ${pangenome_fasta} "
+    }
     """
     generate_summary_json.py \
     --annot-cov ${coverage_summary} \
     --gff ${annotated_gff} \
     --metadata ${metadata} \
     --biome ${biome} \
-    --species-faa ${cluster_faa} \
-    --core-genes ${core_genes} \
-    --pangenome-fna ${pangenome_fasta} \
+    --species-faa ${cluster_rep_faa} \
     --species-name ${cluster} \
+    ${args} \
     --output-file ${cluster}.json
     """
 

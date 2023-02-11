@@ -54,7 +54,7 @@ workflow PROCESS_MANY_GENOMES {
         }
 
     emit:
-        panaroo = PANAROO.out.panaroo_folder
+        panaroo_pangenome_fna = PANAROO.out.panaroo_pangenome_fna
         prokka_faas = PROKKA.out.faa
         prokka_fnas = PROKKA.out.fna
         prokka_gffs = PROKKA.out.gff
