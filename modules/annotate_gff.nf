@@ -1,6 +1,6 @@
 process ANNONTATE_GFF {
 
-    publishDir "results/gff/${cluster}/", mode: 'copy'
+    publishDir "${params.outdir}/${params.catalogue_name}_metadata/", mode: 'copy'
 
     label 'process_light'
 

@@ -2,7 +2,7 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
 
     label 'process_light'
 
-    publishDir "results/summaries/${cluster}/", mode: "copy"
+    publishDir "${params.outdir}/${params.catalogue_name}_metadata/${cluster}/", mode: "copy"
 
     memory '1 GB'
     cpus 1

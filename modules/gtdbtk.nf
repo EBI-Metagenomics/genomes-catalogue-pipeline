@@ -18,6 +18,9 @@ process GTDBTK {
     path 'gtdbtk_results/', emit: gtdbtk_results
     path 'gtdbtk_results/classify/gtdbtk.bac120.summary.tsv', optional: true, emit: gtdbtk_bac
     path 'gtdbtk_results/classify/gtdbtk.ar122.summary.tsv', optional: true, emit: gtdbtk_arc
+    path 'gtdbtk_results/align/gtdbtk.bac120.msa.fasta.gz', optional: true, emit: gtdbtk_msa_bac120
+    path 'gtdbtk_results/align/gtdbtk.ar53.msa.fasta.gz', optional: true, emit: gtdbtk_msa_ar53
+
 
     script:
     // TODO: tweak the cpus based on the number of genomes

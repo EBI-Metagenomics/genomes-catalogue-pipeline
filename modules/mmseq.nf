@@ -1,6 +1,6 @@
 process MMSEQ {
 
-    publishDir "results/mmseqs_${id_threshold}", mode: 'copy'
+    publishDir "${params.outdir}/protein_catalogue/mmseqs_${id_threshold}_outdir/", mode: 'copy'
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.mmseqs:v2'
 

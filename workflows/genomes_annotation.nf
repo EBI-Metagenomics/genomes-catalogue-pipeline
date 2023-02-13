@@ -32,6 +32,7 @@ include { DETECT_NCRNA } from '../modules/detect_ncrna'
 include { INDEX_FNA } from '../modules/index_fna'
 include { ANNONTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
+include { IQTREE } from '../modules/iqtree'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -170,6 +171,20 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.gunc_report,
         ch_gtdb_db
     )
+
+    if (GTDBTK_AND_METADATA.out.gtdbtk_msa_bac120) {
+        IQTREE(
+            GTDBTK_AND_METADATA.out.gtdbtk_msa_bac120,
+            channel.val("bac120")
+        )
+    }
+
+    if (GTDBTK_AND_METADATA.out.gtdbtk_msa_ar53) {
+        IQTREE(
+            GTDBTK_AND_METADATA.out.gtdbtk_msa_ar53,
+            channel.val("ar53")
+        )
+    }
 
     cluster_reps_faa = PROCESS_SINGLETON_GENOMES.out.prokka_faa.mix(
         PROCESS_MANY_GENOMES.out.rep_prokka_faa

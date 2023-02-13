@@ -1,10 +1,13 @@
 process PANAROO {
 
-    publishDir "results/panaroo/${cluster_name}/", mode: 'copy'
+    tag "${cluster_name}"
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.panaroo:v1'
+    publishDir "{params.outdir}/${catalogue_name}_metadata/${cluster_name}/pan-genome", pattern: "${cluster_name}_panaroo/${cluster_name}.pan-genome.fna", mode: 'copy'
+    publishDir "{params.outdir}/${catalogue_name}_metadata/${cluster_name}/pan-genome", pattern: "${cluster_name}_panaroo/${cluster_name}.gene_presence_absence.Rtab", mode: 'copy'
 
     label 'process_medium'
+
+    container 'quay.io/microbiome-informatics/genomes-pipeline.panaroo:v1'
 
     memory "1 GB"
     cpus 8

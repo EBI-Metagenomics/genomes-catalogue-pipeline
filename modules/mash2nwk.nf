@@ -1,6 +1,12 @@
 process MASH_TO_NWK {
 
-    publishDir "results/mashtrees/", mode: 'copy'
+    publishDir(
+        "${params.outdir}",
+        saveAs: {
+            filename -> "${params.catalogue_name}_metadata/${filename.tokenize(".")[0]}/pan-genome/$filename"
+        },
+        mode: 'copy'
+    )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.mash2nwk:v1'
 
@@ -10,16 +16,16 @@ process MASH_TO_NWK {
     memory '1 GB'
 
     input:
-    file mash
+    path mash
 
     output:
-    path 'trees/*.nwk', emit: mash_nwk
+    path "${mash.baseName}.nwk", emit: mash_nwk
 
     script:
     """
     mash2nwk1.R -m ${mash}
 
-    mv trees/mashtree.nwk trees/${mash.baseName}.nwk
+    mv trees/mashtree.nwk ${mash.baseName}.nwk
     """
 
     // stub:

@@ -11,6 +11,24 @@ include { COLLECT_IN_FOLDER as COLLECT_FASTAS } from '../modules/detect_rrna'
 include { COLLECT_IN_FOLDER as COLLECT_OUTS } from '../modules/detect_rrna'
 
 
+process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
+
+    publishDir "${params.outdir}/protein_catalogue/mmseqs_0.9_outdir/", mode: 'copy'
+
+    input:
+    path interproscan_annotations
+    path eggnog_annotations
+
+    output:
+    stdout
+
+    script:
+    """
+    mv ${interproscan_annotations} protein_catalogue-90_InterProScan.tsv
+    mv ${eggnog_annotations} protein_catalogue-90_eggNOG.tsv
+    """
+}
+
 workflow ANNOTATE {
     take:
         mmseq_faa
@@ -52,9 +70,17 @@ workflow ANNOTATE {
             eggnog_data_dir
         )
 
+        interproscan_annotations = IPS.out.ips_annontations.collectFile(name: "ips_annotations.tsv")
+        eggnog_mapper_annotations = EGGNOG_MAPPER_ANNOTATIONS.out.annotations.collectFile(name: "eggnog_annotations.tsv")
+
+        PROTEIN_CATALOGUE_STORE_ANNOTATIONS(
+            interproscan_annotations,
+            eggnog_mapper_annotations
+        )
+
         PER_GENOME_ANNONTATION_GENERATOR(
-            IPS.out.ips_annontations.collectFile(name: "ips_annotations.tsv"),
-            EGGNOG_MAPPER_ANNOTATIONS.out.annotations.collectFile(name: "eggnog_annotations.tsv"),
+            interproscan_annotations,
+            eggnog_mapper_annotations,
             species_reps_names_list,
             mmseq_tsv
         )

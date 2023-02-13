@@ -1,6 +1,6 @@
 process METADATA_TABLE {
 
-    publishDir "results/", mode: 'symlink'
+    publishDir "${params.outdir}/${params.catalogue_name}_metadata/", mode: 'copy'
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.genomes-catalog-update:v1.1'
 
@@ -39,7 +39,7 @@ process METADATA_TABLE {
     --ftp-version ${ftp_version} \
     --geo ${geo_metadata} \
     --gunc-failed ${gunc_failed_tsv} \
-    --outfile metadata_table.tsv
+    --outfile genomes-all_metadata.tsv
     """
 
     // stub:

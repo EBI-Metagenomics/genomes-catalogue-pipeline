@@ -7,7 +7,14 @@
 
 process PER_GENOME_ANNONTATION_GENERATOR {
 
-    publishDir "results/annotations/", mode: 'copy'
+    publishDir(
+        "${params.outdir}",
+        pattern: "output_folder/*.tsv",
+        saveAs: {
+            filename -> "${params.catalogue_name}_metadata/${filename.tokenize(".")[0]}/genome/$filename"
+        },
+        mode: 'copy'
+    )
 
     cpus 16
     memory '5 GB'

@@ -1,8 +1,13 @@
 process PROKKA {
 
-    publishDir "results/prokka/$cluster_name/", mode: "copy"
+    tag "${cluster_name}"
 
-    // container 'quay.io/microbiome-informatics/prokka:1.4.6'
+    publishDir(
+        "${params.outdir}/${params.catalogue_name}_metadata/${cluster_name}/",
+        pattern: "${fasta.baseName}_prokka/*.faa",
+        mode: "copy"
+    )
+
     container "quay.io/biocontainers/prokka:1.14.6--pl526_0"
 
     label 'process_light'

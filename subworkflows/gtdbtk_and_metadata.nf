@@ -52,6 +52,8 @@ workflow GTDBTK_AND_METADATA {
 
     emit:
         gtdbtk_folder = gtdbtk_tables_ch
+        gtdbtk_msa_bac120 = gtdb.out.gtdbtk_msa_bac120
+        gtdbtk_msa_ar53 = gtdb.out.gtdbtk_msa_ar53
         metadata_tsv = METADATA_TABLE.out.metadata_tsv
         phylo_tree = PHYLO_TREE.out.phylo_tree
 }
