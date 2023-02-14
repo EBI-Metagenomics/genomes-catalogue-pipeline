@@ -83,6 +83,7 @@ sub main{
       my ($rank,$scientificName) = split(/__/, $name);
 
       # If the taxon has not been defined yet, then write it up
+      if(!defined($taxon{$name})){
         my $taxid = ++$taxonCounter;
         my $rank   = $rank{lc($rank)};
 
@@ -188,4 +189,3 @@ sub usage{
                        Fasta file extensions can be: fna, fasta, fa, fsa, fas
   "
 }
-

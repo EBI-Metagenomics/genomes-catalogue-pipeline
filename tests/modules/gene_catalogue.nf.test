@@ -1,0 +1,28 @@
+nextflow_process {
+
+    name "Test Process GENE_CATALOGUE"
+    script "modules/gene_catalogue.nf"
+    process "GENE_CATALOGUE"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                outdir = "tests/results"
+            }
+            process {
+                """
+                input[0] = file("$baseDir/tests/modules/fixtures/gene_catalogue/cluster_reps_ffn")
+                input[1] = file("$baseDir/tests/modules/fixtures/gene_catalogue/mmseq_100")
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+}

@@ -1,0 +1,15 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "gene_catalogue": [
+                    [
+                        "clusters.tsv:md5,c60d9b2487dfbd26a65513e51e143001",
+                        "gene_catalogue-100.ffn:md5,880899eae713891a27dc10e9e5b99ee8"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-02-14T21:27:21+0000"
+    }
+}

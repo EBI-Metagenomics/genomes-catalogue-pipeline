@@ -1,0 +1,31 @@
+nextflow_workflow {
+
+    name "Test Workflow KRAKEN_SWF"
+    script "subworkflows/kraken_swf.nf"
+    workflow "KRAKEN_SWF"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                catalogue_name = "zebrahorse"
+                catalogue_version = "1.1"
+                outdir = "tests/results"
+            }
+            workflow {
+                """
+                input[0] = file("$baseDir/tests/subworkflows/fixtures/kraken_swf/gtdbtk.bac120.summary.tsv")
+                input[1] = file("$baseDir/tests/subworkflows/fixtures/kraken_swf/gtdbtk.ar53.summary.tsv")
+                input[2] = Channel.fromPath("$baseDir/tests/subworkflows/fixtures/kraken_swf/*.fna")
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

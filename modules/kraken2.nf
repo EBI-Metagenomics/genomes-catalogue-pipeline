@@ -1,14 +1,17 @@
 process KRAKEN2_PREPARE_GTDBTK_TAX {
 
-    container 'quay.io_microbiome-informatics_genomes-pipeline.gtdb-tax-dump:1.0.sif'
+    container 'quay.io/biocontainers/perl-bio-procedural:1.7.4--pl5321h9ee0642_0'
 
     input:
     path gtdbtk_bac120
     path gtdbtk_ar53
-    path kraken_db
+    val kraken_db_name
+    path cluster_fna, stageAs: "reps_fa/*"
 
     output:
-    path "kraken_intermediate/*", emit: kraken_intermediate
+    path "kraken_intermediate/taxonomy", type: 'dir', emit: kraken_intermediate
+    path "${kraken_db_name}", type: 'dir', emit: kraken_db
+    path "reps_fa/gtdb/*.fna", emit: tax_annotated_fnas
 
     script:
     """
@@ -17,15 +20,19 @@ process KRAKEN2_PREPARE_GTDBTK_TAX {
 
     while read line; do
         NAME=\$(echo \$line | cut -d ' ' -f1 | cut -d '.' -f1)
-        echo \$line | sed "s/__\;/__\$NAME\;/g" | sed "s/s__$/s__\$NAME/g"
+        echo \$line | sed "s/__\\;/__\$NAME\\;/g" | sed "s/s__\$/s__\$NAME/g"
     done < kraken_taxonomy_temp.tsv > kraken_taxonomy.tsv
 
     sed -i "s/ /\t/" kraken_taxonomy.tsv
 
     gtdbToTaxonomy.pl \
     --infile kraken_taxonomy.tsv \
-    --sequence-dir "${OUT}"/reps_fa/ \
+    --sequence-dir reps_fa/ \
     --output-dir kraken_intermediate
+
+    mkdir ${kraken_db_name}
+    
+    cp -r kraken_intermediate/taxonomy ${kraken_db_name}
     """
 }
 
@@ -36,14 +43,56 @@ process KRAKEN2_BUILD_LIBRARY {
     container 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
 
     input:
-    tuple val(cluster_name), path(cluster_fna) 
-    path kraken_db
+    path cluster_fna_tax_annotated
+    path kraken_db_path
 
     output:
-    val(cluster_name)
+    stdout
 
     script:
     """
-    kraken2-build --add-to-library ${cluster_fna} --db ${kraken_db}
+    kraken2-build --add-to-library ${cluster_fna_tax_annotated} --db ${kraken_db_path}
+    """
+}
+
+process KRAKEN2_BUILD {
+
+    container 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
+
+    cpus 4
+
+    stageInMode 'copy'
+
+    input:
+    path kraken_db_path
+    path kraken_build_library_log
+
+    output:
+    path "${kraken_db_path}", emit: kraken_db
+
+    script:
+    """
+    kraken2-build --build --db ${kraken_db_path} --threads ${task.cpus}
+    """
+}
+
+process KRAKEN2_POSTPROCESSING {
+
+    publishDir "${params.outdir}/databases/", pattern: "${kraken_db}", mode: 'copy'
+
+    input:
+    path kraken_db
+    path bracken_log
+
+    output:
+    path "${kraken_db}", emit: kraken_db
+
+    script:
+    """
+    cat ${kraken_db}/library/added/*.fna > ${kraken_db}/library/library.fna
+
+    rm -r ${kraken_db}/library/added
+
+    cp "${kraken_db}"/taxonomy/prelim_map.txt ${kraken_db}/library
     """
 }

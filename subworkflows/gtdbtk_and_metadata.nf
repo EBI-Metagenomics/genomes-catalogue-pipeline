@@ -30,8 +30,8 @@ workflow GTDBTK_AND_METADATA {
         )
 
         gtdbtk_tables_ch = channel.empty().mix(
-            GTDBTK.out.gtdbtk_bac,
-            GTDBTK.out.gtdbtk_arc
+            GTDBTK.out.gtdbtk_summary_bac120,
+            GTDBTK.out.gtdbtk_summary_arc53
         ).collectFile(name: 'gtdbtk.summary.tsv')
 
         METADATA_TABLE(
@@ -54,6 +54,8 @@ workflow GTDBTK_AND_METADATA {
         gtdbtk_folder = gtdbtk_tables_ch
         gtdbtk_msa_bac120 = gtdb.out.gtdbtk_msa_bac120
         gtdbtk_msa_ar53 = gtdb.out.gtdbtk_msa_ar53
+        gtdbtk_summary_bac120 = gtdb.out.gtdbtk_summary_bac120
+        gtdbtk_summary_arc53 = gtdb.out.gtdbtk_summary_arc53
         metadata_tsv = METADATA_TABLE.out.metadata_tsv
         phylo_tree = PHYLO_TREE.out.phylo_tree
 }

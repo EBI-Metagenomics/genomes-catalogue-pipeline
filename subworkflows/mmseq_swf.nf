@@ -39,6 +39,5 @@ workflow MMSEQ_SWF {
             mmseq_coverage_threshold
         )
     emit:
-        mmseq_cluster_rep_faa = mmseq_90.mmseq_cluster_rep_faa
-        mmseq_cluster_tsv = mmseq_90.mmseq_cluster_tsv
+        mmseq_100_mmseq_outdir = mmseq_100.out.mmseq_outdir
 }

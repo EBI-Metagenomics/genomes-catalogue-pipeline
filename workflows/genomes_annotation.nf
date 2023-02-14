@@ -25,6 +25,7 @@ include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_ge
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
 include { ANNOTATE } from '../subworkflows/annotate'
 include { GTDBTK_AND_METADATA } from '../subworkflows/gtdbtk_and_metadata'
+include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
@@ -33,6 +34,7 @@ include { INDEX_FNA } from '../modules/index_fna'
 include { ANNONTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 include { IQTREE } from '../modules/iqtree'
+include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -70,7 +72,7 @@ ch_ftp_version = channel.value(1.0)
 // TODO: move to utils
 process COLLECT_IN_FOLDER {
 
-    publishDir "results/", mode: 'symlink'
+    publishDir "${params.outdir}", mode: 'symlink'
 
     label 'process_light'
 
@@ -253,6 +255,21 @@ workflow GAP {
         files_for_json_summary,
         GTDBTK_AND_METADATA.out.metadata_tsv.first(),
         ch_biome
+    )
+
+    KRAKEN_SWF(
+        GTDBTK_AND_METADATA.out.gtdbtk_summary_bac120,
+        GTDBTK_AND_METADATA.out.gtdbtk_summary_arc53,
+        cluster_reps_fnas
+    )
+
+    cluster_rep_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
+        PROCESS_MANY_GENOMES.out.rep_prokka_ffn
+    )
+
+    GENE_CATALOGUE(
+        cluster_rep_ffn.map({ it[0] }).collectFile(name: "cluster_reps.ffn"),
+        MMSEQ_SWF.out.mmseq_100_mmseq_outdir
     )
 
 }

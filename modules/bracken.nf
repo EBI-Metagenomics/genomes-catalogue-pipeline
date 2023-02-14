@@ -7,6 +7,7 @@ process BRACKEN {
     path kraken_db
 
     output:
+    stdout
 
     script:
     """
