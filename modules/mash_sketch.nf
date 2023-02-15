@@ -1,5 +1,7 @@
 process MASH_SKETCH {
 
+    publishDir "${params.outdir}/", mode: 'copy'
+
     container 'quay.io/biocontainers/mash:2.3--hd3113c8_4 '
 
     input:

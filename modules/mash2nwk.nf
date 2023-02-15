@@ -3,7 +3,7 @@ process MASH_TO_NWK {
     publishDir(
         "${params.outdir}",
         saveAs: {
-            filename -> "${params.catalogue_name}_metadata/${filename.tokenize(".")[0]}/pan-genome/$filename"
+            filename -> "${params.catalogue_name}_metadata/${filename.tokenize(".")[0]}/pan-genome/mashtree.nwk"
         },
         mode: 'copy'
     )

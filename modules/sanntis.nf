@@ -3,7 +3,7 @@
 */
 process SANNTIS {
 
-    publishDir "${params.outdir}/${cluster_name}/genome/", mode: 'copy'
+    publishDir "${params.outdir}/${cluster_name}_metadata/genome/", mode: 'copy'
 
     container 'quay.io/microbiome-informatics/sanntis:0.1.0'
 

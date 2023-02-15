@@ -27,12 +27,12 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
     -k ${kegg_classes}
     """
 
-    // stub:
-    // """
-    // touch ${cluster_rep_faa.baseName}_annotation_coverage.tsv
-    // touch ${cluster_rep_faa.baseName}_kegg_classes.tsv
-    // touch ${cluster_rep_faa.baseName}_kegg_modules.tsv
-    // touch ${cluster_rep_faa.baseName}_cazy_summary.tsv
-    // touch ${cluster_rep_faa.baseName}_cog_summary.tsv
-    // """
+    stub:
+    """
+    touch ${cluster_rep_faa.baseName}_annotation_coverage.tsv
+    touch ${cluster_rep_faa.baseName}_kegg_classes.tsv
+    touch ${cluster_rep_faa.baseName}_kegg_modules.tsv
+    touch ${cluster_rep_faa.baseName}_cazy_summary.tsv
+    touch ${cluster_rep_faa.baseName}_cog_summary.tsv
+    """
 }

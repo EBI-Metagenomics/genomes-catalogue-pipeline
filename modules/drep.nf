@@ -6,9 +6,7 @@ process DREP {
     // TODO: review the cp instruction on the script, I'm using that
     //       to create an empty drep folder in the results area
 
-    publishDir 'results/drep',  mode:'copy', failOnError: true
-
-    // pattern: 'drep_output/data_tables/*.csv',
+    publishDir "${params.outdir}/drep",  mode:'copy', failOnError: true
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.drep:v2'
 
@@ -41,11 +39,11 @@ process DREP {
     drep_output
     """
 
-    // stub:
-    // """
-    // mkdir -p drep_output/data_tables
-    // touch drep_output/data_tables/Cdb.csv
-    // touch drep_output/data_tables/Mdb.csv
-    // touch drep_output/data_tables/Sdb.csv
-    // """
+    stub:
+    """
+    mkdir -p drep_output/data_tables
+    touch drep_output/data_tables/Cdb.csv
+    touch drep_output/data_tables/Mdb.csv
+    touch drep_output/data_tables/Sdb.csv
+    """
 }

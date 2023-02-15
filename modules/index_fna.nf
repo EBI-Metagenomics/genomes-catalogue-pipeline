@@ -29,8 +29,8 @@ process INDEX_FNA {
     samtools faidx ${fasta}
     """
 
-    // stub:
-    // """
-    // touch ${fasta.simpleName}.fai
-    // """
+    stub:
+    """
+    touch ${fasta.simpleName}.fai
+    """
 }

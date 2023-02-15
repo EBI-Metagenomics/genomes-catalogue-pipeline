@@ -1,6 +1,6 @@
 process METADATA_TABLE {
 
-    publishDir "${params.outdir}/${params.catalogue_name}_metadata/", mode: 'copy'
+    publishDir "${params.outdir}/", mode: 'copy'
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.genomes-catalog-update:v1.1'
 
@@ -11,16 +11,16 @@ process METADATA_TABLE {
 
     input:
     path genomes_dir
-    file extra_weights_tsv
-    file check_results_tsv
+    path extra_weights_tsv
+    path check_results_tsv
     path rrna_out_results
-    file name_mapping_tsv
-    file clusters_tsv
-    file gtdb_summary_tsv
+    path name_mapping_tsv
+    path clusters_tsv
+    path gtdb_summary_tsv
     val ftp_name
     val ftp_version
-    file geo_metadata
-    file gunc_failed_tsv
+    path geo_metadata
+    path gunc_failed_tsv
 
     output:
     path 'metadata_table.tsv', emit: metadata_tsv

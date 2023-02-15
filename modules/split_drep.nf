@@ -1,7 +1,6 @@
 process SPLIT_DREP {
 
-    // TODO: adjust output folder structure
-    publishDir 'results/split_drep', mode:'copy'
+    publishDir '${params.outdir}/intermediate_files/split_drep', mode:'copy'
 
     label 'process_light'
 

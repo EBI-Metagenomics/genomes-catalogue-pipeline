@@ -24,9 +24,9 @@ process MERGE_NCBI_ENA {
     --outname merged_genomes
     """
 
-    // stub:
-    // """
-    // mkdir merged_genomes
-    // touch merged_genomes.csv
-    // """
+    stub:
+    """
+    mkdir merged_genomes
+    touch merged_genomes.csv
+    """
 }

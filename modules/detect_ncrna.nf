@@ -9,11 +9,11 @@ process DETECT_NCRNA {
     memory '5 GB'
 
     input:
-    tuple val(cluster_name), file(fasta)
+    tuple val(cluster_name), path(fasta)
     path rfam_ncrna_models
 
     output:
-    tuple val(cluster_name), file('*.ncrna.deoverlap.tbl'), emit: ncrna_tblout
+    tuple val(cluster_name), path('*.ncrna.deoverlap.tbl'), emit: ncrna_tblout
 
     script:
     """
@@ -32,9 +32,4 @@ process DETECT_NCRNA {
     # De-overlap #
     grep -v " = " overlapped_${fasta.baseName} > ${fasta.baseName}.ncrna.deoverlap.tbl
     """
-
-    // stub:
-    // """
-    // touch ${fasta.baseName}.ncrna.deoverlap.tbl
-    // """
 }

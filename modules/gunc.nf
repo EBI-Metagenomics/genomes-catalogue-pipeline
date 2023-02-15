@@ -1,7 +1,7 @@
 
 process GUNC {
 
-    publishDir "results/gunc/${cluster_name}/${fasta.baseName}", mode: 'copy'
+    publishDir "${params.outdir}/gunc/${cluster_name}/${fasta.baseName}", mode: 'copy'
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.gunc:latest'
 

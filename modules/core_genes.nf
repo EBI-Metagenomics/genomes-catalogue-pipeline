@@ -1,7 +1,13 @@
 
 process CORE_GENES {
 
-    publishDir "results/panaroo/${cluster_name}/", mode: 'copy'
+    tag "${cluster_name}"
+
+    publishDir(
+        "{params.outdir}/${catalogue_name}_metadata/${cluster_name}/pan-genome",
+        saveAs: { filename -> "core_genes.txt" }
+        mode: 'copy'
+    )
 
     label 'process_light'
 

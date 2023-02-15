@@ -7,7 +7,8 @@ process CMSCAN {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3'
 
-    publishDir 'results/cmscan', mode:'copy'
+    // TODO, check if needed
+    publishDir '${params.outdir}/cmscan', mode:'copy'
 
     memory '5 GB'
     cpus 4

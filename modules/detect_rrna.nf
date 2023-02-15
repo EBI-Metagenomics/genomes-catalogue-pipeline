@@ -9,7 +9,7 @@ process DETECT_RRNA {
     memory '2 GB'
 
     input:
-    tuple val(cluster_name), file(fasta)
+    tuple val(cluster_name), path(fasta)
     path cm_models
 
     output:
@@ -79,13 +79,6 @@ process DETECT_RRNA {
 
     echo "Completed"
     """
-
-    // stub:
-    // """
-    // touch ${fasta.baseName}_rRNAs.fasta
-    // touch ${fasta.baseName}_tRNA_20aa.out
-    // touch ${fasta.baseName}_rRNAs.out
-    // """
 }
 
 /*
@@ -93,7 +86,7 @@ process DETECT_RRNA {
 */
 process COLLECT_IN_FOLDER {
 
-    publishDir "results/rrna/", mode: "copy"
+    publishDir "${params.outdir}/rrna/", mode: "copy"
 
     label 'process_light'
 

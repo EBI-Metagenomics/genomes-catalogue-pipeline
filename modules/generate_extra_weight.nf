@@ -18,8 +18,8 @@ process GENERATE_EXTRA_WEIGHT {
     generate_extra_weight_table.py -d ${genomes_folder} -o extra_weight_table.txt
     """
 
-    // stub:
-    // """
-    // touch extra_weight_table.txt
-    // """
+    stub:
+    """
+    touch extra_weight_table.txt
+    """
 }

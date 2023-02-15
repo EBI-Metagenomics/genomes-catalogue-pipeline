@@ -29,8 +29,8 @@ If you want to return cluster folders with mash-files - use --create-clusters fl
 
 process CLASSIFY_CLUSTERS {
 
-    publishDir "results/", mode:"copy"
-    publishDir "results/", mode:"copy"
+    publishDir "${params.outdir}/", patter: "pg", mode:"copy"
+    publishDir "${params.outdir}/", patter: "sg", mode:"copy"
 
     label "process_light"
 
@@ -56,22 +56,4 @@ process CLASSIFY_CLUSTERS {
     mv many_genomes pg
     mv one_genome sg
     """
-
-    // stub:
-    // """
-    // mkdir -p many_genomes/CA1/
-    // touch many_genomes/CA1/CA1.fa
-    // touch many_genomes/CA1/CA2.fa
-    // touch many_genomes/CA1/CA3.fa
-
-    // mkdir -p many_genomes/CA2/
-    // touch many_genomes/CA2/CB1.fa
-    // touch many_genomes/CA2/CB2.fa
-    // touch many_genomes/CA2/CB3.fa
-
-    // mkdir -p one_genome/BB1/
-    // touch one_genome/BB1/BB1.fa
-    // mkdir -p one_genome/BB2/
-    // touch one_genome/BB2/BB2.fa
-    // """
 }

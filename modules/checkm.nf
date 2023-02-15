@@ -1,6 +1,6 @@
 process CHECKM {
 
-    publishDir "results/checkm", mode:"copy"
+    publishDir "${params.outdir}/checkm", mode:"copy"
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.checkm:v1'
 
@@ -23,8 +23,8 @@ process CHECKM {
     checkm2csv.py -i checkm_output > checkm_quality.csv
     """
 
-    // stub:
-    // """
-    // touch checkm_quality.csv
-    // """
+    stub:
+    """
+    touch checkm_quality.csv
+    """
 }

@@ -1,6 +1,6 @@
 process PHYLO_TREE {
 
-    publishDir "${params.outdir}/${params.catalogue_name}_metadata/", mode: 'copy'
+    publishDir "${params.outdir}/", mode: 'copy'
 
     label 'process_light'
 

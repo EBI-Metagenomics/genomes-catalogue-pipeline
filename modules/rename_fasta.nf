@@ -1,6 +1,6 @@
 process RENAME_FASTA {
 
-    publishDir "results/renamed_genomes", mode: 'copy'
+    publishDir "${params.outdir}/renamed_genomes", mode: 'copy'
 
     label 'process_light'
 
@@ -32,10 +32,10 @@ process RENAME_FASTA {
     --csv ${check_csv}
     """
 
-    // stub:
-    // """
-    // mkdir renamed_genomes
-    // touch name_mapping.tsv
-    // touch renamed_${check_csv.baseName}_checkm.txt
-    // """
+    stub:
+    """
+    mkdir renamed_genomes
+    touch name_mapping.tsv
+    touch renamed_${check_csv.baseName}_checkm.txt
+    """
 }

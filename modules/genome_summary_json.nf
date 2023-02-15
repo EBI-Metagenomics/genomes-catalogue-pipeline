@@ -8,12 +8,12 @@ process GENOME_SUMMARY_JSON {
     memory '1 GB'
 
     input:
-    tuple val(cluster), file(annotated_gff), file(coverage_summary), file(cluster_rep_faa), file(pangenome_fasta), file(core_genes)
-    file metadata
+    tuple val(cluster), path(annotated_gff), path(coverage_summary), path(cluster_rep_faa), path(pangenome_fasta), path(core_genes)
+    path metadata
     val biome
 
     output:
-    file "*.json"
+    path "*.json"
 
     script:
     def args = ""
@@ -35,8 +35,8 @@ process GENOME_SUMMARY_JSON {
     --output-file ${cluster}.json
     """
 
-    // stub:
-    // """
-    // touch ${cluster}.json
-    // """
+    stub:
+    """
+    touch ${cluster}.json
+    """
 }

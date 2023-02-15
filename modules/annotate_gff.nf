@@ -27,8 +27,8 @@ process ANNONTATE_GFF {
     ${sanntis_flag}
     """
 
-    // stub:
-    // """
-    // touch ${gff.simpleName}_annotated.gff
-    // """
+    stub:
+    """
+    touch ${gff.simpleName}_annotated.gff
+    """
 }
