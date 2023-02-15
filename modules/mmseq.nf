@@ -16,7 +16,7 @@ process MMSEQ {
     val cov_threshold
 
     output:
-    path "*", emit: mmseq_outdir
+    path "*", type: "dir", emit: mmseq_outdir
     path "mmseqs_cluster_rep.fa", emit: mmseq_cluster_rep_faa
     path "mmseqs_cluster.tsv", emit: mmseq_cluster_tsv
 

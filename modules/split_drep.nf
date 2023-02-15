@@ -1,6 +1,6 @@
 process SPLIT_DREP {
 
-    publishDir '${params.outdir}/intermediate_files/split_drep', mode:'copy'
+    publishDir "${params.outdir}/intermediate_files/split_drep", mode:'copy'
 
     label 'process_light'
 
