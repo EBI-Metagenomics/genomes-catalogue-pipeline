@@ -61,6 +61,7 @@ workflow PROCESS_MANY_GENOMES {
         rep_prokka_fna = rep_prokka_fna
         rep_prokka_gff = rep_prokka_gff
         rep_prokka_faa = rep_prokka_faa
+        rep_prokka_gbk = rep_prokka_gbk
         non_rep_prokka_fna = non_rep_prokka_fna
         non_rep_prokka_gff = non_rep_prokka_gff
         core_genes = CORE_GENES.out.core_genes

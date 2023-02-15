@@ -33,7 +33,8 @@ include { DETECT_NCRNA } from '../modules/detect_ncrna'
 include { INDEX_FNA } from '../modules/index_fna'
 include { ANNONTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
-include { IQTREE } from '../modules/iqtree'
+include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
+include { IQTREE as IQTREE_AR } from '../modules/iqtree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 
 /*
@@ -138,6 +139,10 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.prokka_fna
     )
 
+    cluster_reps_gbks = PROCESS_MANY_GENOMES.out.rep_prokka_gbk.mix(
+        PROCESS_SINGLETON_GENOMES.out.prokka_gbk
+    )
+
     species_reps_names_list = PROCESS_MANY_GENOMES.out.rep_prokka_fna.map({ it[0] }) \
         .mix(PROCESS_SINGLETON_GENOMES.out.prokka_fna.map({ it[0] })) \
         .collectFile(name: "species_reps_names_list.txt", newLine: true)
@@ -147,6 +152,7 @@ workflow GAP {
         MMSEQ_SWF.out.mmseq_cluster_tsv,
         cluster_reps_faas,
         cluster_reps_fnas,
+        cluster_reps_gbks,
         species_reps_names_list,
         ch_interproscan_db,
         ch_eggnog_db,
@@ -175,16 +181,16 @@ workflow GAP {
     )
 
     if (GTDBTK_AND_METADATA.out.gtdbtk_msa_bac120) {
-        IQTREE(
+        IQTREE_BAC(
             GTDBTK_AND_METADATA.out.gtdbtk_msa_bac120,
-            channel.val("bac120")
+            channel.value("bac120")
         )
     }
 
     if (GTDBTK_AND_METADATA.out.gtdbtk_msa_ar53) {
-        IQTREE(
+        IQTREE_AR(
             GTDBTK_AND_METADATA.out.gtdbtk_msa_ar53,
-            channel.val("ar53")
+            channel.value("ar53")
         )
     }
 
