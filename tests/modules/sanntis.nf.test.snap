@@ -1,0 +1,15 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "sanntis_gff": [
+                    [
+                        "MGYG000000001",
+                        "MGYG000000001_sanntis.gff:md5,c2347268139fa184993a98810dd48147"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-02-15T12:54:33+0000"
+    }
+}

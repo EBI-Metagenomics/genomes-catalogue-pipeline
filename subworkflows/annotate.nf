@@ -9,6 +9,7 @@ include { PER_GENOME_ANNONTATION_GENERATOR } from '../modules/per_genome_annotat
 include { DETECT_RRNA } from '../modules/detect_rrna'
 include { COLLECT_IN_FOLDER as COLLECT_FASTAS } from '../modules/detect_rrna'
 include { COLLECT_IN_FOLDER as COLLECT_OUTS } from '../modules/detect_rrna'
+include { SANNTIS } from '../modules/sanntis'
 
 
 process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
@@ -35,6 +36,7 @@ workflow ANNOTATE {
         mmseq_tsv
         prokka_faas
         prokka_fnas
+        prokka_gbk
         species_reps_names_list
         interproscan_db
         eggnog_db
@@ -111,9 +113,14 @@ workflow ANNOTATE {
             return tuple(key, file)
         }
 
+        SANNTIS(
+            per_genome_ips_annotations.join(prokka_gbk)
+        )
+
     emit:
         ips_annotation_tsvs = per_genome_ips_annotations
         eggnog_annotation_tsvs = per_genome_eggnog_annotations
         rrna_fastas = COLLECT_FASTAS.out.collection_folder
         rrna_outs = COLLECT_OUTS.out.collection_folder
+        sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
 }

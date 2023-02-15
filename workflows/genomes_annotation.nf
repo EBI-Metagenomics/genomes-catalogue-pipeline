@@ -226,7 +226,9 @@ workflow GAP {
         ).join(
             ANNOTATE.out.eggnog_annotation_tsvs
         ).join(
-            DETECT_NCRNA.out.ncrna_tblout
+            ANNOTATE.out.sanntis_annotation_gffs, remainder: true
+        ).join(
+            DETECT_NCRNA.out.ncrna_tblout, remainder: true
         )
     )
 
