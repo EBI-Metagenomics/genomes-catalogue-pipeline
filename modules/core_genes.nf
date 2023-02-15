@@ -5,7 +5,7 @@ process CORE_GENES {
 
     publishDir(
         "{params.outdir}/${catalogue_name}_metadata/${cluster_name}/pan-genome",
-        saveAs: { filename -> "core_genes.txt" }
+        saveAs: { filename -> "core_genes.txt" },
         mode: 'copy'
     )
 
