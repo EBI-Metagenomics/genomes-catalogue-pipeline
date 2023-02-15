@@ -9,7 +9,7 @@ process INDEX_FNA {
             filename -> "${params.catalogue_name}/${filename.tokenize('.')[0]}/genome/$filename"
         },
         mode: 'copy'
-    }
+    )
 
     container "quay.io/biocontainers/samtools:1.9--h10a08f8_12"
 
