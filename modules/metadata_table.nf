@@ -23,7 +23,7 @@ process METADATA_TABLE {
     path gunc_failed_tsv
 
     output:
-    path 'metadata_table.tsv', emit: metadata_tsv
+    path 'genomes-all_metadata.tsv', emit: metadata_tsv
 
     script:
     """

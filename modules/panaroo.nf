@@ -3,13 +3,13 @@ process PANAROO {
     tag "${cluster_name}"
 
     publishDir(
-        "{params.outdir}/${catalogue_name}_metadata/${cluster_name}/pan-genome",
+        "${params.outdir}/${params.catalogue_name}_metadata/${cluster_name}/pan-genome",
         pattern: "${cluster_name}_panaroo/${cluster_name}.pan-genome.fna",
         saveAs: { filename -> "pan-genome.fna" },
         mode: 'copy'
     )
     publishDir(
-        "{params.outdir}/${catalogue_name}_metadata/${cluster_name}/pan-genome",
+        "${params.outdir}/${catalogue_name}_metadata/${cluster_name}/pan-genome",
         pattern: "${cluster_name}_panaroo/${cluster_name}.gene_presence_absence.Rtab",
         mode: 'copy'
     )

@@ -1,6 +1,6 @@
 process GENE_CATALOGUE {
 
-    publishDir "${params.outdir}/gene_catalogue", mode: 'copy'
+    publishDir "${params.outdir}/", mode: 'copy'
 
     container 'quay.io/biocontainers/seqtk:1.3--h7132678_4'
 
