@@ -7,8 +7,8 @@ process IQTREE {
 
     container 'quay.io/biocontainers/iqtree:2.0.3--h176a8bc_0'
 
-    cpus 4 // TODO: change to 16
-    memory '5 GB'
+    cpus 16
+    memory '10 GB'
 
     input:
     path msa_fasta_gz // gtdbtk.bac120.user_msa.fasta.gz
