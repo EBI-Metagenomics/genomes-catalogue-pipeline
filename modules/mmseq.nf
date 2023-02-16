@@ -4,11 +4,11 @@ process MMSEQ {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.mmseqs:v2'
 
-    label 'process_bigmem'
+    // label 'process_bigmem'
 
     cpus 32
     // TODO: this needs to be dynamic
-    memory "150 GB"
+    memory "100 GB"
 
     input:
     file faa_file

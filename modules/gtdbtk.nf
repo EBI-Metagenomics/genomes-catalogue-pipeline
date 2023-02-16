@@ -5,10 +5,10 @@ process GTDBTK {
 
     publishDir "${params.outdir}/gtdb-tk_output", mode: 'copy'
 
-    label 'process_bigmem'
+    // label 'process_bigmem'
 
     cpus 32
-    memory '500 GB'
+    memory '100 GB'
 
     input:
     path drep_folder
