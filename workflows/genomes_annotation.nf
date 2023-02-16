@@ -148,8 +148,8 @@ workflow GAP {
         .collectFile(name: "species_reps_names_list.txt", newLine: true)
 
     ANNOTATE(
-        MMSEQ_SWF.out.mmseq_cluster_rep_faa,
-        MMSEQ_SWF.out.mmseq_cluster_tsv,
+        MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
+        MMSEQ_SWF.out.mmseq_90_cluster_tsv,
         cluster_reps_faas,
         cluster_reps_fnas,
         cluster_reps_gbks,
@@ -277,7 +277,7 @@ workflow GAP {
 
     GENE_CATALOGUE(
         cluster_rep_ffn.map({ it[0] }).collectFile(name: "cluster_reps.ffn"),
-        MMSEQ_SWF.out.mmseq_100_mmseq_outdir
+        MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 
 }
