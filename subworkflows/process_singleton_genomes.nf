@@ -17,9 +17,11 @@ workflow PROCESS_SINGLETON_GENOMES {
             renamed_genomes_csv,
             gunc_db
         )
+
         PROKKA(
-            singleton_cluster_tuple,
-            GUNC.out.gunc_result
+            GUNC.out.cluster_gunc_result.filter { 
+                it[3].contains('_complete.txt')
+            }
         )
     emit:
         gunc_report = GUNC.out.gunc_result

@@ -8,12 +8,14 @@ process GUNC {
     cpus 4
 
     input:
-    tuple val(cluster_name), file(fasta)
+    tuple val(cluster_name), path(fasta)
     file renamed_genomes_csv
     file gunc_db
 
     output:
-    path '*_gunc_*', emit: gunc_result
+    // TODO: review this, repeated emited value
+    tuple val(cluster_name), path(fasta), path('*_gunc_*'), emit: cluster_gunc_result
+    path('*_gunc_*'), emit: gunc_result
 
     script:
     """

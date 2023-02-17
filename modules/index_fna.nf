@@ -4,9 +4,8 @@ process INDEX_FNA {
 
     publishDir(
         "${params.outdir}",
-        pattern: "*.fasta*",
         saveAs: {
-            filename -> "${params.catalogue_name}/${filename.tokenize('.')[0]}/genome/$filename"
+            filename -> "${params.catalogue_name}_metadata/${filename.tokenize('.')[0]}/genome/$filename"
         },
         mode: 'copy'
     )

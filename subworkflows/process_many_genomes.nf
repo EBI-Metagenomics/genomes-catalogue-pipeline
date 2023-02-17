@@ -13,8 +13,7 @@ workflow PROCESS_MANY_GENOMES {
     main:
 
         PROKKA(
-            many_genomes_clusters,
-            channel.value("prokka-process")
+            many_genomes_clusters
         )
 
         // Group by cluster

@@ -17,7 +17,6 @@ process PROKKA {
 
     input:
     tuple val(cluster_name), path(fasta)
-    val when_filter
 
     output:
     tuple val(cluster_name), file("${fasta.baseName}_prokka/${fasta.baseName}.gff"), emit: gff
@@ -25,9 +24,6 @@ process PROKKA {
     tuple val(cluster_name), file("${fasta.baseName}_prokka/${fasta.baseName}.fna"), emit: fna
     tuple val(cluster_name), file("${fasta.baseName}_prokka/${fasta.baseName}.gbk"), emit: gbk
     tuple val(cluster_name), file("${fasta.baseName}_prokka/${fasta.baseName}.ffn"), emit: ffn
-
-    when:
-    when_filter =~ "complete|prokka-process"
 
     script:
     """

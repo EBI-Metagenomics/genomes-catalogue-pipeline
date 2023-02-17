@@ -1,6 +1,6 @@
 process GENOME_SUMMARY_JSON {
 
-    publishDir "${params.outdir}/${param.catalogue_name}_metadata/${cluster}/", mode:'copy'
+    publishDir "${params.outdir}/${params.catalogue_name}_metadata/${cluster}/", mode:'copy'
 
     label 'process_light'
 
