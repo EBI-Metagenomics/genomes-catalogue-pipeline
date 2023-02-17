@@ -20,7 +20,7 @@ workflow PROCESS_SINGLETON_GENOMES {
 
         PROKKA(
             GUNC.out.cluster_gunc_result.filter { 
-                it[3].contains('_complete.txt')
+                it[2].contains('_complete.txt')
             }
         )
     emit:
