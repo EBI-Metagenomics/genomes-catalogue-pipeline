@@ -102,7 +102,7 @@ workflow ANNOTATE {
             channel.value('rRNA_outs')
         )
 
-        // Group per genome name //
+        // Group by cluster //
         per_genome_ips_annotations = PER_GENOME_ANNONTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
             def key = file.name.toString().tokenize('_').get(0)
             return tuple(key, file)
