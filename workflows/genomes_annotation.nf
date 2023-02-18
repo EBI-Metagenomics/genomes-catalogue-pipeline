@@ -226,15 +226,28 @@ workflow GAP {
         PROCESS_MANY_GENOMES.out.rep_prokka_gff
     )
 
+    // Select the only the reps //
+    // Those where the cluster-name and the file name match
+    // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv  
+    reps_ips = ANNOTATE.out.ips_annotation_tsvs.filter {
+        it[1].name.contains(it[0])
+    }
+    reps_eggnog = ANNOTATE.out.eggnog_annotation_tsvs.filter {
+        it[1].name.contains(it[0])
+    }
+    reps_ncrna = DETECT_NCRNA.out.ncrna_tblout.filter {
+        it[1].name.contains(it[0])
+    }
+
     ANNONTATE_GFF(
         cluster_reps_gff.join(
-            ANNOTATE.out.ips_annotation_tsvs
+            reps_ips
         ).join(
-            ANNOTATE.out.eggnog_annotation_tsvs
+           reps_eggnog
         ).join(
-            ANNOTATE.out.sanntis_annotation_gffs, remainder: true
+            ANNOTATE.out.sanntis_annotation_gffs
         ).join(
-            DETECT_NCRNA.out.ncrna_tblout, remainder: true
+            reps_ncrna
         )
     )
 
