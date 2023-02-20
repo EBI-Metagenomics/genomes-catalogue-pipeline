@@ -1,6 +1,17 @@
 process MMSEQ {
 
-    publishDir "${params.outdir}/protein_catalogue/mmseqs_${id_threshold}_outdir/", mode: 'copy'
+    // TODO: add tar.gz step
+    publishDir(
+        saveAs: {
+            filename -> {
+                if (filename.contains(".tar.gz")) {
+                    Int threshold = id_threshold * 100;
+                    return "${params.outdir}/protein_catalogue/protein_catalogue-${threshold}.tar.gz"
+                }
+            }
+        },
+        mode: 'copy'
+    )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.mmseqs:v2'
 

@@ -29,9 +29,6 @@ If you want to return cluster folders with mash-files - use --create-clusters fl
 
 process CLASSIFY_CLUSTERS {
 
-    publishDir "${params.outdir}/", patter: "pg", mode:"copy"
-    publishDir "${params.outdir}/", patter: "sg", mode:"copy"
-
     label "process_light"
 
     cpus 1

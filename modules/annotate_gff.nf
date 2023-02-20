@@ -1,7 +1,16 @@
 process ANNONTATE_GFF {
 
-    publishDir "${params.outdir}/${params.catalogue_name}_metadata/", mode: 'copy'
-
+    publishDir(
+        saveAs: {
+            filename -> {
+                String genome_id = filename.tokenize('.')[0];
+                String cluster_rep_prefix = cluster.substring(10);
+                return "${params.outdir}/species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${genome_id}.gff"
+            }
+        },
+        mode: 'copy'
+    )
+    
     label 'process_light'
 
     cpus 1

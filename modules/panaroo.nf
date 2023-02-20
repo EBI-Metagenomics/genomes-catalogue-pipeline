@@ -3,9 +3,20 @@ process PANAROO {
     tag "${cluster_name}"
 
     publishDir(
-        "${params.outdir}/${params.catalogue_name}_metadata/${cluster_name}/pan-genome",
-        pattern: "${cluster_name}_panaroo/${cluster_name}.pan-genome.fna",
-        saveAs: { filename -> "pan-genome.fna" },
+        saveAs: {
+            filename -> {
+                if (filename.contains(".pan-genome.fna") or filename.contains("gene_presence_absence.Rtab")) {
+                    finalname = filename;
+                    if (filename.contains(".pan-genome.fna")) {
+                        finalname = "pan-genome.fna"
+                    } else {
+                        finalname = "gene_presence_absence.Rtab"
+                    }
+                    String cluster_rep_prefix = cluster_name.substring(10);
+                    return "${params.outdir}/species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/$finalname"
+                }
+            }
+        },
         mode: 'copy'
     )
     publishDir(

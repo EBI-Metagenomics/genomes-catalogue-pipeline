@@ -3,7 +3,10 @@ process GTDBTK {
     container 'quay.io/microbiome-informatics/gtdb-tk:2.1.0'
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
 
-    publishDir "${params.outdir}/gtdb-tk_output", mode: 'copy'
+    publishDir(
+        saveAs: { filname -> "${params.outdir}/gtdb-tk_output/$filename" },
+        mode: 'copy'
+    )
 
     // label 'process_bigmem'
 

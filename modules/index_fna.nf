@@ -5,7 +5,11 @@ process INDEX_FNA {
     publishDir(
         "${params.outdir}",
         saveAs: {
-            filename -> "${params.catalogue_name}_metadata/${filename.tokenize('.')[0]}/genome/$filename"
+            filename -> {
+                String rep_name = filename.tokenize('.')[0];
+                String cluste_prefix = cluster_name.substring(10);
+                return "${params.outdir}/species_catalogue/${cluste_prefix}/${rep_name}/genome/$filename"
+            }
         },
         mode: 'copy'
     )

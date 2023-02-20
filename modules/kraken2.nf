@@ -78,7 +78,10 @@ process KRAKEN2_BUILD {
 
 process KRAKEN2_POSTPROCESSING {
 
-    publishDir "${params.outdir}/databases/", pattern: "${kraken_db}", mode: 'copy'
+    publishDir(
+        "${params.outdir}/",
+        mode: 'copy'
+    )
 
     input:
     path kraken_db

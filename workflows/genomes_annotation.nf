@@ -36,6 +36,7 @@ include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
 include { IQTREE as IQTREE_AR } from '../modules/iqtree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
+include { MASH_SKETCH } from '..modules/mash_sketch'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -291,6 +292,14 @@ workflow GAP {
     GENE_CATALOGUE(
         cluster_rep_ffn.map({ it[0] }).collectFile(name: "cluster_reps.ffn"),
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
+    )
+
+    all_genomes_fna = PROCESS_MANY_GENOMES.out.prokka_faas.mix(
+        PROCESS_SINGLETON_GENOMES.out.fna
+    ).map({ it[1] })
+
+    MASH_SKETCH(
+        all_genomes_fna.collect()
     )
 
 }

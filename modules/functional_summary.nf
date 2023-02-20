@@ -2,7 +2,12 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
 
     label 'process_light'
 
-    publishDir "${params.outdir}/${params.catalogue_name}_metadata/${cluster}/", mode: "copy"
+    publishDir(
+        saveAs: {
+            filename -> "${params.outdir}/species/${cluster.substring(10)}/${cluster}/genome/"
+        },
+        mode: "copy"
+    )
 
     memory '1 GB'
     cpus 1

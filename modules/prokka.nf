@@ -3,8 +3,17 @@ process PROKKA {
     tag "${cluster_name}"
 
     publishDir(
-        "${params.outdir}/${params.catalogue_name}_metadata/${cluster_name}/",
-        pattern: "${fasta.baseName}_prokka/*.faa",
+        saveAs: {
+            filename -> {
+                if (filename.contains(".faa") or filename.contains(".fna")) {
+                    String rep_name = filename.tokenize('.')[0];
+                    String cluster_prefix = cluster_name.substring(10);
+                    return "${params.outdir}/species_catalogue/${cluster_prefix}/${rep_name}/genome/$filename"
+                } else {
+                    return null;
+                }
+            }
+        }
         mode: "copy"
     )
 

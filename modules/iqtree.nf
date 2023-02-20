@@ -2,8 +2,12 @@ process IQTREE {
 
     tag "${output_prefix}"
 
-    publishDir "${params.outdir}/phylogenies/iqtree", pattern: "*_iqtree.nwk", mode: "copy"
-    publishDir "${params.outdir}/phylogenies/iqtree", pattern: "*_alignment.faa.gz", mode: "copy"
+    publishDir(
+        saveAs: {
+            filename -> "${params.outdir}/phylogenies/$filename"
+        },
+        mode: "copy"
+    )
 
     container 'quay.io/biocontainers/iqtree:2.0.3--h176a8bc_0'
 
@@ -16,6 +20,7 @@ process IQTREE {
 
     output:
     tuple val(output_prefix), path("*_iqtree.nwk"), emit: tree
+    tuple val(output_prefix), path("*_alignment.faa.gz"), emit: alignment
 
     script:
     """

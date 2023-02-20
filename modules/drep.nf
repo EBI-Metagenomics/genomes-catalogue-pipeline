@@ -6,7 +6,13 @@ process DREP {
     // TODO: review the cp instruction on the script, I'm using that
     //       to create an empty drep folder in the results area
 
-    publishDir "${params.outdir}/drep",  mode:'copy', failOnError: true
+    publishDir(
+        saveAs: {
+            filename -> "${params.outdir}/drep/${filename}"
+        },
+        mode:'copy',
+        failOnError: true
+    )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.drep:v2'
 
