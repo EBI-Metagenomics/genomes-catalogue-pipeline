@@ -8,11 +8,11 @@ process DETECT_RRNA {
         saveAs: {
             filename -> {
                 if (!filename.contains(".fasta")) {
-                    return null
+                    return null;
                 }
                 String genome_id = filename.tokenize('.')[0];
                 String cluster_rep_prefix = cluster.substring(10);
-                return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${genome_id}_rRNAs.fasta"
+                return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${genome_id}_rRNAs.fasta"
             }
         },
         mode: 'copy'

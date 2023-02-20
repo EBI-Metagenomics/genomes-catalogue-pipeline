@@ -20,8 +20,8 @@ process IQTREE {
     val output_prefix // bac120 or ar53
 
     output:
-    tuple val(output_prefix), path("*_iqtree.nwk"), emit: tree
-    tuple val(output_prefix), path("*_alignment.faa.gz"), emit: alignment
+    tuple val(output_prefix), path("*.nwk"), emit: tree
+    tuple val(output_prefix), path("*.faa.gz"), emit: alignment
 
     script:
     """
