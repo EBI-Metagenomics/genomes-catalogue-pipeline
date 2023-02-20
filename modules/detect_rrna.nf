@@ -11,7 +11,7 @@ process DETECT_RRNA {
                     return null;
                 }
                 String genome_id = filename.tokenize('.')[0];
-                String cluster_rep_prefix = cluster.substring(10);
+                String cluster_rep_prefix = cluster_name.substring(10);
                 return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${genome_id}_rRNAs.fasta"
             }
         },
