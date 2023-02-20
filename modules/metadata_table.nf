@@ -31,7 +31,7 @@ process METADATA_TABLE {
     --genomes-dir ${genomes_dir} \
     --extra-weight-table ${extra_weights_tsv} \
     --checkm-results ${check_results_tsv} \
-    --rna-results ${rrna_out_results} \
+    --rna-results rRNA_outs \
     --naming-table ${name_mapping_tsv} \
     --clusters-table ${clusters_tsv} \
     --taxonomy ${gtdb_summary_tsv} \
