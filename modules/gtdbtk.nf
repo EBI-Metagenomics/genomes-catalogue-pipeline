@@ -5,7 +5,9 @@ process GTDBTK {
 
     publishDir(
         path: "${params.outdir}",
-        saveAs: { filename -> "gtdb-tk_output/$filename" },
+        saveAs: { 
+            filename -> "${file(filename).getSimpleName()}.${file(filename).getExtension()}"
+        },
         mode: 'copy'
     )
 
@@ -19,7 +21,6 @@ process GTDBTK {
     path gtdbtk_refdata
 
     output:
-    path 'gtdbtk_results/', emit: gtdbtk_results
     path 'gtdbtk_results/classify/gtdbtk.bac120.summary.tsv', optional: true, emit: gtdbtk_summary_bac120
     path 'gtdbtk_results/classify/gtdbtk.ar53.summary.tsv', optional: true, emit: gtdbtk_summary_arc53
     path 'gtdbtk_results/align/gtdbtk.bac120.msa.fasta.gz', optional: true, emit: gtdbtk_msa_bac120

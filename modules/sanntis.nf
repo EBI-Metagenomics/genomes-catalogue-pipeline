@@ -9,9 +9,9 @@ process SANNTIS {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                String rep_name = filename.tokenize('.')[0];
+                def output_file = file(filename);
                 String cluster_prefix = cluster_name.substring(0, 11);
-                return "species_catalogue/${cluster_prefix}/${rep_name}/genome/$filename"
+                return "species_catalogue/${cluster_prefix}/${rep_name}/genome/${output_file.getSimpleName()}_sanntis.gff"
             }
         },
         mode: 'copy'

@@ -12,9 +12,9 @@ process PER_GENOME_ANNONTATION_GENERATOR {
         saveAs: {
             filename -> {
                 // TODO: Fix this one... we need the rep name in this context, we don't have it.
-                String rep_name = filename.tokenize('.')[0];
-                String cluster_prefix = rep_name.substring(0, 11);
-                return "species_catalogue/${cluster_prefix}/${rep_name}/genome/$filename"
+                def tsv_file = file(filename);
+                String cluster_prefix = filename.getSimpleName().substring(0, 11);
+                return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${tsv_file.getSimpleName()}.${tsv_file.getExtension()}"
             }
         },
         mode: 'copy'
