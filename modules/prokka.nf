@@ -13,7 +13,7 @@ process PROKKA {
                     return null;
                 }
             }
-        }
+        },
         mode: "copy"
     )
 
