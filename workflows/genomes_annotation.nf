@@ -295,7 +295,7 @@ workflow GAP {
     )
 
     all_genomes_fna = PROCESS_MANY_GENOMES.out.prokka_faas.mix(
-        PROCESS_SINGLETON_GENOMES.out.fna
+        PROCESS_SINGLETON_GENOMES.out.prokka_fna
     ).map({ it[1] })
 
     MASH_SKETCH(
