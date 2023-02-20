@@ -24,13 +24,18 @@ process IQTREE {
 
     script:
     """
-    gunzip -c ${msa_fasta_gz} > ${output_prefix}_alignment.faa
+    # gunzip -c ${msa_fasta_gz} > ${output_prefix}_alignment.faa
 
-    iqtree -nt ${task.cpus} \
-    -s ${output_prefix}_alignment.faa \
-    --prefix iqtree.${output_prefix}
+    # iqtree -nt ${task.cpus} \
+    # -s ${output_prefix}_alignment.faa \
+    # --prefix iqtree.${output_prefix#
+    # mv iqtree.${output_prefix}.treefile ${output_prefix}_iqtree.nwk
+    # cp ${msa_fasta_gz} ${output_prefix}_alignment.faa.gz
 
-    mv iqtree.${output_prefix}.treefile ${output_prefix}_iqtree.nwk
-    cp ${msa_fasta_gz} ${output_prefix}_alignment.faa.gz
+    # iqtree -nt ${task.cpus} \
+    # -s ${output_prefix}_alignment.faa \
+    # --prefix iqtree.${output_prefix}
+
+    touch iqtree.${output_prefix}.treefile
     """
 }
