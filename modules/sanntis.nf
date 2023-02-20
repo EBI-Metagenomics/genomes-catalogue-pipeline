@@ -12,7 +12,7 @@ process SANNTIS {
                 String cluster_prefix = cluster_name.substring(10);
                 return "${params.outdir}/species_catalogue/${cluster_prefix}/${rep_name}/genome/$filename"
             }
-        }
+        },
         mode: 'copy'
     )
 
