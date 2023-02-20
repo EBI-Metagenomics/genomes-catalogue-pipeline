@@ -37,6 +37,7 @@ process IQTREE {
     # -s ${output_prefix}_alignment.faa \
     # --prefix iqtree.${output_prefix}
 
+    touch ${output_prefix}.faa.gz
     touch iqtree.${output_prefix}.nwk
     """
 }
