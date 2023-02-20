@@ -1,11 +1,12 @@
 process MASH_TO_NWK {
 
     publishDir(
+        path: "${params.outdir}",
         saveAs: {
             filename -> {
                 String rep_name = filename.replace("_mash", "").tokenize(".")[0];
                 String cluster_prefix = rep_name.substring(10);
-                return "${params.outdir}/species_catalogue/${cluster_prefix}/${rep_name}/pan-genome/mashtree.nwk"
+                return "species_catalogue/${cluster_prefix}/${rep_name}/pan-genome/mashtree.nwk";
             }
         },
         mode: 'copy'

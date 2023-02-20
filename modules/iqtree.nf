@@ -3,8 +3,9 @@ process IQTREE {
     tag "${output_prefix}"
 
     publishDir(
+        path: "${params.outdir}",
         saveAs: {
-            filename -> "${params.outdir}/phylogenies/$filename"
+            filename -> "phylogenies/$filename"
         },
         mode: "copy"
     )

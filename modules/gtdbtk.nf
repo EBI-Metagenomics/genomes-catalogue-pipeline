@@ -4,7 +4,8 @@ process GTDBTK {
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
 
     publishDir(
-        saveAs: { filname -> "${params.outdir}/gtdb-tk_output/$filename" },
+        path: "${params.outdir}",
+        saveAs: { filname -> "gtdb-tk_output/$filename" },
         mode: 'copy'
     )
 

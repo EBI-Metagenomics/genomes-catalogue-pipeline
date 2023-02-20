@@ -2,11 +2,12 @@ process MMSEQ {
 
     // TODO: add tar.gz step
     publishDir(
+        path: "${params.outdir}",
         saveAs: {
             filename -> {
                 if (filename.contains(".tar.gz")) {
                     int threshold = id_threshold * 100;
-                    return "${params.outdir}/protein_catalogue/protein_catalogue-${threshold}.tar.gz"
+                    return "protein_catalogue/protein_catalogue-${threshold}.tar.gz"
                 }
             }
         },

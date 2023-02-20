@@ -3,12 +3,12 @@ process INDEX_FNA {
     tag "${cluster_name}"
 
     publishDir(
-        "${params.outdir}",
+        path: "${params.outdir}",
         saveAs: {
             filename -> {
                 String rep_name = filename.tokenize('.')[0];
                 String cluste_prefix = cluster_name.substring(10);
-                return "${params.outdir}/species_catalogue/${cluste_prefix}/${rep_name}/genome/$filename"
+                return "species_catalogue/${cluste_prefix}/${rep_name}/genome/$filename"
             }
         },
         mode: 'copy'

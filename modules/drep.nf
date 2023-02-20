@@ -7,8 +7,9 @@ process DREP {
     //       to create an empty drep folder in the results area
 
     publishDir(
+        path: "${params.outdir}",
         saveAs: {
-            filename -> "${params.outdir}/drep/${filename}"
+            filename -> "drep/${filename}"
         },
         mode:'copy',
         failOnError: true

@@ -4,10 +4,11 @@ process CORE_GENES {
     tag "${cluster_name}"
 
     publishDir(
+        path: "${params.outdir}",
         saveAs: {
             filename -> {
                 String cluster_rep_prefix = cluster_name.substring(10);
-                return "${params.outdir}/species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/core_genes.txt"
+                return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/core_genes.txt"
             }
         },
         mode: 'copy'

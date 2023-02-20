@@ -3,8 +3,9 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
     label 'process_light'
 
     publishDir(
+        path: "${params.outdir}",
         saveAs: {
-            filename -> "${params.outdir}/species/${cluster.substring(10)}/${cluster}/genome/"
+            filename -> "species_catalogue/${cluster.substring(10)}/${cluster}/genome/"
         },
         mode: "copy"
     )

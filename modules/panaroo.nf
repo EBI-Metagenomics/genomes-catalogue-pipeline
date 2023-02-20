@@ -3,6 +3,7 @@ process PANAROO {
     tag "${cluster_name}"
 
     publishDir(
+        path: "${params.outdir}",
         saveAs: {
             filename -> {
                 if (filename.contains(".pan-genome.fna") or filename.contains("gene_presence_absence.Rtab")) {
@@ -13,15 +14,10 @@ process PANAROO {
                         finalname = "gene_presence_absence.Rtab"
                     }
                     String cluster_rep_prefix = cluster_name.substring(10);
-                    return "${params.outdir}/species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/$finalname"
+                    return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/$finalname"
                 }
             }
         },
-        mode: 'copy'
-    )
-    publishDir(
-        "${params.outdir}/${params.catalogue_name}_metadata/${cluster_name}/pan-genome",
-        pattern: "${cluster_name}_panaroo/${cluster_name}.gene_presence_absence.Rtab",
         mode: 'copy'
     )
 
