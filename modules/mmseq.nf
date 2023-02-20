@@ -5,7 +5,7 @@ process MMSEQ {
         saveAs: {
             filename -> {
                 if (filename.contains(".tar.gz")) {
-                    Int threshold = id_threshold * 100;
+                    int threshold = id_threshold * 100;
                     return "${params.outdir}/protein_catalogue/protein_catalogue-${threshold}.tar.gz"
                 }
             }
