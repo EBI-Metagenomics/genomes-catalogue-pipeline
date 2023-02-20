@@ -15,6 +15,6 @@ process MASH_SKETCH {
 
     script:
     """
-    sketch -o all_genomes.msh ${genomes_fasta.join( ' ' )}
+    mash sketch -o all_genomes.msh ${genomes_fasta.join( ' ' )}
     """
 }

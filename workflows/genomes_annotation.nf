@@ -294,7 +294,7 @@ workflow GAP {
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 
-    all_genomes_fna = PROCESS_MANY_GENOMES.out.prokka_faas.mix(
+    all_genomes_fna = PROCESS_MANY_GENOMES.out.prokka_fnas.mix(
         PROCESS_SINGLETON_GENOMES.out.prokka_fna
     ).map({ it[1] })
 
