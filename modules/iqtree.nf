@@ -28,7 +28,7 @@ process IQTREE {
 
     # iqtree -nt ${task.cpus} \
     # -s ${output_prefix}_alignment.faa \
-    # --prefix iqtree.${output_prefix#
+    # --prefix iqtree.${output_prefix}
     # mv iqtree.${output_prefix}.treefile ${output_prefix}_iqtree.nwk
     # cp ${msa_fasta_gz} ${output_prefix}_alignment.faa.gz
 
