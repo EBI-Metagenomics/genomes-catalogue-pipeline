@@ -5,7 +5,7 @@ process GTDBTK {
 
     publishDir(
         path: "${params.outdir}",
-        saveAs: { filname -> "gtdb-tk_output/$filename" },
+        saveAs: { filename -> "gtdb-tk_output/$filename" },
         mode: 'copy'
     )
 

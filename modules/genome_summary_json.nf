@@ -1,6 +1,15 @@
 process GENOME_SUMMARY_JSON {
 
-    publishDir "${params.outdir}/${params.catalogue_name}_metadata/${cluster}/", mode:'copy'
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                String cluster_rep_prefix = cluster.substring(0, 11);
+                return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${filename}"
+            }
+        },
+        mode:'copy'
+    )
 
     label 'process_light'
 
@@ -8,7 +17,7 @@ process GENOME_SUMMARY_JSON {
     memory '1 GB'
 
     input:
-    tuple val(cluster), path(annotated_gff), path(coverage_summary), path(cluster_rep_faa), path(pangenome_fasta), path(core_genes)
+    tuple val(cluster), path(annotated_gff), path(coverage_summary), path(cluster_rep_faa), file(pangenome_fasta), file(core_genes)
     path metadata
     val biome
 

@@ -5,7 +5,7 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
     publishDir(
         path: "${params.outdir}",
         saveAs: {
-            filename -> "species_catalogue/${cluster.substring(10)}/${cluster}/genome/"
+            filename -> "species_catalogue/${cluster.substring(0, 11)}/${cluster}/genome/$filename"
         },
         mode: "copy"
     )

@@ -3,15 +3,13 @@
 */
 process DREP {
 
-    // TODO: review the cp instruction on the script, I'm using that
-    //       to create an empty drep folder in the results area
-
     publishDir(
         path: "${params.outdir}",
+        pattern: "*.csv",
         saveAs: {
-            filename -> "drep/${filename}"
+            filename -> "intermediate_files/drep/$filename"
         },
-        mode:'copy',
+        mode: 'copy',
         failOnError: true
     )
 

@@ -10,7 +10,7 @@ process SANNTIS {
         saveAs: {
             filename -> {
                 String rep_name = filename.tokenize('.')[0];
-                String cluster_prefix = cluster_name.substring(10);
+                String cluster_prefix = cluster_name.substring(0, 11);
                 return "species_catalogue/${cluster_prefix}/${rep_name}/genome/$filename"
             }
         },

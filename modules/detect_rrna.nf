@@ -7,12 +7,14 @@ process DETECT_RRNA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                if (!filename.contains(".fasta")) {
+                if (filename.contains(".fasta") || filename.contains(".out")) {
+                    String extension = (filename.contains(".fasta")) ? ".fasta" : ".out"
+                    String genome_id = filename.tokenize('.')[0];
+                    String cluster_rep_prefix = cluster_name.substring(0, 11);
+                    return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${filename}";
+                } else {
                     return null;
                 }
-                String genome_id = filename.tokenize('.')[0];
-                String cluster_rep_prefix = cluster_name.substring(10);
-                return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${genome_id}_rRNAs.fasta"
             }
         },
         mode: 'copy'
@@ -93,31 +95,5 @@ process DETECT_RRNA {
     "\${RESULTS_FOLDER}/\${FILENAME}_trna.out"
 
     echo "Completed"
-    """
-}
-
-/*
- * Collect the rrna results into a folder
-*/
-process COLLECT_IN_FOLDER {
-
-    publishDir "${params.outdir}/rrna/", mode: "copy"
-
-    label 'process_light'
-
-    cpus 1
-    memory '1 GB'
-
-    input:
-    path files
-    val folder_name
-
-    output:
-    path "${folder_name}", type: 'dir', emit: collection_folder
-
-    script:
-    """
-    mkdir ${folder_name}
-    mv ${files.join( ' ' )} ${folder_name}
     """
 }

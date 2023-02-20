@@ -7,9 +7,10 @@ process PROKKA {
         saveAs: {
             filename -> {
                 if (filename.contains(".faa") or filename.contains(".fna")) {
-                    String rep_name = filename.tokenize('.')[0];
-                    String cluster_prefix = cluster_name.substring(10);
-                    return "species_catalogue/${cluster_prefix}/${rep_name}/genome/$filename"
+                    String genome_name = fasta.baseName;
+                    String extension = filename.tokenize('.')[1];
+                    String cluster_prefix = cluster_name.substring(0, 11);
+                    return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${genome_name}.${extension}"
                 } else {
                     return null;
                 }

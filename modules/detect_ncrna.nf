@@ -1,8 +1,6 @@
 
 process DETECT_NCRNA {
 
-    publishDir "results/ncrna/${cluster_name}/", mode: 'copy'
-
     container 'quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3'
 
     cpus 4

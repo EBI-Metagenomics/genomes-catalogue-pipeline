@@ -13,7 +13,7 @@ process PANAROO {
                     } else {
                         finalname = "gene_presence_absence.Rtab"
                     }
-                    String cluster_rep_prefix = cluster_name.substring(10);
+                    String cluster_rep_prefix = cluster_name.substring(0, 11);
                     return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/$finalname"
                 }
             }

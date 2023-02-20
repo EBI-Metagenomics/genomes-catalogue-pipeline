@@ -7,8 +7,6 @@ include { EGGNOG_MAPPER as EGGNOG_MAPPER_ORTHOLOGS } from '../modules/eggnog'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
 include { PER_GENOME_ANNONTATION_GENERATOR } from '../modules/per_genome_annotations'
 include { DETECT_RRNA } from '../modules/detect_rrna'
-include { COLLECT_IN_FOLDER as COLLECT_FASTAS } from '../modules/detect_rrna'
-include { COLLECT_IN_FOLDER as COLLECT_OUTS } from '../modules/detect_rrna'
 include { SANNTIS } from '../modules/sanntis'
 
 
@@ -92,16 +90,6 @@ workflow ANNOTATE {
             cmmodels_db
         )
 
-        COLLECT_FASTAS(
-            DETECT_RRNA.out.rrna_fasta_results.collect(),
-            channel.value('rRNA_fastas')
-        )
-
-        COLLECT_OUTS(
-            DETECT_RRNA.out.rrna_out_results.collect(),
-            channel.value('rRNA_outs')
-        )
-
         // Group by cluster //
         per_genome_ips_annotations = PER_GENOME_ANNONTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
             def key = file.name.toString().tokenize('_').get(0)
@@ -120,7 +108,6 @@ workflow ANNOTATE {
     emit:
         ips_annotation_tsvs = per_genome_ips_annotations
         eggnog_annotation_tsvs = per_genome_eggnog_annotations
-        rrna_fastas = COLLECT_FASTAS.out.collection_folder
-        rrna_outs = COLLECT_OUTS.out.collection_folder
+        rrna_outs = DETECT_RRNA.out.rrna_out_results.collect()
         sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
 }

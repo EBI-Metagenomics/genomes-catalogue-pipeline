@@ -13,7 +13,7 @@ process PER_GENOME_ANNONTATION_GENERATOR {
             filename -> {
                 // TODO: Fix this one... we need the rep name in this context, we don't have it.
                 String rep_name = filename.tokenize('.')[0];
-                String cluster_prefix = rep_name.substring(10);
+                String cluster_prefix = rep_name.substring(0, 11);
                 return "species_catalogue/${cluster_prefix}/${rep_name}/genome/$filename"
             }
         },

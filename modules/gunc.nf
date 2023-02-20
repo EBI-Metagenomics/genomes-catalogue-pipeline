@@ -1,7 +1,13 @@
 
 process GUNC {
 
-    publishDir "${params.outdir}/gunc/${cluster_name}/${fasta.baseName}", mode: 'copy'
+    publishDir(
+        path: "${params.outdir}/intermediate_files/",
+        saveAs: {
+            filename -> "${fasta.baseName}_${filename}"
+        },
+        mode: 'copy'
+    )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.gunc:latest'
 

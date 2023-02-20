@@ -1,6 +1,10 @@
 process GENERATE_EXTRA_WEIGHT {
 
-    publishDir "results/extra_weight_table", mode: 'copy'
+    publishDir(
+        path: "${params.outdir}/intermediate_files/",
+        saveAs: { filename -> "extra_weight_table.txt" },
+        mode: 'copy'
+    )
 
     label 'process_light'
 

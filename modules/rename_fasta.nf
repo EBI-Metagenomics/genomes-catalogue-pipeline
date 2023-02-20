@@ -1,6 +1,6 @@
 process RENAME_FASTA {
 
-    publishDir "${params.outdir}/renamed_genomes", mode: 'copy'
+    publishDir "${params.outdir}/intermediate_files/renamed_genomes", mode: 'copy'
 
     label 'process_light'
 

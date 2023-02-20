@@ -13,7 +13,7 @@ process METADATA_TABLE {
     path genomes_dir
     path extra_weights_tsv
     path check_results_tsv
-    path rrna_out_results
+    path rrna_out_results, stageAs: "rRNA_outs/*"
     path name_mapping_tsv
     path clusters_tsv
     path gtdb_summary_tsv

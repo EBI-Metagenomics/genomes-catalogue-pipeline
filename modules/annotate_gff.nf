@@ -5,7 +5,7 @@ process ANNONTATE_GFF {
         saveAs: {
             filename -> {
                 String genome_id = filename.tokenize('.')[0];
-                String cluster_rep_prefix = cluster.substring(10);
+                String cluster_rep_prefix = cluster.substring(0, 11);
                 return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${genome_id}.gff"
             }
         },

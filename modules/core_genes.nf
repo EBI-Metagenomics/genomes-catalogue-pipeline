@@ -7,7 +7,7 @@ process CORE_GENES {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                String cluster_rep_prefix = cluster_name.substring(10);
+                String cluster_rep_prefix = cluster_name.substring(0, 11);
                 return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/core_genes.txt"
             }
         },
