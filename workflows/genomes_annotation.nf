@@ -36,7 +36,7 @@ include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
 include { IQTREE as IQTREE_AR } from '../modules/iqtree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
-include { MASH_SKETCH } from '..modules/mash_sketch'
+include { MASH_SKETCH } from '../modules/mash_sketch'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
