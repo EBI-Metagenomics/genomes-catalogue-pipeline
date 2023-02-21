@@ -11,7 +11,7 @@ process SANNTIS {
             filename -> {
                 def output_file = file(filename);
                 String cluster_prefix = cluster_name.substring(0, 11);
-                return "species_catalogue/${cluster_prefix}/${rep_name}/genome/${output_file.getSimpleName()}_sanntis.gff"
+                return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${output_file.getSimpleName()}.gff"
             }
         },
         mode: 'copy'
