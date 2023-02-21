@@ -6,6 +6,7 @@ process PROKKA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
+                // TODO: use file() to improve readability
                 if (filename.contains(".faa") || filename.contains(".fna")) {
                     String genome_name = fasta.baseName;
                     String extension = filename.tokenize('.')[1];

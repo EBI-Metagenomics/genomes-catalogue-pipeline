@@ -20,8 +20,7 @@ workflow KRAKEN_SWF {
        
        // Formats the gtdbtk tax and creates the kraken db directory //
         KRAKEN2_PREPARE_GTDBTK_TAX(
-            gtdbtk_bac120.first(),
-            gtdbtk_ar53.first(),
+            gtdbtk_bac120.mix(gtdbtk_ar53).collectFile("gtdbtk_concatenated.tsv"),
             kraken_db_name,
             cluster_reps_fnas.collect() // this may have performance issues if > 2k (bash args limit)
         )

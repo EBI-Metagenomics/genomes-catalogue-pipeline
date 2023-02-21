@@ -5,7 +5,7 @@ process PANAROO {
     publishDir(
         path: "${params.outdir}",
         saveAs: {
-            output_folder -> {
+            filename -> {
                 def output_file = file(filename);
                 def extension = output_file.getExtension();
                 String cluster_prefix = cluster_name.substring(0, 11);
