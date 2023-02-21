@@ -253,7 +253,7 @@ workflow GAP {
     KRAKEN_SWF(
         GTDBTK_AND_METADATA.out.gtdbtk_summary_bac120,
         GTDBTK_AND_METADATA.out.gtdbtk_summary_arc53,
-        cluster_reps_fnas
+        cluster_reps_fnas.map({ it[1]})
     )
 
     cluster_rep_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
