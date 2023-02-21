@@ -261,7 +261,7 @@ workflow GAP {
     )
 
     GENE_CATALOGUE(
-        cluster_rep_ffn.map({ it[0] }).collectFile(name: "cluster_reps.ffn"),
+        cluster_rep_ffn.map({ it[0] }).collectFile(name: "cluster_reps.ffn", newLine: true),
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 

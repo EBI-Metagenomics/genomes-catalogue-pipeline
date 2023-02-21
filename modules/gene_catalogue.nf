@@ -9,7 +9,7 @@ process GENE_CATALOGUE {
     path mmseqs_100_cluster_tsv
 
     output:
-    path 'gene_catalogue', emit: gene_catalogue
+    path "gene_catalogue", emit: gene_catalogue
 
     script:
     """
