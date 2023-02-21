@@ -7,11 +7,12 @@ process DETECT_RRNA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                if (filename.contains(".fasta") || filename.contains(".out")) {
-                    String extension = (filename.contains(".fasta")) ? ".fasta" : ".out"
-                    String genome_id = filename.tokenize('.')[0];
+                def result_file = file(filename);
+                def file_extension = result_file.getExtension();
+                if (file_extension == "fasta" || file_extension == "out") {
+                    String genome_id = result_file.getSimpleName();
                     String cluster_rep_prefix = cluster_name.substring(0, 11);
-                    return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${filename}";
+                    return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${genome_id}.${file_extension}";
                 } else {
                     return null;
                 }

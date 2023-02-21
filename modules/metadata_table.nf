@@ -10,7 +10,7 @@ process METADATA_TABLE {
     memory '1 GB'
 
     input:
-    path genomes_dir
+    path genomes_fnas, stageAs: "genomes_dir/*"
     path extra_weights_tsv
     path check_results_tsv
     path rrna_out_results, stageAs: "rRNA_outs/*"
@@ -28,7 +28,7 @@ process METADATA_TABLE {
     script:
     """
     create_metadata_table.py \
-    --genomes-dir ${genomes_dir} \
+    --genomes-dir genomes_dir \
     --extra-weight-table ${extra_weights_tsv} \
     --checkm-results ${check_results_tsv} \
     --rna-results rRNA_outs \

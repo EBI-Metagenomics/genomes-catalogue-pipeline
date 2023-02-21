@@ -12,7 +12,7 @@ include { PHYLO_TREE } from '../modules/phylo_tree'
 workflow GTDBTK_AND_METADATA {
 
     take:
-        drep_folder
+        cluster_reps_fnas // list of .fna files for the cluster reps
         extra_weights_tsv
         check_results_tsv
         rrna_out_results
@@ -25,7 +25,7 @@ workflow GTDBTK_AND_METADATA {
         gtdbtk_refdata
     main:
         GTDBTK(
-            drep_folder,
+            cluster_reps_fnas,
             gtdbtk_refdata
         )
 
@@ -35,7 +35,7 @@ workflow GTDBTK_AND_METADATA {
         ).collectFile(name: 'gtdbtk.summary.tsv')
 
         METADATA_TABLE(
-            drep_folder,
+            cluster_reps_fnas,
             extra_weights_tsv,
             check_results_tsv,
             rrna_out_results,

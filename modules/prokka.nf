@@ -6,11 +6,11 @@ process PROKKA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                if (filename.contains(".faa") or filename.contains(".fna")) {
+                if (filename.contains(".faa") || filename.contains(".fna")) {
                     String genome_name = fasta.baseName;
                     String extension = filename.tokenize('.')[1];
                     String cluster_prefix = cluster_name.substring(0, 11);
-                    return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${genome_name}.${extension}"
+                    return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${genome_name}.${extension}";
                 } else {
                     return null;
                 }

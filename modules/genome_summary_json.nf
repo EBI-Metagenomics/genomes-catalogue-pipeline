@@ -5,7 +5,7 @@ process GENOME_SUMMARY_JSON {
         saveAs: {
             filename -> {
                 String cluster_rep_prefix = cluster.substring(0, 11);
-                return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${filename}"
+                return "species_catalogue/${cluster_rep_prefix}/${cluster}/${filename}";
             }
         },
         mode:'copy'

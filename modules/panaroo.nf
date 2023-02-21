@@ -5,16 +5,17 @@ process PANAROO {
     publishDir(
         path: "${params.outdir}",
         saveAs: {
-            filename -> {
-                if (filename.contains(".pan-genome.fna") or filename.contains("gene_presence_absence.Rtab")) {
-                    finalname = filename;
-                    if (filename.contains(".pan-genome.fna")) {
-                        finalname = "pan-genome.fna"
-                    } else {
-                        finalname = "gene_presence_absence.Rtab"
-                    }
-                    String cluster_rep_prefix = cluster_name.substring(0, 11);
-                    return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/$finalname"
+            output_folder -> {
+                def output_file = file(filename);
+                def extension = output_file.getExtension();
+                String cluster_prefix = cluster_name.substring(0, 11);
+                if ( output_file.name == "gene_presence_absence.Rtab" ) {
+                           "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${genome_name}.${extension}";
+                    return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/gene_presence_absence.Rtab";
+                } else if ( output_file.name == "${cluster_name}.pan-genome.fna" ) {
+                    return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/pan-genome.fna";
+                } else {
+                    return null;
                 }
             }
         },
@@ -32,7 +33,6 @@ process PANAROO {
     tuple val(cluster_name), path(gff_files)
 
     output:
-    tuple val(cluster_name), path("${cluster_name}_panaroo"), emit: panaroo_folder
     tuple val(cluster_name), file("${cluster_name}_panaroo/gene_presence_absence.Rtab"), emit: panaroo_gene_presence_absence
     tuple val(cluster_name), file("${cluster_name}_panaroo/${cluster_name}.pan-genome.fna"), emit: panaroo_pangenome_fna
 

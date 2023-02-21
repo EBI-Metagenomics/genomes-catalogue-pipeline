@@ -71,30 +71,6 @@ ch_ftp_version = channel.value(1.0)
     ~~~~~~~~~~~~~~~~~~
 */
 
-// TODO: move to utils
-process COLLECT_IN_FOLDER {
-
-    publishDir "${params.outdir}", mode: 'symlink'
-
-    label 'process_light'
-
-    cpus 1
-    memory '1 GB'
-
-    input:
-    path files
-    val folder_name
-
-    output:
-    path "${folder_name}", type: 'dir', emit: collection_folder
-
-    script:
-    """
-    mkdir ${folder_name}
-    mv ${files.join( ' ' )} ${folder_name}
-    """
-}
-
 workflow GAP {
 
     PREPARE_DATA(
@@ -162,13 +138,8 @@ workflow GAP {
         ch_rfam_rrna_models
     )
 
-    fna_folder = COLLECT_IN_FOLDER(
-        cluster_reps_fnas.map({ it[1]}).collect(),
-        channel.value("all_fna")
-    )
-
     GTDBTK_AND_METADATA(
-        fna_folder,
+        cluster_reps_fnas.map({ it[1]}).collect(),
         DREP_SWF.out.extra_weight_table,
         PREPARE_DATA.out.genomes_checkm,
         ANNOTATE.out.rrna_outs,

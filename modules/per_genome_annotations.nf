@@ -11,10 +11,10 @@ process PER_GENOME_ANNONTATION_GENERATOR {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                // TODO: Fix this one... we need the rep name in this context, we don't have it.
                 def tsv_file = file(filename);
-                String cluster_prefix = filename.getSimpleName().substring(0, 11);
-                return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${tsv_file.getSimpleName()}.${tsv_file.getExtension()}"
+                String genome_name = tsv_file.getSimpleName().replace("_eggNOG", "").replace("_InterProScan", "");
+                String cluster_prefix = tsv_file.getSimpleName().substring(0, 11);
+                return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${tsv_file.getSimpleName()}.${tsv_file.getExtension()}";
             }
         },
         mode: 'copy'

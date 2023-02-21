@@ -17,7 +17,7 @@ process GTDBTK {
     memory '100 GB'
 
     input:
-    path drep_folder
+    path drep_folder, stageAs: "genomes_dir/*"
     path gtdbtk_refdata
 
     output:
@@ -34,7 +34,7 @@ process GTDBTK {
     gtdbtk classify_wf \
     --cpus ${task.cpus} \
     --pplacer_cpus ${task.cpus} \
-    --genome_dir ${drep_folder} \
+    --genome_dir genomes_dir \
     --extension fna \
     --out_dir gtdbtk_results
     """

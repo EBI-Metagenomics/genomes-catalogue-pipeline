@@ -3,8 +3,8 @@ process KRAKEN2_PREPARE_GTDBTK_TAX {
     container 'quay.io/biocontainers/perl-bio-procedural:1.7.4--pl5321h9ee0642_0'
 
     input:
-    path gtdbtk_bac120
-    path gtdbtk_ar53
+    file gtdbtk_bac120
+    file gtdbtk_ar53
     val kraken_db_name
     path cluster_fna, stageAs: "reps_fa/*"
 
