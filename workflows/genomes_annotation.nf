@@ -125,8 +125,8 @@ workflow GAP {
         .collectFile(name: "species_reps_names_list.txt", newLine: true)
 
     ANNOTATE(
-        MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
         MMSEQ_SWF.out.mmseq_90_cluster_tsv,
+        MMSEQ_SWF.out.mmseq_90_tarball,
         cluster_reps_faas,
         cluster_reps_fnas,
         cluster_reps_gbks,

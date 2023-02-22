@@ -12,26 +12,38 @@ include { SANNTIS } from '../modules/sanntis'
 
 process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
 
-    publishDir "${params.outdir}/protein_catalogue/mmseqs_0.9_outdir/", mode: 'copy'
+    publishDir(
+        "${params.outdir}/protein_catalogue/",
+        mode: 'copy'
+    )
 
     input:
-    path interproscan_annotations
-    path eggnog_annotations
+    file interproscan_annotations
+    file eggnog_annotations
+    file mmseq_90_tarball
 
     output:
-    stdout
+    file "protein_catalogue_90.tar.gz"
 
     script:
     """
     mv ${interproscan_annotations} protein_catalogue-90_InterProScan.tsv
     mv ${eggnog_annotations} protein_catalogue-90_eggNOG.tsv
+
+    gunzip -c ${mmseq_90_tarball} > protein_catalogue_90.tar
+
+    rm ${mmseq_90_tarball}
+
+    tar -uf protein_catalogue_90.tar protein_catalogue-90_InterProScan.tsv protein_catalogue-90_eggNOG.tsv
+
+    gzip protein_catalogue_90.tar
     """
 }
 
 workflow ANNOTATE {
     take:
-        mmseq_faa
-        mmseq_tsv
+        mmseq_90_tsv
+        mmseq_90_tarball
         prokka_faas
         prokka_fnas
         prokka_gbk
@@ -75,14 +87,15 @@ workflow ANNOTATE {
 
         PROTEIN_CATALOGUE_STORE_ANNOTATIONS(
             interproscan_annotations,
-            eggnog_mapper_annotations
+            eggnog_mapper_annotations,
+            mmseq_90_tarball
         )
 
         PER_GENOME_ANNONTATION_GENERATOR(
             interproscan_annotations,
             eggnog_mapper_annotations,
             species_reps_names_list,
-            mmseq_tsv
+            mmseq_90_tsv
         )
 
         DETECT_RRNA(

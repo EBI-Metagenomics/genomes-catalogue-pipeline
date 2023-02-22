@@ -41,5 +41,6 @@ workflow MMSEQ_SWF {
     emit:
         mmseq_90_cluster_rep_faa = mmseq_90.mmseq_cluster_rep_faa
         mmseq_90_cluster_tsv = mmseq_90.mmseq_cluster_tsv
+        mmseq_90_tarball = mmseq_90.mmseq_tarball
         mmseq_100_cluster_tsv = mmseq_100.mmseq_cluster_tsv
 }
