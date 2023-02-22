@@ -17,7 +17,7 @@ process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
         mode: 'copy'
     )
 
-    stageInMode: 'copy'
+    stageInMode 'copy'
 
     input:
     file interproscan_annotations
