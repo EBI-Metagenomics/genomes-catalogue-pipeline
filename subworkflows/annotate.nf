@@ -44,7 +44,7 @@ workflow ANNOTATE {
     take:
         mmseq_90_tsv
         mmseq_90_tarball
-        prokka_faas
+        mmseq_90_cluster_rep_faa,
         prokka_fnas
         prokka_gbk
         species_reps_names_list
@@ -54,18 +54,18 @@ workflow ANNOTATE {
         eggnog_data_dir
         cmmodels_db
     main:
-        faa_chunks_ch = prokka_faas.collectFile(name: "collected.faa").splitFasta(
+        mmseq_90_chunks = mmseq_90_cluster_rep_faa.splitFasta(
             by: 10000,
             file: true
         )
 
         IPS(
-            faa_chunks_ch,
+            mmseq_90_chunks,
             interproscan_db
         )
 
         EGGNOG_MAPPER_ORTHOLOGS(
-            faa_chunks_ch,
+            mmseq_90_chunks,
             file("NO_FILE"),
             channel.value('mapper'),
             eggnog_db,
