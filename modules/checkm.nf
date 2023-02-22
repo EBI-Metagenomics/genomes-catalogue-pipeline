@@ -1,6 +1,6 @@
 process CHECKM {
 
-    publishDir "${params.outdir}/checkm", mode:"copy"
+    publishDir "${params.outdir}/checkm", mode: "copy"
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.checkm:v1'
 

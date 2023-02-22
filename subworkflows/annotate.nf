@@ -17,6 +17,8 @@ process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
         mode: 'copy'
     )
 
+    stageInMode: 'copy'
+
     input:
     file interproscan_annotations
     file eggnog_annotations
