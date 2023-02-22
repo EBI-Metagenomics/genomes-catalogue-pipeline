@@ -56,9 +56,8 @@ workflow ANNOTATE {
         eggnog_data_dir
         cmmodels_db
     main:
-        // We have to use the flatten here because is list of one element due to
-        // being caputed using a glob in mmseq.nf
-        mmseq_90_chunks = mmseq_90_cluster_rep_faa.flatten().splitFasta(
+
+        mmseq_90_chunks = mmseq_90_cluster_rep_faa.splitFasta(
             by: 10000,
             file: true
         )
