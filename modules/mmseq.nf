@@ -29,9 +29,9 @@ process MMSEQ {
     val cov_threshold
 
     output:
-    path "protein_catalogue_${threshold_rounded}.fa", emit: mmseq_cluster_rep_faa
-    path "protein_catalogue_${threshold_rounded}.tsv", emit: mmseq_cluster_tsv
-    path "protein_catalogue_${threshold_rounded}.tar.gz", emit: mmseq_tarball
+    path "protein_catalogue_*.fa", emit: mmseq_cluster_rep_faa
+    path "protein_catalogue_*.tsv", emit: mmseq_cluster_tsv
+    path "protein_catalogue_*.tar.gz", emit: mmseq_tarball
 
     script:
     int threshold_rounded = id_threshold * 100;
