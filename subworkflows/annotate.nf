@@ -46,7 +46,7 @@ workflow ANNOTATE {
     take:
         mmseq_90_tsv
         mmseq_90_tarball
-        mmseq_90_cluster_rep_faa,
+        mmseq_90_cluster_rep_faa
         prokka_fnas
         prokka_gbk
         species_reps_names_list
