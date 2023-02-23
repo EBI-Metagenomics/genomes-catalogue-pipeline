@@ -10,9 +10,9 @@ process IQTREE {
         mode: "copy"
     )
 
-    container 'quay.io/biocontainers/iqtree:2.0.3--h176a8bc_0'
+    container 'quay.io/biocontainers/iqtree:2.2.0.3--hb97b32f_1'
 
-    cpus 16
+    cpus 8
     memory '10 GB'
 
     input:
@@ -27,17 +27,11 @@ process IQTREE {
     """
     # gunzip -c ${msa_fasta_gz} > ${output_prefix}_alignment.faa
 
-    # iqtree -nt ${task.cpus} \
-    # -s ${output_prefix}_alignment.faa \
-    # --prefix iqtree.${output_prefix}
-    # mv iqtree.${output_prefix}.treefile ${output_prefix}_iqtree.nwk
-    # cp ${msa_fasta_gz} ${output_prefix}_alignment.faa.gz
-
-    # iqtree -nt ${task.cpus} \
-    # -s ${output_prefix}_alignment.faa \
-    # --prefix iqtree.${output_prefix}
-
-    touch ${output_prefix}.faa.gz
-    touch iqtree.${output_prefix}.nwk
+    iqtree -T AUTO \
+    -s ${output_prefix}_alignment.faa \
+    --prefix iqtree.${output_prefix}
+    
+    cp iqtree.${output_prefix}.treefile ${output_prefix}_iqtree.nwk
+    cp ${msa_fasta_gz} ${output_prefix}_alignment.faa.gz
     """
 }
