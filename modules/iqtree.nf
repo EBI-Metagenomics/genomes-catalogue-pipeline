@@ -25,7 +25,7 @@ process IQTREE {
 
     script:
     """
-    # gunzip -c ${msa_fasta_gz} > ${output_prefix}_alignment.faa
+    gunzip -c ${msa_fasta_gz} > ${output_prefix}_alignment.faa
 
     iqtree -T AUTO \
     -s ${output_prefix}_alignment.faa \
