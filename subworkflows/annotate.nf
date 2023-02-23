@@ -57,7 +57,7 @@ workflow ANNOTATE {
         cmmodels_db
     main:
 
-        mmseq_90_chunks = mmseq_90_cluster_rep_faa.splitFasta(
+        mmseq_90_chunks = mmseq_90_cluster_rep_faa.flatten().splitFasta(
             by: 10000,
             file: true
         )

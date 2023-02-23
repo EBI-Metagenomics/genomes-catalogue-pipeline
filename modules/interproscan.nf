@@ -8,7 +8,7 @@ process IPS {
     containerOptions '--bind data:/opt/interproscan-5.52-86.0/data'
 
     cpus 8
-    memory '16 GB'
+    memory '12 GB'
     label 'ips'
 
     input:
