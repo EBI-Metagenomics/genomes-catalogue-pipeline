@@ -15,7 +15,7 @@ process PROKKA {
                     return "additional_data/prokka_gff/${genome_name}.${output_file.extension}";
                 // Store the species reps gbk files //
                 } else if (output_file.extension == "gbk" && genome_name == cluster_name) {
-                    return "additional_data/prokka_gbk_species_reps/{output_file.baseName}.{output_file.extension}";
+                    return "additional_data/prokka_gbk_species_reps/${output_file.baseName}.${output_file.extension}";
                 }
             }
         },

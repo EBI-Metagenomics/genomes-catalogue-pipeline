@@ -120,6 +120,10 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.prokka_gbk
     )
 
+    all_prokka_fna = PROCESS_SINGLETON_GENOMES.out.prokka_fna.mix(
+        PROCESS_MANY_GENOMES.out.prokka_fnas
+    )
+
     species_reps_names_list = PROCESS_MANY_GENOMES.out.rep_prokka_fna.map({ it[0] }) \
         .mix(PROCESS_SINGLETON_GENOMES.out.prokka_fna.map({ it[0] })) \
         .collectFile(name: "species_reps_names_list.txt", newLine: true)
@@ -128,7 +132,7 @@ workflow GAP {
         MMSEQ_SWF.out.mmseq_90_cluster_tsv,
         MMSEQ_SWF.out.mmseq_90_tarball,
         MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
-        cluster_reps_fnas,
+        all_prokka_fna,
         cluster_reps_gbks,
         species_reps_names_list,
         ch_interproscan_db,
@@ -136,10 +140,6 @@ workflow GAP {
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
         ch_rfam_rrna_models
-    )
-
-    all_prokka_fna = PROCESS_SINGLETON_GENOMES.out.prokka_fna.mix(
-        PROCESS_MANY_GENOMES.out.prokka_fnas
     )
 
     GTDBTK_AND_METADATA(
@@ -255,7 +255,7 @@ workflow GAP {
     KRAKEN_SWF(
         GTDBTK_AND_METADATA.out.gtdbtk_summary_bac120,
         GTDBTK_AND_METADATA.out.gtdbtk_summary_arc53,
-        cluster_reps_fnas.map({ it[1]})
+        cluster_reps_fnas.map({ it[1] })
     )
 
     cluster_rep_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(

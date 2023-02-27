@@ -34,7 +34,7 @@ process DETECT_RRNA {
     output:
     path 'results_folder/*.out', type: 'file', emit: rrna_out_results
     path 'results_folder/*.fasta', type: 'file', emit: rrna_fasta_results
-    path 'results_folder/*_all.tblout.deoverlapped', type: 'file', emit: rrna_tblout_deoverlapped
+    path 'results_folder/*_all.tblout.deoverlapped', emit: rrna_tblout_deoverlapped
 
     script:
     """
@@ -87,14 +87,6 @@ process DETECT_RRNA {
     -o "\${RESULTS_FOLDER}/\${FILENAME}_trna.out" "\${FASTA}"
 
     parse_tRNA.py -i "\${RESULTS_FOLDER}/\${FILENAME}_stats.out" 1> "\${RESULTS_FOLDER}/\${FILENAME}_tRNA_20aa.out"
-
-    echo "Cleaning tmp files..."
-    rm \
-    "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout" \
-    "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout.sort" \
-    "\${RESULTS_FOLDER}/\${FILENAME}"_*.cm.out \
-    "\${RESULTS_FOLDER}/\${FILENAME}_stats.out" \
-    "\${RESULTS_FOLDER}/\${FILENAME}_trna.out"
 
     echo "Completed"
     """

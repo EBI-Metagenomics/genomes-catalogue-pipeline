@@ -101,6 +101,7 @@ workflow ANNOTATE {
             mmseq_90_tsv
         )
 
+        // RRNA detection in all the genomes //
         DETECT_RRNA(
             prokka_fnas,
             cmmodels_db
