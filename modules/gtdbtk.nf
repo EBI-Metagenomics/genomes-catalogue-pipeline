@@ -4,9 +4,9 @@ process GTDBTK {
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
 
     publishDir(
-        path: "${params.outdir}",
-        saveAs: { 
-            filename -> "${file(filename).getSimpleName()}.${file(filename).getExtension()}"
+        path: "${params.outdir}/",
+        saveAs: {
+            filename -> "additional_data/gtdb-tk_output/${file(filename).getSimpleName()}.${file(filename).getExtension()}"
         },
         mode: 'copy'
     )
@@ -23,8 +23,8 @@ process GTDBTK {
     output:
     path 'gtdbtk_results/classify/gtdbtk.bac120.summary.tsv', optional: true, emit: gtdbtk_summary_bac120
     path 'gtdbtk_results/classify/gtdbtk.ar53.summary.tsv', optional: true, emit: gtdbtk_summary_arc53
-    path 'gtdbtk_results/align/gtdbtk.bac120.msa.fasta.gz', optional: true, emit: gtdbtk_msa_bac120
-    path 'gtdbtk_results/align/gtdbtk.ar53.msa.fasta.gz', optional: true, emit: gtdbtk_msa_ar53
+    path 'gtdbtk_results/align/gtdbtk.bac120.user_msa.fasta.gz', optional: true, emit: gtdbtk_user_msa_bac120
+    path 'gtdbtk_results/align/gtdbtk.ar53.user_msa.fasta.gz', optional: true, emit: gtdbtk_user_msa_ar53
 
 
     script:

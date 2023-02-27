@@ -152,16 +152,16 @@ workflow GAP {
         ch_gtdb_db
     )
 
-    if (GTDBTK_AND_METADATA.out.gtdbtk_msa_bac120) {
+    if (GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120) {
         IQTREE_BAC(
-            GTDBTK_AND_METADATA.out.gtdbtk_msa_bac120,
+            GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120,
             channel.value("bac120")
         )
     }
 
-    if (GTDBTK_AND_METADATA.out.gtdbtk_msa_ar53) {
+    if (GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53) {
         IQTREE_AR(
-            GTDBTK_AND_METADATA.out.gtdbtk_msa_ar53,
+            GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53,
             channel.value("ar53")
         )
     }

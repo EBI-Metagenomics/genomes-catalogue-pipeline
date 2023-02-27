@@ -37,7 +37,7 @@ process GENOME_SUMMARY_JSON {
     --annot-cov ${coverage_summary} \
     --gff ${annotated_gff} \
     --metadata ${metadata} \
-    --biome ${biome} \
+    --biome "${biome}" \
     --species-faa ${cluster_rep_faa} \
     --species-name ${cluster} \
     ${args} \

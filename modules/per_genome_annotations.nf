@@ -21,7 +21,7 @@ process PER_GENOME_ANNONTATION_GENERATOR {
     )
 
     cpus 16
-    memory '5 GB'
+    memory '15 GB'
 
     input:
     file ips_annotations_tsv
