@@ -8,13 +8,14 @@ process DETECT_RRNA {
         saveAs: {
             filename -> {
                 def result_file = file(filename);
+                String genome_id = result_file.getSimpleName();
                 def file_extension = result_file.getExtension();
                 if (file_extension == "fasta" || file_extension == "out") {
-                    String genome_id = result_file.getSimpleName();
                     String cluster_rep_prefix = cluster_name.substring(0, 11);
                     return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${genome_id}.${file_extension}";
-                } else {
-                    return null;
+                // Store the repos deoverlapped file //
+                } else if (file_extension == "deoverlapped" && cluster_name == genome_id) {
+                    return "additional_data/rrna_deoverlapped_species_reps/${genome_id}.${file_extension}";
                 }
             }
         },
@@ -33,6 +34,7 @@ process DETECT_RRNA {
     output:
     path 'results_folder/*.out', type: 'file', emit: rrna_out_results
     path 'results_folder/*.fasta', type: 'file', emit: rrna_fasta_results
+    path 'results_folder/*_all.tblout.deoverlapped', type: 'file', emit: rrna_tblout_deoverlapped
 
     script:
     """
@@ -88,7 +90,6 @@ process DETECT_RRNA {
 
     echo "Cleaning tmp files..."
     rm \
-    "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout.deoverlapped" \
     "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout" \
     "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout.sort" \
     "\${RESULTS_FOLDER}/\${FILENAME}"_*.cm.out \

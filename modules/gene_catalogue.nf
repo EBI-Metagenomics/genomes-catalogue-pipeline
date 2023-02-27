@@ -23,7 +23,5 @@ process GENE_CATALOGUE {
     seqtk subseq \
     ${cluster_reps_ffn} \
     rep_list.txt > gene_catalogue/gene_catalogue-100.ffn
-
-    rm rep_list.txt
     """
 }

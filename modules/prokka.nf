@@ -6,14 +6,16 @@ process PROKKA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                // TODO: use file() to improve readability
-                if (filename.contains(".faa") || filename.contains(".fna")) {
-                    String genome_name = fasta.baseName;
-                    String extension = filename.tokenize('.')[1];
+                def output_file = file(filename);
+                String genome_name = fasta.baseName;
+                if (output_file.extension == "faa" || output_file.extension == "fna") {
                     String cluster_prefix = cluster_name.substring(0, 11);
-                    return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${genome_name}.${extension}";
-                } else {
-                    return null;
+                    return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${genome_name}.${output_file.extension}";
+                } else if (output_file.extension == "gff") {
+                    return "additional_data/prokka_gff/${genome_name}.${output_file.extension}";
+                // Store the species reps gbk files //
+                } else if (output_file.extension == "gbk" && genome_name == cluster_name) {
+                    return "additional_data/prokka_gbk_species_reps/{output_file.baseName}.{output_file.extension}";
                 }
             }
         },

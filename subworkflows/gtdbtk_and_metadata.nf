@@ -7,12 +7,11 @@ include { GTDBTK } from '../modules/gtdbtk'
 include { METADATA_TABLE } from '../modules/metadata_table'
 include { PHYLO_TREE } from '../modules/phylo_tree'
 
-// include { COLLECT_INTO_DIR } from '../modules/collect_into_dir'
-
 workflow GTDBTK_AND_METADATA {
 
     take:
         cluster_reps_fnas // list of .fna files for the cluster reps
+        all_genomes_fnas // list of all the genomes .fna
         extra_weights_tsv
         check_results_tsv
         rrna_out_results
@@ -35,7 +34,7 @@ workflow GTDBTK_AND_METADATA {
         ).collectFile(name: 'gtdbtk.summary.tsv')
 
         METADATA_TABLE(
-            cluster_reps_fnas,
+            all_genomes_fnas,
             extra_weights_tsv,
             check_results_tsv,
             rrna_out_results,

@@ -138,8 +138,13 @@ workflow GAP {
         ch_rfam_rrna_models
     )
 
+    all_genomes_fnas = PROCESS_MANY_GENOMES.out.prokka_fnas.mix(
+        PROCESS_SINGLETON_GENOMES.out.prokka_fnas
+    )
+
     GTDBTK_AND_METADATA(
         cluster_reps_fnas.map({ it[1]}).collect(),
+        all_genomes_fnas.map({ it[1] }).collect(),
         DREP_SWF.out.extra_weight_table,
         PREPARE_DATA.out.genomes_checkm,
         ANNOTATE.out.rrna_outs,
@@ -211,6 +216,7 @@ workflow GAP {
         it[1].name.contains(it[0])
     }
 
+    // REPS //
     ANNONTATE_GFF(
         cluster_reps_gff.join(
             reps_ips
@@ -261,7 +267,7 @@ workflow GAP {
     )
 
     GENE_CATALOGUE(
-        cluster_rep_ffn.map({ it[0] }).collectFile(name: "cluster_reps.ffn", newLine: true),
+        cluster_rep_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 
