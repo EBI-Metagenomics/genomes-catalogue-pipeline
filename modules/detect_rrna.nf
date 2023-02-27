@@ -34,7 +34,7 @@ process DETECT_RRNA {
     output:
     path 'results_folder/*.out', type: 'file', emit: rrna_out_results
     path 'results_folder/*.fasta', type: 'file', emit: rrna_fasta_results
-    path 'results_folder/*_all.tblout.deoverlapped', emit: rrna_tblout_deoverlapped
+    path 'results_folder/*.tblout.deoverlapped', emit: rrna_tblout_deoverlapped
 
     script:
     """
@@ -63,22 +63,22 @@ process DETECT_RRNA {
     done
 
     echo "Concatenating results..."
-    cat "\${RESULTS_FOLDER}/\${FILENAME}"_*.tblout > "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout"
+    cat "\${RESULTS_FOLDER}/\${FILENAME}"_*.tblout > "\${RESULTS_FOLDER}/\${FILENAME}.tblout"
 
     echo "Removing overlaps..."
     cmsearch-deoverlap.pl \
     --maxkeep \
     --clanin "\${CM_DB}/ribo.claninfo" \
-    "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout"
+    "\${RESULTS_FOLDER}/\${FILENAME}.tblout"
 
-    mv "\${FILENAME}_all.tblout.deoverlapped" "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout.deoverlapped"
+    mv "\${FILENAME}.tblout.deoverlapped" "\${RESULTS_FOLDER}/\${FILENAME}.tblout.deoverlapped"
 
     echo "Parsing final results..."
     parse_rRNA-bacteria.py -i \
-    "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout.deoverlapped" 1> "\${RESULTS_FOLDER}/\${FILENAME}_rRNAs.out"
+    "\${RESULTS_FOLDER}/\${FILENAME}.tblout.deoverlapped" 1> "\${RESULTS_FOLDER}/\${FILENAME}_rRNAs.out"
 
     rRNA2seq.py -d \
-    "\${RESULTS_FOLDER}/\${FILENAME}_all.tblout.deoverlapped" \
+    "\${RESULTS_FOLDER}/\${FILENAME}.tblout.deoverlapped" \
     -i "\${FASTA}" 1> "\${RESULTS_FOLDER}/\${FILENAME}_rRNAs.fasta"
 
     echo "[ Detecting tRNAs ]"

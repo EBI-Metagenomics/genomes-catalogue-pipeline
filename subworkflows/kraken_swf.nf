@@ -29,7 +29,7 @@ workflow KRAKEN_SWF {
 
         KRAKEN2_BUILD_LIBRARY(
             KRAKEN2_PREPARE_GTDBTK_TAX.out.tax_annotated_fnas | flatten,
-            kraken_db
+            kraken_db.first()
         )
 
         KRAKEN2_BUILD(
@@ -63,7 +63,7 @@ workflow KRAKEN_SWF {
         nextflow to run the post-processing after they are done.
         */
         KRAKEN2_POSTPROCESSING(
-            KRAKEN2_BUILD.out.kraken_db,
+            KRAKEN2_BUILD.out.kraken_db.first(),
             BRACKEN_50.out.mix(
                 BRACKEN_100.out
             ).mix(
