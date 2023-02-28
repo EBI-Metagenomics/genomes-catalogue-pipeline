@@ -48,7 +48,9 @@ process KRAKEN2_BUILD_LIBRARY {
 
     script:
     """
-    kraken2-build --add-to-library ${cluster_fna_tax_annotated} --db ${kraken_db_path}
+    kraken2-build \
+    --add-to-library ${cluster_fna_tax_annotated} \
+    --db ${kraken_db_path}
     """
 }
 
@@ -69,7 +71,9 @@ process KRAKEN2_BUILD {
 
     script:
     """
-    kraken2-build --build --db ${kraken_db_path} --threads ${task.cpus}
+    kraken2-build --build \
+    --db ${kraken_db_path} \
+    --threads ${task.cpus}
     """
 }
 
@@ -90,8 +94,6 @@ process KRAKEN2_POSTPROCESSING {
     script:
     """
     cat ${kraken_db}/library/added/*.fna > ${kraken_db}/library/library.fna
-
-    rm -r ${kraken_db}/library/added
 
     cp "${kraken_db}"/taxonomy/prelim_map.txt ${kraken_db}/library
     """
