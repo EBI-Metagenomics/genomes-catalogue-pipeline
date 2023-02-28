@@ -1,6 +1,6 @@
 process BRACKEN {
 
-    container 'quay.io/biocontainers/bracken:2.6.2--py39hc16433a_0'
+    container 'quay.io/biocontainers/bracken:2.8--py310h30d9df9_0'
 
     input:
     val read_length

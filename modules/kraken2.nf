@@ -37,8 +37,6 @@ process KRAKEN2_PREPARE_GTDBTK_TAX {
 
 process KRAKEN2_BUILD_LIBRARY {
 
-    tag "${cluster_name}"
-
     container 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
 
     input:
