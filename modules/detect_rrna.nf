@@ -7,9 +7,9 @@ process DETECT_RRNA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                def result_file = file(filename);
-                String genome_id = result_file.getSimpleName();
-                def file_extension = result_file.getExtension();
+                def output_file = file(filename);
+                String genome_id = output_file.getSimpleName();
+                def file_extension = output_file.getExtension();
                 if ( file_extension == "fasta" ) {
                     String cluster_rep_prefix = cluster_name.substring(0, 11);
                     return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${genome_id}.${file_extension}";

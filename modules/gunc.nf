@@ -2,7 +2,7 @@
 process GUNC {
 
     publishDir(
-        path: "${params.outdir}/gunc/intermediate_files/",
+        path: "${params.outdir}/intermediate_files/gunc/",
         mode: 'copy'
     )
 
