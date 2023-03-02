@@ -5,7 +5,9 @@ process MMSEQ {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                if ( output_file.extension == "gz" ) {
+                // For the .9 protein catalogue, we need to add the IPS and EGG annotations
+                // This is done by PROTEIN_CATALOGUE_STORE_ANNOTATIONS 
+                if ( output_file.extension == "gz" && id_threshold != 0.90 ) {
                     return "protein_catalogue/$filename";
                 } else {
                     return null;

@@ -6,7 +6,15 @@ process GTDBTK {
     publishDir(
         path: "${params.outdir}/",
         saveAs: {
-            filename -> "additional_data/gtdb-tk_output/${file(filename).getSimpleName()}.${file(filename).getExtension()}"
+            filename -> {
+                def output_file = file(filename);
+                def name = output_file.getBaseName();
+                def extension = output_file.getExtension();
+                if ( extension == "gz" ) {
+                    return "additional_data/$name";
+                }
+                return null;
+            }
         },
         mode: 'copy'
     )
@@ -25,6 +33,7 @@ process GTDBTK {
     path 'gtdbtk_results/classify/gtdbtk.ar53.summary.tsv', optional: true, emit: gtdbtk_summary_arc53
     path 'gtdbtk_results/align/gtdbtk.bac120.user_msa.fasta.gz', optional: true, emit: gtdbtk_user_msa_bac120
     path 'gtdbtk_results/align/gtdbtk.ar53.user_msa.fasta.gz', optional: true, emit: gtdbtk_user_msa_ar53
+    path 'gtdbtk_results.tar.gz', emit: gtdbtk_output_tarball
 
 
     script:
@@ -37,6 +46,8 @@ process GTDBTK {
     --genome_dir genomes_dir \
     --extension fna \
     --out_dir gtdbtk_results
+
+    tar -czf gtdbtk_results.tar.gz gtdbtk_results
     """
 
     stub:

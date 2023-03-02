@@ -14,6 +14,8 @@ process PANAROO {
                     return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/gene_presence_absence.Rtab";
                 } else if ( output_file.name == "${cluster_name}.pan-genome.fna" ) {
                     return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/pan-genome.fna";
+                } else if ( output_file.name == "${cluster_name}_panaroo.tar.gz" ) {
+                    return "additional_data/panaroo_output/${cluster_name}_panaroo.tar.gz";
                 } else {
                     return null;
                 }
@@ -33,6 +35,7 @@ process PANAROO {
     tuple val(cluster_name), path(gff_files)
 
     output:
+    tuple val(cluster_name), path("${cluster_name}_panaroo.tar.gz"), emit: panaroo_tarball_output
     tuple val(cluster_name), file("${cluster_name}_panaroo/gene_presence_absence.Rtab"), emit: panaroo_gene_presence_absence
     tuple val(cluster_name), file("${cluster_name}_panaroo/${cluster_name}.pan-genome.fna"), emit: panaroo_pangenome_fna
 
@@ -50,6 +53,8 @@ process PANAROO {
     --no_clean_edges
 
     mv ${cluster_name}_panaroo/pan_genome_reference.fa ${cluster_name}_panaroo/${cluster_name}.pan-genome.fna
+
+    tar -czf ${cluster_name}_panaroo.tar.gz ${cluster_name}_panaroo
     """
 
     // stub:

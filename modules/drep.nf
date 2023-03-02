@@ -4,11 +4,7 @@
 process DREP {
 
     publishDir(
-        path: "${params.outdir}",
-        pattern: "*.csv",
-        saveAs: {
-            filename -> "intermediate_files/drep/$filename"
-        },
+        path: "${params.outdir}/intermediate_files",
         mode: 'copy',
         failOnError: true
     )

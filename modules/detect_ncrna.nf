@@ -3,6 +3,21 @@ process DETECT_NCRNA {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3'
 
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                def result_file = file(filename);
+                String genome_id = result_file.getSimpleName();
+                def file_extension = result_file.getExtension();
+                if (file_extension == "deoverlapped" && cluster_name == genome_id) {
+                    return "additional_data/rrna_deoverlapped_species_reps/${genome_id}.${file_extension}";
+                }
+            }
+        },
+        mode: 'copy'
+    )
+
     cpus 4
     memory '5 GB'
 

@@ -1,6 +1,17 @@
 process RENAME_FASTA {
 
-    publishDir "${params.outdir}/intermediate_files/renamed_genomes", mode: 'copy'
+    publishDir(
+        path: "${params.outdir}",
+        pattern: "*.txt",
+        saveAs: { "intermediate_files/renamed_genomes_stats.txt" }
+        mode: "copy"
+    )
+    publishDir(
+        path: "${params.outdir}",
+        pattern: "*.tsv",
+        saveAs: { "intermediate_files/renamed_genomes_name_mapping.tsv" }
+        mode: "copy"
+    )
 
     label 'process_light'
 

@@ -10,13 +10,13 @@ process DETECT_RRNA {
                 def result_file = file(filename);
                 String genome_id = result_file.getSimpleName();
                 def file_extension = result_file.getExtension();
-                if (file_extension == "fasta" || file_extension == "out") {
+                if ( file_extension == "fasta" ) {
                     String cluster_rep_prefix = cluster_name.substring(0, 11);
                     return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${genome_id}.${file_extension}";
-                // Store the repos deoverlapped file //
-                } else if (file_extension == "deoverlapped" && cluster_name == genome_id) {
-                    return "additional_data/rrna_deoverlapped_species_reps/${genome_id}.${file_extension}";
+                } else if ( file_extension == "out" ) {
+                    return "additional_data/rRNA_outs/${output_file.baseName}.${output_file.extension}";
                 }
+                return null;
             }
         },
         mode: 'copy'

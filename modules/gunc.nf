@@ -2,10 +2,7 @@
 process GUNC {
 
     publishDir(
-        path: "${params.outdir}/intermediate_files/",
-        saveAs: {
-            filename -> "${fasta.baseName}_${filename}"
-        },
+        path: "${params.outdir}/gunc/intermediate_files/",
         mode: 'copy'
     )
 

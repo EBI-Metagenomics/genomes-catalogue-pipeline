@@ -1,6 +1,16 @@
 process SPLIT_DREP {
 
-    publishDir "${params.outdir}/intermediate_files/split_drep", mode:'copy'
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: { filename -> {
+            def output_file = file(filename);
+            if ( output_file.getBaseName() == "clusters_split.txt" ) {
+                return "/intermediate_files/clusters_split.txt";
+            };
+            return null;
+        },
+        mode: "copy"
+    )
 
     label 'process_light'
 
