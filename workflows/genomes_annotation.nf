@@ -60,9 +60,9 @@ ch_kegg_classes = file(params.kegg_classes)
 ch_genome_prefix = channel.value(params.genome_prefix)
 
 // TODO: Parametrize //
-ch_mmseq_coverage_threshold = channel.value(0.8)
+ch_mmseq_coverage_threshold = channel.value(params.mmseq_coverage_threshold) // def: 0.8
 ch_biome = channel.value(params.biome)
-ch_ftp_name = channel.value("test-ftp")
+ch_ftp_name = channel.value(params.ftp_name)
 ch_ftp_version = channel.value(1.0)
 
 /*
