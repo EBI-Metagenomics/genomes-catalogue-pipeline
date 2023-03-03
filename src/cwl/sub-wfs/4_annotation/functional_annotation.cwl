@@ -5,6 +5,7 @@ class: Workflow
 requirements:
   MultipleInputFeatureRequirement: {}
   InlineJavascriptRequirement: {}
+  SubworkflowFeatureRequirement: {}
 
 inputs:
   input_faa: File
