@@ -19,7 +19,7 @@ process GTDBTK {
         mode: 'copy'
     )
 
-    // label 'process_bigmem'
+    label 'process_bigmem'
 
     cpus 32
     memory '100 GB'
