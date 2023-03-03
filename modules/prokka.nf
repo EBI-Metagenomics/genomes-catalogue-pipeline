@@ -24,6 +24,19 @@ process PROKKA {
         },
         mode: "copy"
     )
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                def output_file = file(filename);
+                if (output_file.extension == "fna") {
+                    return "additional_data/mgyg_genomes/${fasta.baseName}.${output_file.extension}";
+                }
+                return null;
+            }
+        },
+        mode: "copy"
+    )
 
     container "quay.io/biocontainers/prokka:1.14.6--pl526_0"
 

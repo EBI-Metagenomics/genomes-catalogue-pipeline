@@ -13,8 +13,10 @@ process DETECT_RRNA {
                 if ( file_extension == "fasta" ) {
                     String cluster_rep_prefix = cluster_name.substring(0, 11);
                     return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome/${genome_id}.${file_extension}";
-                } else if ( file_extension == "out" ) {
-                    return "additional_data/rRNA_outs/${output_file.baseName}.${output_file.extension}";
+                // Folder structure rRNA_outs/MGYG000299300/MGYG000299300{_rRNAs,_tRNA_20aa}.out
+                } else if ( (genome_id.contains("_rRNAs") || genome_id.contains("_tRNA_20aa") ) && file_extension == "out" ) {
+                    def clean_name = genome_id.replace("_rRNAs", "").replace("_tRNA_20aa", "");
+                    return "additional_data/rRNA_outs/${clean_name}/${genome_id}.${file_extension}";
                 }
                 return null;
             }
