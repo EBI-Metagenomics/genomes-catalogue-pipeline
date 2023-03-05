@@ -59,11 +59,10 @@ ch_geo_metadata = file(params.geo_metadata)
 ch_kegg_classes = file(params.kegg_classes)
 ch_genome_prefix = channel.value(params.genome_prefix)
 
-// TODO: Parametrize //
 ch_mmseq_coverage_threshold = channel.value(params.mmseq_coverage_threshold) // def: 0.8
 ch_biome = channel.value(params.biome)
 ch_ftp_name = channel.value(params.ftp_name)
-ch_ftp_version = channel.value(1.0)
+ch_ftp_version = channel.value(params.ftp_version)
 
 /*
     ~~~~~~~~~~~~~~~~~~
