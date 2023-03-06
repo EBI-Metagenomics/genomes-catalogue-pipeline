@@ -11,6 +11,7 @@ def main(tsv_report, gffs, tsv_output, gff_output, gff_output_hq, fasta):
 
 
 def create_gff(gffs, gff_output, hits, fasta, high_qual_hits, gff_output_high_qual):
+    # generate 2 gffs: one with all hits, one with high-quality hits only
     with open(gff_output, "w") as gff_out, open(gff_output_high_qual, "w") as hq_gff_out:
         gff_out.write("##gff-version 3\n")
         for gff in gffs:
@@ -44,8 +45,10 @@ def get_crispr_id(line):
 
 def fix_gff_line(line, fasta):
     contig, tool, feature, start, end, blank1, blank2, blank3, annotation = line.strip().split("\t")
+    # fix the start coordinate if it's invalid (extends past contig start)
     if int(start) < 1:
         start = 1
+    # fix sequence, at% and verify the end coordinate
     if "sequence=UNKNOWN" in annotation:
         seq_records = SeqIO.to_dict(SeqIO.parse(fasta, "fasta"))
         end = check_end_position(contig, end, seq_records)
@@ -85,12 +88,16 @@ def process_tsv(tsv_report, tsv_output):
     with open(tsv_output, "w") as tsv_out:
         with open(tsv_report, "r") as tsv_in:
             for line in tsv_in:
+                # ignore empty lines
                 if not len(line.strip()) == 0:
+                    # write line to output if non-empty
                     tsv_out.write(line)
+                    # now save hits to use when processing GFFs
                     if not line.startswith("Strain"):
                         parts = line.strip().split("\t")
                         # add sequence basename to hits
                         hits.append(parts[2])
+                        # make crispr_id that the GFFs use
                         crispr_id = "{}_{}_{}".format(parts[1], parts[5], parts[6])
                         # check if evidence level is high (2, 3 or 4)
                         if parts[-1] in ["2", "3", "4"]:
