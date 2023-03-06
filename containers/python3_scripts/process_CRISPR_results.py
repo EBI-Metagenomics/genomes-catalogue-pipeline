@@ -6,12 +6,13 @@ from Bio import SeqIO
 
 
 def main(tsv_report, gffs, tsv_output, gff_output, gff_output_hq, fasta):
-    hits, hq_hits = process_tsv(tsv_report, tsv_output)
+    hits, hq_hits, evidence_levels = process_tsv(tsv_report, tsv_output)
     create_gff(gffs, gff_output, hits, fasta, hq_hits, gff_output_hq)
 
 
 def create_gff(gffs, gff_output, hits, fasta, high_qual_hits, gff_output_high_qual):
-    with open(gff_output, "w") as gff_out:
+    with open(gff_output, "w") as gff_out, open(gff_output_high_qual, "w") as hq_gff_out:
+        gff_out.write("##gff-version 3\n")
         for gff in gffs:
             filename_base = gff.split("/")[-1].split(".")[0]
             if filename_base in hits:
@@ -22,7 +23,23 @@ def create_gff(gffs, gff_output, hits, fasta, high_qual_hits, gff_output_high_qu
                             # fix the GFF feature if it extends outside a contig (CRISPRCasFinder bug)
                             if not all(x > 0 for x in [int(parts[3]), int(parts[4])]) or "sequence=UNKNOWN" in line:
                                 line = fix_gff_line(line, fasta)
+                            if get_crispr_id(line) in high_qual_hits:
+                                hq_gff_out.write(line)
                             gff_out.write(line)
+
+
+def get_crispr_id(line):
+    crispr_id = ""
+    if line.strip().split("\t")[2] == "CRISPR":
+        annotation_field = "Name="
+    else:
+        annotation_field = "Parent="
+    annotation_parts = line.strip().split("\t")[8].split(";")
+    for a in annotation_parts:
+        if a.startswith(annotation_field):
+            crispr_id = a.split("=")[1]
+            break
+    return crispr_id
 
 
 def fix_gff_line(line, fasta):
@@ -37,7 +54,7 @@ def fix_gff_line(line, fasta):
         print("before", annotation)
         annotation = fix_annotation(feature_seq, at_percentage, annotation)
         print("after", annotation)
-    return "\t".join([contig, tool, feature, str(start), str(end), blank1, blank2, blank3, annotation])    
+    return "\t".join([contig, tool, feature, str(start), str(end), blank1, blank2, blank3, annotation]) + "\n"
     
 
 def fix_annotation(feature_seq, at_percentage, annotation):
@@ -64,16 +81,24 @@ def check_end_position(contig, end, seq_records):
 def process_tsv(tsv_report, tsv_output):
     hits = list()
     hq_hits = list()
+    evidence_levels = dict()
     with open(tsv_output, "w") as tsv_out:
         with open(tsv_report, "r") as tsv_in:
             for line in tsv_in:
                 if not len(line.strip()) == 0:
                     tsv_out.write(line)
                     if not line.startswith("Strain"):
-                        hits.append(line.strip().split("\t")[2])
-                        if line.strip().split("\t")[-1] in ["3", "4"]:
-                            hq_hits.append(line.strip().split("\t")[2])
-    return list(set(hits)), list(set(hq_hits))
+                        parts = line.strip().split("\t")
+                        # add sequence basename to hits
+                        hits.append(parts[2])
+                        crispr_id = "{}_{}_{}".format(parts[1], parts[5], parts[6])
+                        # check if evidence level is high (2, 3 or 4)
+                        if parts[-1] in ["2", "3", "4"]:
+                            # add CRISPR ID (contig_start_end) to the high quality hit list
+                            hq_hits.append(crispr_id)
+                        # save evidence level
+                        evidence_levels[crispr_id] = parts[-1]
+    return list(set(hits)), list(set(hq_hits)), evidence_levels
 
 
 def parse_args():
