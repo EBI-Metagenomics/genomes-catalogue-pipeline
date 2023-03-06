@@ -14,6 +14,7 @@ def create_gff(gffs, gff_output, hits, fasta, high_qual_hits, gff_output_high_qu
     # generate 2 gffs: one with all hits, one with high-quality hits only
     with open(gff_output, "w") as gff_out, open(gff_output_high_qual, "w") as hq_gff_out:
         gff_out.write("##gff-version 3\n")
+        hq_gff_out.write("##gff-version 3\n")
         for gff in gffs:
             filename_base = gff.split("/")[-1].split(".")[0]
             if filename_base in hits:
@@ -24,6 +25,8 @@ def create_gff(gffs, gff_output, hits, fasta, high_qual_hits, gff_output_high_qu
                             # fix the GFF feature if it extends outside a contig (CRISPRCasFinder bug)
                             if not all(x > 0 for x in [int(parts[3]), int(parts[4])]) or "sequence=UNKNOWN" in line:
                                 line = fix_gff_line(line, fasta)
+                                if not line:
+                                    continue
                             if parts[2] == "CRISPR":
                                 line = add_evidence_level(line, evidence_levels)
                             if get_crispr_id(line) in high_qual_hits:
@@ -57,17 +60,21 @@ def get_crispr_id(line):
 def fix_gff_line(line, fasta):
     contig, tool, feature, start, end, blank1, blank2, blank3, annotation = line.strip().split("\t")
     # fix the start coordinate if it's invalid (extends past contig start)
+    # return nothing is flanking sequence on the left is entirely outside the contig
+    if int(start) < 1 and int(end) < 1:
+        return None
     if int(start) < 1:
         start = 1
     # fix sequence, at% and verify the end coordinate
     if "sequence=UNKNOWN" in annotation:
         seq_records = SeqIO.to_dict(SeqIO.parse(fasta, "fasta"))
         end = check_end_position(contig, end, seq_records)
-        feature_seq = seq_records[contig][start-1:end].seq
+        # return nothing is flanking sequence on the right is entirely outside the contig
+        if int(end) - int(start) < 1:
+            return None
+        feature_seq = seq_records[contig][int(start)-1:end].seq
         at_percentage = calc_at_percentage(feature_seq)
-        print("before", annotation)
         annotation = fix_annotation(feature_seq, at_percentage, annotation)
-        print("after", annotation)
     return "\t".join([contig, tool, feature, str(start), str(end), blank1, blank2, blank3, annotation]) + "\n"
     
 
