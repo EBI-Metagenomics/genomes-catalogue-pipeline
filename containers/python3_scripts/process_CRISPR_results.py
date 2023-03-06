@@ -7,10 +7,10 @@ from Bio import SeqIO
 
 def main(tsv_report, gffs, tsv_output, gff_output, gff_output_hq, fasta):
     hits, hq_hits, evidence_levels = process_tsv(tsv_report, tsv_output)
-    create_gff(gffs, gff_output, hits, fasta, hq_hits, gff_output_hq)
+    create_gff(gffs, gff_output, hits, fasta, hq_hits, gff_output_hq, evidence_levels)
 
 
-def create_gff(gffs, gff_output, hits, fasta, high_qual_hits, gff_output_high_qual):
+def create_gff(gffs, gff_output, hits, fasta, high_qual_hits, gff_output_high_qual, evidence_levels):
     # generate 2 gffs: one with all hits, one with high-quality hits only
     with open(gff_output, "w") as gff_out, open(gff_output_high_qual, "w") as hq_gff_out:
         gff_out.write("##gff-version 3\n")
@@ -24,10 +24,21 @@ def create_gff(gffs, gff_output, hits, fasta, high_qual_hits, gff_output_high_qu
                             # fix the GFF feature if it extends outside a contig (CRISPRCasFinder bug)
                             if not all(x > 0 for x in [int(parts[3]), int(parts[4])]) or "sequence=UNKNOWN" in line:
                                 line = fix_gff_line(line, fasta)
+                            if parts[2] == "CRISPR":
+                                line = add_evidence_level(line, evidence_levels)
                             if get_crispr_id(line) in high_qual_hits:
                                 hq_gff_out.write(line)
                             gff_out.write(line)
 
+
+def add_evidence_level(line, evidence_levels):
+    crispr_id = get_crispr_id(line)
+    try:
+        line = "{}evidence_level={}\n".format(line.strip(), evidence_levels[crispr_id])
+    except:
+        print("Cannot get evidence level for CRISPR {}".format(crispr_id))
+    return line
+    
 
 def get_crispr_id(line):
     crispr_id = ""
