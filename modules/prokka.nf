@@ -8,16 +8,19 @@ process PROKKA {
             filename -> {
                 def output_file = file(filename);
                 String genome_name = fasta.baseName;
-                if (output_file.extension == "faa" || output_file.extension == "fna") {
-                    String cluster_prefix = cluster_name.substring(0, 11);
-                    return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${genome_name}.${output_file.extension}";
-                } else if (output_file.extension == "gff") {
-                    return "additional_data/prokka_gff/${genome_name}.${output_file.extension}";
+                String cluster_prefix = cluster_name.substring(0, 11);
+                def is_rep = genome_name == cluster_name;
+
+                if ( output_file.extension == "faa" || output_file.extension == "fna" ) {
+                    return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${genome_name}.${output_file.extension}";
+                // For non-reps we use the prokka gff file
+                } else if ( output_file.extension == "gff" && !is_rep ) {
+                    return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${genome_name}.${output_file.extension}";
                 // Used for sanity check purposes
-                } else if (output_file.extension == "ffn") {
-                    return "intermediate_files/ffn_files/${output_file.baseName}.${output_file.extension}";
+                } else if ( output_file.extension == "ffn" ) {
+                    return "additional_data/intermediate_files/ffn_files/${output_file.baseName}.${output_file.extension}";
                 // Store the species reps gbk files //
-                } else if (output_file.extension == "gbk" && genome_name == cluster_name) {
+                } else if ( output_file.extension == "gbk" && is_rep ) {
                     return "additional_data/prokka_gbk_species_reps/${output_file.baseName}.${output_file.extension}";
                 }
             }

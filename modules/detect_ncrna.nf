@@ -9,10 +9,7 @@ process DETECT_NCRNA {
             filename -> {
                 def result_file = file(filename);
                 String genome_id = result_file.getSimpleName();
-                def file_extension = result_file.getExtension();
-                if (file_extension == "deoverlapped" && cluster_name == genome_id) {
-                    return "additional_data/rrna_deoverlapped_species_reps/${genome_id}.${file_extension}";
-                }
+                return "additional_data/rrna_deoverlapped_species_reps/${genome_id}.cmscan-deoverlap.tbl";
             }
         },
         mode: 'copy'

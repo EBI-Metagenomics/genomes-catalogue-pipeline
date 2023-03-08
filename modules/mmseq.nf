@@ -5,9 +5,11 @@ process MMSEQ {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
+                if ( output_file.getBaseName() == "mmseq_${threshold_rounded}_outdir.tar.gz" ) {
+                    return "additional_data/protein_catalogue/mmseq_${threshold_rounded}_outdir.tar.gz";
                 // For the .9 protein catalogue, we need to add the IPS and EGG annotations
                 // This is done by PROTEIN_CATALOGUE_STORE_ANNOTATIONS 
-                if ( output_file.extension == "gz" && id_threshold != 0.90 ) {
+                } else if ( output_file.extension == "gz" && id_threshold != 0.90 ) {
                     return "protein_catalogue/$filename";
                 } else {
                     return null;
@@ -34,6 +36,7 @@ process MMSEQ {
     path "protein_catalogue_*.fa", emit: mmseq_cluster_rep_faa
     path "protein_catalogue_*.tsv", emit: mmseq_cluster_tsv
     path "protein_catalogue_*.tar.gz", emit: mmseq_tarball
+    path "mmseq_${threshold_rounded}_outdir.tar.gz", emit: mmseq_outdir_tarball
 
     script:
     int threshold_rounded = id_threshold * 100;
@@ -91,6 +94,9 @@ process MMSEQ {
     mmseqs_cluster_rep \
     protein_catalogue_${threshold_rounded}.fa \
     --use-fasta-header
+
+    # Create a tarball with all the mmseq files
+    tar -czv mmseq_${threshold_rounded}_outdir.tar.gz mmseqs*
 
     tar -czf protein_catalogue_${threshold_rounded}.tar.gz protein_catalogue_${threshold_rounded}.fa protein_catalogue_${threshold_rounded}.tsv
     """

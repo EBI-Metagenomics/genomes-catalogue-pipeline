@@ -8,10 +8,10 @@ process GTDBTK {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                def name = output_file.getBaseName();
+                def name = output_file.getSimpleName();
                 def extension = output_file.getExtension();
-                if ( extension == "gz" ) {
-                    return "additional_data/$name";
+                if ( name  == "gtdbtk_results.tar.gz" ) {
+                    return "additional_data/${name}";
                 }
                 return null;
             }
@@ -25,7 +25,7 @@ process GTDBTK {
     memory '100 GB'
 
     input:
-    path drep_folder, stageAs: "genomes_dir/*"
+    path drep_folder_genomes_fna, stageAs: "genomes_dir/*"
     path gtdbtk_refdata
 
     output:

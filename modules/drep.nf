@@ -4,9 +4,17 @@
 process DREP {
 
     publishDir(
-        path: "${params.outdir}/intermediate_files",
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                def result_file = file(filename);
+                if ( result_file.getBaseName() == "drep_data_tables.tar.gz" ) {
+                    return "additional_data/intermediate_files/drep_data_tables.tar.gz";
+                }
+                return null;
+            }
+        },
         mode: 'copy',
-        failOnError: true
     )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.drep:v2'
@@ -23,7 +31,8 @@ process DREP {
     path "drep_output/data_tables/Cdb.csv", emit: cdb_csv
     path "drep_output/data_tables/Mdb.csv", emit: mdb_csv
     path "drep_output/data_tables/Sdb.csv", emit: sdb_csv
-    path "drep_output/", emit: drep_folder
+    path "drep_output/*.fna", emit: drep_folder_genomes_fna
+    path "drep_data_tables.tar.gz", emit: drep_data_tables_tarball
 
     script:
     """
@@ -38,6 +47,8 @@ process DREP {
     -extraW ${extra_weights_table} \
     --genomeInfo ${checkm_csv} \
     drep_output
+
+    tar -czf drep_data_tables.tar.gz drep_output/data_tables
     """
 
     stub:

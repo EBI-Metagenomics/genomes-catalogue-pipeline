@@ -7,7 +7,7 @@ process INDEX_FNA {
         saveAs: {
             filename -> {
                 String cluster_prefix = cluster_name.substring(0, 11);
-                return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/$filename";
+                return "species_catalogue/${cluster_prefix}/${fasta.getBaseName()}/genome/${filename}";
             }
         },
         mode: 'copy'

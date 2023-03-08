@@ -6,7 +6,7 @@ process SPLIT_DREP {
             filename -> {
                 def output_file = file(filename);
                 if ( output_file.getBaseName() == "clusters_split.txt" ) {
-                    return "/intermediate_files/clusters_split.txt";
+                    return "additional_data/intermediate_files/clusters_split.txt";
                 };
                 return null;
             }

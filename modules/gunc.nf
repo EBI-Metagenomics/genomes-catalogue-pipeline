@@ -2,7 +2,15 @@
 process GUNC {
 
     publishDir(
-        path: "${params.outdir}/intermediate_files/gunc/",
+        path: "${params.outdir}/additional_data/intermediate_files/gunc/",
+        saveAs: {
+            filename -> {
+                if ( filename.contains(".fa") ) {
+                    return null;
+                }
+                return filename;
+            }
+        },
         mode: 'copy'
     )
 

@@ -3,13 +3,13 @@ process RENAME_FASTA {
     publishDir(
         path: "${params.outdir}",
         pattern: "*.txt",
-        saveAs: { "intermediate_files/renamed_genomes_stats.txt" },
+        saveAs: { "additional_data/intermediate_files/renamed_genomes_stats.txt" },
         mode: "copy"
     )
     publishDir(
         path: "${params.outdir}",
         pattern: "*.tsv",
-        saveAs: { "intermediate_files/renamed_genomes_name_mapping.tsv" },
+        saveAs: { "additional_data/intermediate_files/renamed_genomes_name_mapping.tsv" },
         mode: "copy"
     )
 

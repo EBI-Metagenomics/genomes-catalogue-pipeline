@@ -1,7 +1,7 @@
 process GENERATE_EXTRA_WEIGHT {
 
     publishDir(
-        path: "${params.outdir}/intermediate_files/",
+        path: "${params.outdir}/additional_data/intermediate_files/",
         saveAs: { filename -> "extra_weight_table.txt" },
         mode: 'copy'
     )

@@ -5,7 +5,7 @@ process ANNONTATE_GFF {
         saveAs: {
             filename -> {
                 String cluster_rep_prefix = cluster.substring(0, 11);
-                return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${gff.simpleName}.gff";
+                return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${gff.simpleName}_annotated.gff";
             }
         },
         mode: 'copy'
