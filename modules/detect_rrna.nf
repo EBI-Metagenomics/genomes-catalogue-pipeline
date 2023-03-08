@@ -9,13 +9,13 @@ process DETECT_RRNA {
             filename -> {
                 def output_file = file(filename);
                 String genome_id = output_file.getSimpleName();
+                String clean_name = genome_id.replace("_rRNAs", "").replace("_tRNA_20aa", "");
                 String cluster_rep_prefix = cluster_name.substring(0, 11);
                 def file_extension = output_file.getExtension();
                 if ( file_extension == "fasta" ) {
-                    return "species_catalogue/${cluster_rep_prefix}/${genome_id}/genome/${genome_id}.${file_extension}";
+                    return "species_catalogue/${cluster_rep_prefix}/${clean_name}/genome/${genome_id}.${file_extension}";
                 // Folder structure rRNA_outs/MGYG000299300/MGYG000299300{_rRNAs,_tRNA_20aa}.out
                 } else if ( (genome_id.contains("_rRNAs") || genome_id.contains("_tRNA_20aa") ) && file_extension == "out" ) {
-                    def clean_name = genome_id.replace("_rRNAs", "").replace("_tRNA_20aa", "");
                     return "additional_data/rRNA_outs/${clean_name}/${genome_id}.${file_extension}";
                 }
                 return null;
