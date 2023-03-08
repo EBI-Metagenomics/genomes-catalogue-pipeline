@@ -49,5 +49,4 @@ workflow DREP_SWF {
         drep_cdb_csv = DREP.out.cdb_csv
         drep_mdb_csv = DREP.out.mdb_csv
         drep_sdb_csv = DREP.out.sdb_csv
-        drep_folder = DREP.out.drep_folder
 }

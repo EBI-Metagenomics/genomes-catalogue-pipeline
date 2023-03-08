@@ -25,7 +25,7 @@ process GTDBTK {
     memory '100 GB'
 
     input:
-    path drep_folder_genomes_fna, stageAs: "genomes_dir/*"
+    path genomes_fna, stageAs: "genomes_dir/*"
     path gtdbtk_refdata
 
     output:
