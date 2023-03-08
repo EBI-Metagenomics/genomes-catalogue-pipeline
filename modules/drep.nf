@@ -31,7 +31,6 @@ process DREP {
     path "drep_output/data_tables/Cdb.csv", emit: cdb_csv
     path "drep_output/data_tables/Mdb.csv", emit: mdb_csv
     path "drep_output/data_tables/Sdb.csv", emit: sdb_csv
-    path "drep_output/*.fna", emit: drep_folder_genomes_fna
     path "drep_data_tables.tar.gz", emit: drep_data_tables_tarball
 
     script:
