@@ -8,7 +8,7 @@ process DREP {
         saveAs: {
             filename -> {
                 def result_file = file(filename);
-                if ( result_file.getBaseName() == "drep_data_tables.tar.gz" ) {
+                if ( result_file.name == "drep_data_tables.tar.gz" ) {
                     return "additional_data/intermediate_files/drep_data_tables.tar.gz";
                 }
                 return null;

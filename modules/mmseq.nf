@@ -6,7 +6,7 @@ process MMSEQ {
             filename -> {
                 def output_file = file(filename);
                 int threshold_rounded = id_threshold * 100;
-                if ( output_file.getBaseName() == "mmseq_${threshold_rounded}_outdir.tar.gz" ) {
+                if ( output_file.name == "mmseq_${threshold_rounded}_outdir.tar.gz" ) {
                     return "additional_data/protein_catalogue/mmseq_${threshold_rounded}_outdir.tar.gz";
                 // For the .9 protein catalogue, we need to add the IPS and EGG annotations
                 // This is done by PROTEIN_CATALOGUE_STORE_ANNOTATIONS 
