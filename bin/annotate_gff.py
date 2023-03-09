@@ -17,7 +17,6 @@
 
 import argparse
 import sys
-import os
 
 
 def get_iprs(ipr_annot):
@@ -37,9 +36,9 @@ def get_iprs(ipr_annot):
     return iprs
 
 
-def get_eggnog(eggnot_annot):
+def get_eggnog(eggnog_annot):
     eggnogs = {}
-    with open(eggnot_annot, "r") as f:
+    with open(eggnog_annot, "r") as f:
         for line in f:
             line = line.rstrip()
             cols = line.split("\t")
@@ -62,7 +61,6 @@ def get_eggnog(eggnot_annot):
 
 def get_eggnog_fields(line):
     cols = line.strip().split("\t")
-    print(cols)
     if cols[8] == "KEGG_ko" and cols[15] == "CAZy":
         eggnog_fields = {"KEGG_ko": 8, "cog_func": 20}
     elif cols[11] == "KEGG_ko" and cols[18] == "CAZy":
@@ -239,9 +237,21 @@ def get_rnas(ncrnas_file):
     return ncrnas
 
 
-def add_ncrnas_to_gff(gff_outfile, ncrnas, res):
+def load_crispr(crispr_file):
+    crispr_annotations = dict()
+    with open(crispr_file, "r") as f:
+        for line in f:
+            if not line.startswith("#"):
+                contig = line.split("\t")[0]
+                crispr_annotations.setdefault(contig, list())
+                crispr_annotations[contig].append(line)
+    return crispr_annotations
+
+
+def add_ncrnas_and_crispr_to_gff(gff_outfile, ncrnas, crispr_annotations, res):
     gff_out = open(gff_outfile, "w")
-    added = set()
+    added_ncrnas = set()
+    added_crisprs = set()
     for line in res:
         cols = line.strip().split("\t")
         if line[0] != "#" and len(cols) == 9:
@@ -255,8 +265,8 @@ def add_ncrnas_to_gff(gff_outfile, ncrnas, res):
                         product = c[3]
                         model = c[4]
                         strand = c[5]
-                        if locus not in added:
-                            added.add(locus)
+                        if locus not in added_ncrnas:
+                            added_ncrnas.add(locus)
                             annot = [
                                 "ID=" + locus,
                                 "inference=Rfam:14.6",
@@ -277,6 +287,12 @@ def add_ncrnas_to_gff(gff_outfile, ncrnas, res):
                                 annot,
                             ]
                             gff_out.write("\t".join(newLine) + "\n")
+                if contig in crispr_annotations:
+                    for crispr_line in crispr_annotations[contig]:
+                        crispr_parts = crispr_line.strip().split("\t")
+                        if "{}_{}_{}".format(crispr_parts[2], crispr_parts[3], crispr_parts[4]) not in added_crisprs:
+                            added_crisprs.add("{}_{}_{}".format(crispr_parts[2], crispr_parts[3], crispr_parts[4]))
+                            gff_out.write(crispr_line)
                 gff_out.write("{}\n".format(line))
         #            else:
         #                gff_out.write("{}\n".format(line))
@@ -313,6 +329,12 @@ if __name__ == "__main__":
         help="Sanntis results for the cluster rep",
         required=False,
     )
+    parser.add_argument(
+        "-c",
+        dest="crispr",
+        help="CRISPRCasFinder results for the cluster rep (high quality GFF)",
+        required=False,
+    )
     parser.add_argument("-r", dest="rfam", help="Rfam results", required=True)
     parser.add_argument("-o", dest="outfile", help="Outfile name", required=False)
 
@@ -328,10 +350,14 @@ if __name__ == "__main__":
     )
 
     ncRNAs = get_rnas(args.rfam)
+    if args.crispr:
+        crispr_annotations = load_crispr(args.crispr)
+    else:
+        crispr_annotations = dict()
 
     if not args.outfile:
         outfile = gff.split(".gff")[0] + "_annotated.gff"
     else:
         outfile = args.outfile
 
-    add_ncrnas_to_gff(outfile, ncRNAs, extended_gff)
+    add_ncrnas_and_crispr_to_gff(outfile, ncRNAs, crispr_annotations, extended_gff)

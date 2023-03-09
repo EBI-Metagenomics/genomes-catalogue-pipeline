@@ -60,7 +60,7 @@ def get_crispr_id(line):
 def fix_gff_line(line, fasta):
     contig, tool, feature, start, end, blank1, blank2, blank3, annotation = line.strip().split("\t")
     # fix the start coordinate if it's invalid (extends past contig start)
-    # return nothing is flanking sequence on the left is entirely outside the contig
+    # return nothing if flanking sequence on the left is entirely outside the contig
     if int(start) < 1 and int(end) < 1:
         return None
     if int(start) < 1:
@@ -69,7 +69,7 @@ def fix_gff_line(line, fasta):
     if "sequence=UNKNOWN" in annotation:
         seq_records = SeqIO.to_dict(SeqIO.parse(fasta, "fasta"))
         end = check_end_position(contig, end, seq_records)
-        # return nothing is flanking sequence on the right is entirely outside the contig
+        # return nothing if flanking sequence on the right is entirely outside the contig
         if int(end) - int(start) < 1:
             return None
         feature_seq = seq_records[contig][int(start)-1:end].seq
