@@ -6,8 +6,13 @@ process INDEX_FNA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
+                def output_file = file(filename);
+                String genome_name = fasta.baseName;
                 String cluster_prefix = cluster_name.substring(0, 11);
-                return "species_catalogue/${cluster_prefix}/${fasta.getBaseName()}/genome/${filename}";
+                def is_rep = genome_name == cluster_name;
+                if ( is_rep ) {
+                    return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${filename}";
+                }
             }
         },
         mode: 'copy'

@@ -11,11 +11,12 @@ process PROKKA {
                 String cluster_prefix = cluster_name.substring(0, 11);
                 def is_rep = genome_name == cluster_name;
 
-                if ( output_file.extension == "faa" || output_file.extension == "fna" ) {
+                if ( is_rep && ( output_file.extension == "faa" || output_file.extension == "fna" ) ) {
                     return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${genome_name}.${output_file.extension}";
+                /* TODO: debuging. */
                 // For non-reps we use the prokka gff file
-                } else if ( output_file.extension == "gff" && !is_rep ) {
-                    return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${genome_name}.${output_file.extension}";
+                // } else if ( output_file.extension == "gff" ) {
+                    // return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${genome_name}.${output_file.extension}";
                 // Used for sanity check purposes
                 } else if ( output_file.extension == "ffn" ) {
                     return "additional_data/intermediate_files/ffn_files/${output_file.baseName}.${output_file.extension}";

@@ -8,7 +8,7 @@ process GTDBTK {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                def name = output_file.getSimpleName();
+                def name = output_file.getName();
                 def extension = output_file.getExtension();
                 if ( name  == "gtdbtk_results.tar.gz" ) {
                     return "additional_data/${name}";
