@@ -224,8 +224,10 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--biome",
-        help="Full biome. Example: root:Host-Associated:Human:Digestive System:"
-        "Large intestine",
+        help=(
+            "Full biome. Example: root:Host-Associated:Human:Digestive System:"
+            "Large intestine"
+        ),
         required=True,
     )
     parser.add_argument("--species-name", help="Species name (MGYG...)", required=True)
@@ -234,8 +236,10 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--cluster-structure",
-        help="Cluster has folders genome and pan-genome, "
-        "otherwise all files are in the same folder",
+        help=(
+            "Cluster has folders genome and pan-genome, "
+            "otherwise all files are in the same folder"
+        ),
         action="store_true",
     )
 

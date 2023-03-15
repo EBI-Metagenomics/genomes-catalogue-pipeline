@@ -29,7 +29,7 @@ def run_assembly_stats(infilename):
 
 
 def fasta_iter(fasta_file):
-    fh = open(fasta_file, 'r')
+    fh = open(fasta_file, "r")
     fa_iter = (x[1] for x in groupby(fh, lambda line: line[0] == ">"))
     for header in fa_iter:
         # drop the ">"
@@ -50,7 +50,7 @@ def read_genome(fasta_file):
             contig_list = [seq]
         for contig in contig_list:
             if len(contig):
-                gc += contig.count('G') + contig.count('C')
+                gc += contig.count("G") + contig.count("C")
                 total_len += len(contig)
                 contig_lens.append(len(contig))
     gc_cont = (gc / total_len) * 100
@@ -60,17 +60,17 @@ def read_genome(fasta_file):
 def calculate_stats(seq_lens, gc_cont):
     stats = {}
     seq_array = np.array(seq_lens)
-    stats['N_contigs'] = seq_array.size
-    stats['GC_content'] = gc_cont
+    stats["N_contigs"] = seq_array.size
+    stats["GC_content"] = gc_cont
     sorted_lens = seq_array[np.argsort(-seq_array)]
-    stats['Length'] = int(np.sum(sorted_lens))
+    stats["Length"] = int(np.sum(sorted_lens))
     csum = np.cumsum(sorted_lens)
     level = 50
-    nx = int(stats['Length'] * (level / 100))
+    nx = int(stats["Length"] * (level / 100))
     csumn = min(csum[csum >= nx])
     l_level = int(np.where(csum == csumn)[0])
     n_level = int(sorted_lens[l_level])
-    stats['N' + str(level)] = n_level
+    stats["N" + str(level)] = n_level
     return stats
 
 

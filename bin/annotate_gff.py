@@ -290,8 +290,17 @@ def add_ncrnas_and_crispr_to_gff(gff_outfile, ncrnas, crispr_annotations, res):
                 if contig in crispr_annotations:
                     for crispr_line in crispr_annotations[contig]:
                         crispr_parts = crispr_line.strip().split("\t")
-                        if "{}_{}_{}".format(crispr_parts[2], crispr_parts[3], crispr_parts[4]) not in added_crisprs:
-                            added_crisprs.add("{}_{}_{}".format(crispr_parts[2], crispr_parts[3], crispr_parts[4]))
+                        if (
+                            "{}_{}_{}".format(
+                                crispr_parts[2], crispr_parts[3], crispr_parts[4]
+                            )
+                            not in added_crisprs
+                        ):
+                            added_crisprs.add(
+                                "{}_{}_{}".format(
+                                    crispr_parts[2], crispr_parts[3], crispr_parts[4]
+                                )
+                            )
                             gff_out.write(crispr_line)
                 gff_out.write("{}\n".format(line))
         #            else:

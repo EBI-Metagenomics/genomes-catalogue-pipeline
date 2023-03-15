@@ -104,8 +104,10 @@ def get_genomes_in_study(study):
         )
     query = {
         "result": "wgs_set",
-        "query": 'study_accession="{}" AND assembly_type="metagenome-assembled genome (mag)"'.format(
-            study
+        "query": (
+            'study_accession="{}" AND assembly_type="metagenome-assembled genome (mag)"'.format(
+                study
+            )
         ),
         "fields": "fasta_file",
         "format": "tsv",
@@ -113,8 +115,8 @@ def get_genomes_in_study(study):
     r = run_request(query, ENA_ENDPOINT)
     if r.content.decode() == "":
         logging.error(
-            "Unable to get a list of genomes for study {} from ENA. Provided extra weight info cannot be "
-            "used".format(study)
+            "Unable to get a list of genomes for study {} from ENA. Provided extra"
+            " weight info cannot be used".format(study)
         )
     for line in r.text.splitlines():
         if not line.startswith("accession"):
@@ -141,9 +143,11 @@ def add_genome_info(genome_info_file, extra_weights):
                 extra_weights[genome] = weight
             else:
                 logging.error(
-                    "Extra weight information for genome {} was provided but genome is not found in the "
-                    "genomes folder. Check naming format - is the extension missing? Extra weight information"
-                    " cannot be used".format(genome)
+                    "Extra weight information for genome {} was provided but genome is"
+                    " not found in the genomes folder. Check naming format - is the"
+                    " extension missing? Extra weight information cannot be used".format(
+                        genome
+                    )
                 )
     return extra_weights
 
@@ -212,24 +216,30 @@ def print_results(extra_weights, outfile):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Identifies isolate genomes and MAGs and creates an extra"
-        "weight table for drep"
+        description=(
+            "Identifies isolate genomes and MAGs and creates an extra"
+            "weight table for drep"
+        )
     )
     parser.add_argument(
         "-s",
         "--study-info",
-        help="If the entire study includes only one type of genomes (MAGs only or isolates only) "
-        "and this information is already available, provide a path to a tab-delimited file"
-        "where the first column contains primary study IDs and the second column contains the type "
-        "(MAG or isolate)",
+        help=(
+            "If the entire study includes only one type of genomes (MAGs only or"
+            " isolates only) and this information is already available, provide a path"
+            " to a tab-delimited filewhere the first column contains primary study IDs"
+            " and the second column contains the type (MAG or isolate)"
+        ),
     )
     parser.add_argument(
         "-g",
         "--genome-info",
-        help="If any of the studies contain a mix of isolate and MAG genomes or if information"
-        "for only some of the genomes is available, provide a path to a file containing per"
-        "genome information. First column should be the genome accession, second column the type "
-        "of genome (MAG or isolate)",
+        help=(
+            "If any of the studies contain a mix of isolate and MAG genomes or if"
+            " informationfor only some of the genomes is available, provide a path to a"
+            " file containing pergenome information. First column should be the genome"
+            " accession, second column the type of genome (MAG or isolate)"
+        ),
     )
     parser.add_argument(
         "-o",

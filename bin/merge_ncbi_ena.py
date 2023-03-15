@@ -24,8 +24,10 @@ from shutil import copy
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="This script copies genomes from ENA and NCBI folders "
-        "to common folder. It also unites csv files"
+        description=(
+            "This script copies genomes from ENA and NCBI folders "
+            "to common folder. It also unites csv files"
+        )
     )
     parser.add_argument("--ena", required=True, help="path to folder with ENA genomes")
     parser.add_argument(

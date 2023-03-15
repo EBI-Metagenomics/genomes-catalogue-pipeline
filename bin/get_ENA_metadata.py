@@ -24,46 +24,53 @@ import xmltodict
 
 
 def get_contamination_completeness(sample_id):
-    contamination = ''
-    completeness = ''
+    contamination = ""
+    completeness = ""
     json_data = load_xml(sample_id)
-    for attribute in json_data['SAMPLE_SET']['SAMPLE']['SAMPLE_ATTRIBUTES']['SAMPLE_ATTRIBUTE']:
-        if attribute.get('TAG') == 'completeness score':
-            completeness = attribute.get('VALUE')
-        elif attribute.get('TAG') == 'contamination score':
-            contamination = attribute.get('VALUE')
-        elif attribute.get('TAG') == 'ENA-CHECKLIST':
-            checklist = attribute.get('VALUE')
-            if checklist != 'ERC000047':
-                print('WARNING: checklist for {} is {}; expected checklist: ERC000047'.
-                      format(sample_id, checklist))
+    for attribute in json_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"][
+        "SAMPLE_ATTRIBUTE"
+    ]:
+        if attribute.get("TAG") == "completeness score":
+            completeness = attribute.get("VALUE")
+        elif attribute.get("TAG") == "contamination score":
+            contamination = attribute.get("VALUE")
+        elif attribute.get("TAG") == "ENA-CHECKLIST":
+            checklist = attribute.get("VALUE")
+            if checklist != "ERC000047":
+                print(
+                    "WARNING: checklist for {} is {}; expected checklist: ERC000047".format(
+                        sample_id, checklist
+                    )
+                )
         else:
             pass
     return contamination, completeness
 
 
 def get_location(sample_id):
-    location = ''
+    location = ""
     json_data = load_xml(sample_id)
-    for attribute in json_data['SAMPLE_SET']['SAMPLE']['SAMPLE_ATTRIBUTES']['SAMPLE_ATTRIBUTE']:
-        if attribute.get('TAG') == 'geographic location (country and/or sea)':
-            location = attribute.get('VALUE')
+    for attribute in json_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"][
+        "SAMPLE_ATTRIBUTE"
+    ]:
+        if attribute.get("TAG") == "geographic location (country and/or sea)":
+            location = attribute.get("VALUE")
     return location
 
 
 def get_gca_location(sample_id):
-    location = ''
+    location = ""
     json_data = load_gca_json(sample_id)
-    geo_data_list = json_data['characteristics']['geo loc name']
+    geo_data_list = json_data["characteristics"]["geo loc name"]
     for item in geo_data_list:
-        if 'text' in item:
-            location = item['text'].strip().split(':')[0]
+        if "text" in item:
+            location = item["text"].strip().split(":")[0]
             break
     return location
 
 
 def load_xml(sample_id):
-    xml_url = 'https://www.ebi.ac.uk/ena/browser/api/xml/{}'.format(sample_id)
+    xml_url = "https://www.ebi.ac.uk/ena/browser/api/xml/{}".format(sample_id)
     r = requests.get(xml_url)
     if r.ok:
         data_dict = xmltodict.parse(r.content)
@@ -71,31 +78,31 @@ def load_xml(sample_id):
         json_data = json.loads(json_dump)
         return json_data
     else:
-        print('Could not retrieve xml for sample', sample_id)
+        print("Could not retrieve xml for sample", sample_id)
         print(r.text)
         return None
 
 
 def load_gca_json(sample_id):
-    json_url = 'https://www.ebi.ac.uk/biosamples/samples/{}.json'.format(sample_id)
+    json_url = "https://www.ebi.ac.uk/biosamples/samples/{}.json".format(sample_id)
     r = requests.get(json_url)
     if r.ok:
         json_data = r.json()
         return json_data
     else:
-        print('Could not retrieve json for sample', sample_id)
+        print("Could not retrieve json for sample", sample_id)
         print(r.text)
         return None
 
 
-#test_sample = 'SAMEA6774373'
-#test_sample = 'SAMN14571041'  # GCA
-#cont, comp = get_contamination_completeness(test_sample)
-#location = get_location_gca(test_sample)
-#print(cont, comp, location)
-#print(location)
+# test_sample = 'SAMEA6774373'
+# test_sample = 'SAMN14571041'  # GCA
+# cont, comp = get_contamination_completeness(test_sample)
+# location = get_location_gca(test_sample)
+# print(cont, comp, location)
+# print(location)
 
-#xml_res = load_xml('GCA_015260435')
-#print(xml_res)
-#project = xml_res['ASSEMBLY_SET']['ASSEMBLY']['STUDY_REF']['IDENTIFIERS']['PRIMARY_ID']
-#print(project)
+# xml_res = load_xml('GCA_015260435')
+# print(xml_res)
+# project = xml_res['ASSEMBLY_SET']['ASSEMBLY']['STUDY_REF']['IDENTIFIERS']['PRIMARY_ID']
+# print(project)

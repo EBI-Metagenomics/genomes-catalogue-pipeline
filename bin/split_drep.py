@@ -101,7 +101,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--create-clusters",
         action="store_true",
-        help="Set this flag to generate folders with genomes and mash-files inside for each cluster",
+        help=(
+            "Set this flag to generate folders with genomes and mash-files inside for"
+            " each cluster"
+        ),
     )
 
     if len(sys.argv) == 1:

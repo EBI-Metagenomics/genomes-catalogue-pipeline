@@ -168,10 +168,12 @@ def rename_csv(names, csv_file):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Rename multifasta files, cluster information file and create a table "
-        "matching old and new names. "
-        "If you have map-file: new_name - old_name you can provide it "
-        "and files would be renamed according to this file"
+        description=(
+            "Rename multifasta files, cluster information file and create a table "
+            "matching old and new names. "
+            "If you have map-file: new_name - old_name you can provide it "
+            "and files would be renamed according to this file"
+        )
     )
     parser.add_argument(
         "-d",
@@ -185,7 +187,10 @@ def parse_args():
         dest="index",
         type=int,
         default=1,
-        help="Number to start naming at (will be in the file name following prefix; default = 1",
+        help=(
+            "Number to start naming at (will be in the file name following prefix;"
+            " default = 1"
+        ),
     )
     parser.add_argument(
         "--max", dest="max", type=int, required=False, help="Number to finish naming"
@@ -193,28 +198,37 @@ def parse_args():
     parser.add_argument(
         "-c",
         dest="cluster_file",
-        help="Path to the cluster information file. If provided, the names in the "
-        "file will be updated as well",
+        help=(
+            "Path to the cluster information file. If provided, the names in the "
+            "file will be updated as well"
+        ),
     )
     parser.add_argument(
         "-t",
         dest="table_file",
         default="naming_table.tsv",
-        help="Path to file where output table matching old and new names will be saved to. "
-        "Default: naming_table.tsv",
+        help=(
+            "Path to file where output table matching old and new names will be saved"
+            " to. Default: naming_table.tsv"
+        ),
     )
     parser.add_argument(
         "-n",
         dest="num_digits",
         type=int,
         default=9,
-        help="Number of digit places to include after the prefix in the filename. Default = 9",
+        help=(
+            "Number of digit places to include after the prefix in the filename."
+            " Default = 9"
+        ),
     )
     parser.add_argument(
         "--rename-deflines",
         action="store_true",
-        help="If this flag is on, deflines within the FASTA file will be renamed using the new "
-        "accession.",
+        help=(
+            "If this flag is on, deflines within the FASTA file will be renamed using"
+            " the new accession."
+        ),
     )
     parser.add_argument(
         "-o",
@@ -233,7 +247,10 @@ def parse_args():
         "--map-file",
         dest="map_file",
         required=False,
-        help="If genomes names were already assigned, mapping file has <old name - new name> info",
+        help=(
+            "If genomes names were already assigned, mapping file has <old name - new"
+            " name> info"
+        ),
     )
     return parser.parse_args()
 

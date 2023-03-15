@@ -167,7 +167,7 @@ if __name__ == "__main__":
         dest="out_folder",
         help="The output folder.",
         required=False,
-        default=os.getcwd()
+        default=os.getcwd(),
     )
 
     args = parser.parse_args()

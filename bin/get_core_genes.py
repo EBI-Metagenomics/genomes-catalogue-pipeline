@@ -35,8 +35,10 @@ def main(infile, outfile):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Takes an Rtab file from Panaroo and outputs a list of core"
-        "genes (defined as present in >=90% of genomes)"
+        description=(
+            "Takes an Rtab file from Panaroo and outputs a list of core"
+            "genes (defined as present in >=90% of genomes)"
+        )
     )
     parser.add_argument("-i", "--infile", required=True, help="Path to the input file")
     parser.add_argument(
