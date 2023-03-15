@@ -50,7 +50,7 @@ def add_evidence_level(line, evidence_levels):
     crispr_id = get_crispr_id(line)
     try:
         line = "{}evidence_level={}\n".format(line.strip(), evidence_levels[crispr_id])
-    except:
+    except Exception:
         logging.error(f"Cannot get evidence level for CRISPR {crispr_id}")
     return line
 
@@ -169,8 +169,10 @@ def process_tsv(tsv_report, tsv_output):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Script processes the results of CRISPRCasFinder to produce files"
-        "for genomes pipeline output directory."
+        description=(
+            "Script processes the results of CRISPRCasFinder to produce files"
+            "for genomes pipeline output directory."
+        )
     )
     parser.add_argument(
         "--tsv-report",
@@ -191,12 +193,18 @@ def parse_args():
     parser.add_argument(
         "--gff-output",
         required=True,
-        help="Name of GFF file (with path if needed) where the script will save processed GFF information (one GFF will be produced for the entire genome)",
+        help=(
+            "Name of GFF file (with path if needed) where the script will save processed GFF information (one"
+            " GFF will be produced for the entire genome)"
+        ),
     )
     parser.add_argument(
         "--gff-output-hq",
         required=True,
-        help="Name of GFF file (with path if needed) where the script will save processed GFF information for high quality hits (EL 3 and 4) (one GFF will be produced for the entire genome)",
+        help=(
+            "Name of GFF file (with path if needed) where the script will save processed GFF information for"
+            " high quality hits (EL 3 and 4) (one GFF will be produced for the entire genome)"
+        ),
     )
     parser.add_argument("--fasta", required=True, help="Path to the genome Fasta file")
     return parser.parse_args()
