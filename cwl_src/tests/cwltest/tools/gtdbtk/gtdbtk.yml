@@ -1,7 +1,0 @@
-drep_folder:
-  class: Directory
-  path: ../../../../input_example/small_set/all_genomes
-refdata:
-  class: Directory
-  path: ../../../../db/release202
-gtdb_outfolder: GTDB_out

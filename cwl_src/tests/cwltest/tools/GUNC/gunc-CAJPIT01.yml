@@ -1,7 +1,0 @@
-input_fasta:
-  class: File
-  path: ../../../../input_example/small_set/all_genomes/CAJJTO01.fa
-db_path:
-  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd
-  class: File
-

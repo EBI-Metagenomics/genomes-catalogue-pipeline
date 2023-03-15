@@ -1,7 +1,0 @@
-files:
-  - class: File
-    path: concatenate.yml
-  - class: File
-    path: concatenate_one.yml
-
-name: test.txt

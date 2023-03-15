@@ -1,6 +1,0 @@
-files:
-  - class: File
-    path: ../../../input_example/input_ncbi.txt
-  - class: File
-    path: ../../../input_example/input_ena.txt
-outputFileName: cat.txt

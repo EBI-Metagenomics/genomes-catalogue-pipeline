@@ -1,9 +1,0 @@
-cluster:
-  class: Directory
-  path: ../../../../../input_example/small_set/results/clusters/CAJKRY01
-gunc_db_path:
-  class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd
-csv:
-  class: File
-  path: ../../../../../input_example/small_set/download.csv

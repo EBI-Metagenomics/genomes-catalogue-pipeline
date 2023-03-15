@@ -1,4 +1,0 @@
-fa_file:
-  class: File
-  path: ../../../../input_example/small_set/all_genomes/CAJJTO01.fa
-outdirname: prokka_CAJJTO01

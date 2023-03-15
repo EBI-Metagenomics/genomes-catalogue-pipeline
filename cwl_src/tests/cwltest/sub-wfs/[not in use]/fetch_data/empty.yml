@@ -1,6 +1,0 @@
-download_from: NCBI
-infile:
-  class: File
-  path: bad.txt
-directory_name: empty-test
-unzip: true

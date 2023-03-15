@@ -1,4 +1,0 @@
-many_genomes:1_1:CAJLGA01.fa,CAJKGB01.fa,CAJJTO01.fa
-many_genomes:2_1:CAJKXJ01.fa,CAJKRE01.fa
-one_genome:3_0:CAJKRY01.fa
-one_genome:4_0:CAJKXZ01.fa
