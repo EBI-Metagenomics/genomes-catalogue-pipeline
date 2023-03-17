@@ -58,6 +58,9 @@ def main(
         ), "Provided cluster information file does not exist"
     for file in files:
         if file.endswith(("fa", "fasta")) and not file.startswith(prefix):
+            if max_number and index > max_number:
+                print("index is bigger than requested number in catalogue")
+                exit(1)
             if not map_file:
                 accession = "{}{}{}".format(
                     prefix, "0" * (num_digits - len(str(index))), str(index)
@@ -84,9 +87,6 @@ def main(
                 except OSError as e:
                     logging.error("Unable to delete {}: {}".format(file, e))
             index += 1
-            if max_number and index > max_number:
-                print("index is bigger than requested number in catalogue")
-                exit(1)
     logging.info("Printing names to table...")
     print_table(names, table_file)
     if cluster_file:
@@ -234,7 +234,11 @@ def parse_args():
         "-o",
         dest="outputdir",
         required=False,
-        help="Output directory for renamed FASTA files (use in CWL)",
+        help="Output directory for renamed FASTA files (use in CWL). "
+             "If specifying outputdir, the deflines in FASTA will also be renamed. "
+             "If outdir is not specified, files will be renamed inside their "
+             "original folder and deflines only renamed if flag --rename-deflines "
+             "is used.",
     )
     parser.add_argument(
         "--csv",
