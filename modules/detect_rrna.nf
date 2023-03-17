@@ -3,6 +3,8 @@
 */
 process DETECT_RRNA {
 
+    tag "${cluster_name}"
+
     publishDir(
         path: "${params.outdir}",
         saveAs: {
@@ -10,11 +12,11 @@ process DETECT_RRNA {
                 def output_file = file(filename);
                 String simple_filename = output_file.getSimpleName();
                 String genome_id = simple_filename.replace("_rRNAs", "").replace("_tRNA_20aa", "");
-                String cluster_rep_prefix = cluster_name.substring(0, 11);
                 def file_extension = output_file.getExtension();
                 def is_rep = genome_id == cluster_name;
 
                 if ( is_rep && file_extension == "fasta" ) {
+                    String cluster_rep_prefix = cluster_name.substring(0, 11);
                     return "species_catalogue/${cluster_rep_prefix}/${genome_id}/genome/${genome_id}.${file_extension}";
                 // Folder structure rRNA_outs/MGYG000299300/MGYG000299300{_rRNAs,_tRNA_20aa}.out
                 } else if ( ( simple_filename.contains("_rRNAs") || simple_filename.contains("_tRNA_20aa") ) && file_extension == "out" ) {
