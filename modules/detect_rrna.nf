@@ -9,18 +9,33 @@ process DETECT_RRNA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
+                if ( !filename.endsWith(".fasta") ) {
+                    return null
+                }
                 def output_file = file(filename);
-                String simple_filename = output_file.getSimpleName();
-                String genome_id = simple_filename.replace("_rRNAs", "").replace("_tRNA_20aa", "");
-                def file_extension = output_file.getExtension();
+                def genome_id = fasta.baseName;
                 def is_rep = genome_id == cluster_name;
+                if ( is_rep && output_file.name.contains("_rRNAs") ) {
+                    def cluster_rep_prefix = cluster_name.substring(0, 11);
+                    return "species_catalogue/${cluster_rep_prefix}/${genome_id}/genome/${genome_id}_rRNAs.fasta";
+                }
+                return null;
+            }
+        },
+        mode: 'copy'
+    )
 
-                if ( is_rep && file_extension == "fasta" ) {
-                    String cluster_rep_prefix = cluster_name.substring(0, 11);
-                    return "species_catalogue/${cluster_rep_prefix}/${genome_id}/genome/${genome_id}.${file_extension}";
-                // Folder structure rRNA_outs/MGYG000299300/MGYG000299300{_rRNAs,_tRNA_20aa}.out
-                } else if ( ( simple_filename.contains("_rRNAs") || simple_filename.contains("_tRNA_20aa") ) && file_extension == "out" ) {
-                    return "additional_data/rRNA_outs/${genome_id}/${genome_id}.${file_extension}";
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                if ( !filename.endsWith(".out") ) {
+                    return null;
+                }
+                def output_file = file(filename);
+                def genome_id = fasta.baseName;
+                if ( output_file.name.contains("_rRNAs") || output_file.name.contains("_tRNA_20aa") ) {
+                    return "additional_data/rRNA_outs/${genome_id}/${output_file.name}";
                 }
                 return null;
             }
