@@ -14,7 +14,7 @@ process SPLIT_DREP {
         mode: "copy"
     )
 
-    container 'quay.io/biocontainers/python:3.9--1'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
 
     label 'process_light'
 

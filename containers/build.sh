@@ -9,7 +9,7 @@ export QUAY_NAME="quay.io/microbiome-informatics"
 
 export STORAGE=${QUAY_NAME}
 
-num_containers=14
+num_containers=9
 
 folders=(
     'bash'
@@ -20,7 +20,7 @@ folders=(
     'gtdb-tk'
     'ips'
     'mash2nwk'
-    'python3_scripts'
+    'python3base'
 )
 
 containers_versions=(
@@ -32,7 +32,7 @@ containers_versions=(
     'gtdb-tk:v1'
     'ips:5.57-90.0'
     'mash2nwk:v1'
-    'python3_scripts:v4'
+    'python3base:v1.0'
 )
 
 for ((i = 0; i < num_containers; i++)); do

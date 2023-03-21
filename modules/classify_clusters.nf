@@ -31,7 +31,7 @@ process CLASSIFY_CLUSTERS {
 
     label "process_light"
 
-    container 'quay.io/biocontainers/python:3.9--1'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
 
     cpus 1
     memory "1 GB"

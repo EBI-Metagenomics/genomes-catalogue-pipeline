@@ -10,7 +10,7 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
         mode: "copy"
     )
 
-    container 'quay.io/biocontainers/python:3.9--1'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
 
     memory '1 GB'
     cpus 1
