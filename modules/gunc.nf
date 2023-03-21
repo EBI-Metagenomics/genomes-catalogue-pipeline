@@ -14,7 +14,7 @@ process GUNC {
         mode: 'copy'
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.gunc:latest'
+    container 'quay.io/biocontainers/gunc:1.0.3--pyhdfd78af_0'
 
     cpus 4
 

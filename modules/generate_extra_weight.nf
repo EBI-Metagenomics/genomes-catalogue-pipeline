@@ -6,6 +6,8 @@ process GENERATE_EXTRA_WEIGHT {
         mode: 'copy'
     )
 
+    container 'quay.io/biocontainers/python:3.9--1'
+
     label 'process_light'
 
     cpus 1

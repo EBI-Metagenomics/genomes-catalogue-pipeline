@@ -2,6 +2,8 @@ process MERGE_NCBI_ENA {
 
     label 'process_light'
 
+    container 'quay.io/biocontainers/python:3.9--1'
+
     memory "500 MB"
     cpus 1
 

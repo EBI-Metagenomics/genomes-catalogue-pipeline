@@ -17,7 +17,7 @@ process DREP {
         mode: 'copy',
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.drep:v2'
+    container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
 
     cpus 8
     memory '5 GB'

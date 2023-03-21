@@ -9,7 +9,7 @@ process MMSEQ {
                 if ( output_file.name == "mmseq_${threshold_rounded}_outdir.tar.gz" ) {
                     return "additional_data/protein_catalogue/mmseq_${threshold_rounded}_outdir.tar.gz";
                 // For the .9 protein catalogue, we need to add the IPS and EGG annotations
-                // This is done by PROTEIN_CATALOGUE_STORE_ANNOTATIONS 
+                // This is done by PROTEIN_CATALOGUE_STORE_ANNOTATIONS
                 } else if ( output_file.extension == "gz" && id_threshold != 0.90 ) {
                     return "protein_catalogue/$filename";
                 } else {
@@ -20,7 +20,7 @@ process MMSEQ {
         mode: 'copy'
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.mmseqs:v2'
+    container 'quay.io/biocontainers/mmseqs2:13.45111--h2d02072_0'
 
     label 'process_bigmem'
 

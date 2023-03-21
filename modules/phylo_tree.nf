@@ -4,6 +4,8 @@ process PHYLO_TREE {
 
     label 'process_light'
 
+    container 'quay.io/biocontainers/python:3.9--1'
+
     cpus 1
     memory '1 GB'
 

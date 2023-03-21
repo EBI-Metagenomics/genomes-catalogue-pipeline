@@ -13,6 +13,8 @@ process RENAME_FASTA {
         mode: "copy"
     )
 
+    container 'quay.io/biocontainers/python:3.9--1'
+
     label 'process_light'
 
     memory "500 MB"
