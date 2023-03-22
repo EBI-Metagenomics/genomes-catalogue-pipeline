@@ -52,7 +52,7 @@ def get_eggnog(eggnog_annot):
                     cog = cog.split()
                     if len(cog) > 1:
                         cog = ["R"]
-                except:
+                except Exception:
                     cog = ["NA"]
                 kegg = cols[eggnog_fields["KEGG_ko"]].split(",")
                 eggnogs[protein] = [eggnog, cog, kegg]
@@ -156,25 +156,41 @@ def get_amr(amr_file):
         for line in f:
             if line.startswith("Protein identifier"):
                 continue
-            protein_id, _, _, _, _, gene_name, seq_name, scope, element_type, element_subtype, drug_class, \
-            drug_subclass, _ = line.strip().split("\t", 12)
+            (
+                protein_id,
+                _,
+                _,
+                _,
+                _,
+                gene_name,
+                seq_name,
+                scope,
+                element_type,
+                element_subtype,
+                drug_class,
+                drug_subclass,
+                _,
+            ) = line.strip().split("\t", 12)
             # don't add annotations for which we don't have a protein ID (these will only be
             # available in the AMRFinderPlus TSV file)
             if protein_id == "NA":
                 continue
             # check for characters that could break GFF
             if ";" in seq_name:
-                seq_name = seq_name.replace(";", ',')
+                seq_name = seq_name.replace(";", ",")
             if "=" in seq_name:
-                seq_name = seq_name.replace("=", ' ')
-            amr_annotations[protein_id] = ";".join(["AMRFinderPlus_gene_symbol={}".format(gene_name),
-                                                    "AMRFinderPlus_sequence_name={}".format(seq_name),
-                                                    "AMRFinderPlus_scope={}".format(scope),
-                                                    "element_type={}".format(element_type),
-                                                    "element_subtype={}".format(element_subtype),
-                                                    "drug_class={}".format(drug_class),
-                                                    "drug_subclass={}".format(drug_subclass)
-                                                  ])
+                seq_name = seq_name.replace("=", " ")
+            amr_annotations[protein_id] = ";".join(
+                [
+                    "AMRFinderPlus_gene_symbol={}".format(gene_name),
+                    "AMRFinderPlus_sequence_name={}".format(seq_name),
+                    "AMRFinderPlus_scope={}".format(scope),
+                    "element_type={}".format(element_type),
+                    "element_subtype={}".format(element_subtype),
+                    "drug_class={}".format(drug_class),
+                    "drug_subclass={}".format(drug_subclass),
+                ]
+            )
     return amr_annotations
 
 
@@ -182,7 +198,9 @@ def add_gff(in_gff, eggnog_file, ipr_file, sanntis_file, amr_file):
     eggnogs = get_eggnog(eggnog_file)
     iprs = get_iprs(ipr_file)
     sanntis_bgcs = get_sanntis(sanntis_file, in_gff)
-    amr_annotations = get_amr(amr_file)
+    amr_annotations = {}
+    if amr_file:
+        amr_annotations = get_amr(amr_file)
     added_annot = {}
     out_gff = []
     with open(in_gff, "r") as f:
@@ -206,7 +224,7 @@ def add_gff(in_gff, eggnog_file, ipr_file, sanntis_file, amr_file):
                                     added_annot[protein]["COG"] = a
                                 elif pos == 3:
                                     added_annot[protein]["KEGG"] = a
-                    except:
+                    except Exception:
                         pass
                     try:
                         iprs[protein]
@@ -219,18 +237,18 @@ def add_gff(in_gff, eggnog_file, ipr_file, sanntis_file, amr_file):
                                     added_annot[protein]["Pfam"] = a
                                 elif pos == 2:
                                     added_annot[protein]["InterPro"] = a
-                    except:
+                    except Exception:
                         pass
                     try:
                         sanntis_bgcs[protein]
                         for key, value in sanntis_bgcs[protein].items():
                             added_annot[protein][key] = value
-                    except:
+                    except Exception:
                         pass
                     try:
                         amr_annotations[protein]
-                        added_annot[protein]['AMR'] = amr_annotations[protein]
-                    except:
+                        added_annot[protein]["AMR"] = amr_annotations[protein]
+                    except Exception:
                         pass
                     for a in added_annot[protein]:
                         value = added_annot[protein][a]
@@ -399,7 +417,7 @@ if __name__ == "__main__":
         eggnog_file=args.eggnong,
         ipr_file=args.ips,
         sanntis_file=args.sanntis,
-        amr_file=args.amr
+        amr_file=args.amr,
     )
 
     ncRNAs = get_rnas(args.rfam)
