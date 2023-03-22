@@ -13,16 +13,14 @@ process PROKKA {
 
                 if ( is_rep && ( output_file.extension == "faa" || output_file.extension == "fna" ) ) {
                     return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${genome_name}.${output_file.extension}";
-                /* TODO: debuging. */
-                // For non-reps we use the prokka gff file
-                // } else if ( output_file.extension == "gff" ) {
-                    // return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${genome_name}.${output_file.extension}";
                 // Used for sanity check purposes
                 } else if ( output_file.extension == "ffn" ) {
                     return "additional_data/intermediate_files/ffn_files/${output_file.baseName}.${output_file.extension}";
                 // Store the species reps gbk files //
                 } else if ( output_file.extension == "gbk" && is_rep ) {
                     return "additional_data/prokka_gbk_species_reps/${output_file.baseName}.${output_file.extension}";
+                } else if ( output_file.extension == "gff" && !is_rep ) {
+                    return "all_genomes/${cluster_prefix}/${genome_name}.${output_file.extension}";
                 }
             }
         },

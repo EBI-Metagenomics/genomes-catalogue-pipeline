@@ -10,6 +10,16 @@ process ANNONTATE_GFF {
         },
         mode: 'copy'
     )
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                String cluster_rep_prefix = cluster.substring(0, 11);
+                return "all_genomes/${cluster_rep_prefix}/${gff.simpleName}.${output_file.extension}";
+            }
+        },
+        mode: 'copy'
+    )
 
     label 'process_light'
 
