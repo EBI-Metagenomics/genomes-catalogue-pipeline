@@ -2,7 +2,6 @@
 
 import hashlib
 import os
-import sys
 from pathlib import Path
 
 from bin.process_crispr_results import main as process_main

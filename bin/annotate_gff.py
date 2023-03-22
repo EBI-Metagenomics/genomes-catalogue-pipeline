@@ -421,14 +421,12 @@ if __name__ == "__main__":
     )
 
     ncRNAs = get_rnas(args.rfam)
+    crispr_annotations = {}
     if args.crispr:
         crispr_annotations = load_crispr(args.crispr)
-    else:
-        crispr_annotations = dict()
 
-    if not args.outfile:
-        outfile = gff.split(".gff")[0] + "_annotated.gff"
-    else:
+    outfile = gff.split(".gff")[0] + "_annotated.gff"
+    if args.outfile:
         outfile = args.outfile
 
     add_ncrnas_and_crispr_to_gff(outfile, ncRNAs, crispr_annotations, extended_gff)

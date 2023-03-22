@@ -147,23 +147,25 @@ def process_tsv(tsv_report, tsv_output):
         with open(tsv_report, "r") as tsv_in:
             for line in tsv_in:
                 # ignore empty lines
-                if not len(line.strip()) == 0:
-                    # write line to output if non-empty
-                    tsv_out.write(line)
-                    # now save hits to use when processing GFFs
-                    if not line.startswith("Strain"):
-                        parts = line.strip().split("\t")
-                        # add sequence basename to hits
-                        hits.append(parts[2])
-                        # make crispr_id that the GFFs use
-                        crispr_id = "{}_{}_{}".format(parts[1], parts[5], parts[6])
-                        # check if evidence level is high (2, 3 or 4)
-                        if parts[-1] in ["2", "3", "4"]:
-                            # add CRISPR ID (contig_start_end)
-                            # to the high quality hit list
-                            hq_hits.append(crispr_id)
-                        # save evidence level
-                        evidence_levels[crispr_id] = parts[-1]
+                if len(line.strip()) == 0:
+                    continue
+                # write line to output if non-empty
+                tsv_out.write(line)
+                # now save hits to use when processing GFFs
+                if line.startswith("Strain"):
+                    continue
+                parts = line.strip().split("\t")
+                # add sequence basename to hits
+                hits.append(parts[2])
+                # make crispr_id that the GFFs use
+                crispr_id = "{}_{}_{}".format(parts[1], parts[5], parts[6])
+                # check if evidence level is high (2, 3 or 4)
+                if parts[-1] in ["2", "3", "4"]:
+                    # add CRISPR ID (contig_start_end)
+                    # to the high quality hit list
+                    hq_hits.append(crispr_id)
+                # save evidence level
+                evidence_levels[crispr_id] = parts[-1]
     return list(set(hits)), list(set(hq_hits)), evidence_levels
 
 

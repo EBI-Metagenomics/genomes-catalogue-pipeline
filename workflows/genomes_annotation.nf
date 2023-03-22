@@ -37,7 +37,7 @@ include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
 include { IQTREE as IQTREE_AR } from '../modules/iqtree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
-
+include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Channels for ref databases and input parameters
@@ -200,7 +200,7 @@ workflow GAP {
 
     // Select the only the reps //
     // Those where the cluster-name and the file name match
-    // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv  
+    // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv
     reps_ips = ANNOTATE.out.ips_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
@@ -210,6 +210,10 @@ workflow GAP {
     reps_ncrna = DETECT_NCRNA.out.ncrna_tblout.filter {
         it[1].name.contains(it[0])
     }
+
+    CRISPRCAS_FINDER(
+        cluster_reps_fnas
+    )
 
     // REPS //
     ANNONTATE_GFF(
@@ -221,12 +225,14 @@ workflow GAP {
             ANNOTATE.out.sanntis_annotation_gffs
         ).join(
             reps_ncrna
+        ).join(
+            CRISPRCAS_FINDER.out.hq_gff
         )
     )
 
-    /* This operation will generate a list of tuples for the json generation 
+    /* This operation will generate a list of tuples for the json generation
     * Example of one element on the list;
-    * tuple ( 
+    * tuple (
         val(cluster),
         file(annotated_gff),
         file(coverage_summary),

@@ -11,8 +11,7 @@ LABEL license="https://github.com/dcouvin/CRISPRCasFinder/blob/master/COPYRIGHT"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && \
-    apt upgrade -y && \
-    apt install -y \
+    apt install -y --no-install-recommends \
         build-essential \
         wget \
         unzip \
@@ -28,10 +27,18 @@ RUN apt update && \
         ncbi-blast+ \
         bioperl \
         bioperl-run \
+        python3-biopython \
         libdatetime-perl \
         libxml-simple-perl \
         libdigest-md5-perl \
-        prodigal
+        prodigal \
+        original-awk \
+        dateutils \
+        procps \
+        pcregrep \
+        sed \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
 
 # perl deps
 RUN cpanm -n Unix::Sysexits
@@ -77,10 +84,12 @@ RUN wget -q http://vmatch.de/distributions/vmatch-${vmatchVer}-Linux_x86_64-64bi
 # get MacSyFinder
 ENV macsyfinderVer="2.0"
 WORKDIR /opt
+
 RUN wget -O macsyfinder-${macsyfinderVer}.tar.gz -q https://github.com/gem-pasteur/macsyfinder/archive/refs/tags/v${macsyfinderVer}.tar.gz && \
     tar -xzf macsyfinder-${macsyfinderVer}.tar.gz && \
     rm macsyfinder-${macsyfinderVer}.tar.gz && \
     ln -s /opt/macsyfinder-${macsyfinderVer}/bin/macsyfinder /usr/local/bin/
+
 ENV MACSY_HOME=/opt/macsyfinder-${macsyfinderVer}/
 
 # for singularity compatibility
