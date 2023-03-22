@@ -97,9 +97,10 @@ process MMSEQ {
     --use-fasta-header
 
     # Create a tarball with all the mmseq files
-    tar -czf mmseq_${threshold_rounded}_outdir.tar.gz mmseqs*
+    tar -cv mmseqs* | gzip > mmseq_${threshold_rounded}_outdir.tar.gz
 
-    tar -czf protein_catalogue_${threshold_rounded}.tar.gz protein_catalogue_${threshold_rounded}.fa protein_catalogue_${threshold_rounded}.tsv
+    tar -cv protein_catalogue_${threshold_rounded}.fa \
+    protein_catalogue_${threshold_rounded}.tsv | gzip > protein_catalogue_${threshold_rounded}.tar.gz
     """
 
     // stub:
