@@ -1,5 +1,7 @@
 process ANNONTATE_GFF {
 
+    tag "${cluster}"
+
     publishDir(
         path: "${params.outdir}",
         saveAs: {
@@ -36,12 +38,12 @@ process ANNONTATE_GFF {
 
     script:
     def sanntis_flag = "";
-    def crisprcas_hq_gff = "";
+    def crisprcas_flag = "";
     if ( sanntis_annotations_gff ) {
         sanntis_flag = "-s ${sanntis_annotations_gff} ";
     }
     if ( crisprcas_hq_gff ) {
-        crisprcas_hq_gff = "-c ${crisprcas_hq_gff} ";
+        crisprcas_flag = "-c ${crisprcas_hq_gff} ";
     }
     """
     annotate_gff.py \
@@ -49,7 +51,7 @@ process ANNONTATE_GFF {
     -i ${ips_annotations_tsv} \
     -e ${eggnog_annotations_tsv} \
     -r ${ncrna_tsv} \
-    ${crisprcas_hq_gff} ${sanntis_flag}
+    ${crisprcas_flag} ${sanntis_flag}
     """
 
     stub:
