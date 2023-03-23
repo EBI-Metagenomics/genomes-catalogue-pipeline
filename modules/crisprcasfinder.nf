@@ -1,5 +1,7 @@
 process CRISPRCAS_FINDER {
 
+    tag "${cluster}"
+
     publishDir(
         path: "${params.outdir}",
         saveAs: {

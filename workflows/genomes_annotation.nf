@@ -38,6 +38,8 @@ include { IQTREE as IQTREE_AR } from '../modules/iqtree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
 include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
+include { AMRFINDER_PLUS } from '../modules/amrfinder_plus'
+
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Channels for ref databases and input parameters
@@ -63,6 +65,8 @@ ch_mmseq_coverage_threshold = channel.value(params.mmseq_coverage_threshold) // 
 ch_biome = channel.value(params.biome)
 ch_ftp_name = channel.value(params.ftp_name)
 ch_ftp_version = channel.value(params.ftp_version)
+
+ch_amrfinder_plus_db = file(params.amrfinder_plus_db)
 
 /*
     ~~~~~~~~~~~~~~~~~~
@@ -215,6 +219,14 @@ workflow GAP {
         cluster_reps_fnas
     )
 
+    AMRFINDER_PLUS(
+        cluster_reps_fnas.join(
+            cluster_reps_faa
+        ).join(
+            cluster_reps_gff
+        )
+    )
+
     // REPS //
     ANNONTATE_GFF(
         cluster_reps_gff.join(
@@ -227,6 +239,8 @@ workflow GAP {
             reps_ncrna
         ).join(
             CRISPRCAS_FINDER.out.hq_gff
+        ).join(
+            AMRFINDER_PLUS.out.amrfinder_tsv
         )
     )
 

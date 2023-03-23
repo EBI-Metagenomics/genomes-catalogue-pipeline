@@ -31,7 +31,7 @@ process ANNONTATE_GFF {
     memory '1 GB'
 
     input:
-    tuple val(cluster), path(gff), path(ips_annotations_tsv), path(eggnog_annotations_tsv), path(sanntis_annotations_gff), path(ncrna_tsv), path(crisprcas_hq_gff)
+    tuple val(cluster), path(gff), path(ips_annotations_tsv), path(eggnog_annotations_tsv), path(sanntis_annotations_gff), path(ncrna_tsv), path(crisprcas_hq_gff), path(amrfinder_tsv)
 
     output:
     tuple val(cluster), path("*_annotated.gff"), emit: annotated_gff
@@ -39,11 +39,15 @@ process ANNONTATE_GFF {
     script:
     def sanntis_flag = "";
     def crisprcas_flag = "";
+    def amrfinder_flag = "";
     if ( sanntis_annotations_gff ) {
         sanntis_flag = "-s ${sanntis_annotations_gff} ";
     }
     if ( crisprcas_hq_gff ) {
         crisprcas_flag = "-c ${crisprcas_hq_gff} ";
+    }
+    if ( amrfinder_tsv ) {
+        amrfinder_flag = "-a ${amrfinder_tsv}"
     }
     """
     annotate_gff.py \
@@ -51,7 +55,7 @@ process ANNONTATE_GFF {
     -i ${ips_annotations_tsv} \
     -e ${eggnog_annotations_tsv} \
     -r ${ncrna_tsv} \
-    ${crisprcas_flag} ${sanntis_flag}
+    ${crisprcas_flag} ${sanntis_flag} ${amrfinder_flag}
     """
 
     stub:
