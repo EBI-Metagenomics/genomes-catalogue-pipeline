@@ -1,0 +1,37 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "krakendb": [
+                    [
+                        "database.kraken:md5,e3a1412c8dd92d77a6692840f606fb21",
+                        "database100mers.kmer_distrib:md5,d1ddbeae536aee2e5ca924ddd9131cef",
+                        "database100mers.kraken:md5,2a69a08b1a658fa56f2c16e135ffc0dc",
+                        "database150mers.kmer_distrib:md5,d8b27b690b67209eff83b1b810bf09fe",
+                        "database150mers.kraken:md5,f7501b99b90af3850c7b08af47059745",
+                        "database200mers.kmer_distrib:md5,6764bc4435b53525f3eed4f20ce47d30",
+                        "database200mers.kraken:md5,8264b598c57bb02b49d102aea00e8443",
+                        "database250mers.kmer_distrib:md5,8a31627b7fd4d1c2e5c2b4f152ea9889",
+                        "database250mers.kraken:md5,26413e470a4b10b38b8789134858b066",
+                        "database50mers.kmer_distrib:md5,e4c0457e6024f50abd5388140f761274",
+                        "database50mers.kraken:md5,423b414dded348c9f5ac5c0dee301fce",
+                        "hash.k2d:md5,bbc13222f9bbd2b9ccb0bed9a802f069",
+                        [
+                            "library.fna:md5,91ff4608aef1e73f276ec57225b1bd82",
+                            "prelim_map.txt:md5,12ba0e141df592862575849614b34229"
+                        ],
+                        "opts.k2d:md5,ac455be6860c6b2f09316473988c3f64",
+                        "seqid2taxid.map:md5,21068f109f92b307e95e48f620dfce8a",
+                        "taxo.k2d:md5,e3bb54876809134e07f093e1965c43bf",
+                        [
+                            "names.dmp:md5,f2c8893dfc79d142a7c6490480dd0eee",
+                            "nodes.dmp:md5,db775db3cd6686f69aae39f73bb9864b",
+                            "prelim_map.txt:md5,12ba0e141df592862575849614b34229"
+                        ]
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-02-14T18:19:56+0000"
+    }
+}

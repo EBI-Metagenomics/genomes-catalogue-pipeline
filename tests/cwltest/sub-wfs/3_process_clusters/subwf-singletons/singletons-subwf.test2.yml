@@ -1,9 +1,0 @@
-cluster:
-  class: Directory
-  path: ../../../tools/GUNC/filter_inputs/genome/
-gunc_db_path:
-  class: File
-  path: /hps/nobackup/rdf/metagenomics/service-team/production/ref-dbs/genomes-pipeline/gunc_db_2.0.4.dmnd
-csv:
-  class: File
-  path: ../../../tools/GUNC/filter_inputs/completeness_bad.csv

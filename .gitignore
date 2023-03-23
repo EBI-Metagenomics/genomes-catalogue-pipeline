@@ -1,8 +1,15 @@
 .vscode/
+*.pyc
+.DS_Store
 
-.gpenv
+.nextflow*
+work/
+data/
 
-# templates
-src/templates/*.yml
+results/
+testing/
+testing*
 
-.pyc
+ref-dbs/
+
+.nf-test/*

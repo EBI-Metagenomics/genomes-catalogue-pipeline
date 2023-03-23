@@ -1,0 +1,27 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "hq_gff": [
+                    [
+                        "MGYG000000001",
+                        "MGYG000299389.crisprcasfinder.hq.gff:md5,54842f3efcc24aeda4bc43947554929b"
+                    ]
+                ],
+                "gff": [
+                    [
+                        "MGYG000000001",
+                        "MGYG000299389.crisprcasfinder.gff:md5,dee757c84f1f24d6d7d307d2f619eba6"
+                    ]
+                ],
+                "tsv": [
+                    [
+                        "MGYG000000001",
+                        "MGYG000299389.crisprcasfinder.tsv:md5,2dbe0adb38bd359eca7eb980f4f6daf9"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-03-22T20:56:26+0000"
+    }
+}

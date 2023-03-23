@@ -1,3 +1,0 @@
-input_mash:
-  class: File
-  path: example.mash

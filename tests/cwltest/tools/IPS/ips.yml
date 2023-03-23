@@ -1,8 +1,0 @@
-inputFile:
-  class: File
-  path: ../../../../input_example/small_set/results/mmseqs_0.9_cluster_rep.fa
-
-databases:
-  class: Directory
-  path: /hps/nobackup/rdf/metagenomics/service-team/ref-dbs/ips/data
-  #/hps/nobackup/rdf/metagenomics/service-team/ref-dbs/ips/data
