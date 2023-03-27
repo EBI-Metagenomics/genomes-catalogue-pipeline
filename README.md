@@ -47,7 +47,7 @@ cd containers && bash build.sh
 
 2. When genomes are fetched from ENA using the `fetch_ena.py` script, a CSV file with contamination and completeness statistics is also created in the same directory where genomes are saved to. If you are downloading genomes differently, a CSV file needs to be created manually (each line should be genome accession, % completeness, % contamination). The ENA fetching script also pre-filters genomes to satisfy the QS50 cut-off (QS = % completeness - 5 * % contamination). If you obtain genomes from NCBI or another source, pre-filtering needs to be done before starting the pipeline unless lower quality genomes are acceptable in the final catalogue. The pipeline will automatically remove genomes with completeness <50% and/or contamination >5%.
 
-3. You will need the following information to create YML:
+3. You will need the following information to run the pipeline:
  - catalogue name (for example, GUT)
  - catalogue version (for example, 1.0)
  - catalogue biome (for example, root:Host-associated:Human:Digestive system:Large intestine:Fecal)
