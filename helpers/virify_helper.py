@@ -71,7 +71,7 @@ def main():
     for genome_fasta in genome_fasta_files:
         genome_id = genome_fasta.stem
         # Check if final gff is present #
-        virify_gff = f"{virify_outdir}/{genome_id}/08-final/gff/{genome_id}_virify.gff"
+        virify_gff = f"{virify_outdir}/{genome_id}/{genome_id}/08-final/gff/{genome_id}_virify.gff"
         if Path(virify_gff).exists():
             print(f"Virify completed for {genome_id}, copying the file now")
             folder_prefix = genome_id[:11]
