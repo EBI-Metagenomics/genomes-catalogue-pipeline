@@ -78,15 +78,21 @@ workflow ANNOTATE {
 
         EGGNOG_MAPPER_ANNOTATIONS(
             file("NO_FILE"),
-            EGGNOG_MAPPER_ORTHOLOGS.out.orthologs.collectFile(name: "eggnog_orthologs.tsv"),
+            EGGNOG_MAPPER_ORTHOLOGS.out.orthologs,
             channel.value('annotations'),
             eggnog_db,
             eggnog_diamond_db,
             eggnog_data_dir
         )
 
-        interproscan_annotations = IPS.out.ips_annontations.collectFile(name: "ips_annotations.tsv")
-        eggnog_mapper_annotations = EGGNOG_MAPPER_ANNOTATIONS.out.annotations.collectFile(name: "eggnog_annotations.tsv")
+        interproscan_annotations = IPS.out.ips_annontations.collectFile(
+            name: "ips_annotations.tsv",
+        )
+        eggnog_mapper_annotations = EGGNOG_MAPPER_ANNOTATIONS.out.annotations.collectFile(
+            keepHeader: true,
+            skip: 1,
+            name: "eggnog_annotations.tsv"
+        )
 
         PROTEIN_CATALOGUE_STORE_ANNOTATIONS(
             interproscan_annotations,

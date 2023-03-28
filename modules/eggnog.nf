@@ -44,13 +44,14 @@ process EGGNOG_MAPPER {
         --no_file_comments \
         --cpu ${task.cpus} \
         --annotate_hits_table ${annotation_hit_table} \
+        --dbmem \
         -o ${annotation_hit_table.baseName}
         """
     else
         error "Invalid mode: ${mode}"
 
 
-    // TODO: this of a more clever way to create the stubs for this.
+    // TODO: there must be a more clever way to create the stubs for this.
     stub:
     if ( mode == "mapper" )
         """
@@ -78,4 +79,3 @@ process EGGNOG_MAPPER {
     else
         error "Invalid mode: ${mode}"
 }
-
