@@ -17,7 +17,7 @@ process SANNTIS {
         mode: 'copy'
     )
 
-    container 'quay.io/microbiome-informatics/sanntis:0.1.0'
+    container 'quay.io/microbiome-informatics/sanntis:0.9.3.2'
 
     input:
     tuple val(cluster_name), path(interproscan_tsv), path(prokka_gbk)
