@@ -41,6 +41,7 @@ def main(input_folder, checkm, output, output_csv, remove, filter):
 def load_checkm(checkm, genome_list, output_csv):
     remove_list = set()
     with open(checkm, "r") as file_in, open(output_csv, "w") as file_out:
+        file_out.write("genome,completeness,contamination\n")
         for line in file_in:
             fields = line.strip().split(",")
             if fields[0] in genome_list:

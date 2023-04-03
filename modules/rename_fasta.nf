@@ -28,7 +28,7 @@ process RENAME_FASTA {
     output:
     path "renamed_genomes", emit: renamed_genomes
     path "name_mapping.tsv", emit: rename_mapping
-    path "renamed_*.txt", emit: renamed_checkm
+    path "renamed_*.???", emit: renamed_checkm
 
     script:
     genomes_prefix = prefix ? prefix : "MGYG"
