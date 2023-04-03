@@ -22,9 +22,6 @@ process INDEX_FNA {
 
     label 'process_light'
 
-    cpus 1
-    memory '500 MB'
-
     input:
     tuple val(cluster_name), file(fasta)
 

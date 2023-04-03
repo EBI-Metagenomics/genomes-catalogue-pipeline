@@ -3,7 +3,7 @@
         "content": [
             {
                 "failed_genomes": [
-                    "QC_failed_genomes.txt:md5,925f1ea000a304c2d9a29079861835f7"
+                    "QC_failed_genomes.txt:md5,b21bcb89c78cea90b53e1c9bd33ba419"
                 ],
                 "filtered_genomes": [
                     [
@@ -19,6 +19,6 @@
                 ]
             }
         ],
-        "timestamp": "2023-04-03T13:22:59+0000"
+        "timestamp": "2023-04-03T13:26:13+0000"
     }
 }

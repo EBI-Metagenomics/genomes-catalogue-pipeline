@@ -18,9 +18,6 @@ process SPLIT_DREP {
 
     label 'process_light'
 
-    cpus 1
-    memory '1 GB'
-
     input:
     file cdb_csv
     file mdb_csv

@@ -18,9 +18,6 @@ process CORE_GENES {
 
     label 'process_light'
 
-    cpus 1
-    memory '1 GB'
-
     input:
     tuple val(cluster_name), file(panaroo_gen_preabs)
 

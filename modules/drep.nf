@@ -19,9 +19,6 @@ process DREP {
 
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
 
-    cpus 32
-    memory '25 GB'
-
     input:
     path genomes_directory
     path checkm_csv

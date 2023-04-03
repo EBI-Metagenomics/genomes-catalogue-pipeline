@@ -6,9 +6,6 @@ process PHYLO_TREE {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
 
-    cpus 1
-    memory '1 GB'
-
     input:
     file gtdb_taxonomy_tsv
 

@@ -17,14 +17,11 @@ process RENAME_FASTA {
 
     label 'process_light'
 
-    memory "500 MB"
-    cpus 1
-
     input:
     path genomes
     val start_number
     val max_number
-    file check_csv
+    path check_csv
     // optional
     val prefix
 

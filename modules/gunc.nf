@@ -16,8 +16,6 @@ process GUNC {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.gunc:1.0.3'
 
-    cpus 4
-
     input:
     tuple val(cluster_name), path(fasta)
     file renamed_genomes_csv

@@ -16,9 +16,6 @@ process MASH_TO_NWK {
 
     label 'process_light'
 
-    cpus 1
-    memory '1 GB'
-
     input:
     path mash
 

@@ -15,9 +15,6 @@ process DETECT_NCRNA {
         mode: 'copy'
     )
 
-    cpus 4
-    memory '5 GB'
-
     input:
     tuple val(cluster_name), path(fasta)
     path rfam_ncrna_models

@@ -6,9 +6,6 @@ process EGGNOG_MAPPER {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.eggnog-mapper:v1'
 
-    cpus 16
-    memory '50 GB'
-
     input:
     // on mode "annotations" will be ignored, submit an empty path (channel.path("NO_FILE"))
     file fasta

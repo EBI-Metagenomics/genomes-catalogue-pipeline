@@ -12,9 +12,6 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
 
-    memory '1 GB'
-    cpus 1
-
     input:
     tuple val(cluster), file(cluster_rep_faa), file(ips_annotation_tsvs), file(eggnog_annotation_tsvs)
     file kegg_classes
