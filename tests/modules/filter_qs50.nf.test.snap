@@ -1,0 +1,24 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "failed_genomes": [
+                    "QC_failed_genomes.txt:md5,925f1ea000a304c2d9a29079861835f7"
+                ],
+                "filtered_genomes": [
+                    [
+                        "CAJJTO01.fa:md5,312e2d630f53bed42845454769064d5e",
+                        "CAJKRE01.fa:md5,425e8a8db20a5e261b4e75bbb4a73f41",
+                        "CAJKRY01.fa:md5,5868b9f5c75f9c8128e7dae1ea7df195",
+                        "CAJKXJ01.fa:md5,3ce69fb2b6006bbace23694aca2b6d10",
+                        "CAJLGA01.fa:md5,9d123ef14207b59c47d4085bfcbc6ba4"
+                    ]
+                ],
+                "filtered_csv": [
+                    "filtered_genomes.csv:md5,b339bbd0818a6c4d541719615d796ec7"
+                ]
+            }
+        ],
+        "timestamp": "2023-04-03T13:22:59+0000"
+    }
+}
