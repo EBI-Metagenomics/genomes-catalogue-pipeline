@@ -2,9 +2,6 @@
 # coding=utf-8
 
 import argparse
-import logging
-
-logging.basicConfig(level=logging.INFO)
 
 
 def main(infile, outfile):
