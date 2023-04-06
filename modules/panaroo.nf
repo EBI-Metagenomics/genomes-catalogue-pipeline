@@ -26,7 +26,7 @@ process PANAROO {
 
     label 'process_medium'
 
-    container 'quay.io/biocontainers/panaroo:1.2.7--pyhdfd78af_0'
+    container 'quay.io/biocontainers/panaroo:1.3.2--pyhdfd78af_0'
 
     memory "1 GB"
     cpus 8
