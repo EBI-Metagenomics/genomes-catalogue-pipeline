@@ -80,7 +80,7 @@ def process_strains(clusters_file, existing_pangenomes):
     clusters = dict()
     with open(clusters_file, "r") as file_in:
         for line in file_in:
-            species_rep, new_genome = line.strip().replace(".gff", "").split("\t")
+            species_rep, new_genome = line.strip().replace(".fna", "").split("\t")
             clusters.setdefault(species_rep, list()).append(new_genome)
     new_pangenomes = {k: v for k, v in clusters.items() if k not in existing_pangenomes}
     add_one_to_pangenome = {k: v for k, v in clusters.items() if len(v) == 1 and k in existing_pangenomes}
