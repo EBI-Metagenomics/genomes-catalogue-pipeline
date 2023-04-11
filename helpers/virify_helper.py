@@ -72,6 +72,7 @@ def main():
         genome_id = genome_fasta.stem
         # Check if final gff is present #
         virify_gff = f"{virify_outdir}/{genome_id}/{genome_id}/08-final/gff/{genome_id}_virify.gff"
+        virify_tsv = f"{virify_outdir}/{genome_id}/{genome_id}/08-final/gff/{genome_id}_virify_contig_viewer_metadata.tsv"
         if Path(virify_gff).exists():
             print(f"Virify completed for {genome_id}, copying the file now")
             folder_prefix = genome_id[:11]
@@ -79,6 +80,14 @@ def main():
                 virify_gff,
                 f"{results_folder}/species_catalogue/{folder_prefix}/{genome_id}/genome/{genome_id}_virify.gff",
             )
+            if Path(virify_tsv).exists():
+                shutil.copyfile(
+                    virify_tsv,
+                    f"{results_folder}/species_catalogue/{folder_prefix}/{genome_id}/genome/{genome_id}_virify_metadata.tsv",
+                )
+            else:
+                print("WARNING: genome {} has a gff output but no associated metadata tsv file. Check Virify logs for"
+                      "errors".format(genome_id))
         else:
             if launched_jobs <= MAX_VIRIFY_JOBS:
                 print(
