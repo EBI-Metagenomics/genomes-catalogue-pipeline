@@ -51,15 +51,20 @@ def main(
     #           'Species_rep', 'MGnify_accession', 'Lineage', 'Sample_accession', 'Study_accession', 'Country',
     #           'Continent', 'FTP_download']
     genome_list, genomes_ext = load_genome_list(genomes_dir, gunc_failed)
+    logging.info("Loaded genome list")
     df = pd.DataFrame(genome_list, columns=["Genome"])
     df = add_genome_type(df, extra_weight_table)
     df = add_stats(df, genomes_dir, genomes_ext)
     df = add_checkm(df, checkm_results)
+    logging.info("Loaded stats. Adding RNA...")
     df = add_rna(df, genome_list, rna_results)
+    logging.info("Added rna")
     df, original_accessions = add_original_accession(df, naming_file)
     df, reps = add_species_rep(df, clusters_file)
     df = add_taxonomy(df, taxonomy_file, genome_list, reps)
+    logging.info("Added species reps and taxonomy")
     df = add_sample_project_loc(df, original_accessions, geofile)
+    logging.info("Added locations")
     df = add_ftp(df, genome_list, ftp_name, ftp_version, reps)
     df.set_index("Genome", inplace=True)
     df.to_csv(outfile, sep="\t")
@@ -148,9 +153,12 @@ def get_metadata(acc):
         if acc.startswith("GCA"):
             json_data_sample = load_xml(acc)
             converted_sample = biosample
-            project = json_data_sample["ASSEMBLY_SET"]["ASSEMBLY"]["STUDY_REF"][
-                "IDENTIFIERS"
-            ]["PRIMARY_ID"]
+            try:
+                project = json_data_sample["ASSEMBLY_SET"]["ASSEMBLY"]["STUDY_REF"][
+                    "IDENTIFIERS"
+                ]["PRIMARY_ID"]
+            except:
+                project = "N/A"
         else:
             json_data_sample = load_xml(biosample)
             converted_sample = json_data_sample["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"][
@@ -158,10 +166,13 @@ def get_metadata(acc):
             ]
             if not converted_sample:
                 converted_sample = biosample
-        json_data_project = load_xml(project)
-        converted_project = json_data_project["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"][
-            "SECONDARY_ID"
-        ]
+        if project == "N/A":
+            converted_project = "N/A"
+        else:
+            json_data_project = load_xml(project)
+            converted_project = json_data_project["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"][
+                "SECONDARY_ID"
+            ]
         if not converted_project:
             converted_project = project
     else:

@@ -61,7 +61,10 @@ def get_location(sample_id):
 def get_gca_location(sample_id):
     location = ""
     json_data = load_gca_json(sample_id)
-    geo_data_list = json_data["characteristics"]["geo loc name"]
+    try:
+        geo_data_list = json_data["characteristics"]["geo loc name"]
+    except:
+        return None
     for item in geo_data_list:
         if "text" in item:
             location = item["text"].strip().split(":")[0]
