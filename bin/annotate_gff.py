@@ -332,7 +332,7 @@ def add_ncrnas_and_crispr_to_gff(gff_outfile, ncrnas, crispr_annotations, res):
                             annot = ";".join(annot)
                             newLine = [
                                 contig,
-                                "INFERNAL:1.1.2",
+                                "INFERNAL:1.1.4",
                                 "ncRNA",
                                 start,
                                 end,
