@@ -14,13 +14,13 @@ def main(original_clusters, new_clusters, strain_cluster_file, outfile):
                 if cat == "one_genome":
                     cat = "many_genomes"
                 genomes = genomes + "," + ",".join(new_strains[rep])
-                line = ":".join([cat, group, genomes])
+                line = ":".join([cat, group, genomes]) + "\n"
                 file_out.write(line)
             else:
                 file_out.write(line)
         with open(new_clusters, "r") as new_in:
             for line in new_in:
-                file_out.write(line)
+                file_out.write(line.replace("fna", "fa"))
 
 
 def load_new_strains(file):
