@@ -13,7 +13,7 @@ process PER_GENOME_ANNONTATION_GENERATOR {
             filename -> {
                 def tsv_file = file(filename);
                 def tsv_simple_name = tsv_file.getSimpleName();
-                String genome_name = tsv_simple_name.getSimpleName().replace("_eggNOG", "").replace("_InterProScan", "");
+                String genome_name = tsv_simple_name.replace("_eggNOG", "").replace("_InterProScan", "");
                 String cluster_prefix = tsv_simple_name.substring(0, tsv_simple_name.length() - 2);
                 return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${tsv_simple_name}.${tsv_file.getExtension()}";
             }
