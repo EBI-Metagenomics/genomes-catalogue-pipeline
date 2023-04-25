@@ -4,9 +4,6 @@ process MERGE_NCBI_ENA {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
 
-    memory "500 MB"
-    cpus 1
-
     input:
     path ncbi_genomes
     path ena_genomes

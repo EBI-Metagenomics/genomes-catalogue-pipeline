@@ -20,9 +20,6 @@ process PER_GENOME_ANNONTATION_GENERATOR {
         mode: 'copy'
     )
 
-    cpus 16
-    memory '15 GB'
-
     input:
     file ips_annotations_tsv
     file eggnog_annotations_tsv

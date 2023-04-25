@@ -58,8 +58,6 @@ process KRAKEN2_BUILD {
 
     container 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
 
-    cpus 4
-
     stageInMode 'copy'
 
     input:

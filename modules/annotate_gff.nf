@@ -27,9 +27,6 @@ process ANNONTATE_GFF {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
 
-    cpus 1
-    memory '1 GB'
-
     input:
     tuple val(cluster), path(gff), path(ips_annotations_tsv), path(eggnog_annotations_tsv), path(sanntis_annotations_gff), path(ncrna_tsv), path(crisprcas_hq_gff), path(amrfinder_tsv)
 

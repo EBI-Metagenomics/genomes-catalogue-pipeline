@@ -6,9 +6,6 @@ process CHECKM {
 
     label 'process_medium'
 
-    memory "8.5 GB"
-    cpus 16
-
     input:
     path assemblies_folder
 

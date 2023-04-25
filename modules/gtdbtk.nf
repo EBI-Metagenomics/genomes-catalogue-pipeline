@@ -21,9 +21,6 @@ process GTDBTK {
 
     label 'process_bigmem'
 
-    cpus 32
-    memory '100 GB'
-
     input:
     path genomes_fna, stageAs: "genomes_dir/*"
     path gtdbtk_refdata

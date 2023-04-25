@@ -19,9 +19,6 @@ process CRISPRCAS_FINDER {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.crisprcasfinder:4.3.2'
 
-    cpus 1
-    memory '10G'
-
     input:
     tuple val(cluster), path(fasta)
 

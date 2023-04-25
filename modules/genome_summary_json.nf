@@ -15,9 +15,6 @@ process GENOME_SUMMARY_JSON {
 
     label 'process_light'
 
-    cpus 1
-    memory '1 GB'
-
     input:
     tuple val(cluster), path(annotated_gff), path(coverage_summary), path(cluster_rep_faa), file(pangenome_fasta), file(core_genes)
     path metadata

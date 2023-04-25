@@ -4,6 +4,7 @@
 
 include { MERGE_NCBI_ENA } from '../modules/merge_ncbi_ena'
 include { CHECKM } from '../modules/checkm'
+include { FILTER_QS50 } from '../modules/filter_qs50'
 include { RENAME_FASTA } from '../modules/rename_fasta'
 
 
@@ -43,11 +44,16 @@ workflow PREPARE_DATA {
             genomes_checkm_ch = ena_genomes_checkm
         }
 
-        RENAME_FASTA(
+        FILTER_QS50(
             genomes_ch,
+            genomes_checkm_ch
+        )
+
+        RENAME_FASTA(
+            FILTER_QS50.out.filtered_genomes,
             genomes_name_start,
             genomes_name_end,
-            genomes_checkm_ch,
+            FILTER_QS50.out.filtered_csv,
             genomes_prefix
         )
 

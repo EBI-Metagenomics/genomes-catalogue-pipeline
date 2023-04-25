@@ -10,9 +10,6 @@ process GENERATE_EXTRA_WEIGHT {
 
     label 'process_light'
 
-    cpus 1
-    memory '1 GB'
-
     input:
     path genomes_folder
 

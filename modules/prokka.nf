@@ -44,9 +44,6 @@ process PROKKA {
 
     label 'process_light'
 
-    memory "1 GB"
-    cpus 8
-
     input:
     tuple val(cluster_name), path(fasta)
 

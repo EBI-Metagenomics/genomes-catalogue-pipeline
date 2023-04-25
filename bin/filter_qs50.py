@@ -18,25 +18,37 @@
 
 import argparse
 import os
+import sys
+import shutil
 
 
-def main(input_folder, checkm, output, remove):
+def main(input_folder, checkm, output, output_csv, remove, filter):
     genome_list = [_ for _ in os.listdir(input_folder) if _.endswith(("fa", "fna"))]
-    remove_list = load_checkm(checkm, genome_list)
+    remove_list = load_checkm(checkm, genome_list, output_csv)
     print_result(remove_list, output)
+    output_genomes = os.path.basename(input_folder) + '_filtered'
+    if filter:
+        if not os.path.exists(output_genomes):
+            os.mkdir(output_genomes)
+        for genome in genome_list:
+            if genome not in remove_list:
+                shutil.copy(os.path.join(input_folder, genome), os.path.join(output_genomes, genome))
     if remove:
         for genome in remove_list:
             os.remove(os.path.join(input_folder, genome))
 
 
-def load_checkm(checkm, genome_list):
+def load_checkm(checkm, genome_list, output_csv):
     remove_list = set()
-    with open(checkm, "r") as file_in:
+    with open(checkm, "r") as file_in, open(output_csv, "w") as file_out:
+        file_out.write("genome,completeness,contamination\n")
         for line in file_in:
             fields = line.strip().split(",")
             if fields[0] in genome_list:
-                if not qs50(float(fields[2]), float(fields[1])):
+                if not qs50(float(fields[2]), float(fields[1])): 
                     remove_list.add(fields[0])
+                else:
+                    file_out.write(line)
     return remove_list
 
 
@@ -65,12 +77,19 @@ def parse_args():
                         help='Path to the CheckM results file')
     parser.add_argument('-o', '--output', default='QC_failed_genomes.txt',
                         help='Name of the file to print the list of QS<50 genomes to')
+    parser.add_argument('--output-csv', default='filtered_genomes.csv',
+                        help='CSV with filtered genomes')
     parser.add_argument('--remove', action='store_true',
                         help='If the flag is used, the script will delete the genomes from the input folder, '
                              'otherwise it will only print a list of genomes that failed QC')
+    parser.add_argument('--filter', action='store_true',
+                        help='If the flag is used, the script will create a new folder with filtered genomes')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.input_folder, args.checkm, args.output, args.remove)
+    if args.filter and args.remove:
+        print('Please specify --filter OR --remove')
+        sys.exit(1)
+    main(args.input_folder, args.checkm, args.output, args.output_csv, args.remove, args.filter)

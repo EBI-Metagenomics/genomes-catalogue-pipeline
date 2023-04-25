@@ -33,9 +33,6 @@ process CLASSIFY_CLUSTERS {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
 
-    cpus 1
-    memory "1 GB"
-
     input:
     path genomes_folder
     file text_file

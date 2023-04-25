@@ -6,9 +6,6 @@ process METADATA_TABLE {
 
     label 'process_light'
 
-    cpus 1
-    memory '1 GB'
-
     input:
     path genomes_fnas, stageAs: "genomes_dir/*"
     path extra_weights_tsv

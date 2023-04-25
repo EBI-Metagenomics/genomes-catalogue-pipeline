@@ -24,9 +24,7 @@ process MMSEQ {
 
     label 'process_bigmem'
 
-    cpus 32
-    // TODO: this needs to be dynamic
-    memory "100 GB"
+    // TODO: memory needs to be dynamic
 
     input:
     file faa_file

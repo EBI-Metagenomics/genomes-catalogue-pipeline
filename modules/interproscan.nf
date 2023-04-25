@@ -7,8 +7,6 @@ process IPS {
     container 'quay.io/microbiome-informatics/genomes-pipeline.ips:5.57-90.0'
     containerOptions '--bind data:/opt/interproscan-5.57-90.0/data'
 
-    cpus 8
-    memory '12 GB'
     label 'ips'
 
     input:

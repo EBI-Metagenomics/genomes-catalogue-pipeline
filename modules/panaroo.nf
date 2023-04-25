@@ -28,9 +28,6 @@ process PANAROO {
 
     container 'quay.io/biocontainers/panaroo:1.3.2--pyhdfd78af_0'
 
-    memory "1 GB"
-    cpus 8
-
     input:
     tuple val(cluster_name), path(gff_files)
 

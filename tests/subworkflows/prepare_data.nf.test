@@ -1,0 +1,31 @@
+nextflow_workflow {
+
+    name "Test Workflow PREPARE_DATA"
+    script "subworkflows/prepare_data.nf"
+    workflow "PREPARE_DATA"
+
+    test("Should filter and rename genomes") {
+
+        when {
+            params {
+                input_genomes = "$baseDir/tests/modules/fixtures/classify_clusters/dereplicated_genomes"
+                input_csv = "$baseDir/tests/modules/fixtures/filter_qs50/genomes.csv"
+            }
+            workflow {
+                """
+                input[0] = channel.fromPath("${params.input_genomes}", checkIfExists: true)
+                input[1] = channel.fromPath("${params.input_csv}", checkIfExists: true)
+                input[2] = channel.empty()
+                input[3] = channel.value(1)
+                input[4] = channel.value(8)
+                input[5] = channel.empty()
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+    }
+}
