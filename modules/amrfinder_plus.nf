@@ -7,7 +7,7 @@ process AMRFINDER_PLUS {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                def cluster_prefix = cluster.substring(0, cluster_prefix.length() - 2);
+                def cluster_prefix = cluster.substring(0, cluster.length() - 2);
                 return "species_catalogue/${cluster_prefix}/${cluster}/genome/${cluster}_amrfinderplus.tsv";
             }
         },
