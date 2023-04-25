@@ -12,8 +12,8 @@ process FILTER_QS50 {
         saveAs: { "additional_data/intermediate_files/filtered_genomes.csv" },
         mode: "copy"
     )
-    
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
 

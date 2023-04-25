@@ -1,10 +1,10 @@
 process PHYLO_TREE {
 
-    publishDir "${params.outdir}/", mode: 'copy'
+    publishDir "${params.outdir}/", mode: 'copy', failOnError: true
 
     label 'process_light'
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     input:
     file gtdb_taxonomy_tsv

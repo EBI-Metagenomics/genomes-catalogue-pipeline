@@ -10,11 +10,12 @@ process CRISPRCAS_FINDER {
                     return null;
                 }
                 def output_file = file(filename);
-                def cluster_rep_prefix = cluster.substring(0, 11);
+                def cluster_rep_prefix = cluster.substring(0, cluster_rep_prefix.length() - 2);
                 return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${output_file.name}";
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.crisprcasfinder:4.3.2'

@@ -6,7 +6,7 @@ process GENERATE_EXTRA_WEIGHT {
         mode: 'copy'
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
 

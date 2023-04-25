@@ -8,14 +8,15 @@ process INDEX_FNA {
             filename -> {
                 def output_file = file(filename);
                 String genome_name = fasta.baseName;
-                String cluster_prefix = cluster_name.substring(0, 11);
+                String cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2);
                 def is_rep = genome_name == cluster_name;
                 if ( is_rep ) {
                     return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${filename}";
                 }
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     container "quay.io/biocontainers/samtools:1.9--h10a08f8_12"

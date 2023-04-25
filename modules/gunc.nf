@@ -11,7 +11,8 @@ process GUNC {
                 return filename;
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.gunc:1.0.3'

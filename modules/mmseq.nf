@@ -17,7 +17,8 @@ process MMSEQ {
                 }
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     container 'quay.io/biocontainers/mmseqs2:13.45111--h2d02072_0'

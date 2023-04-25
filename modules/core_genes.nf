@@ -7,14 +7,15 @@ process CORE_GENES {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                String cluster_rep_prefix = cluster_name.substring(0, 11);
+                String cluster_rep_prefix = cluster_name.substring(0, cluster_name.length() - 2);
                 return "species_catalogue/${cluster_rep_prefix}/${cluster_name}/pan-genome/core_genes.txt"
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
 

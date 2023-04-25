@@ -7,11 +7,12 @@ process AMRFINDER_PLUS {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                def cluster_prefix = cluster.substring(0, 11);
+                def cluster_prefix = cluster.substring(0, cluster_prefix.length() - 2);
                 return "species_catalogue/${cluster_prefix}/${cluster}/genome/${cluster}_amrfinderplus.tsv";
             }
         },
-        mode: "copy"
+        mode: "copy",
+        failOnError: true
     )
 
     container 'quay.io/biocontainers/ncbi-amrfinderplus:3.11.4--h6e70893_0'

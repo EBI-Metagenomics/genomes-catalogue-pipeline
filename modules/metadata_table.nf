@@ -1,8 +1,8 @@
 process METADATA_TABLE {
 
-    publishDir "${params.outdir}/", mode: 'copy'
+    publishDir "${params.outdir}/", mode: 'copy', failOnError: true
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.genomes-catalog-update:v1.1'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
 

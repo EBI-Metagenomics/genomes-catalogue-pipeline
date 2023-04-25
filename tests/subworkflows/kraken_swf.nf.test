@@ -14,8 +14,8 @@ nextflow_workflow {
             }
             workflow {
                 """
-                input[0] = file("$baseDir/tests/subworkflows/fixtures/kraken_swf/gtdbtk.bac120.summary.tsv")
-                input[1] = file("$baseDir/tests/subworkflows/fixtures/kraken_swf/gtdbtk.ar53.summary.tsv")
+                input[0] = Channel.fromPath("$baseDir/tests/subworkflows/fixtures/kraken_swf/gtdbtk.bac120.summary.tsv")
+                input[1] = Channel.fromPath("$baseDir/tests/subworkflows/fixtures/kraken_swf/gtdbtk.ar53.summary.tsv")
                 input[2] = Channel.fromPath("$baseDir/tests/subworkflows/fixtures/kraken_swf/*.fna")
                 """
             }

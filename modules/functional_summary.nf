@@ -5,12 +5,16 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
     publishDir(
         path: "${params.outdir}",
         saveAs: {
-            filename -> "species_catalogue/${cluster.substring(0, 11)}/${cluster}/genome/$filename"
+            filename -> {
+                def cluster_prefix = cluster.substring(0, cluster.length() - 2);
+                return "species_catalogue/}/${cluster_prefix}/genome/${filename}";
+            }
         },
-        mode: "copy"
+        mode: "copy",
+        failOnError: true
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     input:
     tuple val(cluster), file(cluster_rep_faa), file(ips_annotation_tsvs), file(eggnog_annotation_tsvs)

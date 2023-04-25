@@ -4,14 +4,15 @@ process GENOME_SUMMARY_JSON {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                String cluster_rep_prefix = cluster.substring(0, 11);
+                String cluster_rep_prefix = cluster.substring(0, cluster_rep_prefix.length() - 2);
                 return "species_catalogue/${cluster_rep_prefix}/${cluster}/${filename}";
             }
         },
-        mode:'copy'
+        mode:'copy',
+        failOnError: true
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
 

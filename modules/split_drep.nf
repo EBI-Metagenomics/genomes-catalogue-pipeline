@@ -11,10 +11,11 @@ process SPLIT_DREP {
                 return null;
             }
         },
-        mode: "copy"
+        mode: "copy",
+        failOnError: true
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
 
