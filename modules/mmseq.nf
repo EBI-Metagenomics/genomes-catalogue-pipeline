@@ -32,9 +32,9 @@ process MMSEQ {
     val cov_threshold
 
     output:
-    path "protein_catalogue_*.fa", emit: mmseq_cluster_rep_faa
-    path "protein_catalogue_*.tsv", emit: mmseq_cluster_tsv
-    path "protein_catalogue_*.tar.gz", emit: mmseq_tarball
+    path "protein_catalogue-*.fa", emit: mmseq_cluster_rep_faa
+    path "protein_catalogue-*.tsv", emit: mmseq_cluster_tsv
+    path "protein_catalogue-*.tar.gz", emit: mmseq_tarball
     path "*_outdir.tar.gz", emit: mmseq_outdir_tarball
 
     script:
@@ -76,7 +76,7 @@ process MMSEQ {
     mmseqs createtsv mmseqs.db \
     mmseqs.db \
     mmseqs_cluster.db \
-    protein_catalogue_${threshold_rounded}.tsv \
+    protein_catalogue-${threshold_rounded}.tsv \
     --threads ${task.cpus}
 
     echo "\$(timestamp) [mmseqs script] Parsing output to create FASTA file of representative sequences"
@@ -91,14 +91,14 @@ process MMSEQ {
     mmseqs.db \
     mmseqs.db \
     mmseqs_cluster_rep \
-    protein_catalogue_${threshold_rounded}.fa \
+    protein_catalogue-${threshold_rounded}.fa \
     --use-fasta-header
 
     # Create a tarball with all the mmseq files
     tar -cv mmseqs* | gzip > mmseq_${threshold_rounded}_outdir.tar.gz
 
-    tar -cv protein_catalogue_${threshold_rounded}.fa \
-    protein_catalogue_${threshold_rounded}.tsv | gzip > protein_catalogue_${threshold_rounded}.tar.gz
+    tar -cv protein_catalogue-${threshold_rounded}.fa \
+    protein_catalogue-${threshold_rounded}.tsv | gzip > protein_catalogue-${threshold_rounded}.tar.gz
     """
 
     // stub:

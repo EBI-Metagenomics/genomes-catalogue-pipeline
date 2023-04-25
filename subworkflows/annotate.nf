@@ -25,20 +25,20 @@ process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
     file mmseq_90_tarball
 
     output:
-    file "protein_catalogue_90.tar.gz"
+    file "protein_catalogue-90.tar.gz"
 
     script:
     """
     mv ${interproscan_annotations} protein_catalogue-90_InterProScan.tsv
     mv ${eggnog_annotations} protein_catalogue-90_eggNOG.tsv
 
-    gunzip -c ${mmseq_90_tarball} > protein_catalogue_90.tar
+    gunzip -c ${mmseq_90_tarball} > protein_catalogue-90.tar
 
     rm ${mmseq_90_tarball}
 
-    tar -uf protein_catalogue_90.tar protein_catalogue-90_InterProScan.tsv protein_catalogue-90_eggNOG.tsv
+    tar -uf protein_catalogue-90.tar protein_catalogue-90_InterProScan.tsv protein_catalogue-90_eggNOG.tsv
 
-    gzip protein_catalogue_90.tar
+    gzip protein_catalogue-90.tar
     """
 }
 

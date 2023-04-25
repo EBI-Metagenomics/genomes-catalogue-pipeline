@@ -16,6 +16,8 @@ process PANAROO {
                     return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/pan-genome.fna";
                 } else if ( output_file.name == "${cluster_name}_panaroo.tar.gz" ) {
                     return "additional_data/panaroo_output/${cluster_name}_panaroo.tar.gz";
+                } else if ( output_file.name == "gene_presence_absence.csv" ) {
+                    return "additional_data/panaroo_output/gene_presence_absence.csv";
                 } else {
                     return null;
                 }

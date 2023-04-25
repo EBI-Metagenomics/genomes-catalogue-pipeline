@@ -23,9 +23,9 @@ process CRISPRCAS_FINDER {
     tuple val(cluster), path(fasta)
 
     output:
-    tuple val(cluster), path("crisprcasfinder_results/${fasta.baseName}.crisprcasfinder.gff"), emit: gff
-    tuple val(cluster), path("crisprcasfinder_results/${fasta.baseName}.crisprcasfinder.tsv"), emit: tsv
-    tuple val(cluster), path("crisprcasfinder_results/${fasta.baseName}.crisprcasfinder.hq.gff"), emit: hq_gff
+    tuple val(cluster), path("crisprcasfinder_results/${fasta.baseName}_crisprcasfinder.gff"), emit: gff
+    tuple val(cluster), path("crisprcasfinder_results/${fasta.baseName}_crisprcasfinder.tsv"), emit: tsv
+    tuple val(cluster), path("crisprcasfinder_results/${fasta.baseName}_crisprcasfinder_hq.gff"), emit: hq_gff
 
     script:
     """
@@ -40,9 +40,9 @@ process CRISPRCAS_FINDER {
     process_crispr_results.py \
     --tsv-report crisprcasfinder_results/TSV/Crisprs_REPORT.tsv \
     --gffs crisprcasfinder_results/GFF/*gff \
-    --tsv-output crisprcasfinder_results/${fasta.baseName}.crisprcasfinder.tsv \
-    --gff-output crisprcasfinder_results/${fasta.baseName}.crisprcasfinder.gff \
-    --gff-output-hq crisprcasfinder_results/${fasta.baseName}.crisprcasfinder.hq.gff \
+    --tsv-output crisprcasfinder_results/${fasta.baseName}_crisprcasfinder.tsv \
+    --gff-output crisprcasfinder_results/${fasta.baseName}_crisprcasfinder.gff \
+    --gff-output-hq crisprcasfinder_results/${fasta.baseName}_crisprcasfinder_hq.gff \
     --fasta $fasta
     """
 }
