@@ -20,7 +20,7 @@ process PROKKA {
                 } else if ( output_file.extension == "gbk" && is_rep ) {
                     return "additional_data/prokka_gbk_species_reps/${output_file.baseName}.${output_file.extension}";
                 } else if ( output_file.extension == "gff" && !is_rep ) {
-                    return "all_genomes/${cluster_prefix}/${genome_name}.${output_file.extension}";
+                    return "all_genomes/${cluster_prefix}/${cluster_name}/${genome_name}.${output_file.extension}";
                 }
             }
         },

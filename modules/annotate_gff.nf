@@ -18,7 +18,7 @@ process ANNONTATE_GFF {
         saveAs: {
             filename -> {
                 String cluster_rep_prefix = cluster.substring(0, cluster.length() - 2);
-                return "all_genomes/${cluster_rep_prefix}/${gff.simpleName}.gff";
+                return "all_genomes/${cluster_rep_prefix}/${cluster}/${gff.simpleName}.gff";
             }
         },
         mode: 'copy',
