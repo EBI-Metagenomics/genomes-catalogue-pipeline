@@ -29,8 +29,8 @@ workflow PROCESS_SINGLETON_GENOMES {
         // gunc_failed.txt contains the list of genomes that were filtered
         gunc_failed_txt = GUNC.out.cluster_gunc_result.filter({
             it[2].name.contains('_gunc_empty.txt')
-        }).collectFile({ _, cluster_fasta, _ ->
-            [ "gunc_failed.txt", cluster_fasta + '\n' ]
+        }).collectFile({ cluster_name, cluster_fasta, cluster_gunc ->
+            [ "gunc_failed.txt", cluster_fasta.name + '\n' ]
         })
 
     emit:
