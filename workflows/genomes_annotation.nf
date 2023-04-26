@@ -156,8 +156,7 @@ workflow GAP {
         ch_ftp_name,
         ch_ftp_version,
         ch_geo_metadata,
-        // FIXME: this one should be gunc_failed.txt
-        PROCESS_SINGLETON_GENOMES.out.gunc_report ,
+        PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
         ch_gtdb_db
     )
 

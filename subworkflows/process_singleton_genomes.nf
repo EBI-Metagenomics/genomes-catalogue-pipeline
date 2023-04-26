@@ -19,14 +19,23 @@ workflow PROCESS_SINGLETON_GENOMES {
         )
 
         PROKKA(
-            GUNC.out.cluster_gunc_result.filter({ 
+            GUNC.out.cluster_gunc_result.filter({
                 it[2].name.contains('_complete.txt')
             }).map({ cluster_name, cluster_fasta, cluster_gunc ->
                 return tuple(cluster_name, cluster_fasta)
             })
         )
+
+        // gunc_failed.txt contains the list of genomes that were filtered
+        gunc_failed_txt = GUNC.out.cluster_gunc_result.filter({
+            it[2].name.contains('_gunc_empty.txt')
+        }).collectFile({ _, cluster_fasta, _ ->
+            [ "gunc_failed.txt", cluster_fasta + '\n' ]
+        })
+
     emit:
         gunc_report = GUNC.out.gunc_result
+        gunc_failed_txt = gunc_failed_txt
         prokka_gff = PROKKA.out.gff
         prokka_faa = PROKKA.out.faa
         prokka_fna = PROKKA.out.fna
