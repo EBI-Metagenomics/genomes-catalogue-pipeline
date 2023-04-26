@@ -6,7 +6,7 @@ process ANNONTATE_GFF {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                String cluster_rep_prefix = cluster.substring(0, cluster_rep_prefix.length() - 2);
+                String cluster_rep_prefix = cluster.substring(0, cluster.length() - 2);
                 return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${gff.simpleName}_annotated.gff";
             }
         },
@@ -17,7 +17,7 @@ process ANNONTATE_GFF {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                String cluster_rep_prefix = cluster.substring(0, cluster_rep_prefix.length() - 2);
+                String cluster_rep_prefix = cluster.substring(0, cluster.length() - 2);
                 return "all_genomes/${cluster_rep_prefix}/${gff.simpleName}.gff";
             }
         },
