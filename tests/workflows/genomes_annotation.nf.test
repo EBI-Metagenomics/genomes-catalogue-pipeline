@@ -1,0 +1,38 @@
+nextflow_workflow {
+
+    // This test requires substantial computing resources and is currently only run on EBI's infrastructure. //
+
+    name "Test Workflow Genomes Annotation Pipeline"
+    script "workflows/genomes_annotation.nf"
+    workflow "GAP"
+
+    test("Should work for gold standard fish") {
+
+        when {
+            params {
+                biome = "root:Host-associated:Fish:Digestive system"
+                ena_genomes = XX
+                ena_genomes_checkm = XXY
+                mgyg_start = 299300
+                mgyg_end = 299400
+                catalogue_name = "zebrafish"
+                catalogue_version = "1.0"
+                ftp_name = "zebrafish"
+                ftp_version = "v1.0"
+
+                outdir = "gold_standard_fish_results"
+            }
+            workflow {
+                """
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}
