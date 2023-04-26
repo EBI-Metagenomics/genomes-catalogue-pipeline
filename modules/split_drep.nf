@@ -4,6 +4,7 @@ process SPLIT_DREP {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
+                def output_file = file(filename);
                 if ( output_file.name == "clusters_split.txt" ) {
                     return "additional_data/intermediate_files/clusters_split.txt";
                 }
