@@ -33,7 +33,7 @@ process MMSEQ {
     val cov_threshold
 
     output:
-    path "protein_catalogue-*.fa", emit: mmseq_cluster_rep_faa
+    path "protein_catalogue-*.faa", emit: mmseq_cluster_rep_faa
     path "protein_catalogue-*.tsv", emit: mmseq_cluster_tsv
     path "protein_catalogue-*.tar.gz", emit: mmseq_tarball
     path "*_outdir.tar.gz", emit: mmseq_outdir_tarball
