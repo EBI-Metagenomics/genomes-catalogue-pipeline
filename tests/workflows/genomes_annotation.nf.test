@@ -11,8 +11,8 @@ nextflow_workflow {
         when {
             params {
                 biome = "root:Host-associated:Fish:Digestive system"
-                ena_genomes = XX
-                ena_genomes_checkm = XXY
+                ena_genomes = "$baseDir/tests/workflows/genomes/data"
+                ena_genomes_checkm = "$baseDir/tests/workflows/genomes/data/genome_stats_subset.txt"
                 mgyg_start = 299300
                 mgyg_end = 299400
                 catalogue_name = "zebrafish"
