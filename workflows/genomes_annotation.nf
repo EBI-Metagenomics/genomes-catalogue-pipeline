@@ -100,7 +100,7 @@ workflow GAP {
 
     PROCESS_SINGLETON_GENOMES(
         DREP_SWF.out.single_genomes_fna_tuples,
-        PREPARE_DATA.out.genomes_checkm,
+        PREPARE_DATA.out.genomes_checkm.first(),
         ch_gunc_db
     )
 
