@@ -37,9 +37,13 @@ process METADATA_TABLE {
 
     output:
     path "genomes-all_metadata.tsv", emit: metadata_tsv
-    path "${gunc_failed_txt}"
+    path "${gunc_failed_txt}", optional: true
 
     script:
+    def args = ""
+    if (gunc_failed_txt) {
+        args = args + "--gunc-failed ${gunc_failed_txt}"
+    }
     """
     create_metadata_table.py \
     --genomes-dir genomes_dir \
@@ -51,8 +55,7 @@ process METADATA_TABLE {
     --taxonomy ${gtdb_summary_tsv} \
     --ftp-name ${ftp_name} \
     --ftp-version ${ftp_version} \
-    --geo ${geo_metadata} \
-    --gunc-failed ${gunc_failed_txt} \
+    --geo ${geo_metadata} ${args} \
     --outfile genomes-all_metadata.tsv
     """
 

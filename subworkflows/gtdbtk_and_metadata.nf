@@ -44,7 +44,7 @@ workflow GTDBTK_AND_METADATA {
             ftp_name,
             ftp_version,
             geo_metadata,
-            gunc_failed_txt
+            gunc_failed_txt.first()
         )
 
         PHYLO_TREE(gtdbtk_tables_ch)

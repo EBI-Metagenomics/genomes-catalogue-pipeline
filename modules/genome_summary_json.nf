@@ -39,8 +39,7 @@ process GENOME_SUMMARY_JSON {
     --metadata ${metadata} \
     --biome "${biome}" \
     --species-faa ${cluster_rep_faa} \
-    --species-name ${cluster} \
-    ${args} \
+    --species-name ${cluster} ${args} \
     --output-file ${cluster}.json
     """
 
