@@ -156,7 +156,7 @@ workflow GAP {
         ch_ftp_name,
         ch_ftp_version,
         ch_geo_metadata,
-        PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
+        PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.first(),
         ch_gtdb_db
     )
 
