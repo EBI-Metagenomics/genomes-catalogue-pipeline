@@ -10,11 +10,12 @@ process SANNTIS {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                String cluster_prefix = cluster_name.substring(0, 11);
+                String cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2);
                 return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${output_file.getSimpleName()}.gff"
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     container 'quay.io/microbiome-informatics/sanntis:0.9.3.2'
@@ -28,7 +29,7 @@ process SANNTIS {
     script:
     if (interproscan_tsv.extension == "gz") {
         """
-        gunzip -c ${interproscan_tsv} > interproscan.tsv 
+        gunzip -c ${interproscan_tsv} > interproscan.tsv
         sanntis \
         --ip-file interproscan.tsv \
         --outfile ${cluster_name}_sanntis.gff \

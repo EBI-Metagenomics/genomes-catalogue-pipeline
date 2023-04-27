@@ -31,7 +31,7 @@ process CLASSIFY_CLUSTERS {
 
     label "process_light"
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     input:
     path genomes_folder

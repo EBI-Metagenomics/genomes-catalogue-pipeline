@@ -5,16 +5,17 @@ process SPLIT_DREP {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                if ( output_file.getBaseName() == "clusters_split.txt" ) {
+                if ( output_file.name == "clusters_split.txt" ) {
                     return "additional_data/intermediate_files/clusters_split.txt";
-                };
+                }
                 return null;
             }
         },
-        mode: "copy"
+        mode: "copy",
+        failOnError: true
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
 

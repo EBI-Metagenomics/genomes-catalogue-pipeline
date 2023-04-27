@@ -1,8 +1,13 @@
 process METADATA_TABLE {
 
-    publishDir "${params.outdir}/", mode: 'copy'
+    publishDir(
+        "${params.outdir}/",
+        pattern: "genomes-all_metadata.tsv",
+        mode: "copy",
+        failOnError: true
+    )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.genomes-catalog-update:v1.1'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
 
@@ -17,12 +22,16 @@ process METADATA_TABLE {
     val ftp_name
     val ftp_version
     path geo_metadata
-    path gunc_failed_tsv
+    file gunc_failed_txt
 
     output:
-    path 'genomes-all_metadata.tsv', emit: metadata_tsv
+    path "genomes-all_metadata.tsv", emit: metadata_tsv
 
     script:
+    def args = ""
+    if (gunc_failed_txt != "EMPTY") {
+        args = args + "--gunc-failed ${gunc_failed_txt}"
+    }
     """
     create_metadata_table.py \
     --genomes-dir genomes_dir \
@@ -34,8 +43,7 @@ process METADATA_TABLE {
     --taxonomy ${gtdb_summary_tsv} \
     --ftp-name ${ftp_name} \
     --ftp-version ${ftp_version} \
-    --geo ${geo_metadata} \
-    --gunc-failed ${gunc_failed_tsv} \
+    --geo ${geo_metadata} ${args} \
     --outfile genomes-all_metadata.tsv
     """
 

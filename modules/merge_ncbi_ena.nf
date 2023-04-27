@@ -2,7 +2,7 @@ process MERGE_NCBI_ENA {
 
     label 'process_light'
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     input:
     path ncbi_genomes

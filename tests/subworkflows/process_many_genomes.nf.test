@@ -31,14 +31,17 @@ nextflow_workflow {
         then {
             assert workflow.success
             assert snapshot(
+                workflow.out.prokka_faas,
+                workflow.out.prokka_fnas,
+                workflow.out.prokka_gffs,
+                workflow.out.rep_prokka_fna,
                 workflow.out.rep_prokka_gff,
-                workflow.out.pangenome_prokka_faas,
                 workflow.out.rep_prokka_faa,
-                workflow.out.pangenome_prokka_gffs,
-                workflow.out.pangenome_prokka_fnas,
+                workflow.out.rep_prokka_gbk,
+                workflow.out.rep_prokka_ffn,
                 workflow.out.non_rep_prokka_fna,
                 workflow.out.non_rep_prokka_gff,
-                workflow.out.rep_prokka_fna
+                workflow.out.core_genes
             ).match()
         }
     }

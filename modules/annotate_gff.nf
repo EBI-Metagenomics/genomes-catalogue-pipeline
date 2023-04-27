@@ -6,26 +6,28 @@ process ANNONTATE_GFF {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                String cluster_rep_prefix = cluster.substring(0, 11);
+                String cluster_rep_prefix = cluster.substring(0, cluster.length() - 2);
                 return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${gff.simpleName}_annotated.gff";
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
     publishDir(
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                String cluster_rep_prefix = cluster.substring(0, 11);
-                return "all_genomes/${cluster_rep_prefix}/${gff.simpleName}.gff";
+                String cluster_rep_prefix = cluster.substring(0, cluster.length() - 2);
+                return "all_genomes/${cluster_rep_prefix}/${cluster}/${gff.simpleName}.gff";
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     label 'process_light'
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     input:
     tuple val(cluster), path(gff), path(ips_annotations_tsv), path(eggnog_annotations_tsv), path(sanntis_annotations_gff), path(ncrna_tsv), path(crisprcas_hq_gff), path(amrfinder_tsv)

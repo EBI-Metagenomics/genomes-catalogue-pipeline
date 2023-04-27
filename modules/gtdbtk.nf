@@ -16,7 +16,8 @@ process GTDBTK {
                 return null;
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     label 'process_bigmem'

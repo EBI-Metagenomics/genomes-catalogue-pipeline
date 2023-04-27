@@ -30,7 +30,7 @@ process KRAKEN2_PREPARE_GTDBTK_TAX {
     --output-dir kraken_intermediate
 
     mkdir ${kraken_db_name}
-    
+
     cp -r kraken_intermediate/taxonomy ${kraken_db_name}
     """
 }
@@ -79,7 +79,8 @@ process KRAKEN2_POSTPROCESSING {
 
     publishDir(
         "${params.outdir}/",
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     input:

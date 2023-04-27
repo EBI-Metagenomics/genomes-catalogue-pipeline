@@ -4,12 +4,6 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.gff:md5,d612867e1c0bf28780775c264b08c83b"
-                ]
-            ],
-            [
-                [
-                    "CAJLGA01",
                     "CAJJTO01.faa:md5,87da0675d312c4089db76ff1ce534bdf"
                 ],
                 [
@@ -24,7 +18,15 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.faa:md5,f8739821dedeb6b8724881ed72016661"
+                    "CAJJTO01.fna:md5,c6cd5c3773e2c8536caf0882b6b52b8a"
+                ],
+                [
+                    "CAJLGA01",
+                    "CAJKGB01.fna:md5,47cccbb99536d4d308a13088bc67b1b5"
+                ],
+                [
+                    "CAJLGA01",
+                    "CAJLGA01.fna:md5,7adfd09cc0deb5248c0ccf785bf0a8cd"
                 ]
             ],
             [
@@ -44,15 +46,31 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJJTO01.fna:md5,c6cd5c3773e2c8536caf0882b6b52b8a"
-                ],
-                [
-                    "CAJLGA01",
-                    "CAJKGB01.fna:md5,47cccbb99536d4d308a13088bc67b1b5"
-                ],
-                [
-                    "CAJLGA01",
                     "CAJLGA01.fna:md5,7adfd09cc0deb5248c0ccf785bf0a8cd"
+                ]
+            ],
+            [
+                [
+                    "CAJLGA01",
+                    "CAJLGA01.gff:md5,d612867e1c0bf28780775c264b08c83b"
+                ]
+            ],
+            [
+                [
+                    "CAJLGA01",
+                    "CAJLGA01.faa:md5,f8739821dedeb6b8724881ed72016661"
+                ]
+            ],
+            [
+                [
+                    "CAJLGA01",
+                    "CAJLGA01.gbk:md5,1c3daf1527dab292e01f2cf86448f2c9"
+                ]
+            ],
+            [
+                [
+                    "CAJLGA01",
+                    "CAJLGA01.ffn:md5,a53fc09c41d9485378d3d4d1dc464ba0"
                 ]
             ],
             [
@@ -78,10 +96,10 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.fna:md5,7adfd09cc0deb5248c0ccf785bf0a8cd"
+                    "CAJLGA01.core_genes.txt:md5,99b02869a691be679e37b4f908a11b63"
                 ]
             ]
         ],
-        "timestamp": "2023-01-31T12:07:12+0000"
+        "timestamp": "2023-04-25T15:18:08+0000"
     }
 }

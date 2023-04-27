@@ -15,10 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
-import os
-import sys
 import argparse
 import json
+import os
 
 
 def get_metadata(species_name, coverage, fasta, biome, metadata_file):
@@ -32,12 +31,12 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file):
         for line in f:
             linen += 1
             cols = line.rstrip().split("\t")
-            mgnify = cols[13]  # mgnify accession of species rep
-            species = mgnify  # species rep
-            if mgnify == species_name:
+            species_rep_accession = cols[13]  # mgnify accession of species rep
+            if (
+                species_rep_accession == species_name
+            ):  # we are running the script on 1 species at a time
                 geo_range.add(cols[18])  # continent
-                if species == cols[0]:  # means this is the representative
-                    species_code = species
+                if species_rep_accession == cols[0]:  # means this is the representative
                     genome_accession = cols[
                         12
                     ]  # old accession (original one with which it was fetched)
@@ -56,14 +55,17 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file):
                     rna_16s = float(cols[9])
                     rna_23s = float(cols[10])
                     trnas = int(cols[11])
+
     geo_range = list(geo_range)
+
     try:
         geo_range.remove("not provided")
-    except:
+    except Exception:
         pass
+
     return (
         geo_range,
-        species_code,
+        species_name,
         {
             "accession": species_name,
             "length": genome_length,
@@ -173,29 +175,69 @@ def write_obj_2_json(obj, filename):
         json.dump(obj, fp, indent=4, sort_keys=True)
 
 
-def get_files(folder, species_name, cluster_structure):
-    if cluster_structure:
-        protein_fasta = os.path.join(folder, "genome", species_name + ".faa")
-        pangenome_fasta_path = os.path.join(
-            folder, "pan-genome", species_name + ".pan-genome.fna"
-        )
-        pangenome_core_path = os.path.join(
-            folder, "pan-genome", species_name + ".core_genes.txt"
-        )
-    else:
-        protein_fasta = os.path.join(folder, species_name + ".faa")
-        pangenome_fasta_path = os.path.join(folder, species_name + ".pan-genome.fna")
-        pangenome_core_path = os.path.join(folder, species_name + ".core_genes.txt")
-    pangenome_fasta = (
-        pangenome_fasta_path if os.path.exists(pangenome_fasta_path) else None
+def main(
+    species_faa,
+    pangenome_fna,
+    core_genes,
+    annot_cov,
+    gff,
+    out_file,
+    biome,
+    species_accession,
+    metadata_file,
+    cluster_structure,
+):
+    # Get metadata for the genome we are running the script on (it will be a species rep because
+    # we only make JSON files for reps
+    meta_res = get_metadata(
+        species_accession, annot_cov, species_faa, biome, metadata_file
     )
-    pangenome_core = (
-        pangenome_core_path if os.path.exists(pangenome_core_path) else None
-    )
-    return protein_fasta, pangenome_fasta, pangenome_core
+    meta_dict = meta_res[-1]
+    species_code = meta_res[1]
+
+    # check genome accession
+    if meta_dict["genome_accession"][:3] in ["GCF", "GCA"]:
+        meta_dict["ncbi_genome_accession"] = meta_dict.pop("genome_accession")
+
+    # check sample accessions
+    if meta_dict["sample_accession"][:3] == "SAM":
+        meta_dict["ena_sample_accession"] = meta_dict.pop("sample_accession")
+
+    elif meta_dict["sample_accession"][1:3] == "RS":
+        if meta_dict["sample_accession"].startswith("S"):
+            meta_dict["ncbi_sample_accession"] = meta_dict.pop("sample_accession")
+        else:
+            meta_dict["ena_sample_accession"] = meta_dict.pop("sample_accession")
+
+    # check study accessions
+    if meta_dict["study_accession"][:3] == "PRJ":
+        meta_dict["ncbi_study_accession"] = meta_dict.pop("study_accession")
+    elif meta_dict["study_accession"][1:3] == "RP":
+        meta_dict["ena_study_accession"] = meta_dict.pop("study_accession")
+
+    ncrnas = get_ncrnas(gff)
+
+    output = merge_dicts(meta_dict, ncrnas)
+
+    delete_dict = dict()
+    for key in output.keys():
+        if output[key] == "NA" or not output[key] and output[key] != 0:
+            delete_dict[key] = output[key]
+
+    for key in delete_dict:
+        del output[key]
+
+    if pangenome_fna and core_genes and os.path.exists(pangenome_fna):
+        pangenome = get_pangenome(
+            core_genes, pangenome_fna, species_code, metadata_file
+        )
+        pangenome["geographic_range"] = meta_res[0]
+        output["pangenome"] = pangenome
+
+    write_obj_2_json(output, out_file)
 
 
-if __name__ == "__main__":
+def parse_args():
     parser = argparse.ArgumentParser(
         description="Generate species summary stats for species reps",
     )
@@ -224,66 +266,37 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--biome",
-        help=(
-            "Full biome. Example: root:Host-Associated:Human:Digestive System:"
-            "Large intestine"
-        ),
+        help="Full biome. Example: root:Host-Associated:Human:Digestive System:Large intestine",
         required=True,
     )
-    parser.add_argument("--species-name", help="Species name (MGYG...)", required=True)
+    parser.add_argument(
+        "--species-name", help="Species accession (MGYG...)", required=True
+    )
     parser.add_argument(
         "--metadata-file", help="Path to the metadata table", required=True
     )
     parser.add_argument(
         "--cluster-structure",
         help=(
-            "Cluster has folders genome and pan-genome, "
-            "otherwise all files are in the same folder"
+            "If the flag is used, it is expected that the cluster has the genome and pan-genome folders, "
+            "otherwise all files are expected to be in the same folder"
         ),
         action="store_true",
     )
+    return parser.parse_args()
 
-    args = parser.parse_args()
-    species_name = args.species_name
-    protein_fasta, pangenome_fasta, pangenome_core = get_files(
-        folder=os.getcwd(),
-        species_name=species_name,
-        cluster_structure=args.cluster_structure,
+
+if __name__ == "__main__":
+    args = parse_args()
+    main(
+        args.species_faa,
+        args.pangenome_fna,
+        args.core_genes,
+        args.annot_cov,
+        args.gff,
+        args.out_file,
+        args.biome,
+        args.species_name,
+        args.metadata_file,
+        args.cluster_structure,
     )
-    # Genome is a main representative
-    meta_res = get_metadata(
-        species_name, args.annot_cov, protein_fasta, args.biome, args.metadata_file
-    )
-    meta_dict = meta_res[-1]
-    species_code = meta_res[1]
-    # check genome accession
-    if meta_dict["genome_accession"][:3] in ["GCF", "GCA"]:
-        meta_dict["ncbi_genome_accession"] = meta_dict.pop("genome_accession")
-    # check sample accessions
-    if meta_dict["sample_accession"][:3] == "SAM":
-        meta_dict["ncbi_sample_accession"] = meta_dict.pop("sample_accession")
-    elif meta_dict["sample_accession"][1:3] == "RS":
-        meta_dict["ena_sample_accession"] = meta_dict.pop("sample_accession")
-    # check study accessions
-    if meta_dict["study_accession"][:3] == "PRJ":
-        meta_dict["ncbi_study_accession"] = meta_dict.pop("study_accession")
-    elif meta_dict["study_accession"][1:3] == "RP":
-        meta_dict["ena_study_accession"] = meta_dict.pop("study_accession")
-
-    ncrnas = get_ncrnas(args.gff)
-
-    output = merge_dicts(meta_dict, ncrnas)
-    delete_dict = dict()
-    for key in output.keys():
-        if output[key] == "NA" or not output[key] and output[key] != 0:
-            delete_dict[key] = output[key]
-    for key in delete_dict:
-        del output[key]
-    if pangenome_fasta and pangenome_core:
-        pangenome = get_pangenome(
-            pangenome_core, pangenome_fasta, species_code, args.metadata_file
-        )
-        pangenome["geographic_range"] = meta_res[0]
-        output["pangenome"] = pangenome
-
-    write_obj_2_json(output, args.out_file)

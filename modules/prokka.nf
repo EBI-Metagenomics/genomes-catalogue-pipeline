@@ -8,7 +8,7 @@ process PROKKA {
             filename -> {
                 def output_file = file(filename);
                 String genome_name = fasta.baseName;
-                String cluster_prefix = cluster_name.substring(0, 11);
+                String cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2);
                 def is_rep = genome_name == cluster_name;
 
                 if ( is_rep && ( output_file.extension == "faa" || output_file.extension == "fna" ) ) {
@@ -20,11 +20,12 @@ process PROKKA {
                 } else if ( output_file.extension == "gbk" && is_rep ) {
                     return "additional_data/prokka_gbk_species_reps/${output_file.baseName}.${output_file.extension}";
                 } else if ( output_file.extension == "gff" && !is_rep ) {
-                    return "all_genomes/${cluster_prefix}/${genome_name}.${output_file.extension}";
+                    return "all_genomes/${cluster_prefix}/${cluster_name}/${genome_name}.${output_file.extension}";
                 }
             }
         },
-        mode: "copy"
+        mode: "copy",
+        failOnError: true
     )
     publishDir(
         path: "${params.outdir}",
@@ -37,7 +38,8 @@ process PROKKA {
                 return null;
             }
         },
-        mode: "copy"
+        mode: "copy",
+        failOnError: true
     )
 
     container "quay.io/biocontainers/prokka:1.14.6--pl526_0"

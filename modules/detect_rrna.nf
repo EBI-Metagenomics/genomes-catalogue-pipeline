@@ -16,13 +16,14 @@ process DETECT_RRNA {
                 def genome_id = fasta.baseName;
                 def is_rep = genome_id == cluster_name;
                 if ( is_rep && output_file.name.contains("_rRNAs") ) {
-                    def cluster_rep_prefix = cluster_name.substring(0, 11);
+                    def cluster_rep_prefix = cluster_name.substring(0, cluster_name.length() - 2);
                     return "species_catalogue/${cluster_rep_prefix}/${genome_id}/genome/${genome_id}_rRNAs.fasta";
                 }
                 return null;
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     publishDir(
@@ -40,7 +41,8 @@ process DETECT_RRNA {
                 return null;
             }
         },
-        mode: 'copy'
+        mode: 'copy',
+        failOnError: true
     )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3.1'

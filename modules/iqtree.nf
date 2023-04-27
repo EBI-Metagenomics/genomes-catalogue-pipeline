@@ -7,7 +7,8 @@ process IQTREE {
         saveAs: {
             filename -> "phylogenies/$filename"
         },
-        mode: "copy"
+        mode: "copy",
+        failOnError: true
     )
 
     container 'quay.io/biocontainers/iqtree:2.2.0.3--hb97b32f_1'
@@ -27,7 +28,7 @@ process IQTREE {
     iqtree -T 8 \
     -s ${output_prefix}_alignment.faa \
     --prefix iqtree.${output_prefix}
-    
+
     cp iqtree.${output_prefix}.treefile ${output_prefix}_iqtree.nwk
     cp ${msa_fasta_gz} ${output_prefix}_alignment.faa.gz
     """
