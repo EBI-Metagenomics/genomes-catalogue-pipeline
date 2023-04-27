@@ -17,6 +17,7 @@ def main(
         study_list,
         version,
         catalog_name,
+        archaea
     ) = process_metadata_table(metadata_table)
     cat_url = "https://www.ebi.ac.uk/metagenomics/genome-catalogues/{}-{}".format(
         catalog_name, version.replace(".", "-")
@@ -32,7 +33,8 @@ def main(
         ver_pipeline,
         study_list_string,
         biome,
-        git_link
+        git_link,
+        archaea
     )
 
 
@@ -42,6 +44,7 @@ def process_metadata_table(metadata_table):
     study_list = set()
     version = ""
     catalog_name = ""
+    archaea = False
     with open(metadata_table, "r") as meta_in:
         for line in meta_in:
             if not line.startswith("Genome"):
@@ -53,9 +56,12 @@ def process_metadata_table(metadata_table):
                     subfields = fields[19].strip().split("/")
                     catalog_name = subfields[7]
                     version = subfields[8]
+                if not archaea:
+                    if "d__Archaea" in line:
+                        archaea = True
     total_genomes = "{:,}".format(total_genomes)
     num_reps = "{:,}".format(len(reps))
-    return total_genomes, num_reps, study_list, version, catalog_name
+    return total_genomes, num_reps, study_list, version, catalog_name, archaea
 
 
 def print_file(
@@ -68,8 +74,20 @@ def print_file(
     ver_pipeline,
     study_list,
     biome,
-    git_link
+    git_link,
+    archaea
 ):
+    if archaea:
+        phylo_text = """
+    * ar53_iqtree.nwk : A phylogenetic tree for archaeal genomes in Newick format.
+    * bac120_iqtree.nwk : A phylogenetic tree for bacterial genomes in Newick format.
+    * ar53_alignment.faa.gz : A multiple sequence alignment for archaeal genomes.
+    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes."""
+    else:
+        phylo_text = """
+    * bac120_iqtree.nwk : A phylogenetic tree for bacterial genomes in Newick format.
+    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes. """
+    
     readme_text = """
 {version} release
 ------------
@@ -129,11 +147,7 @@ Website URL: {url}
 
 - kraken2_db_{catalog_name}_{version}/ : A folder containing the Kraken 2 and Bracken databases. 
 
-- phylogenies/: 
-    * ar53_iqtree.nwk : A phylogenetic tree for archaeal genomes in Newick format.
-    * bac120_iqtree.nwk : A phylogenetic tree for bacterial genomes in Newick format.
-    * ar53_alignment.faa.gz : A multiple sequence alignment for archaeal genomes.
-    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes.
+- phylogenies/: {phylo_text}
 
 - protein_catalogue/
     * protein_catalogue-XX.tar.gz
@@ -151,7 +165,8 @@ Website URL: {url}
         git_link=git_link,
         study_list=study_list,
         biome=biome,
-        catalog_name=catalog_name
+        catalog_name=catalog_name,
+        phylo_text=phylo_text
     )
     with open(outfile_name, "w") as outfile:
         outfile.write(readme_text)
