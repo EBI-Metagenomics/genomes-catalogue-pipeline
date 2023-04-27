@@ -7,7 +7,7 @@ process FUNCTIONAL_ANNOTATION_SUMMARY {
         saveAs: {
             filename -> {
                 def cluster_prefix = cluster.substring(0, cluster.length() - 2);
-                return "species_catalogue/${cluster_prefix}/genome/${filename}";
+                return "species_catalogue/${cluster_prefix}/${cluster}/genome/${filename}";
             }
         },
         mode: "copy",
