@@ -11,7 +11,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | ----------- | ----------- |----------- |
 | CheckM      | 1.1.3       | Determining genome quality       |
 | dRep   | 3.2.2        | Genome clustering       |
-| Mash   | Text        | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree      |
+| Mash   | 2.3        | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree      |
 | GUNC   | 1.0.3        | Quality control       |
 | GTDB-Tk   | 2.1.0        | Assigning taxonomy; generating alignments       |
 | GTDB   | r207_v2        | Database for GTDB-Tk       |
