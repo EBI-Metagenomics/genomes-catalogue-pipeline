@@ -248,11 +248,11 @@ def parse_args():
     )
     parser.add_argument(
         "--pangenome-fna",
-        required=True,
+        required=False,
         help="The genome - pangenome fasta.",
     )
     parser.add_argument(
-        "--core-genes", required=True, help="The core genes from panaroo."
+        "--core-genes", required=False, help="The core genes from panaroo."
     )
     parser.add_argument(
         "--annot-cov", help="Path to the genome annotation coverage file", required=True
