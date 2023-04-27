@@ -6,17 +6,6 @@ process METADATA_TABLE {
         mode: "copy",
         failOnError: true
     )
-    // gunc_failed is published here, because nextflow doesn't support
-    // publishing files in workflows (where the file is generated).
-    // As this is the only place the file is used, it's included here
-    // to avoid having to include a dummy copy file process.
-    publishDir(
-        "${params.outdir}",
-        pattern: "${gunc_failed_txt}",
-        saveAs: "additional_data/intermediate_files/gunc/gunc_failed.txt",
-        mode: "copy",
-        failOnError: true
-    )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
@@ -33,15 +22,14 @@ process METADATA_TABLE {
     val ftp_name
     val ftp_version
     path geo_metadata
-    path gunc_failed_txt
+    file gunc_failed_txt
 
     output:
     path "genomes-all_metadata.tsv", emit: metadata_tsv
-    path "${gunc_failed_txt}", optional: true
 
     script:
     def args = ""
-    if (gunc_failed_txt) {
+    if (gunc_failed_txt != "EMPTY") {
         args = args + "--gunc-failed ${gunc_failed_txt}"
     }
     """
