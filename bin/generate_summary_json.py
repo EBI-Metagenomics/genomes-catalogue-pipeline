@@ -232,7 +232,7 @@ def main(
         and core_genes
         and os.path.exists(pangenome_fna)
         and os.stat(pangenome_fna).st_size
-        == 0  # this is required because nextflow submits an empty file
+        != 0  # this is required because nextflow submits an empty file
     ):
         pangenome = get_pangenome(
             core_genes, pangenome_fna, species_code, metadata_file
