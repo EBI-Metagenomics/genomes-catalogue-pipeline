@@ -1,6 +1,8 @@
 
 process GUNC {
 
+    tag "${fasta.name}"
+
     publishDir(
         path: "${params.outdir}/additional_data/intermediate_files/gunc/",
         saveAs: {

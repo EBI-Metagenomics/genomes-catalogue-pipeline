@@ -36,13 +36,13 @@ process COLLECT_FAILED_GUNC {
 workflow PROCESS_SINGLETON_GENOMES {
     take:
         singleton_cluster_tuple
-        renamed_genomes_csv
+        genomes_checkm
         gunc_db
     main:
 
         GUNC(
             singleton_cluster_tuple,
-            renamed_genomes_csv,
+            genomes_checkm,
             gunc_db
         )
 
