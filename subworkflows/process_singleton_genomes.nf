@@ -9,8 +9,8 @@ process COLLECT_FAILED_GUNC {
 
     publishDir(
         "${params.outdir}",
-        pattern: "${gunc_failed_txt}",
-        saveAs: "additional_data/intermediate_files/gunc/gunc_failed.txt",
+        pattern: "gunc_failed.txt",
+        saveAs: { "additional_data/intermediate_files/gunc/gunc_failed.txt" },
         mode: "copy",
         failOnError: true
     )
@@ -57,6 +57,8 @@ workflow PROCESS_SINGLETON_GENOMES {
         COLLECT_FAILED_GUNC(
             GUNC.out.cluster_gunc_result.filter({
                 it[2].name.contains('_gunc_empty.txt')
+            }).map({ cluster_name, cluster_fasta, cluster_gunc ->
+                return cluster_gunc
             }).collect()
         )
 
