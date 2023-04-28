@@ -21,7 +21,7 @@ process GUNC {
 
     input:
     tuple val(cluster_name), path(fasta)
-    file renamed_genomes_csv
+    file genomes_checkm
     file gunc_db
 
     output:
@@ -44,7 +44,7 @@ process GUNC {
     ### check completeness ###
 
     # remove header
-    tail -n +2 "${renamed_genomes_csv}" > genomes.csv
+    tail -n +2 "${genomes_checkm}" > genomes.csv
 
     ### get notcompleted genomes ###
     cat genomes.csv | tr ',' '\t' | awk '{if(\$2 < 90)print\$1}' > notcompleted.txt
