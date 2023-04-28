@@ -1,0 +1,15 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "amrfinder_tsv": [
+                    [
+                        "MGYG000299400",
+                        "MGYG000299400_amrfinderplus.tsv:md5,1c60e636f614bab3b200b13c5bd556d8"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-03-23T15:00:41+0000"
+    }
+}

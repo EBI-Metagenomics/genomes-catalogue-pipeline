@@ -1,9 +1,0 @@
-list_files:
-  - class: File
-    path: ../../../input_example/small_set/all_genomes/CAJJTO01.fa
-  - class: File
-    path: ../../../input_example/small_set/all_genomes/CAJKGB01.fa
-  - class: File
-    path: ../../../input_example/small_set/all_genomes/CAJKRE01.fa
-
-pattern: CAJKGB01

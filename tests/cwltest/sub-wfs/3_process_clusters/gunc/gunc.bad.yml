@@ -1,9 +1,0 @@
-input_fasta:
-  class: File
-  path: ../../../tools/GUNC/filter_inputs/genome/CAJPIO01
-input_csv:
-  class: File
-  path: ../../../tools/GUNC/filter_inputs/completeness_bad.csv
-gunc_db_path:
-  class: File
-  path: gunc_db_2.0.4.dmnd

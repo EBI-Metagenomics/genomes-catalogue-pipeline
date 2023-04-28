@@ -1,0 +1,46 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "krakendb": [
+                    [
+                        "database.kraken:md5,0ee4e3c877d8c4fbda2190c27a55b03a",
+                        "database100mers.kmer_distrib:md5,1635be1d10fa3345e7e87aa7500d18f3",
+                        "database100mers.kraken:md5,9679c2a344513b8d9a92abe89f9e20b6",
+                        "database150mers.kmer_distrib:md5,b3548133b74e07e360b47542fced11b8",
+                        "database150mers.kraken:md5,ca1415fddc9c2737d19a25bc1a839f94",
+                        "database200mers.kmer_distrib:md5,6e3e624b0d027133fe2ecb8b09ef3342",
+                        "database200mers.kraken:md5,73035efadbcf77acdcb12e62a2991652",
+                        "database250mers.kmer_distrib:md5,744db7d0976a2379d7633f35fcd0e78a",
+                        "database250mers.kraken:md5,3019fec80bc07ca5267888ab634a8626",
+                        "database50mers.kmer_distrib:md5,eae65565e77687bdc151cb20aac9c57d",
+                        "database50mers.kraken:md5,64ded426a0e4563bcfaf0cd781fb00f9",
+                        "hash.k2d:md5,14ae3178ff458ebcf47d4212e878b362",
+                        [
+                            [
+                                "EqcLFeQUhZ.fna:md5,b102fd88a31247724d2148a4bec74754",
+                                "EqcLFeQUhZ.fna.masked:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "jHUusGrKq4.fna:md5,0c93ba4969432b0272b29aae0e043d68",
+                                "jHUusGrKq4.fna.masked:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "prelim_map.txt:md5,12ba0e141df592862575849614b34229",
+                                "prelim_map_DXJiTdHacg.txt:md5,2b4549cb914722d3b8e020dba9aa2ccd",
+                                "prelim_map_pxYIlqgOtp.txt:md5,fceb72b36292d138ef642766ea39938e"
+                            ],
+                            "library.fna:md5,eaed3bb9c4f0baa2322a68bfbcc610c5",
+                            "prelim_map.txt:md5,12ba0e141df592862575849614b34229"
+                        ],
+                        "opts.k2d:md5,3cc4796e1e8e8bfc0fc70443fa750d8d",
+                        "seqid2taxid.map:md5,21068f109f92b307e95e48f620dfce8a",
+                        "taxo.k2d:md5,e3bb54876809134e07f093e1965c43bf",
+                        [
+                            "names.dmp:md5,f2c8893dfc79d142a7c6490480dd0eee",
+                            "nodes.dmp:md5,db775db3cd6686f69aae39f73bb9864b",
+                            "prelim_map.txt:md5,12ba0e141df592862575849614b34229"
+                        ]
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-04-25T13:42:44+0000"
+    }
+}

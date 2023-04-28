@@ -1,6 +1,0 @@
-download_from: NCBI
-infile:
-  class: File
-  path: ../../../../input_example/input_ncbi.txt
-directory_name: ncbi-test
-unzip: true

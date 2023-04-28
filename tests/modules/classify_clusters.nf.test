@@ -1,0 +1,43 @@
+nextflow_process {
+
+    name "Test Process CLASSIFY_CLUSTERS"
+    script "modules/classify_clusters.nf"
+    process "CLASSIFY_CLUSTERS"
+
+    test("Correctly classify singletons and many_genomes") {
+
+        when {
+
+            process {
+                """
+                input[0] = file("$baseDir/tests/modules/fixtures/classify_clusters/dereplicated_genomes")
+                input[1] = file("$baseDir/tests/modules/fixtures/classify_clusters/clusters_split.txt")
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.trace.tasks().size() == 1
+
+            with(process.out.many_genomes_fnas) {
+                assert size() == 1
+                with(get(0)) {
+                    assert get(0) ==~ ".*/CAJKXJ01/CAJKRE01.fa"
+                    assert get(1) ==~ ".*/CAJKXJ01/CAJKXJ01.fa"
+
+                    assert get(2) ==~ ".*/CAJLGA01/CAJJTO01.fa"
+                    assert get(3) ==~ ".*/CAJLGA01/CAJKGB01.fa"
+                    assert get(4) ==~ ".*/CAJLGA01/CAJLGA01.fa"
+                }
+            }
+            with(process.out.one_genome_fnas) {
+                assert size() == 1
+                with(get(0)) {
+                    assert get(0) ==~ ".*/CAJKRY01/CAJKRY01.fa"
+                    assert get(1) ==~ ".*/CAJKXZ01/CAJKXZ01.fa"
+                }
+            }
+        }
+    }
+}

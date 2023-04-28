@@ -1,7 +1,0 @@
-list_files:
-  - class: File
-    path: concatenate.yml
-  - null
-  - null
-  - class: File
-    path: cut_header.yml

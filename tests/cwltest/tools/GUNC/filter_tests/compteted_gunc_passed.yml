@@ -1,9 +1,0 @@
-csv:
-  class: File
-  path: ../filter_inputs/completeness_ok.csv
-
-gunc:
-  class: File
-  path: ../filter_inputs/gunc_ok.tsv
-
-name: test1

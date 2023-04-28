@@ -1,0 +1,33 @@
+nextflow_process {
+
+    name "Test Process AMRFINDER_PLUS"
+    script "modules/amrfinder_plus.nf"
+    process "AMRFINDER_PLUS"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                outdir = "tests/results"
+                amrfinder_plus_db = "$baseDir/ref-dbs/amrfinder_plus/2023-02-23.1"
+            }
+            process {
+                """
+                input[0] = channel.from([
+                    tuple(
+                        "MGYG000299400",
+                        file("$baseDir/tests/modules/fixtures/amrfinder_plus/MGYG000299400.fna"),
+                        file("$baseDir/tests/modules/fixtures/amrfinder_plus/MGYG000299400.faa"),
+                        file("$baseDir/tests/modules/fixtures/amrfinder_plus/MGYG000299400.gff")
+                    )
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+    }
+}

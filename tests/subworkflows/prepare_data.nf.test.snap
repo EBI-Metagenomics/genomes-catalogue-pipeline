@@ -1,0 +1,18 @@
+{
+    "Should filter and rename genomes": {
+        "content": [
+            {
+                "genomes_checkm": [
+
+                ],
+                "genomes": [
+
+                ],
+                "genomes_name_mapping": [
+
+                ]
+            }
+        ],
+        "timestamp": "2023-04-25T13:43:42+0000"
+    }
+}

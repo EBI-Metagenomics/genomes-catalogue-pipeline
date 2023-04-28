@@ -1,6 +1,0 @@
-text_file:
-  class: File
-  path: ../../../../../input_example/small_set/results/drep-output/clusters_split.txt
-genomes:
-  class: Directory
-  path: ../../../../../input_example/small_set/all_genomes

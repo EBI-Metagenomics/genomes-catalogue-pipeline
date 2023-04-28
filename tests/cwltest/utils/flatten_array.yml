@@ -1,7 +1,0 @@
-arrayTwoDim:
-  -
-    - class: File
-      path: ../../../input_example/input_ena.txt
-  -
-    - class: File
-      path: ../../../input_example/input_ncbi.txt
