@@ -14,7 +14,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Mash   | 2.3        | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree      |
 | GUNC   | 1.0.3        | Quality control       |
 | GTDB-Tk   | 2.1.0        | Assigning taxonomy; generating alignments       |
-| GTDB   | r207_v2        | Database for GTDB-Tk       |
+| GTDB   | r214        | Database for GTDB-Tk       |
 | Prokka   | 1.14.6        | Protein annotation       |
 | IQ-TREE 2  | 2.2.0.3        | Generating a phylogenetic tree       |
 | Kraken 2   | 2.1.2        | Generating a kraken database       |
@@ -54,7 +54,7 @@ The pipeline needs the following reference databases and configuration files (ro
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/ncrna/
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
-- https://data.gtdb.ecogenomic.org/releases/release207/207.0/auxillary_files/gtdbtk_r207_v2_data.tar.gz
+- https://data.ace.uq.edu.au/public/gtdb/data/releases/release214/214.0/auxillary_files/gtdbtk_r214_data.tar.gz
 
 ### Containers
 
