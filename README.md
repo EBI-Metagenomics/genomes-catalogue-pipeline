@@ -29,7 +29,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | SanntiS   | 0.9.3.2        | Biosynthetic gene cluster annotation       |
 | Infernal   | 1.1.4        | RNA predictions       |
 | tRNAscan-SE   | 2.0.9       | tRNA predictions       |
-| Rfam   | 14.6        | Identification of SSU/LSU rRNA and other ncRNAs       |
+| Rfam   | 14.9        | Identification of SSU/LSU rRNA and other ncRNAs       |
 | Panaroo   | 1.3.2        | Pan-genome computation       |
 | Seqtk   | 1.3        | Generating a gene catalogue       |
 | VIRify   | -        | Viral sequence annotation       |
@@ -51,7 +51,7 @@ The pipeline needs the following reference databases and configuration files (ro
 
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db.tgz
-- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfams_cms/
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_14.9
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/ncrna/
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
