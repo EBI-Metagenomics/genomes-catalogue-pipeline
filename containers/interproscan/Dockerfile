@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 LABEL software="InterProScan"
-LABEL software.version="5.57-90.0"
+LABEL software.version="5.62-94.0"
 LABEL description="InterProScan is a search engine for InterPro is a database which integrates together predictive information about proteins' function."
 LABEL website="https://github.com/ebi-pf-team/interproscan"
 LABEL license="Apache 2.0"
@@ -20,7 +20,7 @@ RUN apt update && \
 RUN cpanm Data::Dumper
 
 # Install IPS
-ARG ipsVersion=5.57-90.0
+ARG ipsVersion=5.62-94.0
 WORKDIR /opt
 RUN wget -q ftp://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${ipsVersion}/interproscan-${ipsVersion}-64-bit.tar.gz && \
     tar pxfz interproscan-${ipsVersion}-64-bit.tar.gz  && \

@@ -21,7 +21,8 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Bracken   | 2.6.2        | Generating a bracken database       |
 | MMseqs2   | 13.45111        | Generating a protein catalogue       |
 | eggNOG-mapper  | 2.1.3        | Protein annotation (eggNOG, KEGG, COG,  CAZy)       |
-| InterProScan   | 5.57-90.0      | Protein annotation (InterPro, Pfam)       |
+| eggNOG DB  | 5.0       | Database for eggNOG mapper       |
+| InterProScan   | 5.62-94.0      | Protein annotation (InterPro, Pfam)       |
 | CRISPRCasFinder   | 4.3.2        | Annotation of CRISPR arrays       |
 | AMRFinderPlus   | 3.11.4        |   Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation     |
 | AMRFinderPlus DB   | 3.11 2023-02-23.1        | Database for AMRFinderPlus      |
