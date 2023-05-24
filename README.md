@@ -13,6 +13,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | dRep   | 3.2.2        | Genome clustering       |
 | Mash   | 2.3        | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree      |
 | GUNC   | 1.0.3        | Quality control       |
+| GUNC DB  | 2.0.4        | Database for GUNC       |
 | GTDB-Tk   | 2.1.0        | Assigning taxonomy; generating alignments       |
 | GTDB   | r214        | Database for GTDB-Tk       |
 | Prokka   | 1.14.6        | Protein annotation       |
@@ -20,8 +21,9 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Kraken 2   | 2.1.2        | Generating a kraken database       |
 | Bracken   | 2.6.2        | Generating a bracken database       |
 | MMseqs2   | 13.45111        | Generating a protein catalogue       |
-| eggNOG-mapper  | 2.1.3        | Protein annotation (eggNOG, KEGG, COG,  CAZy)       |
-| eggNOG DB  | 5.0       | Database for eggNOG mapper       |
+| eggNOG-mapper  | 2.1.11        | Protein annotation (eggNOG, KEGG, COG,  CAZy)       |
+| eggNOG DB  | 5.0       | Database for eggNOG-mapper       |
+| Diamond    | 2.0.11       | Protein annotation (eggNOG)       |
 | InterProScan   | 5.62-94.0      | Protein annotation (InterPro, Pfam)       |
 | CRISPRCasFinder   | 4.3.2        | Annotation of CRISPR arrays       |
 | AMRFinderPlus   | 3.11.4        |   Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation     |

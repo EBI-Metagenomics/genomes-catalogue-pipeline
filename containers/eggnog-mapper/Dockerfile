@@ -2,13 +2,13 @@ FROM ubuntu:latest
 
 LABEL Maintainer="Microbiome Informatics Team www.ebi.ac.uk/metagenomics"
 LABEL software="eggNOG"
-LABEL software.version="2.1.3"
+LABEL software.version="2.1.11"
 LABEL description="EggNOG-mapper is a tool for fast functional annotation of novel sequences."
 LABEL website="https://github.com/eggnogdb/eggnog-mapper"
 LABEL license="GPL3"
 
 
-ENV VERSION=2.1.3
+ENV VERSION=2.1.11
 ENV VERSION_DIAMOND=2.0.11
 
 # deps
@@ -35,7 +35,7 @@ RUN wget -q https://github.com/bbuchfink/diamond/releases/download/v${VERSION_DI
 
 # install eggnog
 WORKDIR /opt
-RUN wget -q https://github.com/eggnogdb/eggnog-mapper/archive/$VERSION.tar.gz && \
+RUN wget -q https://github.com/eggnogdb/eggnog-mapper/archive/refs/tags/$VERSION.tar.gz && \
     tar -xzf $VERSION.tar.gz && \
     rm -rf $VERSION.tar.gz && \
     cd eggnog-mapper-$VERSION && \
