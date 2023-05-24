@@ -20,8 +20,6 @@ process GTDBTK {
         failOnError: true
     )
 
-    label 'process_bigmem'
-
     input:
     path genomes_fna, stageAs: "genomes_dir/*"
     path gtdbtk_refdata
@@ -54,7 +52,7 @@ process GTDBTK {
 
     mkdir -p gtdbtk_results/classify
     touch gtdbtk_results/classify/gtdbtk.bac120.summary.tsv
-    touch gtdbtk_results/classify/gtdbtk.ar122.summary.tsv
+    touch gtdbtk_results/classify/gtdbtk.ar53.summary.tsv
 
     echo "user_genome	classification	fastani_reference	fastani_reference_radius	fastani_taxonomy	fastani_ani	fastani_af	closest_placement_reference	closest_placement_radius	closest_placement_taxonomy	closest_placement_ani	closest_placement_af	pplacer_taxonomy	classification_method	note	other_related_references(genome_id,species_name,radius,ANI,AF)	msa_percent	translation_table	red_value	warnings" > gtdbtk_results/classify/gtdbtk.bac120.summary.tsv
 
