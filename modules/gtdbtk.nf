@@ -41,6 +41,7 @@ process GTDBTK {
     --pplacer_cpus ${task.cpus} \
     --genome_dir genomes_dir \
     --extension fna \
+    --skip_ani_screen \
     --out_dir gtdbtk_results
 
     tar -czf gtdbtk_results.tar.gz gtdbtk_results
