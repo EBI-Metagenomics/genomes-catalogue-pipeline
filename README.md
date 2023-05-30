@@ -14,7 +14,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Mash   | 2.3        | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree      |
 | GUNC   | 1.0.3        | Quality control       |
 | GUNC DB  | 2.0.4        | Database for GUNC       |
-| GTDB-Tk   | 2.1.0        | Assigning taxonomy; generating alignments       |
+| GTDB-Tk   | 2.3.0        | Assigning taxonomy; generating alignments       |
 | GTDB   | r214        | Database for GTDB-Tk       |
 | Prokka   | 1.14.6        | Protein annotation       |
 | IQ-TREE 2  | 2.2.0.3        | Generating a phylogenetic tree       |
