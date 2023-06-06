@@ -324,7 +324,7 @@ def add_ncrnas_and_crispr_to_gff(gff_outfile, ncrnas, crispr_annotations, res):
                             added_ncrnas.add(locus)
                             annot = [
                                 "ID=" + locus,
-                                "inference=Rfam:14.6",
+                                "inference=Rfam:14.9",
                                 "locus_tag=" + locus,
                                 "product=" + product,
                                 "rfam=" + model,

@@ -4,7 +4,7 @@
 
 process EGGNOG_MAPPER {
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.eggnog-mapper:v1'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.eggnog-mapper:v2.1.11'
 
     input:
     // on mode "annotations" will be ignored, submit an empty path (channel.path("NO_FILE"))

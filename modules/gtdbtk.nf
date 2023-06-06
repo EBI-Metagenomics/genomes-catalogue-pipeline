@@ -1,6 +1,6 @@
 process GTDBTK {
 
-    container 'quay.io/microbiome-informatics/gtdb-tk:2.1.0'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.gtdb-tk:v2.3.0'
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
 
     publishDir(
@@ -19,8 +19,6 @@ process GTDBTK {
         mode: 'copy',
         failOnError: true
     )
-
-    label 'process_bigmem'
 
     input:
     path genomes_fna, stageAs: "genomes_dir/*"
@@ -43,6 +41,7 @@ process GTDBTK {
     --pplacer_cpus ${task.cpus} \
     --genome_dir genomes_dir \
     --extension fna \
+    --skip_ani_screen \
     --out_dir gtdbtk_results
 
     tar -czf gtdbtk_results.tar.gz gtdbtk_results
@@ -54,7 +53,7 @@ process GTDBTK {
 
     mkdir -p gtdbtk_results/classify
     touch gtdbtk_results/classify/gtdbtk.bac120.summary.tsv
-    touch gtdbtk_results/classify/gtdbtk.ar122.summary.tsv
+    touch gtdbtk_results/classify/gtdbtk.ar53.summary.tsv
 
     echo "user_genome	classification	fastani_reference	fastani_reference_radius	fastani_taxonomy	fastani_ani	fastani_af	closest_placement_reference	closest_placement_radius	closest_placement_taxonomy	closest_placement_ani	closest_placement_af	pplacer_taxonomy	classification_method	note	other_related_references(genome_id,species_name,radius,ANI,AF)	msa_percent	translation_table	red_value	warnings" > gtdbtk_results/classify/gtdbtk.bac120.summary.tsv
 
