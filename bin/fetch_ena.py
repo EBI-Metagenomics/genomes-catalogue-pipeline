@@ -22,8 +22,6 @@ import logging
 import os
 import sys
 
-bin_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../bin'))
-sys.path.append(bin_path)
 from get_ENA_metadata import get_contamination_completeness
 from utils import download_fasta, qs50, run_request
 
