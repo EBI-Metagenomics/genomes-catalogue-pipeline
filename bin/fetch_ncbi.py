@@ -22,6 +22,7 @@ import logging
 import time
 import urllib.request as request
 import urllib.error as error
+
 from utils import download_fasta
 
 LINKS = 'https://ftp.ncbi.nlm.nih.gov/genomes/genbank/assembly_summary_genbank.txt'
