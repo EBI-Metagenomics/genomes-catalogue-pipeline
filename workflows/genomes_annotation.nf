@@ -10,6 +10,9 @@ ch_ena_genomes_checkm = channel.fromPath(params.ena_genomes_checkm, checkIfExist
 ch_mgyg_index_start = channel.value(params.mgyg_start)
 ch_mgyg_index_end = channel.value(params.mgyg_end)
 
+ch_genomes_information = channel.fromPath(params.genomes_information)
+ch_study_genomes_information = channel.fromPath(params.study_genomes_information)
+
 // TODO: Add help message with parameters
 
 /*
@@ -82,12 +85,15 @@ workflow GAP {
         channel.empty(), // ncbi, we are ignoring this ATM
         ch_mgyg_index_start,
         ch_mgyg_index_end,
-        ch_genome_prefix
+        ch_genome_prefix,
+        ch_genomes_information,
+        ch_study_genomes_information
     )
 
     DREP_SWF(
         PREPARE_DATA.out.genomes,
-        PREPARE_DATA.out.genomes_checkm
+        PREPARE_DATA.out.genomes_checkm,
+        PREPARE_DATA.out.extra_weight_table
     )
 
     MASH_TO_NWK(
@@ -148,7 +154,7 @@ workflow GAP {
     GTDBTK_AND_METADATA(
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
-        DREP_SWF.out.extra_weight_table,
+        PREPARE_DATA.out.extra_weight_table,
         PREPARE_DATA.out.genomes_checkm,
         ANNOTATE.out.rrna_outs,
         PREPARE_DATA.out.genomes_name_mapping,

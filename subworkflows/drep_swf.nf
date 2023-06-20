@@ -2,7 +2,6 @@
  * De-replicate
  */
 
-include { GENERATE_EXTRA_WEIGHT } from '../modules/generate_extra_weight'
 include { DREP } from '../modules/drep'
 include { SPLIT_DREP } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
@@ -10,15 +9,15 @@ include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 workflow DREP_SWF {
     take:
         genomes_directory
+        extra_weight_table
         checkm_csv
     main:
 
-        GENERATE_EXTRA_WEIGHT(genomes_directory)
 
         DREP(
             genomes_directory,
             checkm_csv,
-            GENERATE_EXTRA_WEIGHT.out.extra_weight_table
+            extra_weight_table
         )
 
         SPLIT_DREP(
@@ -45,7 +44,6 @@ workflow DREP_SWF {
         single_genomes_fna_tuples = single_genomes_fna_tuples
         drep_split_text = SPLIT_DREP.out.text_split
         mash_splits = SPLIT_DREP.out.mash_splits
-        extra_weight_table = GENERATE_EXTRA_WEIGHT.out.extra_weight_table
         drep_cdb_csv = DREP.out.cdb_csv
         drep_mdb_csv = DREP.out.mdb_csv
         drep_sdb_csv = DREP.out.sdb_csv

@@ -18,10 +18,11 @@
 
 
 import argparse
-from ftplib import FTP, all_errors
+import csv
 import logging
 import os
 import time
+from ftplib import FTP, all_errors
 
 from utils import run_request
 
@@ -30,12 +31,16 @@ logging.basicConfig(level=logging.INFO)
 ENA_ENDPOINT = "https://www.ebi.ac.uk/ena/portal/api/search"
 
 
-def main(genome_info, study_info, outfile, genomes_dir):
+def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
+    """Identifies isolate genomes and MAGs and creates an extra weight table for drep"""
+
     extra_weights, extension = initialize_weights_dict(genomes_dir)
+
     if study_info:
         extra_weights = add_study_info(study_info, extra_weights)
     if genome_info:
         extra_weights = add_genome_info(genome_info, extra_weights)
+
     empty_ncbi_records = set()
     for record in extra_weights:
         if extra_weights[record] == "":
@@ -57,12 +62,28 @@ def main(genome_info, study_info, outfile, genomes_dir):
     print_results(extra_weights, outfile)
 
 
-def initialize_weights_dict(genomes_dir):
+def initialize_weights_dict(genomes_dir, name_mapping=None):
+    """
+    Initializes a weights dictionary for genomes in a directory.
+    Args:
+        genomes_dir (str): Path to the directory containing genome files.
+        name_mapping (str, optional): Path to the file containing genome name mappings.
+    Returns:
+        tuple: A tuple containing the extra weights dictionary and the extension of the genome files.
+    """
     genomes_dir_contents = os.listdir(genomes_dir)
     extension = ""
-    for genome in genomes_dir_contents:
+    name_mapping_dict = {}
+    if name_mapping:
+        with open(name_mapping, "r") as nm_f:
+            for genome_name, new_name in nm_f:
+                name_mapping_dict[genome_name] = new_name
+
+    for genome_file in genomes_dir_contents:
+        # Get the new name from the mapping, otherwise keep the current one
+        genome = name_mapping_dict.get(genome_file, genome_file)
         if genome.strip().split(".")[-1] not in ["fa", "fasta"]:
-            logging.info("Not analyzing {} - not a fasta file".format(genome))
+            logging.info(f"Not analyzing {genome} - not a fasta file")
             genomes_dir_contents.remove(genome)
         else:
             if not extension:
@@ -72,6 +93,7 @@ def initialize_weights_dict(genomes_dir):
 
 
 def add_study_info(study_info_file, extra_weights):
+    """Read the study information, used to override the weight"""
     with open(study_info_file, "r") as file_in:
         for line in file_in:
             study, genome_type = line.strip().split("\t")
@@ -135,9 +157,10 @@ def add_extension(genomes_in_study, extra_weights):
 
 
 def add_genome_info(genome_info_file, extra_weights):
+    """Get the genome info, "isolate" or "MAG"."""
     with open(genome_info_file, "r") as file_in:
-        for line in file_in:
-            genome, genome_type = line.strip().split("\t")
+        tsv_reader = csv.reader(file_in, delimiter="\t")
+        for genome, genome_type in tsv_reader:
             weight = assign_weight(genome_type)
             if genome in extra_weights:
                 extra_weights[genome] = weight
@@ -236,9 +259,18 @@ def parse_args():
         "--genome-info",
         help=(
             "If any of the studies contain a mix of isolate and MAG genomes or if"
-            " informationfor only some of the genomes is available, provide a path to a"
-            " file containing pergenome information. First column should be the genome"
+            " information for only some of the genomes is available, provide a path to a"
+            " file containing per genome information. First column should be the genome"
             " accession, second column the type of genome (MAG or isolate)"
+        ),
+    )
+    parser.add_argument(
+        "-n",
+        "--name-mapping",
+        required=False,
+        help=(
+            "If this is provided the genomes from the genome-info"
+            " and study-info will be renamed following the mapping."
         ),
     )
     parser.add_argument(
@@ -258,4 +290,10 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args.genome_info, args.study_info, args.outfile, args.genomes_dir)
+    main(
+        args.genome_info,
+        args.study_info,
+        args.outfile,
+        args.genomes_dir,
+        args.name_mapping,
+    )
