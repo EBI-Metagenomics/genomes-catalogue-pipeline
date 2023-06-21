@@ -34,7 +34,14 @@ ENA_ENDPOINT = "https://www.ebi.ac.uk/ena/portal/api/search"
 def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
     """Identifies isolate genomes and MAGs and creates an extra weight table for drep"""
 
-    extra_weights, extension = initialize_weights_dict(genomes_dir)
+    # If a name mapping file is provided, the code will use the names on the mapping file
+    # as the expectation is that the genomes_dir will contain the MAGs/Isolates under a
+    # different name space, but all the other files will use the names in the mapping file
+    extra_weights, extension = initialize_weights_dict(
+        genomes_dir, name_mapping=name_mapping
+    )
+
+    print(extra_weights)
 
     if study_info:
         extra_weights = add_study_info(study_info, extra_weights)
@@ -54,12 +61,15 @@ def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
                 logging.error(
                     "Unable to assign weight to genome {}. Assigning 0.".format(record)
                 )
+
     if len(empty_ncbi_records) > 0:
         extra_weights = add_ncbi_information(
             extra_weights, empty_ncbi_records, extension
         )
+
     extra_weights = check_table(extra_weights)
-    print_results(extra_weights, outfile)
+
+    print_results(extra_weights, outfile, name_mapping=name_mapping)
 
 
 def initialize_weights_dict(genomes_dir, name_mapping=None):
@@ -67,28 +77,35 @@ def initialize_weights_dict(genomes_dir, name_mapping=None):
     Initializes a weights dictionary for genomes in a directory.
     Args:
         genomes_dir (str): Path to the directory containing genome files.
-        name_mapping (str, optional): Path to the file containing genome name mappings.
+        name_mapping (str): Path to the genome name mapping file.
     Returns:
         tuple: A tuple containing the extra weights dictionary and the extension of the genome files.
     """
+    extra_weights = {}
     genomes_dir_contents = os.listdir(genomes_dir)
     extension = ""
+
     name_mapping_dict = {}
     if name_mapping:
         with open(name_mapping, "r") as nm_f:
-            for genome_name, new_name in nm_f:
-                name_mapping_dict[genome_name] = new_name
+            tsv_reader = csv.reader(nm_f, delimiter="\t")
+            for old_name, new_name in tsv_reader:
+                print(f"Mapeo: {old_name} {new_name}")
+                name_mapping_dict[new_name] = old_name
 
     for genome_file in genomes_dir_contents:
         # Get the new name from the mapping, otherwise keep the current one
         genome = name_mapping_dict.get(genome_file, genome_file)
+        print(f"{genome_file} -> {genome}")
         if genome.strip().split(".")[-1] not in ["fa", "fasta"]:
             logging.info(f"Not analyzing {genome} - not a fasta file")
             genomes_dir_contents.remove(genome)
         else:
             if not extension:
                 extension = genome.strip().split(".")[-1]
-    extra_weights = {i: "" for i in genomes_dir_contents}
+        # Add to result dictionary #
+        extra_weights[genome] = ""
+
     return extra_weights, extension
 
 
@@ -231,10 +248,20 @@ def check_table(extra_weights):
     return extra_weights
 
 
-def print_results(extra_weights, outfile):
+def print_results(extra_weights, outfile, name_mapping=None):
+    """Generate the result tsv file."""
+    name_mapping_dict = {}
+    if name_mapping:
+        with open(name_mapping, "r") as nm_f:
+            tsv_reader = csv.reader(nm_f, delimiter="\t")
+            for new_name, old_name in tsv_reader:
+                name_mapping_dict[new_name] = old_name
+
     with open(outfile, "w") as table_out:
-        for key, value in extra_weights.items():
-            table_out.write("\t".join([key, value]) + "\n")
+        table_writer = csv.writer(table_out, delimiter="\t")
+        for genome_name, weight in extra_weights.items():
+            genome_name = name_mapping_dict.get(genome_name, genome_name)
+            table_writer.writerow([genome_name, weight])
 
 
 def parse_args():
