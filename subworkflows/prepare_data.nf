@@ -6,6 +6,7 @@ include { MERGE_NCBI_ENA } from '../modules/merge_ncbi_ena'
 include { CHECKM } from '../modules/checkm'
 include { FILTER_QS50 } from '../modules/filter_qs50'
 include { RENAME_FASTA } from '../modules/rename_fasta'
+include { GENERATE_EXTRA_WEIGHT } from '../modules/generate_extra_weight'
 
 
 workflow PREPARE_DATA {
@@ -16,8 +17,8 @@ workflow PREPARE_DATA {
         genomes_name_start          // val
         genomes_name_end            // val
         genomes_prefix              // val
-        per_genome_category         // channel: path
-        per_study_genomes_category  // channel: path
+        per_genome_category         // file | empty
+        per_study_genomes_category  // file | empty
     main:
         genomes_ch = channel.empty()
         genomes_checkm_ch = channel.empty()
@@ -61,9 +62,9 @@ workflow PREPARE_DATA {
 
         GENERATE_EXTRA_WEIGHT(
             FILTER_QS50.out.filtered_genomes,
-            per_genome_category,
-            per_study_genomes_category.
-            RENAME_FASTA.out.rename_mapping
+            RENAME_FASTA.out.rename_mapping,
+            per_genome_category.ifEmpty(file("NO_FILE_GENOME_CAT")),
+            per_study_genomes_category.ifEmpty(file("NO_FILE_STUDY_CAT"))
         )
 
     emit:
