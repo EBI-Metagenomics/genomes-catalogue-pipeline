@@ -21,6 +21,7 @@ import argparse
 import csv
 import logging
 import os
+import sys
 import time
 from ftplib import FTP, all_errors
 
@@ -153,7 +154,7 @@ def get_genomes_in_study(study):
     }
     r = run_request(query, ENA_ENDPOINT)
     if r.content.decode() == "":
-        logging.error(
+        sys.exit(
             "Unable to get a list of genomes for study {} from ENA. Provided extra"
             " weight info cannot be used".format(study)
         )
@@ -182,7 +183,7 @@ def add_genome_info(genome_info_file, extra_weights):
             if genome in extra_weights:
                 extra_weights[genome] = weight
             else:
-                logging.error(
+                sys.exit(
                     "Extra weight information for genome {} was provided but genome is"
                     " not found in the genomes folder. Check naming format - is the"
                     " extension missing? Extra weight information cannot be used".format(
