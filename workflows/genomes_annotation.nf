@@ -10,8 +10,15 @@ ch_ena_genomes_checkm = channel.fromPath(params.ena_genomes_checkm, checkIfExist
 ch_mgyg_index_start = channel.value(params.mgyg_start)
 ch_mgyg_index_end = channel.value(params.mgyg_end)
 
-ch_genomes_information = file(params.genomes_information)
-ch_study_genomes_information = file(params.study_genomes_information)
+ch_genomes_information = channel.empty()
+ch_study_genomes_information = channel.empty()
+
+if (params.genomes_information) {
+    ch_genomes_information = channel.fromPath(params.genomes_information)
+}
+if (params.study_genomes_information) {
+    ch_study_genomes_information = channel.fromPath(params.study_genomes_information)
+}
 
 // TODO: Add help message with parameters
 

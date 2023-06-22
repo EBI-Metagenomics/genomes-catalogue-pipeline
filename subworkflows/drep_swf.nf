@@ -9,8 +9,8 @@ include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 workflow DREP_SWF {
     take:
         genomes_directory
-        extra_weight_table
         checkm_csv
+        extra_weight_table
     main:
 
 
