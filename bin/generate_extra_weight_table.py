@@ -38,11 +38,9 @@ def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
     # If a name mapping file is provided, the code will use the names on the mapping file
     # as the expectation is that the genomes_dir will contain the MAGs/Isolates under a
     # different name space, but all the other files will use the names in the mapping file
-    extra_weights, extension = initialize_weights_dict(
+    extra_weights, extension, name_mapping_dict = initialize_weights_dict(
         genomes_dir, name_mapping=name_mapping
     )
-
-    print(extra_weights)
 
     if study_info:
         extra_weights = add_study_info(study_info, extra_weights)
@@ -99,15 +97,13 @@ def initialize_weights_dict(genomes_dir, name_mapping=None):
         genome = name_mapping_dict.get(genome_file, genome_file)
         print(f"{genome_file} -> {genome}")
         if genome.strip().split(".")[-1] not in ["fa", "fasta"]:
-            logging.info(f"Not analyzing {genome} - not a fasta file")
-            genomes_dir_contents.remove(genome)
+            logging.info(f"Not analyzing {genome} - not a fasta file.")
         else:
             if not extension:
                 extension = genome.strip().split(".")[-1]
-        # Add to result dictionary #
-        extra_weights[genome] = ""
-
-    return extra_weights, extension
+            # Add to result dictionary #
+            extra_weights[genome] = ""
+    return extra_weights, extension, name_mapping_dict
 
 
 def add_study_info(study_info_file, extra_weights):
@@ -138,10 +134,36 @@ def get_genomes_in_study(study):
     genomes_in_study = set()
     if not study.startswith("PRJ"):
         raise ValueError(
-            "Cannot process study accession {}. A primary accession is required".format(
+            "Cannot process study accession {}. A primary accession is required.".format(
                 study
             )
         )
+    ena_request_result = run_ena_request(study)
+    study_is_ncbi = False
+    if len(ena_request_result.split("\n")) < 3:
+        study_is_ncbi = True
+    else:
+        for line in ena_request_result.splitlines():
+            if not line.startswith("accession"):
+                genome = line.strip().split("\t")[-1].split("/")[-1].split(".")[0]
+                if genome.startswith("C"):
+                    genomes_in_study.add(genome)
+                else:
+                    study_is_ncbi = True
+    if study_is_ncbi:
+        ncbi_request_result = run_ncbi_request(study)
+        for line in ncbi_request_result.splitlines():
+            if not line.startswith("accession"):
+                genomes_in_study.add(line.split()[0])
+    if len(genomes_in_study) == 0:
+        sys.exit(
+            "Unable to get a list of genomes for study {} from ENA. "
+            "Provided extra weight info cannot be used.".format(study)
+        )
+    return genomes_in_study
+
+
+def run_ena_request(study):
     query = {
         "result": "wgs_set",
         "query": (
@@ -153,16 +175,21 @@ def get_genomes_in_study(study):
         "format": "tsv",
     }
     r = run_request(query, ENA_ENDPOINT)
-    if r.content.decode() == "":
-        sys.exit(
-            "Unable to get a list of genomes for study {} from ENA. Provided extra"
-            " weight info cannot be used".format(study)
-        )
-    for line in r.text.splitlines():
-        if not line.startswith("accession"):
-            genome = line.strip().split("\t")[-1].split("/")[-1].split(".")[0]
-            genomes_in_study.add(genome)
-    return genomes_in_study
+    return r.content.decode()
+    
+
+def run_ncbi_request(study):
+    query = {
+        "result": "assembly",
+        "query": (
+            'study_accession="{}"'.format(
+                study
+            )
+        ),
+        "format": "tsv",
+    }
+    r = run_request(query, ENA_ENDPOINT)
+    return r.content.decode()
 
 
 def add_extension(genomes_in_study, extra_weights):
@@ -186,7 +213,7 @@ def add_genome_info(genome_info_file, extra_weights):
                 sys.exit(
                     "Extra weight information for genome {} was provided but genome is"
                     " not found in the genomes folder. Check naming format - is the"
-                    " extension missing? Extra weight information cannot be used".format(
+                    " extension missing? Extra weight information cannot be used.".format(
                         genome
                     )
                 )
@@ -269,7 +296,11 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description=(
             "Identifies isolate genomes and MAGs and creates an extra"
-            "weight table for drep"
+            " weight table for drep. It is strongly suggested that if"
+            " the genome list includes any known isolates, the --study-info"
+            " --genome-info parameters are used to indicate that. Without them"
+            " the script will try to identify isolates from metadata which is not "
+            " always available."
         )
     )
     parser.add_argument(
@@ -278,8 +309,8 @@ def parse_args():
         help=(
             "If the entire study includes only one type of genomes (MAGs only or"
             " isolates only) and this information is already available, provide a path"
-            " to a tab-delimited filewhere the first column contains primary study IDs"
-            " and the second column contains the type (MAG or isolate)"
+            " to a tab-delimited file where the first column contains primary study IDs (starting with PRJ)"
+            " and the second column contains the type (MAG or isolate)."
         ),
     )
     parser.add_argument(
@@ -289,7 +320,7 @@ def parse_args():
             "If any of the studies contain a mix of isolate and MAG genomes or if"
             " information for only some of the genomes is available, provide a path to a"
             " file containing per genome information. First column should be the genome"
-            " accession, second column the type of genome (MAG or isolate)"
+            " accession (original one, not MGYG), second column the type of genome (MAG or isolate)."
         ),
     )
     parser.add_argument(
@@ -297,7 +328,7 @@ def parse_args():
         "--name-mapping",
         required=False,
         help=(
-            "If this is provided the genomes from the genome-info"
+            "If this is provided, the genomes from the genome-info"
             " and study-info will be renamed following the mapping."
         ),
     )
@@ -305,13 +336,13 @@ def parse_args():
         "-o",
         "--outfile",
         required=True,
-        help="Path to the output file where the extra weight table will be stored",
+        help="Path to the output file where the extra weight table will be stored.",
     )
     parser.add_argument(
         "-d",
         "--genomes-dir",
         required=True,
-        help="Path to the directory where input genomes for dereplication are stored",
+        help="Path to the directory where input genome fasta files for dereplication are stored.",
     )
     return parser.parse_args()
 
