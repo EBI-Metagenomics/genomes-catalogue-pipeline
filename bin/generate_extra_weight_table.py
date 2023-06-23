@@ -68,7 +68,7 @@ def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
 
     extra_weights = check_table(extra_weights)
 
-    print_results(extra_weights, outfile, name_mapping=name_mapping)
+    print_results(extra_weights, outfile, name_mapping_dict=name_mapping_dict)
 
 
 def initialize_weights_dict(genomes_dir, name_mapping=None):
@@ -89,7 +89,6 @@ def initialize_weights_dict(genomes_dir, name_mapping=None):
         with open(name_mapping, "r") as nm_f:
             tsv_reader = csv.reader(nm_f, delimiter="\t")
             for old_name, new_name in tsv_reader:
-                print(f"Mapeo: {old_name} {new_name}")
                 name_mapping_dict[new_name] = old_name
 
     for genome_file in genomes_dir_contents:
@@ -276,19 +275,12 @@ def check_table(extra_weights):
     return extra_weights
 
 
-def print_results(extra_weights, outfile, name_mapping=None):
+def print_results(extra_weights, outfile, name_mapping_dict):
     """Generate the result tsv file."""
-    name_mapping_dict = {}
-    if name_mapping:
-        with open(name_mapping, "r") as nm_f:
-            tsv_reader = csv.reader(nm_f, delimiter="\t")
-            for new_name, old_name in tsv_reader:
-                name_mapping_dict[new_name] = old_name
-
     with open(outfile, "w") as table_out:
         table_writer = csv.writer(table_out, delimiter="\t")
         for genome_name, weight in extra_weights.items():
-            genome_name = name_mapping_dict.get(genome_name, genome_name)
+            genome_name = next((key for key, value in name_mapping_dict.items() if value == genome_name), genome_name)
             table_writer.writerow([genome_name, weight])
 
 
