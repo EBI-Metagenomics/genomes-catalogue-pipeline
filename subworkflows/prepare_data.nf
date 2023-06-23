@@ -6,16 +6,19 @@ include { MERGE_NCBI_ENA } from '../modules/merge_ncbi_ena'
 include { CHECKM } from '../modules/checkm'
 include { FILTER_QS50 } from '../modules/filter_qs50'
 include { RENAME_FASTA } from '../modules/rename_fasta'
+include { GENERATE_EXTRA_WEIGHT } from '../modules/generate_extra_weight'
 
 
 workflow PREPARE_DATA {
     take:
-        ena_assemblies      // channel: path
-        ena_genomes_checkm  // channel: file
-        ncbi_assemblies     // channel: path
-        genomes_name_start  // val
-        genomes_name_end    // val
-        genomes_prefix
+        ena_assemblies              // channel: path
+        ena_genomes_checkm          // channel: file
+        ncbi_assemblies             // channel: path
+        genomes_name_start          // val
+        genomes_name_end            // val
+        genomes_prefix              // val
+        per_genome_category         // file | empty
+        per_study_genomes_category  // file | empty
     main:
         genomes_ch = channel.empty()
         genomes_checkm_ch = channel.empty()
@@ -57,8 +60,16 @@ workflow PREPARE_DATA {
             genomes_prefix
         )
 
+        GENERATE_EXTRA_WEIGHT(
+            FILTER_QS50.out.filtered_genomes,
+            RENAME_FASTA.out.rename_mapping,
+            per_genome_category.ifEmpty(file("NO_FILE_GENOME_CAT")).first(),
+            per_study_genomes_category.ifEmpty(file("NO_FILE_STUDY_CAT")).first()
+        )
+
     emit:
         genomes = RENAME_FASTA.out.renamed_genomes
         genomes_checkm = RENAME_FASTA.out.renamed_checkm
         genomes_name_mapping = RENAME_FASTA.out.rename_mapping
+        extra_weight_table = GENERATE_EXTRA_WEIGHT.out.extra_weight_table
 }

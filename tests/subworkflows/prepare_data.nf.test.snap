@@ -1,18 +1,52 @@
 {
+    "Should use the genome_info file": {
+        "content": [
+            {
+                "genomes_checkm": [
+                    "renamed_filtered_genomes.csv:md5,b46dfe5adba6c6553768e059df4afdea"
+                ],
+                "genomes": [
+                    [
+                        "MGYG000000001.fa:md5,87e1e1cfbbef41101737b5e60acf0fa6",
+                        "MGYG000000002.fa:md5,a4399eda9db234a1e6026a0faf7fe23d",
+                        "MGYG000000003.fa:md5,a0b7bdf23408a1c56ad430ee201e1dd9",
+                        "MGYG000000004.fa:md5,f8378657291941ceb0d9f508b57c545d",
+                        "MGYG000000005.fa:md5,a364cc8718ccf7668269e928d0a21c91"
+                    ]
+                ],
+                "genomes_name_mapping": [
+                    "name_mapping.tsv:md5,98986c941f924f93178f806a94b5f834"
+                ],
+                "extra_weight_table": [
+                    "extra_weight_table.txt:md5,812f45920ff4b6d98f7cf8e5e2a21838"
+                ]
+            }
+        ],
+        "timestamp": "2023-06-21T19:40:49+0000"
+    },
     "Should filter and rename genomes": {
         "content": [
             {
                 "genomes_checkm": [
-
+                    "renamed_filtered_genomes.csv:md5,ac2d10be522193131ed0dc11f7a569f5"
                 ],
                 "genomes": [
-
+                    [
+                        "MGYG000000000.fa:md5,bba7f5fc50e79ab2be19ff34c8a9104f",
+                        "MGYG000000001.fa:md5,7897135cc5d8c6d81e85d1b5e58941da",
+                        "MGYG000000002.fa:md5,b32db60d90de43d6041fa794eb95a502",
+                        "MGYG000000003.fa:md5,2a4a9494f5d57c34e3a564726161e8b5",
+                        "MGYG000000004.fa:md5,19f27d7ad6b98edd39e946d58d60976b"
+                    ]
                 ],
                 "genomes_name_mapping": [
-
+                    "name_mapping.tsv:md5,9d5826e1c7ce213f507f90f27636f3b5"
+                ],
+                "extra_weight_table": [
+                    "extra_weight_table.txt:md5,1e6fea665b538a0c873e401ec0e498c4"
                 ]
             }
         ],
-        "timestamp": "2023-04-25T13:43:42+0000"
+        "timestamp": "2023-06-21T19:40:49+0000"
     }
 }
