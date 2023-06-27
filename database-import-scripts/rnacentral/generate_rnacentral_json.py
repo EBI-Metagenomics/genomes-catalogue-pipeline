@@ -14,27 +14,22 @@ import sys
 from Bio import SeqIO
 from Bio.Seq import Seq
 import requests
+import urllib.parse
 import xmltodict
 
 logging.basicConfig(level=logging.INFO)
 
+# Define variables for stats report
 SKIP_CMSCAN = SKIP_GFF = SKIP_SHORT = SKIP_TOTAL = GOOD = 0
 
 
 def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
     produced_date = get_date()
     rfam_lengths = load_rfam(rfam_info)
-    if not os.path.exists(deoverlap_dir):
-        logging.exception("cmscan deoverlap directory doesn't exist")
-        sys.exit()
-    if not os.path.exists(gff_dir):
-        logging.exception("GFF directory doesn't exist")
-        sys.exit()
-    if not os.path.exists(fasta_dir):
-        logging.exception("Fasta directory doesn't exist")
-        sys.exit()
+    check_inputs_existence(deoverlap_dir, gff_dir, fasta_dir)
     metadata_json = dict()
     sample_publication_mapping = dict()
+    sample_publication_mapping["NA"] = list()  # we are missing some sample accessions in the gut catalogue
     final_dict = dict()
     final_dict.setdefault("data", list())
     with open(metadata, "r") as f:
@@ -47,7 +42,7 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
                     metadata_json, catalogue_name = generate_metadata_dict(ftp, produced_date)
                 # only process species reps
                 if mgnify_accession == species_rep:
-                    json_data = generate_data_dict(mgnify_accession, sample_accession,
+                    json_data, sample_publication_mapping = generate_data_dict(mgnify_accession, sample_accession,
                                                    taxonomy, deoverlap_dir, gff_dir, fasta_dir, rfam_lengths,
                                                    sample_publication_mapping, catalogue_name)
                     if json_data:
@@ -77,6 +72,18 @@ def get_date():
     return produced_date
 
 
+def check_inputs_existence(deoverlap_dir, gff_dir, fasta_dir):
+    if not os.path.exists(deoverlap_dir):
+        logging.exception("cmscan deoverlap directory doesn't exist")
+        sys.exit()
+    if not os.path.exists(gff_dir):
+        logging.exception("GFF directory doesn't exist")
+        sys.exit()
+    if not os.path.exists(fasta_dir):
+        logging.exception("Fasta directory doesn't exist")
+        sys.exit()
+    
+    
 def generate_metadata_dict(ftp, produced_date):
     """Generates the metadata object for the entire JSON.
 
@@ -128,7 +135,7 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
         fasta_file = glob.glob(os.path.join(fasta_dir, mgnify_accession + ".*"))[0]
         seq_records = SeqIO.to_dict(SeqIO.parse(fasta_file, "fasta"))
         read_function = gzip.open if gff_path.endswith('.gz') else open
-        with read_function(gff_path, "r") as f:
+        with read_function(gff_path, "rt") as f:
             for line in f:
                 if line.startswith(">"):
                     break
@@ -167,8 +174,10 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                                          format(contig, start, end))
                             SKIP_TOTAL += 1
                             print(line)
+    else:
+        SKIP_TOTAL += 1
     # Print a warning if there are no hits in GFF but there are hits in hits_to_report
-    return dict_list
+    return dict_list, sample_publication_mapping
 
 
 def get_seq_name(annotation):
@@ -198,12 +207,19 @@ def make_genome_locations(contig, start, end, strand, mgnify_accession):
 
 
 def get_publications(genome_sample_accession):
-    """Get a list of PMIDs associates with the raw data from which the genome was generated.
+    """Get a list of PMIDs associated with the raw data from which the genome was generated.
 
     :param genome_sample_accession: sample from the metadata table.
     :return: list of PMIDs
     """
     publications = list()
+    biosamples = None
+    # Check if there are read files associated with the sample (meaning sample accession points to raw data already)
+    raw_data_sample = check_sample_level(genome_sample_accession)
+    #if raw_data_sample:
+    #    biosamples = list()
+    #    biosamples.append(genome_sample_accession)
+    #else:
     xml_data = load_xml(genome_sample_accession)
     sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
     for attribute in sample_attributes:
@@ -229,6 +245,27 @@ def get_publications(genome_sample_accession):
     if not biosamples:
         logging.error("Biosample couldn't be obtained for sample {}".format(genome_sample_accession))
     return list(filter(None, list(set(publications))))
+
+
+def check_sample_level(genome_sample_accession):
+    api_endpoint = "https://www.ebi.ac.uk/ena/portal/api/filereport"
+    query = {
+        'accession': '{}'.format(genome_sample_accession),
+        'result': 'read_run',
+        'fields': 'run_accession',
+        'format': 'tsv'
+    }
+    r = run_request(query, api_endpoint)
+    for line in r.text.splitlines():
+        if line.startswith(("ERR", "DRR", "SRR")):
+            return True
+    return False
+
+
+def run_request(query, api_endpoint):
+    r = requests.get(api_endpoint, params=urllib.parse.urlencode(query))
+    r.raise_for_status()
+    return r
 
 
 def convert_bin_sample(biosample):
