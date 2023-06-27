@@ -114,6 +114,9 @@ def load_geography(geofile):
 
 
 def get_metadata(acc):
+    location = None
+    project = None
+    biosample = None
     if acc.startswith("ERZ"):
         json_data_erz = load_xml(acc)
         biosample = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["SAMPLE_REF"][
@@ -124,6 +127,10 @@ def get_metadata(acc):
         ]
     elif acc.startswith("GUT"):
         pass
+    elif acc.startswith("GCA"):
+        json_data_gca = load_xml(acc)
+        biosample = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["SAMPLE_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
+        project = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["STUDY_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
     else:
         if acc.startswith("CA"):
             acc = acc + "0" * 7
@@ -161,20 +168,22 @@ def get_metadata(acc):
                 project = "N/A"
         else:
             json_data_sample = load_xml(biosample)
-            converted_sample = json_data_sample["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"][
+            try:
+                converted_sample = json_data_sample["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"][
                 "PRIMARY_ID"
-            ]
-            if not converted_sample:
+                ]
+            except:
                 converted_sample = biosample
         if project == "N/A":
             converted_project = "N/A"
         else:
             json_data_project = load_xml(project)
-            converted_project = json_data_project["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"][
+            try:
+                converted_project = json_data_project["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"][
                 "SECONDARY_ID"
-            ]
-        if not converted_project:
-            converted_project = project
+                ]
+            except:
+                converted_project = project
     else:
         converted_sample = "FILL"
         converted_project = "FILL"
