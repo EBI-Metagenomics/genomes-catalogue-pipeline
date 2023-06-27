@@ -175,7 +175,7 @@ workflow GAP {
 
     /* IQTree need at least 3 sequences. */
     gtdbtk_user_msa_bac120 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.first {
-        file(it).countFasta() => 2
+        file(it).countFasta() > 2
     }
     IQTREE_BAC(
         gtdbtk_user_msa_bac120,
