@@ -173,19 +173,22 @@ workflow GAP {
         ch_gtdb_db
     )
 
-    if (GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120) {
-        IQTREE_BAC(
-            GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120,
-            channel.value("bac120")
-        )
+    /* IQTree need at least 3 sequences. */
+    gtdbtk_user_msa_bac120 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.first {
+        file(it).countFasta() => 2
     }
-
-    if (GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53) {
-        IQTREE_AR(
-            GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53,
-            channel.value("ar53")
-        )
+    IQTREE_BAC(
+        GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120,
+        channel.value("bac120")
+    )
+    /* IQTree need at least 3 sequences. */
+    gtdbtk_user_msa_ar53 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53.first {
+        file(it).countFasta() > 2
     }
+    IQTREE_AR(
+        gtdbtk_user_msa_ar53,
+        channel.value("ar53")
+    )
 
     cluster_reps_faa = PROCESS_SINGLETON_GENOMES.out.prokka_faa.mix(
         PROCESS_MANY_GENOMES.out.rep_prokka_faa
