@@ -20,7 +20,9 @@ import xmltodict
 logging.basicConfig(level=logging.INFO)
 
 # Define variables for stats report
-SKIP_CMSCAN = SKIP_GFF = SKIP_SHORT = SKIP_TOTAL = GOOD = 0
+SKIP_CMSCAN = SKIP_GFF = GOOD = 0
+skip_short = list()
+skip_total = list()
 
 
 def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
@@ -50,14 +52,24 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
     final_dict["metaData"] = metadata_json
     with open(outfile, "w") as file_out:
         json.dump(final_dict, file_out, indent=5)
+    skip_other = set(skip_total) - set(skip_short)
     with open(outfile + ".report", "w") as file_out:
         file_out.write("Total hits reported in JSON\t{}\n".format(GOOD))
-        file_out.write("Hits excluded due to short length\t{}\n".format(SKIP_SHORT))
+        file_out.write("Hits excluded due to short length\t{}\n".format(len(skip_short)))
         file_out.write("Hits excluded because contig names don't match between GFF and cmsearch output\t{}\n".format(
-            SKIP_TOTAL-SKIP_SHORT))
+            len(skip_other)))
         file_out.write("Genomes not processed because cmsearch output is missing\t{}\n".format(SKIP_CMSCAN))
         file_out.write("Genomes not processed because GFF is missing (cmsearch output exists)\t{}\n".format(SKIP_GFF))
-
+    with open("skipped_short.txt", "w") as short_out:
+        for element in skip_short:
+            short_out.write(element + "\n")
+    with open("skipped_total.txt", "w") as total_out:
+        for element in skip_total:
+            total_out.write(element + "\n")
+    with open("skipped_other.txt", "w") as skip_other_out:
+        for element in skip_other:
+            skip_other_out.write(element + "\n")
+    
 
 def get_date():
     now = datetime.now()
@@ -115,7 +127,7 @@ def parse_ftp(ftp):
 
 def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_dir,
                        gff_dir, fasta_dir, rfam_lengths, sample_publication_mapping, catalogue_name):
-    global SKIP_CMSCAN, SKIP_GFF, SKIP_TOTAL, GOOD
+    global SKIP_CMSCAN, SKIP_GFF, GOOD
     deoverlap_path = os.path.join(deoverlap_dir, "{}.cmscan-deoverlap.tbl".format(mgnify_accession))
     if not os.path.exists(deoverlap_path):
         logging.warning("cmscan file for accession {} doesn't exist. Skipping.".format(mgnify_accession))
@@ -172,11 +184,22 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                                          "JSON because it did not make the high quality list or the contig name "
                                          "doesn't match between the GFF and the deoverlapped file.".
                                          format(contig, start, end))
-                            SKIP_TOTAL += 1
-                            print(line)
+                            skip_total.append("{}_{}_{}".format(contig, start, end))
     else:
-        SKIP_TOTAL += 1
-    # Print a warning if there are no hits in GFF but there are hits in hits_to_report
+        read_function = gzip.open if gff_path.endswith('.gz') else open
+        with read_function(gff_path, "rt") as f:
+            for line in f:
+                if line.startswith(">"):
+                    break
+                elif line.startswith("#"):
+                    pass
+                else:
+                    if "INFERNAL" in line:
+                        fields = line.strip().split("\t")
+                        contig, start, end, strand, annotation = fields[0], int(fields[3]), int(fields[4]), fields[6], \
+                                                                 fields[8]
+                        skip_total.append("{}_{}_{}".format(contig, start, end))
+    # TO DO: Print a warning if there are no hits in GFF but there are hits in hits_to_report
     return dict_list, sample_publication_mapping
 
 
@@ -213,35 +236,35 @@ def get_publications(genome_sample_accession):
     :return: list of PMIDs
     """
     publications = list()
-    biosamples = None
+    biosamples = list()
     # Check if there are read files associated with the sample (meaning sample accession points to raw data already)
+    # If that's the case, there is no need to convert the sample accession to the raw data one
     raw_data_sample = check_sample_level(genome_sample_accession)
-    #if raw_data_sample:
-    #    biosamples = list()
-    #    biosamples.append(genome_sample_accession)
-    #else:
-    xml_data = load_xml(genome_sample_accession)
-    sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
-    for attribute in sample_attributes:
-        if all([x in attribute["TAG"] for x in ["derived", "from"]]):
-            biosamples = re.findall("SAMN\d+|ERS\d+", attribute["VALUE"])
-            print(biosamples)
-            for biosample in biosamples:
-                if biosample.startswith("ERS"):
-                    biosample = convert_bin_sample(biosample)
-                project_accessions = get_project_accession(biosample)
-                print(project_accessions)
-                if project_accessions:
-                    publications_to_add = list()
-                    for project in project_accessions:
-                        extracted_publications = get_publications_from_xml(project)
-                        if extracted_publications:
-                            publications_to_add.extend(list(extracted_publications))
-                    publications.extend(list(publications_to_add))
-                else:
-                    logging.error("Could not obtain project accessions for sample {}".
-                                  format(genome_sample_accession))
-            break
+    if raw_data_sample:
+        biosamples.append(genome_sample_accession)
+    else:
+        xml_data = load_xml(genome_sample_accession)
+        sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
+        for attribute in sample_attributes:
+            if all([x in attribute["TAG"] for x in ["derived", "from"]]):
+                biosamples = re.findall("SAMN\d+|ERS\d+", attribute["VALUE"])
+                print(biosamples)
+                break
+    for biosample in biosamples:
+        if biosample.startswith("ERS"):
+            biosample = convert_bin_sample(biosample)
+        project_accessions = get_project_accession(biosample)
+        print(project_accessions)
+        if project_accessions:
+            publications_to_add = list()
+            for project in project_accessions:
+                extracted_publications = get_publications_from_xml(project)
+                if extracted_publications:
+                    publications_to_add.extend(list(extracted_publications))
+            publications.extend(list(publications_to_add))
+        else:
+            logging.error("Could not obtain project accessions for sample {}".
+                          format(genome_sample_accession))
     if not biosamples:
         logging.error("Biosample couldn't be obtained for sample {}".format(genome_sample_accession))
     return list(filter(None, list(set(publications))))
@@ -295,7 +318,6 @@ def get_publications_from_xml(project):
 def get_project_accession(biosample):
     api_endpoint = "https://www.ebi.ac.uk/ena/portal/api/filereport"
     full_url = "{}?accession={}&result=read_run&fields=secondary_study_accession".format(api_endpoint, biosample)
-    print(full_url)
     r = requests.get(url=full_url)
     if r.ok:
         projects = list()
@@ -307,7 +329,8 @@ def get_project_accession(biosample):
     else:
         logging.error("Error when requesting study accession for biosample {}".format(biosample))
         logging.error(r.text)
-        return None
+        sys.exit()
+        # return None
 
 
 def load_xml(sample_id):
@@ -369,7 +392,6 @@ def get_good_hits(file, rfam_lengths):
     :param rfam_lengths: dictionary where key = Rfam model accession, value = length
     :return: dictionary where key = contig, value = list of start/end pairs that correspond to good hits
     """
-    global SKIP_SHORT
     hits_to_report = dict()
     with open(file, 'r') as f:
         for line in f:
@@ -384,7 +406,8 @@ def get_good_hits(file, rfam_lengths):
                 if perc_covered >= 80.0:
                     hits_to_report.setdefault(contig, list()).append(sorted([contig_start, contig_end]))
                 else:
-                    SKIP_SHORT += 1
+                    pos = sorted([contig_start, contig_end])
+                    skip_short.append("{}_{}_{}".format(contig, pos[0], pos[1]))
     return hits_to_report
 
 
