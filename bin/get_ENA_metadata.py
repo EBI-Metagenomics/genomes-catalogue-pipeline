@@ -59,17 +59,48 @@ def get_location(sample_id):
 
 
 def get_gca_location(sample_id):
-    location = ""
+    location = None
+    geo_data_list = list()
     json_data = load_gca_json(sample_id)
-    try:
-        geo_data_list = json_data["characteristics"]["geo loc name"]
-    except:
+    if not json_data:
         return None
+    
+    possible_keys = ["characteristics.geo loc name", "characteristics.geo_loc_name", "description.geo_loc_name"]
+    for key_pair in possible_keys:
+        try:
+            attr1, attr2 = key_pair.split('.')
+            geo_data_list = json_data[attr1][attr2]
+            break
+        except KeyError:
+            pass
+    if not geo_data_list:
+        return None
+    
     for item in geo_data_list:
         if "text" in item:
             location = item["text"].strip().split(":")[0]
             break
     return location
+        
+#    try:
+#        geo_data_list = json_data["characteristics"]["geo loc name"]
+#    except:
+#        pass
+#    try:
+#        geo_data_list = json_data["characteristics"]["geo_loc_name"]
+#    except:
+#        pass
+#    try:
+#        geo_data_list = json_data["description"]["geo_loc_name"]
+#    except:
+#        pass
+#    for item in geo_data_list:
+#        if "text" in item:
+#            location = item["text"].strip().split(":")[0]
+#            break
+#    if not geo_data_list:
+#        return None
+#    return location
 
 
 def load_xml(sample_id):
