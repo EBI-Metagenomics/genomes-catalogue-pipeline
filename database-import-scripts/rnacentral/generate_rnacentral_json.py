@@ -248,13 +248,11 @@ def get_publications(genome_sample_accession):
         for attribute in sample_attributes:
             if all([x in attribute["TAG"] for x in ["derived", "from"]]):
                 biosamples = re.findall("SAMN\d+|ERS\d+", attribute["VALUE"])
-                print(biosamples)
                 break
     for biosample in biosamples:
         if biosample.startswith("ERS"):
             biosample = convert_bin_sample(biosample)
         project_accessions = get_project_accession(biosample)
-        print(project_accessions)
         if project_accessions:
             publications_to_add = list()
             for project in project_accessions:
