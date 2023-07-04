@@ -133,10 +133,11 @@ def get_metadata(acc):
             biosample = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["SAMPLE_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
             project = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["STUDY_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
         except:
+            logging.info("Missing metadata in ENA XML for sample {}. Using API instead.".format(acc))
             try:
                 biosample, project = ena_api_request(acc)
             except:
-                sys.exit("Could not obtain biosample and project information for {}".format(acc))
+                logging.exception("Could not obtain biosample and project information for {}".format(acc))
     else:
         biosample, project = ena_api_request(acc)
     if not acc.startswith("GUT"):
@@ -145,6 +146,7 @@ def get_metadata(acc):
         else:
             location = get_location(biosample)
     if not location:
+        logging.warning("Unable to obtain location for sample {}".format(biosample))
         location = "not provided"
     if not acc.startswith("GUT"):
         if acc.startswith("GCA"):
