@@ -81,26 +81,6 @@ def get_gca_location(sample_id):
             location = item["text"].strip().split(":")[0]
             break
     return location
-        
-#    try:
-#        geo_data_list = json_data["characteristics"]["geo loc name"]
-#    except:
-#        pass
-#    try:
-#        geo_data_list = json_data["characteristics"]["geo_loc_name"]
-#    except:
-#        pass
-#    try:
-#        geo_data_list = json_data["description"]["geo_loc_name"]
-#    except:
-#        pass
-#    for item in geo_data_list:
-#        if "text" in item:
-#            location = item["text"].strip().split(":")[0]
-#            break
-#    if not geo_data_list:
-#        return None
-#    return location
 
 
 def load_xml(sample_id):
