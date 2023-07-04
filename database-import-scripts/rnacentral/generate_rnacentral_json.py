@@ -38,15 +38,15 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
         for line in f:
             if not line.startswith("Genome"):
                 parts = line.strip().split("\t")
-                mgnify_accession, species_rep, taxonomy, sample_accession, ftp = \
-                    parts[0], parts[13], parts[14], parts[15], parts[19]
+                mgnify_accession, species_rep, taxonomy, sample_accession, reported_project, ftp = \
+                    parts[0], parts[13], parts[14], parts[15], parts[16], parts[19]
                 if not metadata_json:
                     metadata_json, catalogue_name = generate_metadata_dict(ftp, produced_date)
                 # only process species reps
                 if mgnify_accession == species_rep:
                     json_data, sample_publication_mapping = generate_data_dict(mgnify_accession, sample_accession,
                                                    taxonomy, deoverlap_dir, gff_dir, fasta_dir, rfam_lengths,
-                                                   sample_publication_mapping, catalogue_name)
+                                                   sample_publication_mapping, catalogue_name, reported_project)
                     if json_data:
                         final_dict["data"].extend(json_data)
     final_dict["metaData"] = metadata_json
@@ -126,7 +126,8 @@ def parse_ftp(ftp):
 
 
 def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_dir,
-                       gff_dir, fasta_dir, rfam_lengths, sample_publication_mapping, catalogue_name):
+                       gff_dir, fasta_dir, rfam_lengths, sample_publication_mapping, catalogue_name,
+                       reported_project):
     global SKIP_CMSCAN, SKIP_GFF, GOOD
     deoverlap_path = os.path.join(deoverlap_dir, "{}.cmscan-deoverlap.tbl".format(mgnify_accession))
     if not os.path.exists(deoverlap_path):
