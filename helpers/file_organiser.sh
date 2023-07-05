@@ -95,6 +95,8 @@ function CopyAdditionalFiles {
     cp -r additional_data ${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/
     cd ${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data
     bsub -q production -M 1G -n 1 -o /dev/null "tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes"
+    cd ${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/gene_catalogue
+    bsub -q production -M 1G -n 1 -o /dev/null "gzip gene_catalogue-100.ffn"
 }
 
 
