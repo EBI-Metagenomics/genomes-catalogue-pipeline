@@ -14,6 +14,7 @@ import sys
 from Bio import SeqIO
 from Bio.Seq import Seq
 import requests
+from retry import retry
 import urllib.parse
 import xmltodict
 
@@ -40,6 +41,7 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
                 parts = line.strip().split("\t")
                 mgnify_accession, species_rep, taxonomy, sample_accession, reported_project, ftp = \
                     parts[0], parts[13], parts[14], parts[15], parts[16], parts[19]
+                # metadata json is only produced once for the entire catalogue
                 if not metadata_json:
                     metadata_json, catalogue_name = generate_metadata_dict(ftp, produced_date)
                 # only process species reps
@@ -176,7 +178,7 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                             if sample_accession in sample_publication_mapping:
                                 data_dict["publications"] = sample_publication_mapping[sample_accession]
                             else:
-                                data_dict["publications"] = get_publications(sample_accession)
+                                data_dict["publications"] = get_publications(sample_accession, reported_project)
                                 sample_publication_mapping[sample_accession] = data_dict["publications"]
                             data_dict["additionalAnnotations"] = {"catalog_name": catalogue_name}
                             dict_list.append(data_dict)
@@ -230,7 +232,7 @@ def make_genome_locations(contig, start, end, strand, mgnify_accession):
     return loc_dict
 
 
-def get_publications(genome_sample_accession):
+def get_publications(genome_sample_accession, reported_project):
     """Get a list of PMIDs associated with the raw data from which the genome was generated.
 
     :param genome_sample_accession: sample from the metadata table.
@@ -238,22 +240,46 @@ def get_publications(genome_sample_accession):
     """
     publications = list()
     biosamples = list()
+    new_samples_to_check = list()
     # Check if there are read files associated with the sample (meaning sample accession points to raw data already)
     # If that's the case, there is no need to convert the sample accession to the raw data one
+    samples_to_check = [genome_sample_accession]
     raw_data_sample = check_sample_level(genome_sample_accession)
     if raw_data_sample:
-        biosamples.append(genome_sample_accession)
+        print("sample is a raw sample", genome_sample_accession)
+        biosamples = samples_to_check
     else:
-        xml_data = load_xml(genome_sample_accession)
-        sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
-        for attribute in sample_attributes:
-            if all([x in attribute["TAG"] for x in ["derived", "from"]]):
-                biosamples = re.findall("SAMN\d+|ERS\d+", attribute["VALUE"])
-                break
+        while samples_to_check:
+            print("Checking samples", samples_to_check)
+            samples_for_next_iteration = list()
+            for sample_to_check in samples_to_check:
+                xml_data = load_xml(sample_to_check)
+                try:
+                    sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
+                except:
+                    logging.exception("Unable to process XML for sample {}".format(sample_to_check))
+                    sys.exit()
+                sample_is_derived = False
+                for attribute in sample_attributes:
+                    if all([x in attribute["TAG"] for x in ["derived", "from"]]):
+                        derived_from_list = re.findall("SAMN\d+|ERS\d+", attribute["VALUE"])
+                        samples_for_next_iteration = samples_for_next_iteration + derived_from_list
+                        sample_is_derived = True
+                        break
+                if not sample_is_derived:
+                    biosamples.append(sample_to_check)
+            samples_to_check = samples_for_next_iteration
+    print("Done checking samples. Resulting set is", biosamples)
     for biosample in biosamples:
         if biosample.startswith("ERS"):
+            print("trying to convert", biosample)
             biosample = convert_bin_sample(biosample)
+            print("converted to", biosample)
         project_accessions = get_project_accession(biosample)
+        print("got these project accessions for sample", biosample, "accs:", project_accessions)
+        if not project_accessions and raw_data_sample:
+            print("------------------> Assigning raw project", biosample)
+            project_accessions = {reported_project}
         if project_accessions:
             publications_to_add = list()
             for project in project_accessions:
@@ -284,6 +310,7 @@ def check_sample_level(genome_sample_accession):
     return False
 
 
+@retry(tries=5, delay=10, backoff=1.5)
 def run_request(query, api_endpoint):
     r = requests.get(api_endpoint, params=urllib.parse.urlencode(query))
     r.raise_for_status()
@@ -311,6 +338,20 @@ def get_publications_from_xml(project):
                 if element["XREF_LINK"]["DB"].lower() == "pubmed":
                     pub = "PMID:{}".format(element["XREF_LINK"]["ID"])
                     extracted_publications.append(pub)
+    if not extracted_publications:
+        # check xref
+        print("Checking xref")
+        api_endpoint = "https://www.ebi.ac.uk/ena/xref/rest/json/search"
+        query = {
+            'accession': '{}'.format(project),
+            'format': 'json'
+        }
+        r = run_request(query, api_endpoint)
+        data = r.json()
+        for pub_record in data:
+            if "Source Secondary Accession" in pub_record:
+                pub = "PMID:{}".format(pub_record["Source Secondary Accession"])
+                extracted_publications.append(pub)
     return set(extracted_publications)
 
 
@@ -334,16 +375,27 @@ def get_project_accession(biosample):
 
 def load_xml(sample_id):
     xml_url = 'https://www.ebi.ac.uk/ena/browser/api/xml/{}'.format(sample_id)
-    r = requests.get(xml_url)
+    r = run_xml_request(xml_url)
     if r.ok:
-        data_dict = xmltodict.parse(r.content)
-        json_dump = json.dumps(data_dict)
-        json_data = json.loads(json_dump)
-        return json_data
+        try:
+            data_dict = xmltodict.parse(r.content)
+            json_dump = json.dumps(data_dict)
+            json_data = json.loads(json_dump)
+            return json_data
+        except:
+            logging.exception("Unable to load json from API for accession {}".format(sample_id))
+            print(r.text)
     else:
-        logging.error('Could not retrieve xml for sample {}'.format(sample_id))
+        logging.error('Could not retrieve xml for accession {}'.format(sample_id))
         logging.error(r.text)
         return None
+
+
+@retry(tries=5, delay=10, backoff=1.5)
+def run_xml_request(xml_url):
+    r = requests.get(xml_url)
+    r.raise_for_status()
+    return r
 
 
 def get_sequence(seq_records, contig, start, end, strand):
