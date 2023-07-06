@@ -338,34 +338,7 @@ def get_publications_from_xml(project):
                 if element["XREF_LINK"]["DB"].lower() == "pubmed":
                     pub = "PMID:{}".format(element["XREF_LINK"]["ID"])
                     extracted_publications.append(pub)
-    if not extracted_publications:
-        # check xref
-        print("Checking xref")
-        api_endpoint = "https://www.ebi.ac.uk/ena/xref/rest/json/search"
-        query = {
-            'accession': '{}'.format(project),
-            'format': 'json'
-        }
-        r = run_request(query, api_endpoint)
-        data = r.json()
-        for pub_record in data:
-            if "Source Secondary Accession" in pub_record:
-                if check_pub_validity(pub_record["Source Secondary Accession"]):
-                    pub = "PMID:{}".format(pub_record["Source Secondary Accession"])
-                    extracted_publications.append(pub)
-                else:
-                    logging.warning("Skipping publication {} for study {} because format in xref data is incorrect".
-                                    format(pub_record["Source Secondary Accession"], project))
-                
     return set(extracted_publications)
-
-
-def check_pub_validity(pub):
-    try:
-        float(pub)
-        return True
-    except ValueError:
-        return False
         
 
 def get_project_accession(biosample):
