@@ -337,7 +337,11 @@ def get_publications_from_xml(project):
             if "XREF_LINK" in element and "DB" in element["XREF_LINK"]:
                 if element["XREF_LINK"]["DB"].lower() == "pubmed":
                     pub = "PMID:{}".format(element["XREF_LINK"]["ID"])
-                    extracted_publications.append(pub)
+                    if check_pub_validity(pub):
+                        extracted_publications.append(pub)
+                    else:
+                        logging.warning("Skipping publication {} for study {} because format in xref data is inforrect".
+                                        format(pub, project))
     if not extracted_publications:
         # check xref
         print("Checking xref")
@@ -354,6 +358,14 @@ def get_publications_from_xml(project):
                 extracted_publications.append(pub)
     return set(extracted_publications)
 
+
+def check_pub_validity(pub):
+    try:
+        float(pub)
+        return True
+    except ValueError:
+        return False
+        
 
 def get_project_accession(biosample):
     api_endpoint = "https://www.ebi.ac.uk/ena/portal/api/filereport"
