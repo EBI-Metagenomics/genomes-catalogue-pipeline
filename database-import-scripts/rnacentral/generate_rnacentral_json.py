@@ -337,11 +337,7 @@ def get_publications_from_xml(project):
             if "XREF_LINK" in element and "DB" in element["XREF_LINK"]:
                 if element["XREF_LINK"]["DB"].lower() == "pubmed":
                     pub = "PMID:{}".format(element["XREF_LINK"]["ID"])
-                    if check_pub_validity(pub):
-                        extracted_publications.append(pub)
-                    else:
-                        logging.warning("Skipping publication {} for study {} because format in xref data is inforrect".
-                                        format(pub, project))
+                    extracted_publications.append(pub)
     if not extracted_publications:
         # check xref
         print("Checking xref")
@@ -354,8 +350,13 @@ def get_publications_from_xml(project):
         data = r.json()
         for pub_record in data:
             if "Source Secondary Accession" in pub_record:
-                pub = "PMID:{}".format(pub_record["Source Secondary Accession"])
-                extracted_publications.append(pub)
+                if check_pub_validity(pub_record["Source Secondary Accession"]):
+                    pub = "PMID:{}".format(pub_record["Source Secondary Accession"])
+                    extracted_publications.append(pub)
+                else:
+                    logging.warning("Skipping publication {} for study {} because format in xref data is incorrect".
+                                    format(pub_record["Source Secondary Accession"], project))
+                
     return set(extracted_publications)
 
 
