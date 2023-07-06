@@ -209,10 +209,10 @@ def add_genome_info(genome_info_file, extra_weights):
             if genome in extra_weights:
                 extra_weights[genome] = weight
             else:
-                sys.exit(
+                logging.warning(
                     "Extra weight information for genome {} was provided but genome is"
-                    " not found in the genomes folder. Check naming format - is the"
-                    " extension missing? Extra weight information cannot be used.".format(
+                    " not found in the genomes folder. Genome possibly removed during the QC step."
+                    " Extra weight information cannot be used.".format(
                         genome
                     )
                 )
