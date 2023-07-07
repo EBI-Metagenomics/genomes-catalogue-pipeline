@@ -169,7 +169,8 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                             data_dict["sequence"] = get_sequence(seq_records, contig, start, end, strand)
                             data_dict["name"] = get_seq_name(annotation)
                             data_dict["version"] = "1"
-                            data_dict["sourceModel"] = get_rfam_accession(annotation)
+                            data_dict["rfamAccession"] = get_rfam_accession(annotation)
+                            data_dict["sourceModel"] = "RFAM:{}".format(get_rfam_accession(annotation))
                             data_dict["genomeLocations"] = make_genome_locations(contig, start, end, strand,
                                                                                  mgnify_accession)
                             data_dict["url"] = \
