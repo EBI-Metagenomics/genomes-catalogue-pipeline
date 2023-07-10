@@ -18,7 +18,7 @@ from retry import retry
 import urllib.parse
 import xmltodict
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 # Define variables for stats report
 SKIP_CMSCAN = SKIP_GFF = GOOD = BAD_SEQUENCE = 0
@@ -261,11 +261,9 @@ def get_publications(genome_sample_accession, reported_project):
     samples_to_check = [genome_sample_accession]
     raw_data_sample = check_sample_level(genome_sample_accession)
     if raw_data_sample:
-        print("sample is a raw sample", genome_sample_accession)
         biosamples = samples_to_check
     else:
         while samples_to_check:
-            print("Checking samples", samples_to_check)
             samples_for_next_iteration = list()
             for sample_to_check in samples_to_check:
                 xml_data = load_xml(sample_to_check)
@@ -284,16 +282,11 @@ def get_publications(genome_sample_accession, reported_project):
                 if not sample_is_derived:
                     biosamples.append(sample_to_check)
             samples_to_check = samples_for_next_iteration
-    print("Done checking samples. Resulting set is", biosamples)
     for biosample in biosamples:
         if biosample.startswith("ERS"):
-            print("trying to convert", biosample)
             biosample = convert_bin_sample(biosample)
-            print("converted to", biosample)
         project_accessions = get_project_accession(biosample)
-        print("got these project accessions for sample", biosample, "accs:", project_accessions)
         if not project_accessions and raw_data_sample:
-            print("------------------> Assigning raw project", biosample)
             project_accessions = {reported_project}
         if project_accessions:
             publications_to_add = list()
