@@ -10,6 +10,16 @@ ch_ena_genomes_checkm = channel.fromPath(params.ena_genomes_checkm, checkIfExist
 ch_mgyg_index_start = channel.value(params.mgyg_start)
 ch_mgyg_index_end = channel.value(params.mgyg_end)
 
+ch_genomes_information = channel.empty()
+ch_study_genomes_information = channel.empty()
+
+if (params.genomes_information) {
+    ch_genomes_information = channel.fromPath(params.genomes_information)
+}
+if (params.study_genomes_information) {
+    ch_study_genomes_information = channel.fromPath(params.study_genomes_information)
+}
+
 // TODO: Add help message with parameters
 
 /*
@@ -82,12 +92,15 @@ workflow GAP {
         channel.empty(), // ncbi, we are ignoring this ATM
         ch_mgyg_index_start,
         ch_mgyg_index_end,
-        ch_genome_prefix
+        ch_genome_prefix,
+        ch_genomes_information,
+        ch_study_genomes_information
     )
 
     DREP_SWF(
         PREPARE_DATA.out.genomes,
-        PREPARE_DATA.out.genomes_checkm
+        PREPARE_DATA.out.genomes_checkm,
+        PREPARE_DATA.out.extra_weight_table
     )
 
     MASH_TO_NWK(
@@ -148,7 +161,7 @@ workflow GAP {
     GTDBTK_AND_METADATA(
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
-        DREP_SWF.out.extra_weight_table,
+        PREPARE_DATA.out.extra_weight_table,
         PREPARE_DATA.out.genomes_checkm,
         ANNOTATE.out.rrna_outs,
         PREPARE_DATA.out.genomes_name_mapping,
@@ -160,19 +173,22 @@ workflow GAP {
         ch_gtdb_db
     )
 
-    if (GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120) {
-        IQTREE_BAC(
-            GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120,
-            channel.value("bac120")
-        )
+    /* IQTree need at least 3 sequences. */
+    gtdbtk_user_msa_bac120 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.first {
+        file(it).countFasta() > 2
     }
-
-    if (GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53) {
-        IQTREE_AR(
-            GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53,
-            channel.value("ar53")
-        )
+    IQTREE_BAC(
+        gtdbtk_user_msa_bac120,
+        channel.value("bac120")
+    )
+    /* IQTree need at least 3 sequences. */
+    gtdbtk_user_msa_ar53 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53.first {
+        file(it).countFasta() > 2
     }
+    IQTREE_AR(
+        gtdbtk_user_msa_ar53,
+        channel.value("ar53")
+    )
 
     cluster_reps_faa = PROCESS_SINGLETON_GENOMES.out.prokka_faa.mix(
         PROCESS_MANY_GENOMES.out.rep_prokka_faa

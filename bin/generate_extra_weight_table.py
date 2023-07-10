@@ -18,10 +18,12 @@
 
 
 import argparse
-from ftplib import FTP, all_errors
+import csv
 import logging
 import os
+import sys
 import time
+from ftplib import FTP, all_errors
 
 from utils import run_request
 
@@ -30,12 +32,21 @@ logging.basicConfig(level=logging.INFO)
 ENA_ENDPOINT = "https://www.ebi.ac.uk/ena/portal/api/search"
 
 
-def main(genome_info, study_info, outfile, genomes_dir):
-    extra_weights, extension = initialize_weights_dict(genomes_dir)
+def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
+    """Identifies isolate genomes and MAGs and creates an extra weight table for drep"""
+
+    # If a name mapping file is provided, the code will use the names on the mapping file
+    # as the expectation is that the genomes_dir will contain the MAGs/Isolates under a
+    # different name space, but all the other files will use the names in the mapping file
+    extra_weights, extension, name_mapping_dict = initialize_weights_dict(
+        genomes_dir, name_mapping=name_mapping
+    )
+
     if study_info:
         extra_weights = add_study_info(study_info, extra_weights)
     if genome_info:
         extra_weights = add_genome_info(genome_info, extra_weights)
+
     empty_ncbi_records = set()
     for record in extra_weights:
         if extra_weights[record] == "":
@@ -49,29 +60,53 @@ def main(genome_info, study_info, outfile, genomes_dir):
                 logging.error(
                     "Unable to assign weight to genome {}. Assigning 0.".format(record)
                 )
+
     if len(empty_ncbi_records) > 0:
         extra_weights = add_ncbi_information(
             extra_weights, empty_ncbi_records, extension
         )
+
     extra_weights = check_table(extra_weights)
-    print_results(extra_weights, outfile)
+
+    print_results(extra_weights, outfile, name_mapping_dict=name_mapping_dict)
 
 
-def initialize_weights_dict(genomes_dir):
+def initialize_weights_dict(genomes_dir, name_mapping=None):
+    """
+    Initializes a weights dictionary for genomes in a directory.
+    Args:
+        genomes_dir (str): Path to the directory containing genome files.
+        name_mapping (str): Path to the genome name mapping file.
+    Returns:
+        tuple: A tuple containing the extra weights dictionary and the extension of the genome files.
+    """
+    extra_weights = {}
     genomes_dir_contents = os.listdir(genomes_dir)
     extension = ""
-    for genome in genomes_dir_contents:
+
+    name_mapping_dict = {}
+    if name_mapping:
+        with open(name_mapping, "r") as nm_f:
+            tsv_reader = csv.reader(nm_f, delimiter="\t")
+            for old_name, new_name in tsv_reader:
+                name_mapping_dict[new_name] = old_name
+
+    for genome_file in genomes_dir_contents:
+        # Get the new name from the mapping, otherwise keep the current one
+        genome = name_mapping_dict.get(genome_file, genome_file)
+        print(f"{genome_file} -> {genome}")
         if genome.strip().split(".")[-1] not in ["fa", "fasta"]:
-            logging.info("Not analyzing {} - not a fasta file".format(genome))
-            genomes_dir_contents.remove(genome)
+            logging.info(f"Not analyzing {genome} - not a fasta file.")
         else:
             if not extension:
                 extension = genome.strip().split(".")[-1]
-    extra_weights = {i: "" for i in genomes_dir_contents}
-    return extra_weights, extension
+            # Add to result dictionary #
+            extra_weights[genome] = ""
+    return extra_weights, extension, name_mapping_dict
 
 
 def add_study_info(study_info_file, extra_weights):
+    """Read the study information, used to override the weight"""
     with open(study_info_file, "r") as file_in:
         for line in file_in:
             study, genome_type = line.strip().split("\t")
@@ -98,10 +133,36 @@ def get_genomes_in_study(study):
     genomes_in_study = set()
     if not study.startswith("PRJ"):
         raise ValueError(
-            "Cannot process study accession {}. A primary accession is required".format(
+            "Cannot process study accession {}. A primary accession is required.".format(
                 study
             )
         )
+    ena_request_result = run_ena_request(study)
+    study_is_ncbi = False
+    if len(ena_request_result.split("\n")) < 3:
+        study_is_ncbi = True
+    else:
+        for line in ena_request_result.splitlines():
+            if not line.startswith("accession"):
+                genome = line.strip().split("\t")[-1].split("/")[-1].split(".")[0]
+                if genome.startswith("C"):
+                    genomes_in_study.add(genome)
+                else:
+                    study_is_ncbi = True
+    if study_is_ncbi:
+        ncbi_request_result = run_ncbi_request(study)
+        for line in ncbi_request_result.splitlines():
+            if not line.startswith("accession"):
+                genomes_in_study.add(line.split()[0])
+    if len(genomes_in_study) == 0:
+        sys.exit(
+            "Unable to get a list of genomes for study {} from ENA. "
+            "Provided extra weight info cannot be used.".format(study)
+        )
+    return genomes_in_study
+
+
+def run_ena_request(study):
     query = {
         "result": "wgs_set",
         "query": (
@@ -113,16 +174,21 @@ def get_genomes_in_study(study):
         "format": "tsv",
     }
     r = run_request(query, ENA_ENDPOINT)
-    if r.content.decode() == "":
-        logging.error(
-            "Unable to get a list of genomes for study {} from ENA. Provided extra"
-            " weight info cannot be used".format(study)
-        )
-    for line in r.text.splitlines():
-        if not line.startswith("accession"):
-            genome = line.strip().split("\t")[-1].split("/")[-1].split(".")[0]
-            genomes_in_study.add(genome)
-    return genomes_in_study
+    return r.content.decode()
+    
+
+def run_ncbi_request(study):
+    query = {
+        "result": "assembly",
+        "query": (
+            'study_accession="{}"'.format(
+                study
+            )
+        ),
+        "format": "tsv",
+    }
+    r = run_request(query, ENA_ENDPOINT)
+    return r.content.decode()
 
 
 def add_extension(genomes_in_study, extra_weights):
@@ -135,17 +201,18 @@ def add_extension(genomes_in_study, extra_weights):
 
 
 def add_genome_info(genome_info_file, extra_weights):
+    """Get the genome info, "isolate" or "MAG"."""
     with open(genome_info_file, "r") as file_in:
-        for line in file_in:
-            genome, genome_type = line.strip().split("\t")
+        tsv_reader = csv.reader(file_in, delimiter="\t")
+        for genome, genome_type in tsv_reader:
             weight = assign_weight(genome_type)
             if genome in extra_weights:
                 extra_weights[genome] = weight
             else:
-                logging.error(
+                logging.warning(
                     "Extra weight information for genome {} was provided but genome is"
-                    " not found in the genomes folder. Check naming format - is the"
-                    " extension missing? Extra weight information cannot be used".format(
+                    " not found in the genomes folder. Genome possibly removed during the QC step."
+                    " Extra weight information cannot be used.".format(
                         genome
                     )
                 )
@@ -208,17 +275,24 @@ def check_table(extra_weights):
     return extra_weights
 
 
-def print_results(extra_weights, outfile):
+def print_results(extra_weights, outfile, name_mapping_dict):
+    """Generate the result tsv file."""
     with open(outfile, "w") as table_out:
-        for key, value in extra_weights.items():
-            table_out.write("\t".join([key, value]) + "\n")
+        table_writer = csv.writer(table_out, delimiter="\t")
+        for genome_name, weight in extra_weights.items():
+            genome_name = next((key for key, value in name_mapping_dict.items() if value == genome_name), genome_name)
+            table_writer.writerow([genome_name, weight])
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
             "Identifies isolate genomes and MAGs and creates an extra"
-            "weight table for drep"
+            " weight table for drep. It is strongly suggested that if"
+            " the genome list includes any known isolates, the --study-info"
+            " --genome-info parameters are used to indicate that. Without them"
+            " the script will try to identify isolates from metadata which is not "
+            " always available."
         )
     )
     parser.add_argument(
@@ -227,8 +301,8 @@ def parse_args():
         help=(
             "If the entire study includes only one type of genomes (MAGs only or"
             " isolates only) and this information is already available, provide a path"
-            " to a tab-delimited filewhere the first column contains primary study IDs"
-            " and the second column contains the type (MAG or isolate)"
+            " to a tab-delimited file where the first column contains primary study IDs (starting with PRJ)"
+            " and the second column contains the type (MAG or isolate)."
         ),
     )
     parser.add_argument(
@@ -236,26 +310,41 @@ def parse_args():
         "--genome-info",
         help=(
             "If any of the studies contain a mix of isolate and MAG genomes or if"
-            " informationfor only some of the genomes is available, provide a path to a"
-            " file containing pergenome information. First column should be the genome"
-            " accession, second column the type of genome (MAG or isolate)"
+            " information for only some of the genomes is available, provide a path to a"
+            " file containing per genome information. First column should be the genome"
+            " accession (original one, not MGYG), second column the type of genome (MAG or isolate)."
+        ),
+    )
+    parser.add_argument(
+        "-n",
+        "--name-mapping",
+        required=False,
+        help=(
+            "If this is provided, the genomes from the genome-info"
+            " and study-info will be renamed following the mapping."
         ),
     )
     parser.add_argument(
         "-o",
         "--outfile",
         required=True,
-        help="Path to the output file where the extra weight table will be stored",
+        help="Path to the output file where the extra weight table will be stored.",
     )
     parser.add_argument(
         "-d",
         "--genomes-dir",
         required=True,
-        help="Path to the directory where input genomes for dereplication are stored",
+        help="Path to the directory where input genome fasta files for dereplication are stored.",
     )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args.genome_info, args.study_info, args.outfile, args.genomes_dir)
+    main(
+        args.genome_info,
+        args.study_info,
+        args.outfile,
+        args.genomes_dir,
+        args.name_mapping,
+    )

@@ -9,7 +9,7 @@ nextflow_workflow {
         when {
             workflow {
                 """
-                input[0] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/genomes")
+                input[0] = file("$baseDir/tests/subworkflows/fixtures/genomes")
                 input[1] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/checkm.csv")
                 """
             }
