@@ -21,7 +21,7 @@ import xmltodict
 logging.basicConfig(level=logging.INFO)
 
 # Define variables for stats report
-SKIP_CMSCAN = SKIP_GFF = GOOD = 0
+SKIP_CMSCAN = SKIP_GFF = GOOD = BAD_SEQUENCE = 0
 skip_short = list()
 skip_total = list()
 
@@ -60,6 +60,8 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
         file_out.write("Hits excluded due to short length\t{}\n".format(len(skip_short)))
         file_out.write("Hits excluded because contig names don't match between GFF and cmsearch output\t{}\n".format(
             len(skip_other)))
+        file_out.write("Hits excluded due to too many N's in sequence\t{}\n".format(
+            BAD_SEQUENCE))
         file_out.write("Genomes not processed because cmsearch output is missing\t{}\n".format(SKIP_CMSCAN))
         file_out.write("Genomes not processed because GFF is missing (cmsearch output exists)\t{}\n".format(SKIP_GFF))
     with open("skipped_short.txt", "w") as short_out:
@@ -130,7 +132,7 @@ def parse_ftp(ftp):
 def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_dir,
                        gff_dir, fasta_dir, rfam_lengths, sample_publication_mapping, catalogue_name,
                        reported_project):
-    global SKIP_CMSCAN, SKIP_GFF, GOOD
+    global SKIP_CMSCAN, SKIP_GFF, GOOD, BAD_SEQUENCE
     deoverlap_path = os.path.join(deoverlap_dir, "{}.cmscan-deoverlap.tbl".format(mgnify_accession))
     if not os.path.exists(deoverlap_path):
         logging.warning("cmscan file for accession {} doesn't exist. Skipping.".format(mgnify_accession))
@@ -167,6 +169,9 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                             data_dict["primaryId"] = get_primary_id(annotation)
                             data_dict["inferredPhylogeny"] = "GTDB:{}".format(taxonomy)
                             data_dict["sequence"] = get_sequence(seq_records, contig, start, end, strand)
+                            if not pass_seq_check(data_dict["sequence"]):
+                                BAD_SEQUENCE += 1
+                                continue
                             data_dict["name"] = get_seq_name(annotation)
                             data_dict["version"] = "1"
                             data_dict["rfamAccession"] = get_rfam_accession(annotation)
@@ -207,6 +212,15 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
     return dict_list, sample_publication_mapping
 
 
+def pass_seq_check(seq):
+    count_n = seq.lower().count('n')
+    total_length = len(seq)
+    if count_n / total_length < 0.1:
+        return True
+    else:
+        return False
+    
+    
 def get_seq_name(annotation):
     """Return the name of the matched sequence.
 
@@ -398,7 +412,7 @@ def get_sequence(seq_records, contig, start, end, strand):
     seq = seq_records[contig][start-1:end].seq
     if strand == "-":
         seq = Seq(seq).reverse_complement()
-    return str(seq)
+    return str(seq).upper()
 
 
 def get_rfam_accession(annotation):
