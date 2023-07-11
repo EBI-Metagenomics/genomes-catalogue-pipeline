@@ -39,16 +39,16 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
         for line in f:
             if not line.startswith("Genome"):
                 parts = line.strip().split("\t")
-                mgnify_accession, species_rep, taxonomy, sample_accession, reported_project, ftp = \
-                    parts[0], parts[13], parts[14], parts[15], parts[16], parts[19]
+                mgnify_accession, insdc_accession, species_rep, taxonomy, sample_accession, reported_project, ftp = \
+                    parts[0], parts[12], parts[13], parts[14], parts[15], parts[16], parts[19]
                 # metadata json is only produced once for the entire catalogue
                 if not metadata_json:
                     metadata_json, catalogue_name = generate_metadata_dict(ftp, produced_date)
                 # only process species reps
                 if mgnify_accession == species_rep:
-                    json_data, sample_publication_mapping = generate_data_dict(mgnify_accession, sample_accession,
-                                                   taxonomy, deoverlap_dir, gff_dir, fasta_dir, rfam_lengths,
-                                                   sample_publication_mapping, catalogue_name, reported_project)
+                    json_data, sample_publication_mapping = generate_data_dict(
+                        mgnify_accession, sample_accession, taxonomy, deoverlap_dir, gff_dir, fasta_dir, rfam_lengths,
+                        sample_publication_mapping, catalogue_name, reported_project, insdc_accession)
                     if json_data:
                         final_dict["data"].extend(json_data)
     final_dict["metaData"] = metadata_json
@@ -131,7 +131,7 @@ def parse_ftp(ftp):
 
 def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_dir,
                        gff_dir, fasta_dir, rfam_lengths, sample_publication_mapping, catalogue_name,
-                       reported_project):
+                       reported_project, insdc_accession):
     global SKIP_CMSCAN, SKIP_GFF, GOOD, BAD_SEQUENCE
     deoverlap_path = os.path.join(deoverlap_dir, "{}.cmscan-deoverlap.tbl".format(mgnify_accession))
     if not os.path.exists(deoverlap_path):
@@ -174,7 +174,6 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                                 continue
                             data_dict["name"] = get_seq_name(annotation)
                             data_dict["version"] = "1"
-                            data_dict["rfamAccession"] = get_rfam_accession(annotation)
                             data_dict["sourceModel"] = "RFAM:{}".format(get_rfam_accession(annotation))
                             data_dict["genomeLocations"] = make_genome_locations(contig, start, end, strand,
                                                                                  mgnify_accession)
@@ -184,7 +183,8 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                             if sample_accession in sample_publication_mapping:
                                 data_dict["publications"] = sample_publication_mapping[sample_accession]
                             else:
-                                data_dict["publications"] = get_publications(sample_accession, reported_project)
+                                data_dict["publications"] = get_publications(sample_accession, reported_project, 
+                                                                             insdc_accession)
                                 sample_publication_mapping[sample_accession] = data_dict["publications"]
                             data_dict["additionalAnnotations"] = {"catalog_name": catalogue_name}
                             dict_list.append(data_dict)
@@ -247,22 +247,26 @@ def make_genome_locations(contig, start, end, strand, mgnify_accession):
     return loc_dict
 
 
-def get_publications(genome_sample_accession, reported_project):
+def get_publications(genome_sample_accession, reported_project, insdc_accession):
     """Get a list of PMIDs associated with the raw data from which the genome was generated.
 
     :param genome_sample_accession: sample from the metadata table.
+    :param reported_project: project accession for this sample from the metadata table.
+    :param insdc_accession: INSDC accession of the genome.
     :return: list of PMIDs
     """
     publications = list()
     biosamples = list()
-    new_samples_to_check = list()
+
+    samples_to_check = [genome_sample_accession]
     # Check if there are read files associated with the sample (meaning sample accession points to raw data already)
     # If that's the case, there is no need to convert the sample accession to the raw data one
-    samples_to_check = [genome_sample_accession]
     raw_data_sample = check_sample_level(genome_sample_accession)
+    print("Samples to check are", samples_to_check)
     if raw_data_sample:
         biosamples = samples_to_check
     else:
+        # keep going through levels of samples until we get to the raw read samples
         while samples_to_check:
             samples_for_next_iteration = list()
             for sample_to_check in samples_to_check:
@@ -275,17 +279,22 @@ def get_publications(genome_sample_accession, reported_project):
                 sample_is_derived = False
                 for attribute in sample_attributes:
                     if all([x in attribute["TAG"] for x in ["derived", "from"]]):
-                        derived_from_list = re.findall("SAMN\d+|ERS\d+", attribute["VALUE"])
+                        derived_from_list = re.findall("SAM[A-Z]+\d+|ERS\d+|SRS\d+|DRS\d+", attribute["VALUE"])
                         samples_for_next_iteration = samples_for_next_iteration + derived_from_list
                         sample_is_derived = True
                         break
-                if not sample_is_derived:
+                if not sample_is_derived:  # we found the raw read sample
                     biosamples.append(sample_to_check)
             samples_to_check = samples_for_next_iteration
+    # now we are working with raw read samples
+    print("Going through biosamples", biosamples)
     for biosample in biosamples:
-        if biosample.startswith("ERS"):
-            biosample = convert_bin_sample(biosample)
-        project_accessions = get_project_accession(biosample)
+        if biosample.startswith("ERS"): 
+            print("converting biosample", biosample)
+            biosample = convert_bin_sample(biosample)  # convert to biosample
+            print("to", biosample)
+        print("About to get project accessions for biosample ", biosample)
+        project_accessions = get_project_accession(biosample)  # find what project the sample is from
         if not project_accessions and raw_data_sample:
             project_accessions = {reported_project}
         if project_accessions:
@@ -300,6 +309,10 @@ def get_publications(genome_sample_accession, reported_project):
                           format(genome_sample_accession))
     if not biosamples:
         logging.error("Biosample couldn't be obtained for sample {}".format(genome_sample_accession))
+        if insdc_accession.startswith("CA"):
+            logging.error("Biosample could not be obtained for an ENA genome {}".
+                          format(genome_sample_accession))
+            sys.exit("ERROR: cannot proceed because ENA samples are not found in ENA.")
     return list(filter(None, list(set(publications))))
 
 
@@ -338,8 +351,20 @@ def convert_bin_sample(biosample):
 
 def get_publications_from_xml(project):
     extracted_publications = list()
-    xml_data = load_xml(project)
-    study_links = xml_data["STUDY_SET"]["STUDY"]["STUDY_LINKS"]
+    counter = 1
+    study_links = None
+    while counter < 5:
+        try:
+            xml_data = load_xml(project)
+            study_links = xml_data["STUDY_SET"]["STUDY"]["STUDY_LINKS"]
+            break
+        except:
+            counter += 1
+            logging.info("XML data retrieval failed for project {}. Retrying. Attempt {}.".
+                         format(project, counter))
+    if not study_links:
+        logging.error("Failed to get XML for project {}".format(project))
+        sys.exit()
     for study_link in study_links.keys():
         for element in study_links[study_link]:
             if "XREF_LINK" in element and "DB" in element["XREF_LINK"]:
@@ -359,6 +384,7 @@ def get_project_accession(biosample):
         for e in elements:
             if not e.startswith("run_accession") and not e == "":
                 projects.append(e.strip().split("\t")[1])
+        print("Got projects successfully", set(projects))
         return set(projects)
     else:
         logging.error("Error when requesting study accession for biosample {}".format(biosample))
@@ -380,6 +406,7 @@ def load_xml(sample_id):
             logging.exception("Unable to load json from API for accession {}".format(sample_id))
             print(r.text)
     else:
+        print("R is not ok")
         logging.error('Could not retrieve xml for accession {}'.format(sample_id))
         logging.error(r.text)
         return None
