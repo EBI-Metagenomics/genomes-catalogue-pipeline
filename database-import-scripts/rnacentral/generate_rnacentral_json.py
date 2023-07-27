@@ -64,15 +64,6 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
             BAD_SEQUENCE))
         file_out.write("Genomes not processed because cmsearch output is missing\t{}\n".format(SKIP_CMSCAN))
         file_out.write("Genomes not processed because GFF is missing (cmsearch output exists)\t{}\n".format(SKIP_GFF))
-    with open("skipped_short.txt", "w") as short_out:
-        for element in skip_short:
-            short_out.write(element + "\n")
-    with open("skipped_total.txt", "w") as total_out:
-        for element in skip_total:
-            total_out.write(element + "\n")
-    with open("skipped_other.txt", "w") as skip_other_out:
-        for element in skip_other:
-            skip_other_out.write(element + "\n")
     
 
 def get_date():
@@ -262,7 +253,6 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
     # Check if there are read files associated with the sample (meaning sample accession points to raw data already)
     # If that's the case, there is no need to convert the sample accession to the raw data one
     raw_data_sample = check_sample_level(genome_sample_accession)
-    print("Samples to check are", samples_to_check)
     if raw_data_sample:
         biosamples = samples_to_check
     else:
@@ -270,10 +260,15 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
         while samples_to_check:
             samples_for_next_iteration = list()
             for sample_to_check in samples_to_check:
-                xml_data = load_xml(sample_to_check)
+                xml_data = load_xml(sample_to_check, insdc_accession)
                 try:
-                    sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
+                    if xml_data:
+                        sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
+                    else:
+                        # there is no XML for this sample, we can't get samples it is derived from
+                        sample_attributes = list()
                 except:
+                    # There is XML but it's format is wrong and we can't parse it
                     logging.exception("Unable to process XML for sample {}".format(sample_to_check))
                     sys.exit()
                 sample_is_derived = False
@@ -287,13 +282,9 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
                     biosamples.append(sample_to_check)
             samples_to_check = samples_for_next_iteration
     # now we are working with raw read samples
-    print("Going through biosamples", biosamples)
     for biosample in biosamples:
         if biosample.startswith("ERS"): 
-            print("converting biosample", biosample)
             biosample = convert_bin_sample(biosample)  # convert to biosample
-            print("to", biosample)
-        print("About to get project accessions for biosample ", biosample)
         project_accessions = get_project_accession(biosample)  # find what project the sample is from
         if not project_accessions and raw_data_sample:
             project_accessions = {reported_project}
@@ -384,7 +375,6 @@ def get_project_accession(biosample):
         for e in elements:
             if not e.startswith("run_accession") and not e == "":
                 projects.append(e.strip().split("\t")[1])
-        print("Got projects successfully", set(projects))
         return set(projects)
     else:
         logging.error("Error when requesting study accession for biosample {}".format(biosample))
@@ -393,9 +383,17 @@ def get_project_accession(biosample):
         # return None
 
 
-def load_xml(sample_id):
+def load_xml(sample_id, insdc_accession=None):
     xml_url = 'https://www.ebi.ac.uk/ena/browser/api/xml/{}'.format(sample_id)
-    r = run_xml_request(xml_url)
+    try:
+        r = run_xml_request(xml_url)
+    except:
+        if insdc_accession.startswith("C"):
+            logging.error("Unable to get XML for sample {}, ENA genome {}".format(sample_id, insdc_accession))
+            sys.exit()
+        else:
+            logging.warning("Unable to get XML for accession {}. Skipping.".format(sample_id))
+            return None
     if r.ok:
         try:
             data_dict = xmltodict.parse(r.content)
@@ -406,7 +404,6 @@ def load_xml(sample_id):
             logging.exception("Unable to load json from API for accession {}".format(sample_id))
             print(r.text)
     else:
-        print("R is not ok")
         logging.error('Could not retrieve xml for accession {}'.format(sample_id))
         logging.error(r.text)
         return None
