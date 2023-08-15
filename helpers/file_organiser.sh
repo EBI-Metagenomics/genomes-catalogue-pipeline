@@ -45,8 +45,8 @@ function GenerateRNACentralJSON {
     
     echo "Running JSON generation"
     mitload miniconda && conda activate pybase
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/database-import-scripts/rnacentral/generate_rnacentral_json.py \
-    -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/database-import-scripts/rnacentral/rfam_model_lengths_14.9.txt \
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/generate_rnacentral_json.py \
+    -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/rfam_model_lengths_14.9.txt \
     -m ${RESULTS_PATH}/genomes-all_metadata.tsv -o ${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json \
     -d ${RESULTS_PATH}/additional_data/ncrna_deoverlapped_species_reps/ -g ${RESULTS_PATH}/additional_data/rnacentral/GFFs/ \
      -f ${RESULTS_PATH}/additional_data/mgyg_genomes/
