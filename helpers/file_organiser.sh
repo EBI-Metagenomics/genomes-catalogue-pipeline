@@ -32,6 +32,86 @@ function GenerateDirectories {
 }
 
 
+function GenerateRNACentralJSON {
+    echo "Generating RNAcentral JSON. This could take a while..."
+    mkdir -p ${RESULTS_PATH}/additional_data/rnacentral
+    mkdir -p ${RESULTS_PATH}/additional_data/rnacentral/GFFs
+    
+    echo "Copying GFFs"
+    for R in $REPS
+    do
+        cp ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/${R}.gff* ${RESULTS_PATH}/additional_data/rnacentral/GFFs/
+    done
+    
+    echo "Running JSON generation"
+    mitload miniconda && conda activate pybase
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/generate_rnacentral_json.py \
+    -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/rfam_model_lengths_14.9.txt \
+    -m ${RESULTS_PATH}/genomes-all_metadata.tsv -o ${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json \
+    -d ${RESULTS_PATH}/additional_data/ncrna_deoverlapped_species_reps/ -g ${RESULTS_PATH}/additional_data/rnacentral/GFFs/ \
+     -f ${RESULTS_PATH}/additional_data/mgyg_genomes/
+     
+    echo "Removing GFFs"
+    rm -r ${RESULTS_PATH}/additional_data/rnacentral/GFFs/
+    
+    if [[ ! -f "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json" ]]
+    then
+        echo "Did not generate the RNAcentral JSON successfully"
+        exit 1   
+    fi
+    
+}
+
+
+function CheckRNACentralErrors {
+    # Read the file line by line, check specific lines, and extract second column
+    value_3=$(awk -F '\t' 'NR==3 {print $2}' ${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json.report)
+    value_5=$(awk -F '\t' 'NR==5 {print $2}' ${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json.report)
+    value_6=$(awk -F '\t' 'NR==6 {print $2}' ${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json.report)
+
+    # Check if any of the values are greater than 0
+    if (( value_3 > 0 || value_5 > 0 || value_6 > 0 )); then
+        echo "Warning: the RNAcentral script had to skip some records. Make sure this is what is expected. If not, 
+        abort execution of the script and investigate."
+        cat ${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json.report
+        
+        while true; do
+            read -p "Do you want to abort? (yes/no): " answer
+            case "$answer" in
+                no)
+                    break
+                    ;;
+                yes)
+                    echo "Aborted."
+                    exit 1
+                    ;;
+                *)
+                    echo "Invalid response. Please enter 'yes' or 'no'."
+                    ;;
+            esac
+        done
+    fi
+}
+
+
+function RunRNACentralValidator {
+    echo "Running RNAcentral validator"
+    mitload miniconda && conda activate pybase
+    cd /nfs/production/rdf/metagenomics/pipelines/prod/rnacentral-data-schema/
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/rnacentral-data-schema/validate.py \
+    ${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json > \
+    ${RESULTS_PATH}/additional_data/rnacentral/validator_output.txt
+    
+    cd ${RESULTS_PATH}
+    
+    if [ -s "${RESULTS_PATH}/additional_data/rnacentral/validator_output.txt" ]; then
+    echo "RNAcentral validator found issues. Aborting."
+    cat ${RESULTS_PATH}/additional_data/rnacentral/validator_output.txt
+    exit 1
+    fi
+}
+
+
 function GenerateWebsiteGFFs {
     echo "Generating GFFs for the website"
     cd ${RESULTS_PATH}/species_catalogue
@@ -135,6 +215,9 @@ fi
 GenerateDirectories
 cd ${RESULTS_PATH}
 export REPS=$(cut -f14 genomes-all_metadata.tsv | grep -v "Species" | sort -u)
+GenerateRNACentralJSON
+CheckRNACentralErrors
+RunRNACentralValidator
 GenerateWebsiteGFFs
 CopyWebsiteFiles
 CopyFTPFiles
