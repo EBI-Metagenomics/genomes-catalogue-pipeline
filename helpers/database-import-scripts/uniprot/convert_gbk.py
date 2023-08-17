@@ -31,7 +31,7 @@ def process_file(gbk_file, outfile, taxid, ncbi_taxonomy):
             if line.startswith("DEFINITION"):
                 line = line.replace("Genus species strain strain", species)
                 file_out.write(line)
-            elif line.startswith("SOURCE"):
+            elif line.startswith("SOURCE") or re.match(r'^\s*\/organism=', line):
                 line = line.replace("Genus species", species)
                 file_out.write(line)
             elif re.match(r'^\s*ORGANISM', line):
@@ -41,6 +41,12 @@ def process_file(gbk_file, outfile, taxid, ncbi_taxonomy):
                 line = line.replace("Unclassified", species)
                 file_out.write(line)
                 file_out.write(citation)
+            elif re.match(r'^\s*\/strain=', line):
+                pass
+            elif re.match(r'^\s*\/locus_tag=', line):
+                file_out.write(line)
+                line = line.replace("/locus_tag=", "/protein_id=")
+                file_out.write(line)
             else:
                 file_out.write(line)
     
