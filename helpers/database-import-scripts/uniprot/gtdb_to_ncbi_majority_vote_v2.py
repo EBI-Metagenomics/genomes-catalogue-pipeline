@@ -9,6 +9,8 @@ from os.path import join
 
 import dendropy
 
+logging.basicConfig(level=logging.DEBUG)
+
 PATH_BAC120_TREE_FILE = join("classify", '{prefix}.bac120.classify.tree')
 PATH_BACKBONE_BAC120_TREE_FILE = join("classify", '{prefix}.backbone.bac120.classify.tree')
 PATH_CLASS_LEVEL_BAC120_TREE_FILE = join("classify", '{prefix}.bac120.classify.tree.{iter}.tree')
@@ -334,7 +336,8 @@ class Translate(object):
                            ncbi_lineages,
                            ncbi_sp_classification,
                            gid_to_gtdb_family,
-                           gtdb_family_to_rids):
+                           gtdb_family_to_rids,
+                           output_file):
         """Get NCBI majority vote classification for each user genome."""
 
         data = [
@@ -429,7 +432,7 @@ class Translate(object):
                         gtdb_taxa,
                         ncbi_rep_ids,
                         ncbi_sp_classification,
-                        ncbi_lineages
+                        ncbi_lineages,
                     )
 
                     fout[gid] = ncbi_mv
@@ -440,7 +443,8 @@ class Translate(object):
             gtdbtk_output_dir,
             ar53_metadata_file,
             bac120_metadata_file,
-            gtdbtk_prefix):
+            gtdbtk_prefix,
+            outfile):
         """Translate GTDB to NCBI classification via majority vote."""
 
         # get GTDB-Tk classification summary files
