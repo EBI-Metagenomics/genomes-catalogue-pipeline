@@ -10,9 +10,9 @@ import pandas as pd
 def main(gbk_file, outfile, metadata_file):
     accession = gbk_file.split('.')[0]
     #taxonomy, taxid = get_taxid(metadata_file, accession)
-    taxid = "11111"
+    taxid = "1284702"
     ncbi_taxonomy = "Placeholder genus placeholder species"
-    outfile = process_file(gbk_file, outfile, taxid, ncbi_taxonomy)
+    process_file(gbk_file, outfile, taxid, ncbi_taxonomy)
 
 
 def process_file(gbk_file, outfile, taxid, ncbi_taxonomy):
@@ -25,7 +25,8 @@ def process_file(gbk_file, outfile, taxid, ncbi_taxonomy):
   JOURNAL   J. Mol. Biol., 168016 (2023)
    PUBMED   36806692\n"""
     # PLACEHOLDER!!!! TODO: replace with proper species extraction
-    species = ncbi_taxonomy
+    #species = ncbi_taxonomy
+    species = "Mageeibacillus indolicus"
     with open(gbk_file, "r") as file_in, open(outfile, "w") as file_out:
         for line in file_in:
             if line.startswith("DEFINITION"):
@@ -35,14 +36,14 @@ def process_file(gbk_file, outfile, taxid, ncbi_taxonomy):
                 line = line.replace("Genus species", species)
                 file_out.write(line)
             elif re.match(r'^\s*ORGANISM', line):
-                line = line.replace("Genus species", species)
+                line = line.replace("Genus species", "{}\n            Bacteria; Firmicutes; Clostridia; Eubacteriales; Oscillospiraceae;\n            Mageeibacillus.".format(species))
                 file_out.write(line)
                 line = file_in.readline()
-                line = line.replace("Unclassified", species)
+                line = line.replace("Unclassified.\n", "")
                 file_out.write(line)
                 file_out.write(citation)
             elif re.match(r'^\s*\/strain=', line):
-                pass
+                file_out.write("                     /db_xref=\"taxon:1284702\"\n")
             elif re.match(r'^\s*\/locus_tag=', line):
                 file_out.write(line)
                 line = line.replace("/locus_tag=", "/protein_id=")
