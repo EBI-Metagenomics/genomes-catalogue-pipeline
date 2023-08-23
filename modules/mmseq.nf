@@ -23,10 +23,6 @@ process MMSEQ {
 
     container 'quay.io/biocontainers/mmseqs2:13.45111--h2d02072_0'
 
-    label 'process_bigmem'
-
-    // TODO: memory needs to be dynamic
-
     input:
     file faa_file
     val id_threshold
