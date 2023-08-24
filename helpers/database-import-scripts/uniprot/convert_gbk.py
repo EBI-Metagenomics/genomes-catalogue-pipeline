@@ -16,13 +16,14 @@ def main(gbk_file, outfile, metadata_file):
 
 
 def process_file(gbk_file, outfile, taxid, ncbi_taxonomy):
-    citation = """REFERENCE   1
+    citation = """
+REFERENCE   1
   AUTHORS   Gurbich,T.A., Almeida,A., Beracochea,M., Burdett,T., Burgin,J.,
             Cochrane,G., Raj,S., Richardson,L., Rogers,A., Sakharova,E.,
             Salazar,G., Finn,R.D. 
   TITLE     MGnify Genomes: a resource for biome-specific microbial genome
 	    catalogues. 
-  JOURNAL   J. Mol. Biol., 168016 (2023)
+  JOURNAL   J. Mol. Biol., 435:168016 (2023)
    PUBMED   36806692\n"""
     # PLACEHOLDER!!!! TODO: replace with proper species extraction
     #species = ncbi_taxonomy
