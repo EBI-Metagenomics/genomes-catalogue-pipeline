@@ -18,6 +18,7 @@ PATH_AR53_TREE_FILE = join("classify", '{prefix}.ar53.classify.tree')
 PATH_BAC120_SUMMARY_OUT = join("classify", '{prefix}.bac120.summary.tsv')
 PATH_AR53_SUMMARY_OUT = join("classify", '{prefix}.ar53.summary.tsv')
 
+
 class Translate(object):
     """Translate GTDB to NCBI classification via majority vote."""
 
@@ -172,7 +173,7 @@ class Translate(object):
 
             self.logger.info(f'Processing {domain} metadata file.')
             if not os.path.exists(metadata_file):
-                raise GTDBTkExit(f'File does not exist: {metadata_file}')
+                raise f'File does not exist: {metadata_file}'
 
             with open_file(metadata_file, 'rt', encoding='utf-8') as f:
                 header = f.readline().strip().split('\t')
@@ -292,8 +293,7 @@ class Translate(object):
                     break
 
             if rep_id in ncbi_sp_classification and ncbi_sp_classification[rep_id][0] == 'd__':
-                raise GTDBTkExit(
-                    f'Majority vote domain is undefined for {rep_id}')
+                raise f'Majority vote domain is undefined for {rep_id}'
 
         return ncbi_sp_classification
 
@@ -336,8 +336,7 @@ class Translate(object):
                            ncbi_lineages,
                            ncbi_sp_classification,
                            gid_to_gtdb_family,
-                           gtdb_family_to_rids,
-                           output_file):
+                           gtdb_family_to_rids):
         """Get NCBI majority vote classification for each user genome."""
 
         data = [
@@ -443,8 +442,7 @@ class Translate(object):
             gtdbtk_output_dir,
             ar53_metadata_file,
             bac120_metadata_file,
-            gtdbtk_prefix,
-            outfile):
+            gtdbtk_prefix):
         """Translate GTDB to NCBI classification via majority vote."""
 
         # get GTDB-Tk classification summary files
