@@ -81,7 +81,8 @@ REFERENCE   1
                 line = file_in.readline()  # skip the next line
                 file_out.write(citation)
             elif re.match(r'^\s*\/strain=', line):
-                file_out.write("                     /db_xref=\"taxon:{}\"\n".format(taxid))
+                indent_21 = " " * 21
+                file_out.write("{}/db_xref=\"taxon:{}\"\n".format(indent_21, taxid))  # print this instead of strain
             elif re.match(r'^\s*\/locus_tag=', line):
                 file_out.write(line)
                 line = line.replace("/locus_tag=", "/protein_id=")
