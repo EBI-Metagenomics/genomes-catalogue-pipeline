@@ -4,6 +4,7 @@ import argparse
 import logging
 import re
 import sys
+import textwrap
 
 logging.basicConfig(level=logging.INFO)
 
@@ -57,7 +58,7 @@ def format_lineage(taxonomy_lineage):
 
 
 def process_file(gbk_file, outfile, taxid, species, lineage):
-    citation = """
+    citation = textwrap.dedent("""\
 REFERENCE   1
   AUTHORS   Gurbich,T.A., Almeida,A., Beracochea,M., Burdett,T., Burgin,J.,
             Cochrane,G., Raj,S., Richardson,L., Rogers,A., Sakharova,E.,
@@ -65,7 +66,7 @@ REFERENCE   1
   TITLE     MGnify Genomes: a resource for biome-specific microbial genome
 	    catalogues. 
   JOURNAL   J. Mol. Biol., 435:168016 (2023)
-   PUBMED   36806692\n"""
+   PUBMED   36806692\n""")
     with open(gbk_file, "r") as file_in, open(outfile, "w") as file_out:
         for line in file_in:
             if line.startswith("DEFINITION"):
@@ -75,12 +76,9 @@ REFERENCE   1
                 line = line.replace("Genus species", species)
                 file_out.write(line)
             elif re.match(r'^\s*ORGANISM', line):
-                #line = line.replace("Genus species", "{}\n            Bacteria; Firmicutes; Clostridia; Eubacteriales; Oscillospiraceae;\n            Mageeibacillus.".format(species))
                 line = line.replace("Genus species", "{}\n{}".format(species, format_lineage(lineage)))
                 file_out.write(line)
-                line = file_in.readline()
-                line = line.replace("Unclassified.\n", "")
-                file_out.write(line)
+                line = file_in.readline()  # skip the next line
                 file_out.write(citation)
             elif re.match(r'^\s*\/strain=', line):
                 file_out.write("                     /db_xref=\"taxon:{}\"\n".format(taxid))
