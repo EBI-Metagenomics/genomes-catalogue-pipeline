@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 
 import pandas as pd
 import requests
 from retry import retry
 
 
-def main(metadata_file, outfile):
-    with open(metadata_file, "r") as file_in:
-        original_df = pd.read_csv(metadata_file, sep='\t')
-        filtered_df = original_df[original_df['Genome'] == original_df['Species_rep']]
-        relevant_columns = ['Genome', 'N50', 'Completeness', 'Contamination', 'Sample_accession']
-        reduced_df = filtered_df[relevant_columns].copy()
-        reduced_df['GCA_accession'] = reduced_df['Sample_accession'].apply(get_gca_accession)
-        reduced_df = reduced_df.drop(columns=["Sample_accession"])
+def main(metadata_file, outfile, uniprot_folder):
+    uniprot_results = [filename.split("_")[0] for filename in os.listdir(uniprot_folder)]
+    original_df = pd.read_csv(metadata_file, sep='\t')
+    filtered_df = original_df[original_df['Genome'] == original_df['Species_rep']]
+    relevant_columns = ['Genome', 'N50', 'Completeness', 'Contamination', 'Sample_accession']
+    reduced_df = filtered_df[relevant_columns].copy()
+    reduced_df['GCA_accession'] = reduced_df['Sample_accession'].apply(get_gca_accession)
+    reduced_df = reduced_df.drop(columns=["Sample_accession"])
+    reduced_df = reduced_df[reduced_df.Genome.isin(uniprot_results)]
 
-        # Reorder the columns
-        columns = reduced_df.columns.tolist()  # Convert columns to a list
-        columns.insert(1, columns.pop(4))  # Move the 5th column to the 2nd position
-        reordered_df = reduced_df[columns]  # Create a new DataFrame with reordered columns
-        reordered_df.to_csv(outfile, index=False, sep='\t')
+    # Reorder the columns
+    columns = reduced_df.columns.tolist()  # Convert columns to a list
+    columns.insert(1, columns.pop(4))  # Move the 5th column to the 2nd position
+    reordered_df = reduced_df[columns]  # Create a new DataFrame with reordered columns
+    reordered_df.to_csv(outfile, index=False, sep='\t')
 
 
 def get_gca_accession(sample):
@@ -46,15 +48,18 @@ def run_request(full_url):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="The script takes the catalogue metadata table and "
-                                                 "generates a metadata table to be submitted to UniProt.")
+    parser = argparse.ArgumentParser(description="The script takes the catalogue metadata table and Uniprot "
+                                                 "results folder and generates a metadata table to be submitted "
+                                                 "to UniProt.")
     parser.add_argument('-m', '--metadata', required=True,
                         help='Path to the metadata table.')
     parser.add_argument('-o', '--output', required=True,
                         help='Path to the output file.')
+    parser.add_argument('-u', '--uniprot-folder', required=True,
+                        help='Path to the folder containing per-genome Uniprot files.')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.metadata, args.output)
+    main(args.metadata, args.output, args.uniprot_folder)
