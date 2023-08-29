@@ -12,19 +12,22 @@ def main(gtdbtk_folder, outfile, taxonomy_version):
     # ar122_metadata = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/ar122_metadata_r95.tsv"
     # ar53_metadata = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/ar53_metadata_r207.tsv"
     # bac120_metadata = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/bac120_metadata_r214.tsv"
-    # tax_NCBI = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/fullnamelineage.dmp"
+    # tax_ncbi_v2 = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/fullnamelineage_01_31.dmp"
 
     ar122_metadata = "ar122_metadata_r95.tsv"
     ar53_metadata = "ar53_metadata_r207.tsv"
     bac120_metadata = "bac120_metadata_r214.tsv"
-    tax_ncbi = "fullnamelineage.dmp"
+    tax_ncbi_v2 = "fullnamelineage_01_31.dmp"
+    tax_ncbi_v1 = ""
 
     if taxonomy_version == "1":
         tax = gtdb_to_ncbi_majority_vote.Translate()
         selected_archaea_metadata = ar122_metadata
+        tax_ncbi = tax_ncbi_v1
     else:
         tax = gtdb_to_ncbi_majority_vote_v2.Translate()
         selected_archaea_metadata = ar53_metadata
+        tax_ncbi = tax_ncbi_v2
         
     tax_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, bac120_metadata, "gtdbtk")
     tax_dict_filtered = filter_tax(tax_dict)  # filtered out unknown species; key=MGYG, value=full NCBI lineage
