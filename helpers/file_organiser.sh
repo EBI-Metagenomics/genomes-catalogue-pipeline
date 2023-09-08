@@ -112,6 +112,31 @@ function RunRNACentralValidator {
 }
 
 
+function GenerateUniprotFiles {
+    echo "Converting taxonomy for Uniprot"
+    mkdir -p ${RESULTS_PATH}/additional_data/uniprot ${RESULTS_PATH}/additional_data/uniprot/uniprot-files
+    if [[ -f ${RESULTS_PATH}/additional_data/gtdb-tk_output.tar.gz ]]
+    then
+        tar -xf ${RESULTS_PATH}/additional_data/gtdb-tk_output.tar.gz
+    fi
+    mitload miniconda && conda activate pybase
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/preprocess_taxonomy_for_uniprot.py \
+    -g ${RESULTS_PATH}/additional_data/gtdb-tk_output/ -r "r214" -v "2" -o ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv
+    
+    echo "Generating Uniprot files"
+    ACCS=$(cut -f1 ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv)
+    
+    for F in $ACCS; do python3 ../convert_gbk.py \
+    -g ${RESULTS_PATH}/additional_data/prokka_gbk_species_reps/${F}.gbk \
+    -o ${RESULTS_PATH}/additional_data/uniprot/uniprot-files/${F}_uniprot.gbk \
+    -t ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv; done
+    
+    echo "Generating Uniprot metadata"
+    
+    echo "Uniprot cleanup"
+}
+
+
 function GenerateWebsiteGFFs {
     echo "Generating GFFs for the website"
     cd ${RESULTS_PATH}/species_catalogue
