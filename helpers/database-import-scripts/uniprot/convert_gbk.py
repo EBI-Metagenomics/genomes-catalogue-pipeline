@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 import re
 import sys
 import textwrap
@@ -10,17 +11,17 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(gbk_file, outfile, taxonomy_file):
-    accession = gbk_file.split('.')[0]
+    accession = os.path.basename(gbk_file).replace(".gbk", "")
     species, lineage, taxid = ingest_taxonomy_file(taxonomy_file, accession)
     if not species:
-        logging.error("Could not retrieve taxonomy information for genome {}".format(accession))
+        logging.info("Uniprot output file is not generated because species is unknown: {}".format(accession))
         sys.exit()
     if lineage.endswith("s__"):
         logging.info("NCBI species for genome {} is unknown. Uniprot import file will not be generated.".
                      format(accession))
     process_file(gbk_file, outfile, taxid, species, lineage)
 
-
+    
 def ingest_taxonomy_file(taxonomy_file, accession):
     species = lineage = taxid = ""
     with open(taxonomy_file, "r") as file_in:
@@ -54,6 +55,8 @@ def format_lineage(taxonomy_lineage):
             line_length += len(segment) + 2
 
     formatted_output = "\n".join([indent + line.rstrip(" ") for line in lines]).rstrip("; ") + "."
+    if "; ;" in formatted_output:
+        logging.info("Taxonomy lineage is missing fields: {}".format(formatted_output))
     return formatted_output
 
 
