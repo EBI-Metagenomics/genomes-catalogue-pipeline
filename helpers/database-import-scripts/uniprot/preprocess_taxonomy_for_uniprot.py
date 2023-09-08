@@ -2,34 +2,30 @@
 
 import argparse
 import logging
+import os
+import sys
 
 import gtdb_to_ncbi_majority_vote, gtdb_to_ncbi_majority_vote_v2
 
 logging.basicConfig(level=logging.INFO)
 
 
-def main(gtdbtk_folder, outfile, taxonomy_version):
-    # ar122_metadata = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/ar122_metadata_r95.tsv"
-    # ar53_metadata = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/ar53_metadata_r207.tsv"
-    # bac120_metadata = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/bac120_metadata_r214.tsv"
-    # tax_ncbi_v2 = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/fullnamelineage_01_31.dmp"
-
-    ar122_metadata = "ar122_metadata_r95.tsv"
-    ar53_metadata = "ar53_metadata_r207.tsv"
-    bac120_metadata = "bac120_metadata_r214.tsv"
-    tax_ncbi_v2 = "fullnamelineage_01_31.dmp"
-    tax_ncbi_v1 = ""
+def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release):
+    if not versions_compatible(taxonomy_version, taxonomy_release):
+        sys.exit("GTDB versions {} and {} are not compatible".format(taxonomy_version, taxonomy_release))
+    
+    db_dir = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/"
+    selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, db_dir)
+    tax_ncbi = select_dump(taxonomy_release, db_dir)
+    print("Using the following databases:\n{}\n{}\n{}\n".format(selected_archaea_metadata, selected_bacteria_metadata,
+                                                                tax_ncbi))
 
     if taxonomy_version == "1":
         tax = gtdb_to_ncbi_majority_vote.Translate()
-        selected_archaea_metadata = ar122_metadata
-        tax_ncbi = tax_ncbi_v1
     else:
         tax = gtdb_to_ncbi_majority_vote_v2.Translate()
-        selected_archaea_metadata = ar53_metadata
-        tax_ncbi = tax_ncbi_v2
         
-    tax_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, bac120_metadata, "gtdbtk")
+    tax_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, selected_bacteria_metadata, "gtdbtk")
     tax_dict_filtered = filter_tax(tax_dict)  # filtered out unknown species; key=MGYG, value=full NCBI lineage
     ncbi_dump = load_ncbi(tax_ncbi)
     # lookup tax id and print results to file
@@ -40,8 +36,37 @@ def main(gtdbtk_folder, outfile, taxonomy_version):
                 file_out.write("{}\t{}\t{}\t{}\n".format(mgyg, species, lineage, ncbi_dump[species]))
             except:
                 logging.error("Unable to obtain NCBI taxid for genome {}. Skipping genome.".format(mgyg))
+                sys.exit(1)
 
 
+def select_dump(taxonomy_release, db_dir):
+    dump_dict = {
+        "r202": "fullnamelineage_2020-11-01.dmp",
+        "r207": "fullnamelineage_2022-03-01.dmp",
+        "r214": "fullnamelineage_2023-02-01.dmp"
+    }
+    return os.path.join(db_dir, dump_dict[taxonomy_release])
+    
+
+def select_metadata(taxonomy_release, db_dir):
+    bac_prefix = "bac120_metadata_"
+    ar_prefix_old = "ar122_metadata_"
+    ar_prefix_new = "ar53_metadata_"
+    if taxonomy_release == "r202":
+        ar_filename = "{}{}.tsv".format(ar_prefix_old, taxonomy_release)
+    else:
+        ar_filename = "{}{}.tsv".format(ar_prefix_new, taxonomy_release)
+    bac_filename = "{}{}.tsv".format(bac_prefix, taxonomy_release)
+    return os.path.join(db_dir, ar_filename), os.path.join(db_dir, bac_filename)
+    
+
+def versions_compatible(taxonomy_version, taxonomy_release):
+    if taxonomy_version == "2" and taxonomy_release == "r202":
+        return False
+    else:
+        return True
+    
+    
 def load_ncbi(tax_ncbi):
     ncbi_dump = dict()
     repeats = list()
@@ -68,8 +93,6 @@ def filter_tax(tax_dict):
     return filtered_tax_dict
 
     
-    
-    
 def parse_args():
     parser = argparse.ArgumentParser(description="The script takes in a GTDB-Tk output folder and "
                                                  "outputs NCBI taxonomy.")
@@ -78,10 +101,12 @@ def parse_args():
     parser.add_argument('-o', '--outfile', required=True,
                         help='Path to the output file where the modified file will be stored.')
     parser.add_argument('-v', '--taxonomy-version', choices=['1', '2'], default="2",
-                        help='Version of GTDB, "1" or "2". Default = "2".')
+                        help='Version of GTDB-Tk, "1" or "2". Default = "2".')
+    parser.add_argument('-r', '--taxonomy-release', choices=['r202', 'r207', 'r214'], default="r214",
+                        help='Version of GTDB-Tk, "r202", "r207" or "r214". Default = "r214".')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.gtdbtk_folder, args.outfile, args.taxonomy_version)
+    main(args.gtdbtk_folder, args.outfile, args.taxonomy_version, args.taxonomy_release)
