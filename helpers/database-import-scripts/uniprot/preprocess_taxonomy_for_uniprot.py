@@ -97,8 +97,6 @@ def process_taxonkit_output(taxonkit_output):
                 #taxid_dict.setdefault(parts[0], list()).append(None)
             else:
                 taxon, taxid = parts[:2]
-                if taxon in taxid_dict:
-                    print("ALREADY IN", taxon)
                 taxid_dict.setdefault(taxon, list()).append(taxid)
     return taxid_dict
 
