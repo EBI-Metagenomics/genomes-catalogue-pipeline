@@ -27,34 +27,88 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release):
         tax = gtdb_to_ncbi_majority_vote_v2.Translate()
         
     tax_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, selected_bacteria_metadata, "gtdbtk")
-    #tax_dict_filtered = filter_tax(tax_dict)  # filtered out unknown species; key=MGYG, value=full NCBI lineage
-    #ncbi_dump = load_ncbi(tax_ncbi)
     # lookup tax id and print results to file
+    lowest_taxon_dict = get_lowest_taxa(tax_dict)  # key = mgyg, value = name of the lowest known taxon
     with open(outfile, "w") as file_out:
-        for mgyg, lineage in tax_dict.items():
-            #species = lineage.strip().split(";")[-1].replace("s__", "")
-            lowest_known_taxon = get_lowest_taxon(lineage)
-            if not lowest_known_taxon:
-                sys.exit("Genome {} doesn't have any known taxonomy".format(mgyg))
-            else:
-                run_taxonkit(lowest_known_taxon)
-            #try:
-            #    file_out.write("{}\t{}\t{}\t{}\n".format(mgyg, species, lineage, ncbi_dump[species]))
-            #except:
-            #    logging.error("Unable to obtain NCBI taxid for genome {}. Skipping genome.".format(mgyg))
-            #    sys.exit(1)
+        for key, value in lowest_taxon_dict.items():
+            file_out.write("{}\t{}\n".format(key, value))
+    taxid_dict = run_taxonkit_on_dict(lowest_taxon_dict)  # key = taxon name, value = taxid
+    with open(outfile, "w") as file_out:
+        for key, value in lowest_taxon_dict.items():
+            lineage = tax_dict[key]
+            species_level = False if lineage.endswith("s__") else True
+            taxid = taxid_dict[lowest_taxon_dict[key]]
+            print(key, lineage, taxid, species_level)
+            file_out.write("{}\t{}\t{}\t{}\n".format(key, lineage, taxid, species_level))
 
 
-def run_taxonkit(lowest_known_taxon):
+def run_taxonkit_on_dict(lowest_taxon_dict):
+    input_data = "\n".join(set(lowest_taxon_dict.values()))  # remove duplicate taxa and save all lines to a variable
     command = ["/homes/tgurbich/Taxonkit/taxonkit", "name2taxid", "--data-dir", "/homes/tgurbich/Taxonkit/taxdump"]
     try:
-        result = subprocess.run(command, input=lowest_known_taxon, text=True, stdout=subprocess.PIPE,
+        result = subprocess.run(command, input=input_data, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
-        non_empty_line_count = len([line for line in result.stdout.split('\n') if line.strip()])
-        if non_empty_line_count > 1:
-            print("There multiple lines in output: {}".format(result.stdout))
+        taxid_dict = process_taxonkit_output(result.stdout)
+        filtered_taxid_dict = filter_taxid_dict(taxid_dict)  # resolve cases where multiple taxid are assigned to taxon
+        return filtered_taxid_dict
     except subprocess.CalledProcessError as e:
         print("Error:", e.stderr)
+
+
+def filter_taxid_dict(taxid_dict):
+    filtered_taxid_dict = dict()
+    command = ["/homes/tgurbich/Taxonkit/taxonkit", "lineage", "--data-dir",
+               "/homes/tgurbich/Taxonkit/taxdump"]
+    for taxon_name, taxid_list in taxid_dict.items():
+        if len(taxid_list) == 1:
+            filtered_taxid_dict[taxon_name] = taxid_list[0]
+        else:
+            print("------------------> resolving duplicate {} {}".format(taxon_name, taxid_list))
+            correct_taxon = list()
+            for taxid in taxid_list:
+                result = subprocess.run(command, input=taxid, text=True, stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, check=True)
+                try:
+                    lineage = result.stdout.strip().split("\t")[1]
+                    retrieved_name = result.stdout.strip().split("\t")[1].split(";")[-1]
+                    print(lineage, retrieved_name)
+                    if retrieved_name == taxon_name:
+                        correct_taxon.append(taxid)
+                except:
+                    logging.error("Error when resolving duplicate {}".format(taxid))
+            correct_taxon = list(set(correct_taxon))
+            if len(correct_taxon) == 1:
+                filtered_taxid_dict[taxon_name] = correct_taxon[0]
+            else:
+                print("Multiple identical taxon names: {}".format(taxon_name))
+    return filtered_taxid_dict
+        
+
+def process_taxonkit_output(taxonkit_output):
+    taxid_dict = dict()
+    lines = taxonkit_output.split("\n")
+    for line in lines:
+        line = line.strip()
+        if len(line) > 0:
+            parts = line.split("\t")
+            if len(parts) == 1:
+                logging.error("No taxid for taxon {}. EXITING!".format(parts[0]))
+                sys.exit(1)
+                #taxid_dict.setdefault(parts[0], list()).append(None)
+            else:
+                taxon, taxid = parts[:2]
+                if taxon in taxid_dict:
+                    print("ALREADY IN", taxon)
+                taxid_dict.setdefault(taxon, list()).append(taxid)
+    return taxid_dict
+
+
+def get_lowest_taxa(tax_dict):
+    lowest_taxon_dict = dict()
+    for mgyg, lineage in tax_dict.items():
+        lowest_known_taxon = get_lowest_taxon(lineage)
+        lowest_taxon_dict[mgyg] = lowest_known_taxon
+    return lowest_taxon_dict
     
     
 def get_lowest_taxon(lineage):
@@ -62,7 +116,7 @@ def get_lowest_taxon(lineage):
     for i in reversed(elements):
         if not i.endswith("__"):
             return i.split("__")[1]
-    return None
+    sys.exit("Could not obtain lowest taxon from lineage {}".format(lineage))
     
     
 def select_dump(taxonomy_release, db_dir):
