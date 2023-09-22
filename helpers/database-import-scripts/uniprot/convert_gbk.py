@@ -27,7 +27,7 @@ def ingest_taxonomy_file(taxonomy_file, accession):
     with open(taxonomy_file, "r") as file_in:
         for line in file_in:
             if line.startswith(accession):
-                _, species, lineage, taxid = line.strip().split("\t")
+                _, species, lineage, taxid, _ = line.strip().split("\t")
                 return species, lineage, taxid
     return species, lineage, taxid
 
