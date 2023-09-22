@@ -124,12 +124,13 @@ def filter_taxid_dict(taxid_dict, lineage_dict, lowest_taxon_lineage_dict):
                             if phylum == lineage.split(';')[1]:
                                 print("Phylum match")
                                 matching_lineage = pick_lineage(retrieved_domain, phylum,
-                                                                lowest_taxon_lineage_dict[taxon_name])
+                                                                lowest_taxon_lineage_dict[taxon_name], lineage)
                                 if compare_positions(lineage, matching_lineage, taxon_name) and \
                                         last_non_empty_segment_position(lineage) == \
                                         last_non_empty_segment_position(matching_lineage):
                                     print("Positions match")
                                     success = True
+                                    print("Saving {}".format(matching_lineage))
                                     filtered_taxid_dict.setdefault(taxon_name, dict())
                                     if matching_lineage not in filtered_taxid_dict[taxon_name]:
                                         filtered_taxid_dict[taxon_name][matching_lineage] = taxid
@@ -141,11 +142,12 @@ def filter_taxid_dict(taxid_dict, lineage_dict, lowest_taxon_lineage_dict):
                                     print("levels are different")
                             else:
                                 matching_lineage = pick_lineage(retrieved_domain, phylum,
-                                                                lowest_taxon_lineage_dict[taxon_name])
+                                                                lowest_taxon_lineage_dict[taxon_name], lineage)
                                 if (taxon_name in synonyms[taxid] and last_non_empty_segment_position(lineage) == 
                                     last_non_empty_segment_position(matching_lineage)):
                                     success = True
                                     print("Resolved lineage through synonyms")
+                                    print("Saving {}".format(matching_lineage))
                     print(lineage, retrieved_name)
                     print(lowest_taxon_lineage_dict[taxon_name])
                     # first check that the name matches
@@ -228,14 +230,15 @@ def compare_positions(lineage1, lineage2, search_term):
     return position1 == position2
 
 
-def pick_lineage(expected_domain, expected_phylum, lineage_list):
+def pick_lineage(expected_domain, expected_phylum, lineage_list, dump_lineage):
     if len(lineage_list) == 1:
         return lineage_list[0]
     else:
         print("---------------------->>>>>>> Multiple lineages: {}".format(lineage_list))
         for lineage in lineage_list:
             domain, phylum = [part.replace("d__", "").replace("p__", "") for part in lineage.split(";")[:2]]
-            if domain == expected_domain and phylum == expected_phylum:
+            if domain == expected_domain and phylum == expected_phylum and \
+                    last_non_empty_segment_position(lineage) == last_non_empty_segment_position(dump_lineage):
                 return lineage
     sys.exit("ERROR: could not resolve lineages: {} {} {}".format(expected_domain, expected_phylum, lineage_list))
 
@@ -245,6 +248,8 @@ def get_domains_and_phyla(lineage_list):
     for lineage in lineage_list:
         domain, phylum = [part.replace("d__", "").replace("p__", "") for part in lineage.split(";")[:2]]
         expected_domains_and_phyla.setdefault(domain, list()).append(phylum)
+    for key, values in expected_domains_and_phyla.items():
+        expected_domains_and_phyla[key] = list(set(values))
     return expected_domains_and_phyla
 
 
