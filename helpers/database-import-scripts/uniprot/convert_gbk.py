@@ -35,8 +35,12 @@ def ingest_taxonomy_file(taxonomy_file, accession):
 def format_lineage(taxonomy_lineage):
     # Split the lineage into segments
     segments = taxonomy_lineage.split(';')
+    
+    # Remove empty segments from the end
+    while segments and re.match(r'[a-z]__$', segments[-1]):
+        segments.pop()
 
-    # Remove the species segment
+    # Remove the last known (named) segment
     segments.pop()
 
     # Extract the names from the segments and format the output
@@ -54,7 +58,8 @@ def format_lineage(taxonomy_lineage):
             lines[-1] += segment + "; "
             line_length += len(segment) + 2
 
-    formatted_output = "\n".join([indent + line.rstrip(" ") for line in lines]).rstrip("; ") + "."
+    formatted_output = "\n".join([indent + line.rstrip(" ") for line in lines])
+    formatted_output = re.sub(r';$', '', formatted_output) + "."
     if "; ;" in formatted_output:
         logging.info("Taxonomy lineage is missing fields: {}".format(formatted_output))
     return formatted_output
