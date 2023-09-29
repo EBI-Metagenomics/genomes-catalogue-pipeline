@@ -38,13 +38,15 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release):
     lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict)  
     # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
     # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
-    taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lineage_dict, lowest_taxon_lineage_dict)  # key = taxon name, value = taxid
-    #with open(outfile, "w") as file_out:
-    #    for key, value in lowest_taxon_mgyg_dict.items():
-    #        lineage = lineage_dict[key]
-    #        species_level = False if lineage.endswith("s__") else True
-    #        taxid = taxid_dict[value]
-    #        file_out.write("{}\t{}\t{}\t{}\n".format(key, lineage, taxid, species_level))
+    taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lineage_dict, lowest_taxon_lineage_dict)  
+    with open(outfile, "w") as file_out:
+        for key, value in lowest_taxon_mgyg_dict.items():
+            lineage = lineage_dict[key]
+            species_level = False if lineage.endswith("s__") else True
+            taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
+            file_out.write("{}\t{}\t{}\t{}\t{}\n".format(
+                key, lowest_taxon_mgyg_dict[key], lineage, taxid, species_level))
+    logging.info("Printed results to {}".format(outfile))
 
 
 def load_synonyms():
@@ -94,14 +96,12 @@ def filter_taxid_dict(taxid_dict, lineage_dict, lowest_taxon_lineage_dict):
     for taxon_name, taxid_list in taxid_dict.items():
         if len(taxid_list) == 1:
             # no need to filter anything, save to results
-            #filtered_taxid_dict[taxon_name] = taxid_list[0]
             filtered_taxid_dict.setdefault(taxon_name, dict())
             filtered_taxid_dict[taxon_name][lowest_taxon_lineage_dict[taxon_name][0]] = taxid_list[0]
         else:
             # if we are here, the taxon name has multiple taxids associated with it
             success = False 
-            print("\n\n\n------------------> resolving duplicate {} {}".format(taxon_name, taxid_list))
-            correct_taxon = list()
+            logging.debug("\n\n\n------------------> resolving duplicate {} {}".format(taxon_name, taxid_list))
             # go through taxids and identify the ones we need to keep
             for taxid in taxid_list:
                 # get the lineage
@@ -109,53 +109,51 @@ def filter_taxid_dict(taxid_dict, lineage_dict, lowest_taxon_lineage_dict):
                                         stderr=subprocess.PIPE, check=True)
                 try:
                     lineage = result.stdout.strip().split("\t")[1]
-                    print("Checking dump lineage", lineage)
+                    logging.debug("Checking dump lineage", lineage)
                     retrieved_name = re.sub(";+$", "", lineage).split(";")[-1]
                     assert retrieved_name, "Could not get retrieved name for lineage".format(lineage)
-                    print("Checking name from dump lineage is", retrieved_name)
+                    logging.debug("Checking name from dump lineage is", retrieved_name)
                     expected_domains_and_phyla = get_domains_and_phyla(lowest_taxon_lineage_dict[taxon_name])
-                    print("expected phyla obtained", expected_domains_and_phyla)
+                    logging.debug("expected phyla obtained", expected_domains_and_phyla)
                     retrieved_domain = lineage.split(";")[0]
-                    print("Checking domain", retrieved_domain)
+                    logging.debug("Checking domain", retrieved_domain)
                     if retrieved_domain in expected_domains_and_phyla:
-                        print("Domain match")
+                        logging.debug("Domain match")
                         for phylum in expected_domains_and_phyla[retrieved_domain]:
-                            print("checking phylum {}".format(phylum))
+                            logging.debug("checking phylum {}".format(phylum))
                             if phylum == lineage.split(';')[1]:
-                                print("Phylum match")
+                                logging.debug("Phylum match")
                                 matching_lineage = pick_lineage(retrieved_domain, phylum,
                                                                 lowest_taxon_lineage_dict[taxon_name], lineage)
                                 if compare_positions(lineage, matching_lineage, taxon_name) and \
                                         last_non_empty_segment_position(lineage) == \
                                         last_non_empty_segment_position(matching_lineage):
-                                    print("Positions match")
+                                    logging.debug("Positions match")
                                     success = True
-                                    print("Saving {}".format(matching_lineage))
+                                    logging.debug("Saving {}".format(matching_lineage))
                                     filtered_taxid_dict.setdefault(taxon_name, dict())
                                     if matching_lineage not in filtered_taxid_dict[taxon_name]:
                                         filtered_taxid_dict[taxon_name][matching_lineage] = taxid
                                     else:
-                                        print("###################### Multiple matching taxids: {}".format(
+                                        logging.debug("###################### Multiple matching taxids: {}".format(
                                             matching_lineage))
                                         
                                 else:
-                                    print("levels are different")
+                                    logging.debug("levels are different")
                             else:
                                 matching_lineage = pick_lineage(retrieved_domain, phylum,
                                                                 lowest_taxon_lineage_dict[taxon_name], lineage)
                                 if (taxon_name in synonyms[taxid] and last_non_empty_segment_position(lineage) == 
                                     last_non_empty_segment_position(matching_lineage)):
                                     success = True
-                                    print("Resolved lineage through synonyms")
-                                    print("Saving {}".format(matching_lineage))
-                    print(lineage, retrieved_name)
-                    print(lowest_taxon_lineage_dict[taxon_name])
+                                    logging.debug("Resolved lineage through synonyms")
+                                    logging.debug("Saving {}".format(matching_lineage))
+                                    filtered_taxid_dict.setdefault(taxon_name, dict())
+                                    if matching_lineage not in filtered_taxid_dict[taxon_name]:
+                                        filtered_taxid_dict[taxon_name][matching_lineage] = taxid
+                    logging.debug(lineage, retrieved_name)
+                    logging.debug(lowest_taxon_lineage_dict[taxon_name])
                     # first check that the name matches
-                    if retrieved_name == taxon_name:
-                        # now check that lineage is correct
-                        # compare phyla:
-                        
-                        correct_taxon.append(taxid)
                 except AssertionError as e:
                     logging.error("Assertion error: {}".format(e))
                 except IndexError:
@@ -163,24 +161,8 @@ def filter_taxid_dict(taxid_dict, lineage_dict, lowest_taxon_lineage_dict):
                 except Exception as e:
                     logging.error("Error when processing taxid {}: {}".format(taxid, e))
                     sys.exit("Unable to find lineages for taxid {}".format(taxid))
-            correct_taxon = list(set(correct_taxon))
-            # Todo: fix how this is handled - check lineage
-            #if len(correct_taxon) == 1:
-            #    filtered_taxid_dict[taxon_name] = correct_taxon[0]
-            #else:
-            #    print("Multiple identical taxon names: {}".format(taxon_name))
-            #    filtered_taxid_dict[taxon_name] = taxid
             if not success:
-                sys.exit("Unable to resolve taxonomy of {}. EXITING.".format(taxon_name))
-    for key, value in filtered_taxid_dict.items():
-        for lineage, taxid in value.items():
-            command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir",
-                       TAXDUMP_PATH, "-I", "1"]
-            result = subprocess.run(command, input=taxid, text=True, stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE, check=True)
-            retrieved_lineage = result.stdout.strip().split("\t")[1]
-            print(key, "\n", lineage, "\n", retrieved_lineage, "\n", taxid, "\n")
-    
+                sys.exit("Unable to resolve taxonomy of {}. EXITING.".format(taxon_name)) 
     return filtered_taxid_dict
 
 
@@ -204,7 +186,6 @@ def last_non_empty_segment_position(lineage_string):
         if segment:
             position = i
             break  # Stop when the last non-empty segment is found
-    print("lineage position", position, "in lineage", lineage_string)
     if position is None:
         sys.exit("Could not find last non-empty position in lineage {}".format(lineage_string))
     return position
@@ -234,7 +215,6 @@ def pick_lineage(expected_domain, expected_phylum, lineage_list, dump_lineage):
     if len(lineage_list) == 1:
         return lineage_list[0]
     else:
-        print("---------------------->>>>>>> Multiple lineages: {}".format(lineage_list))
         for lineage in lineage_list:
             domain, phylum = [part.replace("d__", "").replace("p__", "") for part in lineage.split(";")[:2]]
             if domain == expected_domain and phylum == expected_phylum and \
@@ -263,7 +243,6 @@ def process_taxonkit_output(taxonkit_output):
             if len(parts) == 1:
                 logging.error("No taxid for taxon {}. EXITING!".format(parts[0]))
                 sys.exit(1)
-                #taxid_dict.setdefault(parts[0], list()).append(None)
             else:
                 taxon, taxid = parts[:2]
                 taxid_dict.setdefault(taxon, list()).append(taxid)
