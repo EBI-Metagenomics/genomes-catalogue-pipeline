@@ -11,7 +11,7 @@ import gtdb_to_ncbi_majority_vote, gtdb_to_ncbi_majority_vote_v2
 
 logging.basicConfig(level=logging.INFO)
 
-TAXDUMP_PATH = "/homes/tgurbich/Taxonkit/taxdump"
+TAXDUMP_PATH = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/Taxonkit/taxdump"
 DB_DIR = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/"
 
 
