@@ -40,7 +40,7 @@ function GenerateRNACentralJSON {
     echo "Copying GFFs"
     for R in $REPS
     do
-        cp ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/${R}.gff* ${RESULTS_PATH}/additional_data/rnacentral/GFFs/
+        cp ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/${R}.gff* ${RESULTS_PATH}/additional_data/rnacentral/GFFs/
     done
     
     echo "Running JSON generation"
