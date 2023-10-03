@@ -34,7 +34,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Rfam   | 14.9        | Identification of SSU/LSU rRNA and other ncRNAs       |
 | Panaroo   | 1.3.2        | Pan-genome computation       |
 | Seqtk   | 1.3        | Generating a gene catalogue       |
-| VIRify   | -        | Viral sequence annotation       |
+| VIRify   | 2.0.0        | Viral sequence annotation       |
 | MoMofy   | 1.0.0        | Mobilome annotation       |
 | samtools   | 1.15       | FASTA indexing       |
 
