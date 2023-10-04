@@ -30,6 +30,7 @@ if (params.study_genomes_information) {
 
 include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
+include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
@@ -96,26 +97,50 @@ workflow GAP {
         ch_genomes_information,
         ch_study_genomes_information
     )
-
-    DREP_SWF(
-        PREPARE_DATA.out.genomes,
-        PREPARE_DATA.out.genomes_checkm,
-        PREPARE_DATA.out.extra_weight_table
-    )
-
-    MASH_TO_NWK(
-        DREP_SWF.out.mash_splits | flatten
-    )
-
-    PROCESS_MANY_GENOMES(
-        DREP_SWF.out.many_genomes_fna_tuples
-    )
-
-    PROCESS_SINGLETON_GENOMES(
-        DREP_SWF.out.single_genomes_fna_tuples,
-        PREPARE_DATA.out.genomes_checkm.first(),
-        ch_gunc_db
-    )
+    
+    // needs a more elegant solution here
+    if ( !params.xlarge ) {
+        DREP_SWF(
+            PREPARE_DATA.out.genomes,
+            PREPARE_DATA.out.genomes_checkm,
+            PREPARE_DATA.out.extra_weight_table
+        )
+        
+        MASH_TO_NWK(
+            DREP_SWF.out.mash_splits | flatten
+        )
+        
+        PROCESS_MANY_GENOMES(
+            DREP_SWF.out.many_genomes_fna_tuples
+        )
+        
+        PROCESS_SINGLETON_GENOMES(
+            DREP_SWF.out.single_genomes_fna_tuples,
+            PREPARE_DATA.out.genomes_checkm.first(),
+            ch_gunc_db
+        )
+    }
+    else {
+        DREP_LARGE_SWF(
+            PREPARE_DATA.out.genomes,
+            PREPARE_DATA.out.genomes_checkm,
+            PREPARE_DATA.out.extra_weight_table
+        )
+        
+        MASH_TO_NWK(
+            DREP_LARGE_SWF.out.mash_splits | flatten
+        )
+        
+        PROCESS_MANY_GENOMES(
+            DREP_LARGE_SWF.out.many_genomes_fna_tuples
+        )
+        
+        PROCESS_SINGLETON_GENOMES(
+            DREP_LARGE_SWF.out.single_genomes_fna_tuples,
+            PREPARE_DATA.out.genomes_checkm.first(),
+            ch_gunc_db
+        )
+    }
 
     MMSEQ_SWF(
         PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),
@@ -157,21 +182,38 @@ workflow GAP {
         ch_eggnog_data_dir,
         ch_rfam_rrna_models
     )
-
-    GTDBTK_AND_METADATA(
-        cluster_reps_fnas.map({ it[1]}).collect(),
-        all_prokka_fna.map({ it[1] }).collect(),
-        PREPARE_DATA.out.extra_weight_table,
-        PREPARE_DATA.out.genomes_checkm,
-        ANNOTATE.out.rrna_outs,
-        PREPARE_DATA.out.genomes_name_mapping,
-        DREP_SWF.out.drep_split_text,
-        ch_ftp_name,
-        ch_ftp_version,
-        ch_geo_metadata,
-        PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
-        ch_gtdb_db
-    )
+    
+    if ( !params.xlarge ){
+        GTDBTK_AND_METADATA(
+            cluster_reps_fnas.map({ it[1]}).collect(),
+            all_prokka_fna.map({ it[1] }).collect(),
+            PREPARE_DATA.out.extra_weight_table,
+            PREPARE_DATA.out.genomes_checkm,
+            ANNOTATE.out.rrna_outs,
+            PREPARE_DATA.out.genomes_name_mapping,
+            DREP_SWF.out.drep_split_text,
+            ch_ftp_name,
+            ch_ftp_version,
+            ch_geo_metadata,
+            PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
+            ch_gtdb_db
+        )
+    else {
+        GTDBTK_AND_METADATA(
+            cluster_reps_fnas.map({ it[1]}).collect(),
+            all_prokka_fna.map({ it[1] }).collect(),
+            PREPARE_DATA.out.extra_weight_table,
+            PREPARE_DATA.out.genomes_checkm,
+            ANNOTATE.out.rrna_outs,
+            PREPARE_DATA.out.genomes_name_mapping,
+            DREP_LARGE_SWF.out.drep_split_text,
+            ch_ftp_name,
+            ch_ftp_version,
+            ch_geo_metadata,
+            PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
+            ch_gtdb_db
+        )
+    }
 
     /* IQTree need at least 3 sequences. */
     gtdbtk_user_msa_bac120 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.first {
