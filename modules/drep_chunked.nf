@@ -6,18 +6,19 @@ process DREP_CHUNKED {
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
 
     input:
-    path genomes_directory
+    path genomes, stageAs: "genomes/*"
     path checkm_csv
     path extra_weights_table
 
     output:
     path "drep_output/data_tables/Cdb.csv", emit: cdb_csv
+    path "drep_output/data_tables/Mdb.csv", emit: mdb_csv
     path "drep_output/data_tables/Sdb.csv", emit: sdb_csv
-    path "drep_output/dereplicated_genomes/", emit: dereplicated_genomes
+    path "drep_output/dereplicated_genomes/*.fa", emit: dereplicated_genomes
 
     script:
     """
-    dRep dereplicate -g ${genomes_directory}/*.fa \
+    dRep dereplicate -g ${genomes}/*.fa \
     -p ${task.cpus} \
     -pa 0.9 \
     -sa 0.95 \
@@ -37,5 +38,6 @@ process DREP_CHUNKED {
     touch drep_output/data_tables/Cdb.csv
     touch drep_output/data_tables/Sdb.csv
     touch drep_output/dereplicated_genomes/CAMNGJ02.fa
+    touch drep_output/dereplicated_genomes/CAMNGJ04.fa
     """
 }

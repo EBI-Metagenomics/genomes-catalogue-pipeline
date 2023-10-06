@@ -1,0 +1,32 @@
+nextflow_workflow {
+
+    name "Test Workflow DREP_LARGE_SWF"
+    script "subworkflows/drep_large_catalogue_swf.nf"
+    workflow "DREP_LARGE_SWF"
+
+    test("Should run dRep per chunks") {
+
+        when {
+            params {
+                // define parameters here. Example:
+                xlarge = true
+                xlarge_chunk_size = 3
+                outdir = "tests/results"
+            }
+            workflow {
+                """
+                input[0] = file("$baseDir/tests/subworkflows/fixtures/genomes")
+                input[1] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/checkm.csv")
+                input[3] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/extra_weight_table.txt)
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}
