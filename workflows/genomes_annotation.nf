@@ -4,20 +4,20 @@
     ~~~~~~~~~~~~~~~~~~
 */
 ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
-ch_ena_genomes_checkm = channel.fromPath(params.ena_genomes_checkm, checkIfExists: true)
+ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
 
 // TODO: Validate
 ch_mgyg_index_start = channel.value(params.mgyg_start)
 ch_mgyg_index_end = channel.value(params.mgyg_end)
 
-ch_genomes_information = channel.empty()
-ch_study_genomes_information = channel.empty()
+ch_genomes_information = file("NO_FILE_GENOME_CAT")
+ch_study_genomes_information = file("NO_FILE_STUDY_CAT")
 
 if (params.genomes_information) {
-    ch_genomes_information = channel.fromPath(params.genomes_information)
+    ch_genomes_information = file(params.genomes_information)
 }
 if (params.study_genomes_information) {
-    ch_study_genomes_information = channel.fromPath(params.study_genomes_information)
+    ch_study_genomes_information = file(params.study_genomes_information)
 }
 
 // TODO: Add help message with parameters
@@ -118,15 +118,15 @@ workflow GAP {
     }
 
     MASH_TO_NWK(
-        DREP_LARGE_SWF.out.mash_splits | flatten
+        dereplicated_genomes.out.mash_splits | flatten
     )
 
     PROCESS_MANY_GENOMES(
-        DREP_LARGE_SWF.out.many_genomes_fna_tuples
+        dereplicated_genomes.out.many_genomes_fna_tuples
     )
 
     PROCESS_SINGLETON_GENOMES(
-        DREP_LARGE_SWF.out.single_genomes_fna_tuples,
+        dereplicated_genomes.out.single_genomes_fna_tuples,
         PREPARE_DATA.out.genomes_checkm.first(),
         ch_gunc_db
     )
@@ -179,7 +179,7 @@ workflow GAP {
         PREPARE_DATA.out.genomes_checkm,
         ANNOTATE.out.rrna_outs,
         PREPARE_DATA.out.genomes_name_mapping,
-        DREP_LARGE_SWF.out.drep_split_text,
+        dereplicated_genomes.out.drep_split_text,
         ch_ftp_name,
         ch_ftp_version,
         ch_geo_metadata,

@@ -8,17 +8,18 @@ process MASH_COMPARE {
         failOnError: true
     )
 
-    container 'quay.io/biocontainers/mash:2.3--hd3113c8_4 '
+    container 'quay.io/biocontainers/mash:2.3--hd3113c8_4'
 
     input:
     tuple val(cluster), path(many_genomes_fnas)
 
     output:
-    tuple val(cluster), path "${cluster}_mash.tsv", emit: mash_split
+    path("${cluster}_mash.tsv"), emit: mash_split
 
     script:
     """
     mash sketch -o ${cluster}.msh ${many_genomes_fnas.join( ' ' )}
-    mash dist ${cluster}.msh > ${cluster}_mash.tsv
+    mash dist ${cluster}.msh ${cluster}.msh > ${cluster}_mash_dist.tsv
+    awk -F'\t' 'BEGIN {OFS=","} NR==1 {print "genome1", "genome2", "dist", "similarity"} NR>1 {print \$1, \$2, \$3, 1 - \$3}' < ${cluster}_mash_dist.tsv > ${cluster}_mash.tsv
     """
 }

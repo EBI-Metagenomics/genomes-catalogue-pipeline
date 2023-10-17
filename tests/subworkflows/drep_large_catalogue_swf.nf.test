@@ -10,14 +10,14 @@ nextflow_workflow {
             params {
                 // define parameters here. Example:
                 xlarge = true
-                xlarge_chunk_size = 3
+                xlarge_chunk_size = 4
                 outdir = "tests/results"
             }
             workflow {
                 """
                 input[0] = file("$baseDir/tests/subworkflows/fixtures/genomes")
                 input[1] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/checkm.csv")
-                input[3] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/extra_weight_table.txt)
+                input[2] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/extra_weight_table.txt")
                 """
             }
         }

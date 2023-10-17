@@ -3,7 +3,7 @@
  */
 
 include { DREP_CHUNKED } from '../modules/drep_chunked'
-include { DREP_RERUN } from '../modules/drep_chunked'
+include { DREP_CHUNKED as DREP_RERUN } from '../modules/drep_chunked'
 include { COMBINE_CHUNKED_DREP } from '../modules/combine_chunked_drep'
 include { SPLIT_DREP_LARGE } from '../modules/split_drep_large'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
@@ -18,23 +18,27 @@ workflow DREP_LARGE_SWF {
     main:
 
         // split genomes from genomes_directory into chunks 25000 files each (probably doesnt work)
-        genomes_chunked = Channel.fromPath( "${genomes_directory}/*.{fa,fasta,fna}" )
+        genomes_chunked = genomes_directory
+            .map( { dir -> files("${dir}/*.fa") })
+            .flatten()
             .buffer( size: params.xlarge_chunk_size, remainder: true )
 
         // dRep each chunk
         DREP_CHUNKED(
             genomes_chunked,
-            checkm_csv,
-            extra_weight_table
+            checkm_csv.first(),
+            extra_weight_table.first(),
+            false // not-merged - used for the output tarball name
         )
 
-        dereplicated_genomes = DREP_CHUNKED.out.dereplicated_genomes.collect().flatten()
+        dereplicated_genomes = DREP_CHUNKED.out.dereplicated_genomes.collect()
 
         // re-run dDrep on species representatives
         DREP_RERUN(
             dereplicated_genomes,
             checkm_csv,
-            extra_weight_table
+            extra_weight_table,
+            true // merged - used for the output tarball name
         )
 
         all_cdb_files = DREP_CHUNKED.out.cdb_csv.collect()
@@ -43,23 +47,24 @@ workflow DREP_LARGE_SWF {
         COMBINE_CHUNKED_DREP(
             all_cdb_files,
             all_sdb_files,
-            DREP_RERUN.out.cbd_csv
+            DREP_RERUN.out.cdb_csv
         )
 
         SPLIT_DREP_LARGE(
-            DREP.out.cdb_csv,
-            DREP.out.sdb_csv
+            COMBINE_CHUNKED_DREP.out.combined_cdb,
+            COMBINE_CHUNKED_DREP.out.combined_sdb
         )
 
         CLASSIFY_CLUSTERS(
             genomes_directory,
-            SPLIT_DREP.out.text_split
+            SPLIT_DREP_LARGE.out.text_split
         )
 
+        // TODO: We need to check if this is a valid way of publishing files. 
+        //       I suspect it's not as collectFile and publishDir are very different
         // The mdb.csv files are contacenated and published a singile file
-        mdb_csv_collected = COMBINE_CHUNKED_DREP.out.mdb_csv.collectFile(
+        mdb_csv_collected = DREP_CHUNKED.out.mdb_csv.collectFile(
             keepHeader: true,
-            skip: 1,
             name: "Mdb.csv",
             storeDir: "${params.outdir}/additional_data/intermediate_files/"
         )
@@ -74,7 +79,7 @@ workflow DREP_LARGE_SWF {
 
         // Run mash on each group of fastas in many_genomes_fnas
         MASH_COMPARE(
-            many_genomes_fna_tuples
+            many_genomes_fna_tuples | groupTuple
         )
 
     emit:
@@ -84,5 +89,5 @@ workflow DREP_LARGE_SWF {
         mash_splits = MASH_COMPARE.out.mash_split
         drep_cdb_csv = DREP_RERUN.out.cdb_csv
         drep_sdb_csv = DREP_RERUN.out.sdb_csv
-        drep_mdb_csv = DREP.out.mdb_csv_collected
+        drep_mdb_csv = mdb_csv_collected
 }

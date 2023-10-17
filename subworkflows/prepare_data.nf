@@ -63,8 +63,8 @@ workflow PREPARE_DATA {
         GENERATE_EXTRA_WEIGHT(
             FILTER_QS50.out.filtered_genomes,
             RENAME_FASTA.out.rename_mapping,
-            per_genome_category.ifEmpty(file("NO_FILE_GENOME_CAT")).first(),
-            per_study_genomes_category.ifEmpty(file("NO_FILE_STUDY_CAT")).first()
+            per_genome_category,
+            per_study_genomes_category
         )
 
     emit:

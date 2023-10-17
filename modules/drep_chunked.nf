@@ -5,20 +5,38 @@ process DREP_CHUNKED {
 
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
 
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                def result_file = file(filename);
+                if ( result_file.name.contains( ".tar.gz" ) ) {
+                    return "additional_data/intermediate_files/${result_file.name}";
+                }
+                return null;
+            }
+        },
+        mode: 'copy',
+        failOnError: true
+    )
+
     input:
     path genomes, stageAs: "genomes/*"
     path checkm_csv
     path extra_weights_table
+    val merged
 
     output:
     path "drep_output/data_tables/Cdb.csv", emit: cdb_csv
     path "drep_output/data_tables/Mdb.csv", emit: mdb_csv
     path "drep_output/data_tables/Sdb.csv", emit: sdb_csv
     path "drep_output/dereplicated_genomes/*.fa", emit: dereplicated_genomes
+    path "drep_data_tables_*.tar.gz", emit: drep_data_tables_tarball
 
     script:
+    tarball_suffix = merged ? "merged" : task.index 
     """
-    dRep dereplicate -g ${genomes}/*.fa \
+    dRep dereplicate -g genomes/* \
     -p ${task.cpus} \
     -pa 0.9 \
     -sa 0.95 \
@@ -29,6 +47,8 @@ process DREP_CHUNKED {
     -extraW ${extra_weights_table} \
     --genomeInfo ${checkm_csv} \
     drep_output
+
+    tar -czf drep_data_tables_${tarball_suffix}.tar.gz drep_output/data_tables
     """
 
     stub:
