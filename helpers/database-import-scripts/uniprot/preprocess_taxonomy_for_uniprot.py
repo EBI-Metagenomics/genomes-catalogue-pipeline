@@ -45,31 +45,27 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict)  
     # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
     # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
-    taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lineage_dict, lowest_taxon_lineage_dict)  
-    count_match = 0
-    count_mismatch = 0
+    taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)  
     with open(outfile, "w") as file_out:
         for key, lowest_taxon in lowest_taxon_mgyg_dict.items():
+            taxid_to_report = ""
             lineage = lineage_dict[key]
-            species_level = False if lineage.endswith("s__") else True
-            taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
-            print("before: ", lineage, lowest_taxon)
-            
-            if key in gca_accessions:
+            taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]            
+            if key in gca_accessions:  # meaning we know GCA accession from the metadata table
                 gca_accession = gca_accessions[key]
             else:
-                logging.debug("Using sample to get GCA")
                 gca_accession = get_gca_accession(sample_accessions[key])
-                logging.debug("Got this: {}".format(gca_accession))
-            if not gca_accession == "N/A":
-                # this means there is already a taxid in INSD for this genome
+            if not gca_accession == "N/A":  # this means there is already a taxid in INSDC for this genome
                 insdc_taxid = lookup_taxid_online(gca_accession)
-                if not taxid == insdc_taxid:
-                    lineage, lowest_taxon, species_level = lookup_lineage(insdc_taxid)
+                taxid_to_report = insdc_taxid
+                if not taxid == insdc_taxid:  # taxid online doesn't match -> need to recompute lineage
+                    lineage, lowest_taxon = lookup_lineage(insdc_taxid)
+            else:
+                taxid_to_report = taxid
+            species_level = False if lineage.endswith("s__") else True
             file_out.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                key, lowest_taxon, lineage, gca_accession, insdc_taxid, species_level))
+                key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level))
     logging.info("Printed results to {}".format(outfile))
-    # known_taxid = get_taxid(metadata['Genome']['GCA'])
 
 
 def lookup_lineage(insdc_taxid):
@@ -83,7 +79,7 @@ def lookup_lineage(insdc_taxid):
         retrieved_name = re.sub("[a-z]__", "", retrieved_name)
         assert retrieved_name, "Could not get retrieved name for lineage".format(lineage)
         print("Got INSDC lineage", lineage, retrieved_name)
-        return lineage, retrieved_name, False
+        return lineage, retrieved_name
     except:
         logging.error("Unable to retrieve lineage from taxid.")
         sys.exit("Aborting.")
@@ -183,7 +179,7 @@ def load_synonyms():
     return synonym_dict
     
     
-def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lineage_dict, lowest_taxon_lineage_dict):
+def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict):
     input_data = "\n".join(set(lowest_taxon_mgyg_dict.values()))  # remove duplicate taxa and save all lines to a variable
     command = ["/homes/tgurbich/Taxonkit/taxonkit", "name2taxid", "--data-dir", TAXDUMP_PATH]
     try:
