@@ -49,7 +49,7 @@ workflow DREP_LARGE_SWF {
 
         // split genomes from genomes_directory into chunks 25000 files each (probably doesnt work)
         genomes_chunked = genomes_directory
-            .map( { dir -> files("${dir}/*.fa") })
+            .map( { dir -> files("${dir}/*.fa") } )
             .flatten()
             .buffer( size: params.xlarge_chunk_size, remainder: true )
 
