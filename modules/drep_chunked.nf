@@ -1,24 +1,11 @@
 /*
- * dRep, this workflow dereplicates a set of genomes.
+ * dRep, this process dereplicates a set of genomes.
+ * this version of the process is meant to be use for a subset
+ * of the genomes (as part of the drep_swf for large catalogues)
 */
 process DREP_CHUNKED {
 
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
-
-    publishDir(
-        path: "${params.outdir}",
-        saveAs: {
-            filename -> {
-                def result_file = file(filename);
-                if ( result_file.name.contains( ".tar.gz" ) ) {
-                    return "additional_data/intermediate_files/${result_file.name}";
-                }
-                return null;
-            }
-        },
-        mode: 'copy',
-        failOnError: true
-    )
 
     input:
     path genomes, stageAs: "genomes/*"

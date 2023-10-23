@@ -1,11 +1,5 @@
 process COMBINE_CHUNKED_DREP {
 
-    publishDir(
-       path: "${params.outdir}/additional_data/intermediate_files/",
-       mode: "copy",
-       failOnError: true
-    )
-
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'

@@ -5,9 +5,39 @@
 include { DREP_CHUNKED } from '../modules/drep_chunked'
 include { DREP_CHUNKED as DREP_RERUN } from '../modules/drep_chunked'
 include { COMBINE_CHUNKED_DREP } from '../modules/combine_chunked_drep'
-include { SPLIT_DREP_LARGE } from '../modules/split_drep_large'
+include { SPLIT_DREP } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { MASH_COMPARE } from '../modules/mash_compare'
+
+process COLLECT_DREP_RESULTS {
+
+    publishDir(
+        path: "${params.outdir}/additional_data/intermediate_files",
+        mode: "copy",
+        failOnError: true
+    )
+
+    stageInMode "copy"
+
+    input:
+    path drep_tables_tarballs
+    path cdb_csv
+    path sdb_csv
+    path mdb_csv
+
+    output:
+    path "drep_data_tables.tar.gz"
+
+    script:
+    """
+    tar -czf drep_data_tables.tar.gz \
+        ${cdb_csv} \
+        ${sdb_csv} \
+        ${mdb_csv} \
+        ${drep_tables_tarballs.join(' ')}
+    """
+
+}
 
 workflow DREP_LARGE_SWF {
     take:
@@ -50,23 +80,28 @@ workflow DREP_LARGE_SWF {
             DREP_RERUN.out.cdb_csv
         )
 
-        SPLIT_DREP_LARGE(
+        SPLIT_DREP(
             COMBINE_CHUNKED_DREP.out.combined_cdb,
-            COMBINE_CHUNKED_DREP.out.combined_sdb
+            file("NO_FILE"), // optional mdb file
+            COMBINE_CHUNKED_DREP.out.combined_sdb,
         )
 
         CLASSIFY_CLUSTERS(
             genomes_directory,
-            SPLIT_DREP_LARGE.out.text_split
+            SPLIT_DREP.out.text_split
         )
 
-        // TODO: We need to check if this is a valid way of publishing files. 
-        //       I suspect it's not as collectFile and publishDir are very different
-        // The mdb.csv files are contacenated and published a singile file
+        // The mdb.csv files are contacenated and published as a single file
         mdb_csv_collected = DREP_CHUNKED.out.mdb_csv.collectFile(
             keepHeader: true,
-            name: "Mdb.csv",
-            storeDir: "${params.outdir}/additional_data/intermediate_files/"
+            name: "Mdb.csv"
+        )
+
+        COLLECT_DREP_RESULTS(
+            DREP_CHUNKED.out.drep_data_tables_tarball.mix(DREP_RERUN.out.drep_data_tables_tarball).collect(),
+            COMBINE_CHUNKED_DREP.out.combined_cdb,
+            COMBINE_CHUNKED_DREP.out.combined_sdb,
+            mdb_csv_collected
         )
 
         def groupGenomes = { fna_file ->
@@ -85,7 +120,7 @@ workflow DREP_LARGE_SWF {
     emit:
         many_genomes_fna_tuples = many_genomes_fna_tuples
         single_genomes_fna_tuples = single_genomes_fna_tuples
-        drep_split_text = SPLIT_DREP_LARGE.out.text_split
+        drep_split_text = SPLIT_DREP.out.text_split
         mash_splits = MASH_COMPARE.out.mash_split
         drep_cdb_csv = DREP_RERUN.out.cdb_csv
         drep_sdb_csv = DREP_RERUN.out.sdb_csv
