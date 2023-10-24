@@ -3,7 +3,7 @@
  */
 
 include { DREP_CHUNKED } from '../modules/drep_chunked'
-include { DREP_CHUNKED as DREP_RERUN } from '../modules/drep_chunked'
+include { DREP_CHUNKED as DREP_SPECIES_REPS } from '../modules/drep_chunked'
 include { COMBINE_CHUNKED_DREP } from '../modules/combine_chunked_drep'
 include { SPLIT_DREP } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
@@ -64,7 +64,7 @@ workflow DREP_LARGE_SWF {
         dereplicated_genomes = DREP_CHUNKED.out.dereplicated_genomes.collect()
 
         // re-run dDrep on species representatives
-        DREP_RERUN(
+        DREP_SPECIES_REPS(
             dereplicated_genomes,
             checkm_csv,
             extra_weight_table,
@@ -77,7 +77,7 @@ workflow DREP_LARGE_SWF {
         COMBINE_CHUNKED_DREP(
             all_cdb_files,
             all_sdb_files,
-            DREP_RERUN.out.cdb_csv
+            DREP_SPECIES_REPS.out.cdb_csv
         )
 
         SPLIT_DREP(
@@ -98,7 +98,7 @@ workflow DREP_LARGE_SWF {
         )
 
         COLLECT_DREP_RESULTS(
-            DREP_CHUNKED.out.drep_data_tables_tarball.mix(DREP_RERUN.out.drep_data_tables_tarball).collect(),
+            DREP_CHUNKED.out.drep_data_tables_tarball.mix(DREP_SPECIES_REPS.out.drep_data_tables_tarball).collect(),
             COMBINE_CHUNKED_DREP.out.combined_cdb,
             COMBINE_CHUNKED_DREP.out.combined_sdb,
             mdb_csv_collected
@@ -122,7 +122,7 @@ workflow DREP_LARGE_SWF {
         single_genomes_fna_tuples = single_genomes_fna_tuples
         drep_split_text = SPLIT_DREP.out.text_split
         mash_splits = MASH_COMPARE.out.mash_split
-        drep_cdb_csv = DREP_RERUN.out.cdb_csv
-        drep_sdb_csv = DREP_RERUN.out.sdb_csv
+        drep_cdb_csv = DREP_SPECIES_REPS.out.cdb_csv
+        drep_sdb_csv = DREP_SPECIES_REPS.out.sdb_csv
         drep_mdb_csv = mdb_csv_collected
 }
