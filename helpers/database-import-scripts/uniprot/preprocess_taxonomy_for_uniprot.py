@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import concurrent.futures
 import json
 import logging
 import os
@@ -20,13 +21,15 @@ TAXDUMP_PATH = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipelin
 DB_DIR = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/"
 
 
-def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_file, species_level_taxonomy):
+def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_file, species_level_taxonomy, threads):
     if not os.path.isdir(gtdbtk_folder):
         sys.exit("GTDB folder {} is not a directory. EXITING.".format(gtdbtk_folder))
     if not versions_compatible(taxonomy_version, taxonomy_release):
         sys.exit("GTDB versions {} and {} are not compatible".format(taxonomy_version, taxonomy_release))
     
     gca_accessions, sample_accessions = parse_metadata(metadata_file)  # key = mgyg, value = gca accession
+    mgyg_to_gca, gca_to_taxid = match_taxid_to_gca(gca_accessions, sample_accessions, threads)
+
     
     selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, DB_DIR)
     tax_ncbi = select_dump(taxonomy_release, DB_DIR)
@@ -46,45 +49,64 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
     if not species_level_taxonomy:
         taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
+        
+    
     with open(outfile, "w") as file_out:
-        for key, lowest_taxon in lowest_taxon_mgyg_dict.items():           
-            if key in gca_accessions:  # meaning we know GCA accession from the metadata table
-                gca_accession = gca_accessions[key]
-            else:
-                gca_accession = get_gca_accession(sample_accessions[key])
+        for key, lowest_taxon in lowest_taxon_mgyg_dict.items():
+            gca_accession = mgyg_to_gca[key] 
             lineage = lineage_dict[key]
             if gca_accession == "N/A" and species_level_taxonomy:
-                taxid, name, submittable, lineage = get_species_level_taxonomy(lineage, file_out)
+                taxid, name, submittable, lineage = get_species_level_taxonomy(lineage)
                 print(taxid, name, submittable, lineage)
                 taxid_to_report = taxid
             elif gca_accession.startswith("GCA") and species_level_taxonomy:
-                insdc_taxid = lookup_taxid_online(gca_accession)
+                insdc_taxid = gca_to_taxid[gca_accession]
                 lineage, lowest_taxon = lookup_lineage(insdc_taxid)
                 taxid_to_report = insdc_taxid
             else:
                 taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage] 
                 if gca_accession.startswith("GCA"):  # this means there is already a taxid in INSDC for this genome
-                    insdc_taxid = lookup_taxid_online(gca_accession)
+                    insdc_taxid = gca_to_taxid[gca_accession]
                     taxid_to_report = insdc_taxid
                     if not taxid == insdc_taxid:  # taxid online doesn't match -> need to recompute lineage
                         lineage, lowest_taxon = lookup_lineage(insdc_taxid)
                 else:
                     taxid_to_report = taxid
             species_level = False if lineage.endswith("s__") else True
-            #file_out.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
-            #    key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level))
+            file_out.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level))
     logging.info("Printed results to {}".format(outfile))
 
 
-def get_species_level_taxonomy(lineage, file_out):
+def match_lineage_to_taxid(gca_to_taxid, threads):
+    taxids = list(gca_to_taxid.values())
+    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+        gca_to_taxid = {gca_acc: taxid for gca_acc, taxid in zip(taxids, executor.map(lookup_lineage, taxids))}
+    return ""
+    
+
+def match_taxid_to_gca(gca_accessions, sample_accessions, threads):
+    mgyg_to_gca = dict()  
+    for mgyg, sample in sample_accessions.items():
+        if mgyg in gca_accessions:
+            mgyg_to_gca[mgyg] = gca_accessions[mgyg]
+        else:
+            mgyg_to_gca[mgyg] = get_gca_accession(sample_accessions[mgyg])
+    gca_list = list(mgyg_to_gca.values())
+    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+        gca_to_taxid = {gca_acc: taxid for gca_acc, taxid in zip(gca_list, executor.map(lookup_taxid_online, gca_list))}
+    return mgyg_to_gca, gca_to_taxid
+    
+
+def get_species_level_taxonomy(lineage):
     lowest_taxon, lowest_rank = get_lowest_taxon(lineage)
     print(lowest_rank, lineage)
     if lineage.lower().startswith("d__b"):
-        submittable, name, taxid = extract_bacteria_info(lowest_taxon, lowest_rank, file_out)
+        submittable, name, taxid = extract_bacteria_info(lowest_taxon, lowest_rank)
     elif lineage.lower().startswith("d__a"):
-        submittable, name, taxid = extract_archaea_info(lowest_taxon, lowest_rank, file_out)
+        submittable, name, taxid = extract_archaea_info(lowest_taxon, lowest_rank)
     elif lineage.lower().startswith("d__e"):
-        submittable, name, taxid = extract_eukaryota_info(lowest_taxon, lowest_rank, file_out)
+        submittable, name, taxid = extract_eukaryota_info(lowest_taxon, lowest_rank)
     else:
         sys.exit("Unknown domain in lineage {}. Aborting".format(lineage))
     return taxid, name, submittable, ""
@@ -121,7 +143,7 @@ def query_scientific_name_from_ena(scientific_name, search_rank=False):
         return submittable, taxid
 
 
-def extract_eukaryota_info(name, rank, file_out):
+def extract_eukaryota_info(name, rank):
     nonsubmittable = (False, "", 0)
 
     # Asterisks in given taxonomy suggest the classification might be not confident enough.
@@ -148,11 +170,10 @@ def extract_eukaryota_info(name, rank, file_out):
                 if submittable:
                     return submittable, name, taxid
                 else:
-                    file_out.write("Euk {} {} {}".format(name, taxid, submittable))
                     return nonsubmittable
 
 
-def extract_bacteria_info(name, rank, file_out):
+def extract_bacteria_info(name, rank):
     if rank == "s":
         name = name
     elif rank == "d":
@@ -191,11 +212,10 @@ def extract_bacteria_info(name, rank, file_out):
             print("Removed. Result: {} {} {}".format(name, taxid, submittable))
             if not submittable:
                 print("=====================> {} {} {}".format(name, taxid, submittable))
-                file_out.write("{} {} {}\n".format(name, taxid, submittable))
     return submittable, name, taxid
 
 
-def extract_archaea_info(name, rank, file_out):
+def extract_archaea_info(name, rank):
     if rank == "s":
         name = name
     elif rank == "d":
@@ -220,8 +240,6 @@ def extract_archaea_info(name, rank, file_out):
             elif rank == "f":
                 name = name.replace("uncultured ", '')
             submittable, taxid = query_scientific_name_from_ena(name)
-    if not submittable:
-        file_out.write("Archaea {} {} {}".format(name, taxid, submittable))
 
     return submittable, name, taxid
 
@@ -236,6 +254,8 @@ def lookup_lineage(insdc_taxid):
         retrieved_name = re.sub("(;[a-z]__)+$", "", lineage).split(";")[-1]
         retrieved_name = re.sub("[a-z]__", "", retrieved_name)
         assert retrieved_name, "Could not get retrieved name for lineage".format(lineage)
+        if lineage.startswith("k__"):
+            lineage = lineage.replace("k__", "d__")
         print("Got INSDC lineage", lineage, retrieved_name)
         return lineage, retrieved_name
     except:
@@ -582,11 +602,13 @@ def parse_args():
                         help='Path to the metadata table.')
     parser.add_argument('-s', '--species-level-taxonomy', action='store_true',
                         help='Flag to assign species-level taxonomy to everything (as uncultured X species)')
+    parser.add_argument('-t', '--threads', required=True, type=int,
+                        help='Number of threads to use (only helps if --species-level-taxonomy flag is used')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
     main(args.gtdbtk_folder, args.outfile, args.taxonomy_version, args.taxonomy_release, args.metadata, 
-         args.species_level_taxonomy)
+         args.species_level_taxonomy, args.threads)
     
