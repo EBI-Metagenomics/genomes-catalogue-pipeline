@@ -42,7 +42,7 @@ process PROKKA {
         failOnError: true
     )
 
-    container "quay.io/biocontainers/prokka:1.14.6--pl526_0"
+    container "quay.io/biocontainers/prokka:1.14.6--pl5321hdfd78af_5"
 
     label 'process_light'
 
@@ -59,6 +59,8 @@ process PROKKA {
     script:
     """
     cat ${fasta} | tr '-' ' ' > ${fasta.baseName}_cleaned.fasta
+
+    export JAVA_TOOL_OPTIONS="-XX:-UsePerfData"
 
     prokka ${fasta.baseName}_cleaned.fasta \
     --cpus ${task.cpus} \
