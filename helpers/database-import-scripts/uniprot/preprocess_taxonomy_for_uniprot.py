@@ -11,7 +11,6 @@ import sys
 import pandas as pd
 import requests
 from retry import retry
-import xmltodict
 
 import gtdb_to_ncbi_majority_vote, gtdb_to_ncbi_majority_vote_v2
 
@@ -21,7 +20,7 @@ TAXDUMP_PATH = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipelin
 DB_DIR = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/"
 
 
-def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_file):
+def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_file, species_level_taxonomy):
     if not os.path.isdir(gtdbtk_folder):
         sys.exit("GTDB folder {} is not a directory. EXITING.".format(gtdbtk_folder))
     if not versions_compatible(taxonomy_version, taxonomy_release):
@@ -45,27 +44,186 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict)  
     # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
     # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
-    taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)  
+    if not species_level_taxonomy:
+        taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
     with open(outfile, "w") as file_out:
-        for key, lowest_taxon in lowest_taxon_mgyg_dict.items():
-            taxid_to_report = ""
-            lineage = lineage_dict[key]
-            taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]            
+        for key, lowest_taxon in lowest_taxon_mgyg_dict.items():           
             if key in gca_accessions:  # meaning we know GCA accession from the metadata table
                 gca_accession = gca_accessions[key]
             else:
                 gca_accession = get_gca_accession(sample_accessions[key])
-            if not gca_accession == "N/A":  # this means there is already a taxid in INSDC for this genome
-                insdc_taxid = lookup_taxid_online(gca_accession)
-                taxid_to_report = insdc_taxid
-                if not taxid == insdc_taxid:  # taxid online doesn't match -> need to recompute lineage
-                    lineage, lowest_taxon = lookup_lineage(insdc_taxid)
-            else:
+            lineage = lineage_dict[key]
+            if gca_accession == "N/A" and species_level_taxonomy:
+                taxid, name, submittable, lineage = get_species_level_taxonomy(lineage, file_out)
+                print(taxid, name, submittable, lineage)
                 taxid_to_report = taxid
+            elif gca_accession.startswith("GCA") and species_level_taxonomy:
+                insdc_taxid = lookup_taxid_online(gca_accession)
+                lineage, lowest_taxon = lookup_lineage(insdc_taxid)
+                taxid_to_report = insdc_taxid
+            else:
+                taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage] 
+                if gca_accession.startswith("GCA"):  # this means there is already a taxid in INSDC for this genome
+                    insdc_taxid = lookup_taxid_online(gca_accession)
+                    taxid_to_report = insdc_taxid
+                    if not taxid == insdc_taxid:  # taxid online doesn't match -> need to recompute lineage
+                        lineage, lowest_taxon = lookup_lineage(insdc_taxid)
+                else:
+                    taxid_to_report = taxid
             species_level = False if lineage.endswith("s__") else True
-            file_out.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level))
+            #file_out.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
+            #    key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level))
     logging.info("Printed results to {}".format(outfile))
+
+
+def get_species_level_taxonomy(lineage, file_out):
+    lowest_taxon, lowest_rank = get_lowest_taxon(lineage)
+    print(lowest_rank, lineage)
+    if lineage.lower().startswith("d__b"):
+        submittable, name, taxid = extract_bacteria_info(lowest_taxon, lowest_rank, file_out)
+    elif lineage.lower().startswith("d__a"):
+        submittable, name, taxid = extract_archaea_info(lowest_taxon, lowest_rank, file_out)
+    elif lineage.lower().startswith("d__e"):
+        submittable, name, taxid = extract_eukaryota_info(lowest_taxon, lowest_rank, file_out)
+    else:
+        sys.exit("Unknown domain in lineage {}. Aborting".format(lineage))
+    return taxid, name, submittable, ""
+
+
+def query_scientific_name_from_ena(scientific_name, search_rank=False):
+    url = "https://www.ebi.ac.uk/ena/taxonomy/rest/scientific-name/{}".format(scientific_name)
+    response = run_full_url_request(url)
+
+    try:
+        # Will raise exception if response status code is non-200 
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if search_rank:
+            return False, "", ""
+        else:
+            return False, ""
+
+    try:
+        res = json.loads(response.text)[0]
+    except IndexError:
+        if search_rank:
+            return False, "", ""
+        else:
+            return False, ""
+
+    submittable = res.get("submittable", "").lower() == "true"
+    taxid = res.get("taxId", "")
+    rank = res.get("rank", "")
+
+    if search_rank:
+        return submittable, taxid, rank
+    else:
+        return submittable, taxid
+
+
+def extract_eukaryota_info(name, rank, file_out):
+    nonsubmittable = (False, "", 0)
+
+    # Asterisks in given taxonomy suggest the classification might be not confident enough.
+    if '*' in name:
+        return nonsubmittable
+
+    if rank == "d":
+        name = "uncultured eukaryote"
+        submittable, taxid = query_scientific_name_from_ena(name)
+        return submittable, name, taxid
+    else:
+        name = name.capitalize() + " sp."
+        submittable, taxid = query_scientific_name_from_ena(name)
+        if submittable:
+            return submittable, name, taxid
+        else:
+            name = "uncultured " + name
+            submittable, taxid = query_scientific_name_from_ena(name)
+            if submittable:
+                return submittable, name, taxid
+            else:
+                name = name.replace(" sp.", '')
+                submittable, taxid = query_scientific_name_from_ena(name)
+                if submittable:
+                    return submittable, name, taxid
+                else:
+                    file_out.write("Euk {} {} {}".format(name, taxid, submittable))
+                    return nonsubmittable
+
+
+def extract_bacteria_info(name, rank, file_out):
+    if rank == "s":
+        name = name
+    elif rank == "d":
+        name = "uncultured bacterium".format(name)
+    elif rank in ["f", "o", "c", "p"]:
+        name = "uncultured {} bacterium".format(name)
+    elif rank == "g":
+        name = "uncultured {} sp.".format(name)
+
+    submittable, taxid, rank = query_scientific_name_from_ena(name, search_rank=True)
+    if not submittable:
+        if rank in ["s", "g"] and name.lower().endswith("bacteria"):
+            name = "uncultured {}".format(name.lower().replace("bacteria", "bacterium"))
+        elif rank == "f":
+            if name.lower() == "deltaproteobacteria":
+                name = "uncultured delta proteobacterium"
+            elif name.lower() == "uncultured acidaminococcaceae bacterium":
+                name = "uncultured Veillonellaceae bacterium"
+        elif rank == "p":
+            if name.lower() == "uncultured proteobacteria bacterium":
+                name = "uncultured proteobacterium"
+            elif name.lower() == "uncultured lentisphaerae bacterium":
+                name = "uncultured lentisphaerota bacterium"
+            elif name.lower() == "uncultured cyanobacteria bacterium":
+                name = "uncultured cyanobacterium"
+            elif name.lower() == "uncultured verrucomicrobia bacterium":
+                name = "uncultured verrucomicrobiota bacterium"
+            elif name.lower() == "uncultured candidatus scatovivens sp.":
+                name = "Candidatus Scatovivens sp."
+        submittable, taxid = query_scientific_name_from_ena(name)
+    if not submittable:
+        if rank == "g" and name.lower().startswith("uncultured") and name.lower().endswith("sp."):
+            print("Removing uncultured")
+            name = name.lower().replace("uncultured ", "")
+            submittable, taxid = query_scientific_name_from_ena(name)
+            print("Removed. Result: {} {} {}".format(name, taxid, submittable))
+            if not submittable:
+                print("=====================> {} {} {}".format(name, taxid, submittable))
+                file_out.write("{} {} {}\n".format(name, taxid, submittable))
+    return submittable, name, taxid
+
+
+def extract_archaea_info(name, rank, file_out):
+    if rank == "s":
+        name = name
+    elif rank == "d":
+        name = "uncultured archaeon"
+    elif rank == "p":
+        if "Euryarchaeota" in name:
+            name = "uncultured euryarchaeote"
+        elif "Candidatus" in name:
+            name = "{} archaeon".format(name)
+        else:
+            name = "uncultured {} archaeon".format(name)
+    elif rank in ["f", "o", "c"]:
+        name = "uncultured {} archaeon".format(name)
+    elif rank == "g":
+        name = "uncultured {} sp.".format(name)
+
+    submittable, taxid, rank = query_scientific_name_from_ena(name, search_rank=True)
+    if not submittable:
+        if "Candidatus" in name:
+            if rank == "p":
+                name = name.replace("Candidatus ", '')
+            elif rank == "f":
+                name = name.replace("uncultured ", '')
+            submittable, taxid = query_scientific_name_from_ena(name)
+    if not submittable:
+        file_out.write("Archaea {} {} {}".format(name, taxid, submittable))
+
+    return submittable, name, taxid
 
 
 def lookup_lineage(insdc_taxid):
@@ -106,7 +264,7 @@ def get_gca_accession(sample):
         return "N/A"
     api_endpoint = "https://www.ebi.ac.uk/ena/portal/api/filereport"
     full_url = "{}?accession={}&result=assembly&fields=accession".format(api_endpoint, sample)
-    r = run_request(full_url)
+    r = run_full_url_request(full_url)
     if r.ok:
         lines = r.text.split('\n')
         if len(lines) > 3:
@@ -130,38 +288,21 @@ def get_gca_accession(sample):
     
 
 def lookup_taxid_online(gca_acc):
-    taxid = "N/A"
-    if not gca_acc == "N/A":
-        taxid = load_taxid_from_xml(gca_acc)
-    return taxid
+    api_endpoint = "https://www.ebi.ac.uk/ena/portal/api/search"
+    query_params = {
+        "result": "assembly",
+        "query": 'accession="{}"'.format(gca_acc),
+        "fields": "tax_id",
+        "format": "json"
+    }
 
-
-def load_taxid_from_xml(gca_acc):
-    xml_url = 'https://www.ebi.ac.uk/ena/browser/api/xml/{}'.format(gca_acc)
-    try:
-        r = run_xml_request(xml_url)
-    except:
-        logging.warning("Unable to get XML for accession {}. Recording as N/A.".format(gca_acc))
-        return "N/A"
+    r = run_query_request(api_endpoint, query_params)
     if r.ok:
-        try:
-            data_dict = xmltodict.parse(r.content)
-            json_dump = json.dumps(data_dict)
-            json_data = json.loads(json_dump)
-        except:
-            logging.exception("Unable to load json from API for accession {}".format(gca_acc))
-            print(r.text)
-            sys.exit("Aborting.")
-    else:
-        logging.error('Could not retrieve xml for accession {}'.format(gca_acc))
-        logging.error(r.text)
-        sys.exit("Aborting.")
-    try:
-        taxid = json_data["ASSEMBLY_SET"]["ASSEMBLY"]["TAXON"]["TAXON_ID"]
+        data = r.json()
+        taxid = data[0]['tax_id']
         return taxid
-    except:
-        logging.error("Couldn't print json data")
-        return "N/A"
+    else:
+        sys.exit("Failed to fetch taxid for GCA accession {}. Aborting.".format(gca_acc))
         
     
 def load_synonyms():
@@ -368,7 +509,7 @@ def get_lowest_taxa(tax_dict):
     lowest_taxon_mgyg_dict = dict()
     lowest_taxon_lineage_dict = dict()
     for mgyg, lineage in tax_dict.items():
-        lowest_known_taxon = get_lowest_taxon(lineage)
+        lowest_known_taxon, lowest_known_rank = get_lowest_taxon(lineage)
         lowest_taxon_mgyg_dict[mgyg] = lowest_known_taxon
         lowest_taxon_lineage_dict.setdefault(lowest_known_taxon, list()).append(lineage)
     for key, value in lowest_taxon_lineage_dict.items():
@@ -380,7 +521,7 @@ def get_lowest_taxon(lineage):
     elements = lineage.strip().split(";")
     for i in reversed(elements):
         if not i.endswith("__"):
-            return i.split("__")[1]
+            return i.split("__")[1], i.split("__")[0]
     sys.exit("Could not obtain lowest taxon from lineage {}".format(lineage))
     
     
@@ -413,15 +554,15 @@ def versions_compatible(taxonomy_version, taxonomy_release):
 
 
 @retry(tries=5, delay=10, backoff=1.5)
-def run_request(full_url):
+def run_full_url_request(full_url):
     r = requests.get(url=full_url)
     r.raise_for_status()
     return r
 
 
 @retry(tries=5, delay=10, backoff=1.5)
-def run_xml_request(xml_url):
-    r = requests.get(xml_url)
+def run_query_request(api_url, query_params):
+    r = requests.get(api_url, params=query_params)
     r.raise_for_status()
     return r
 
@@ -439,10 +580,13 @@ def parse_args():
                         help='Version of GTDB-Tk, "r202", "r207" or "r214". Default = "r214".')
     parser.add_argument('-m', '--metadata', required=True,
                         help='Path to the metadata table.')
+    parser.add_argument('-s', '--species-level-taxonomy', action='store_true',
+                        help='Flag to assign species-level taxonomy to everything (as uncultured X species)')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.gtdbtk_folder, args.outfile, args.taxonomy_version, args.taxonomy_release, args.metadata)
+    main(args.gtdbtk_folder, args.outfile, args.taxonomy_version, args.taxonomy_release, args.metadata, 
+         args.species_level_taxonomy)
     
