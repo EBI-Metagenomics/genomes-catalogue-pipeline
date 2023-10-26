@@ -12,7 +12,8 @@ def main(metadata_file, outfile, processed_taxonomy):
     filtered_df = original_df[original_df['Genome'] == original_df['Species_rep']]
     relevant_columns = ['Genome', 'N50', 'Completeness', 'Contamination', 'Sample_accession']
     reduced_df = filtered_df[relevant_columns].copy()
-    reduced_df['GCA_accession'] = reduced_df['Sample_accession'].apply(get_gca_accession)
+    reduced_df['GCA_accession'] = reduced_df['Genome'].apply(get_gca_accession, processed_taxonomy=processed_taxonomy)
+    reduced_df['Taxid'] = reduced_df['Genome'].apply(get_taxid, processed_taxonomy=processed_taxonomy)
     reduced_df['Species_level'] = reduced_df['Genome'].apply(get_species_level, processed_taxonomy=processed_taxonomy)
     reduced_df = reduced_df.drop(columns=["Sample_accession"])
 
@@ -27,28 +28,24 @@ def get_species_level(genome, processed_taxonomy):
     with open(processed_taxonomy) as file_in:
         for line in file_in:
             if line.startswith(genome):
-                _, _, _, _, species_level = line.strip().split("\t")
+                _, _, _, _, _, species_level, _ = line.strip().split("\t")
                 return species_level
+
+
+def get_taxid(genome, processed_taxonomy):
+    with open(processed_taxonomy) as file_in:
+        for line in file_in:
+            if line.startswith(genome):
+                _, _, _, _, taxid, _, _ = line.strip().split("\t")
+                return taxid
+            
     
-    
-def get_gca_accession(sample):
-    print(sample)
-    if not isinstance(sample, str):
-        return "N/A"
-    if sample == "NA" or sample.startswith("P"):
-        return "N/A"
-    api_endpoint = "https://www.ebi.ac.uk/ena/portal/api/filereport"
-    full_url = "{}?accession={}&result=assembly&fields=accession".format(api_endpoint, sample)
-    r = run_request(full_url)
-    if r.ok:
-        lines = r.text.split('\n')
-        try:
-            gca_line = next(line for line in lines if line.startswith("GCA"))
-        except:
-            gca_line = "N/A"
-        return gca_line
-    else:
-        return "N/A"
+def get_gca_accession(genome, processed_taxonomy):
+    with open(processed_taxonomy) as file_in:
+        for line in file_in:
+            if line.startswith(genome):
+                _, _, _, gca, _, _, _ = line.strip().split("\t")
+                return gca
 
 
 @retry(tries=5, delay=10, backoff=1.5)
