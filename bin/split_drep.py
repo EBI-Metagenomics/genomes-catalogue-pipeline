@@ -95,7 +95,7 @@ if __name__ == "__main__":
         "--mdb",
         dest="mdb",
         help="dRep output folder/data_tables/Mdb.csv",
-        required=True,
+        required=False,
     )
     parser.add_argument("--sdb", dest="sdb", help="dRep Sdb.csv", required=True)
     parser.add_argument(
@@ -156,16 +156,18 @@ if __name__ == "__main__":
                         + "\n"
                     )
                     main_rep_name = sorted_genomes[0].split(".")[0]
-                    splitMash(
-                        mash_dist=args.mdb,
-                        genlist=genomes,
-                        outdir=args.output_folder,
-                        cluster_name=main_rep_name,
-                    )
+                    if args.mdb:
+                        splitMash(
+                            mash_dist=args.mdb,
+                            genlist=genomes,
+                            outdir=args.output_folder,
+                            cluster_name=main_rep_name,
+                        )
             else:
-                out_mash_folder = os.path.join(args.output_folder, "mash_folder")
-                if not os.path.exists(out_mash_folder):
-                    os.makedirs(out_mash_folder)
+                if args.mdb:
+                    out_mash_folder = os.path.join(args.output_folder, "mash_folder")
+                    if not os.path.exists(out_mash_folder):
+                        os.makedirs(out_mash_folder)
                 for c in clusters:
                     genomes = clusters[c]
                     genome_scores = [float(scores[genome]) for genome in genomes]
@@ -185,11 +187,12 @@ if __name__ == "__main__":
                         + ",".join(sorted_genomes)
                         + "\n"
                     )
-                    main_rep_name = sorted_genomes[0].split(".")[0]
-                    if len(genomes) > 1:
-                        generate_mash_folder(
-                            mash_dist=args.mdb,
-                            out_mash_folder=out_mash_folder,
-                            cluster_name=main_rep_name,
-                            genlist=genomes,
-                        )
+                    if args.mdb:
+                        main_rep_name = sorted_genomes[0].split(".")[0]
+                        if len(genomes) > 1:
+                            generate_mash_folder(
+                                mash_dist=args.mdb,
+                                out_mash_folder=out_mash_folder,
+                                cluster_name=main_rep_name,
+                                genlist=genomes,
+                            )

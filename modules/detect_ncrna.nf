@@ -15,6 +15,8 @@ process DETECT_NCRNA {
         mode: 'copy'
     )
 
+    scratch true
+
     input:
     tuple val(cluster_name), path(fasta)
     path rfam_ncrna_models

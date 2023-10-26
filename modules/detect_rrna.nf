@@ -69,6 +69,13 @@ process DETECT_RRNA {
 
     mkdir "\${RESULTS_FOLDER}"
 
+    # tRNAscan-SE needs a tmp folder otherwise it will use the base TMPDIR (with no subfolder)
+    # and that causes issues as other detect_rrna process will crash when the files are cleaned
+    PROCESSTMP="\$(mktemp -d)"
+    export TMPDIR="\${PROCESSTMP}"
+    # bash trap to clean the tmp directory
+    trap 'rm -r -- "\${PROCESSTMP}"' EXIT
+
     echo "[ Detecting rRNAs ] "
 
     for CM_FILE in "\${CM_DB}"/*.cm; do
@@ -81,7 +88,6 @@ process DETECT_RRNA {
             --tblout "\${RESULTS_FOLDER}/\${FILENAME}_\${MODEL}.tblout" \
             "\${CM_FILE}" "\${FASTA}" 1> "\${RESULTS_FOLDER}/\${FILENAME}_\${MODEL}.out"
     done
-
     echo "Concatenating results..."
     cat "\${RESULTS_FOLDER}/\${FILENAME}"_*.tblout > "\${RESULTS_FOLDER}/\${FILENAME}.tblout"
 
@@ -107,7 +113,6 @@ process DETECT_RRNA {
     -o "\${RESULTS_FOLDER}/\${FILENAME}_trna.out" "\${FASTA}"
 
     parse_tRNA.py -i "\${RESULTS_FOLDER}/\${FILENAME}_stats.out" 1> "\${RESULTS_FOLDER}/\${FILENAME}_tRNA_20aa.out"
-
     echo "Completed"
     """
 }

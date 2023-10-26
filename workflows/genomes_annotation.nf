@@ -4,20 +4,20 @@
     ~~~~~~~~~~~~~~~~~~
 */
 ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
-ch_ena_genomes_checkm = channel.fromPath(params.ena_genomes_checkm, checkIfExists: true)
+ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
 
 // TODO: Validate
 ch_mgyg_index_start = channel.value(params.mgyg_start)
 ch_mgyg_index_end = channel.value(params.mgyg_end)
 
-ch_genomes_information = channel.empty()
-ch_study_genomes_information = channel.empty()
+ch_genomes_information = file("NO_FILE_GENOME_CAT")
+ch_study_genomes_information = file("NO_FILE_STUDY_CAT")
 
 if (params.genomes_information) {
-    ch_genomes_information = channel.fromPath(params.genomes_information)
+    ch_genomes_information = file(params.genomes_information)
 }
 if (params.study_genomes_information) {
-    ch_study_genomes_information = channel.fromPath(params.study_genomes_information)
+    ch_study_genomes_information = file(params.study_genomes_information)
 }
 
 // TODO: Add help message with parameters
@@ -30,6 +30,7 @@ if (params.study_genomes_information) {
 
 include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
+include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
@@ -97,22 +98,35 @@ workflow GAP {
         ch_study_genomes_information
     )
 
-    DREP_SWF(
-        PREPARE_DATA.out.genomes,
-        PREPARE_DATA.out.genomes_checkm,
-        PREPARE_DATA.out.extra_weight_table
-    )
+    // needs a more elegant solution here
+    dereplicated_genomes = channel.empty()
+
+    if ( !params.xlarge ) {
+        DREP_SWF(
+            PREPARE_DATA.out.genomes,
+            PREPARE_DATA.out.genomes_checkm,
+            PREPARE_DATA.out.extra_weight_table
+        )
+        dereplicated_genomes = DREP_SWF
+    } else {
+        DREP_LARGE_SWF(
+            PREPARE_DATA.out.genomes,
+            PREPARE_DATA.out.genomes_checkm,
+            PREPARE_DATA.out.extra_weight_table
+        )
+        dereplicated_genomes = DREP_LARGE_SWF
+    }
 
     MASH_TO_NWK(
-        DREP_SWF.out.mash_splits | flatten
+        dereplicated_genomes.out.mash_splits | flatten
     )
 
     PROCESS_MANY_GENOMES(
-        DREP_SWF.out.many_genomes_fna_tuples
+        dereplicated_genomes.out.many_genomes_fna_tuples
     )
 
     PROCESS_SINGLETON_GENOMES(
-        DREP_SWF.out.single_genomes_fna_tuples,
+        dereplicated_genomes.out.single_genomes_fna_tuples,
         PREPARE_DATA.out.genomes_checkm.first(),
         ch_gunc_db
     )
@@ -165,7 +179,7 @@ workflow GAP {
         PREPARE_DATA.out.genomes_checkm,
         ANNOTATE.out.rrna_outs,
         PREPARE_DATA.out.genomes_name_mapping,
-        DREP_SWF.out.drep_split_text,
+        dereplicated_genomes.out.drep_split_text,
         ch_ftp_name,
         ch_ftp_version,
         ch_geo_metadata,

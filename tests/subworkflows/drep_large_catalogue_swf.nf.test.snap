@@ -1,0 +1,125 @@
+{
+    "Should run dRep per chunks": {
+        "content": [
+            {
+                "0": [
+                    [
+                        "CAJKXJ01",
+                        "CAJKRE01.fa:md5,fad2872eadba37a05f09e79f5597e1a2"
+                    ],
+                    [
+                        "CAJKXJ01",
+                        "CAJKXJ01.fa:md5,2245de698b5ee5eceb25f209809ed63e"
+                    ],
+                    [
+                        "CAJLGA01",
+                        "CAJKGB01.fa:md5,07a29193c470aed0eb0f4ea65246e731"
+                    ],
+                    [
+                        "CAJLGA01",
+                        "CAJLGA01.fa:md5,cfe38cfeb08f5fbfc74b634fb96c1ac8"
+                    ]
+                ],
+                "1": [
+                    [
+                        "CAJKRY01",
+                        "CAJKRY01.fa:md5,a158ee8609aa6d15e340a1f2cb2cde97"
+                    ],
+                    [
+                        "CAJKXZ01",
+                        "CAJKXZ01.fa:md5,5aa88db381b6cdae1f5831f22759e7ff"
+                    ]
+                ],
+                "2": [
+                    "clusters_split.txt:md5,27862d46eab4513be86e580432896443"
+                ],
+                "3": [
+                    [
+                        "CAJKXJ01",
+                        "CAJKXJ01_mash.tsv:md5,34b832a6f967b2f11ad8652de0f2bb3c"
+                    ],
+                    [
+                        "CAJKXJ01",
+                        "CAJKXJ01_mash.tsv:md5,4661fb299e7596dacfe7fad317660bad"
+                    ],
+                    [
+                        "CAJLGA01",
+                        "CAJLGA01_mash.tsv:md5,22fbb13d4c8fee82529bf62cc545f6af"
+                    ],
+                    [
+                        "CAJLGA01",
+                        "CAJLGA01_mash.tsv:md5,38354b7d89846ce61ac1dcded6301b39"
+                    ]
+                ],
+                "4": [
+                    "Cdb.csv:md5,d4755db132525aa0a34dcf8d9369cf07"
+                ],
+                "5": [
+                    "Sdb.csv:md5,f9fbee7b7fb3c7fa9de9dbe008e1a814"
+                ],
+                "6": [
+                    "tests/results/additional_data/intermediate_files/Mdb.csv"
+                ],
+                "drep_cdb_csv": [
+                    "Cdb.csv:md5,d4755db132525aa0a34dcf8d9369cf07"
+                ],
+                "drep_mdb_csv": [
+                    "tests/results/additional_data/intermediate_files/Mdb.csv"
+                ],
+                "drep_sdb_csv": [
+                    "Sdb.csv:md5,f9fbee7b7fb3c7fa9de9dbe008e1a814"
+                ],
+                "drep_split_text": [
+                    "clusters_split.txt:md5,27862d46eab4513be86e580432896443"
+                ],
+                "many_genomes_fna_tuples": [
+                    [
+                        "CAJKXJ01",
+                        "CAJKRE01.fa:md5,fad2872eadba37a05f09e79f5597e1a2"
+                    ],
+                    [
+                        "CAJKXJ01",
+                        "CAJKXJ01.fa:md5,2245de698b5ee5eceb25f209809ed63e"
+                    ],
+                    [
+                        "CAJLGA01",
+                        "CAJKGB01.fa:md5,07a29193c470aed0eb0f4ea65246e731"
+                    ],
+                    [
+                        "CAJLGA01",
+                        "CAJLGA01.fa:md5,cfe38cfeb08f5fbfc74b634fb96c1ac8"
+                    ]
+                ],
+                "mash_splits": [
+                    [
+                        "CAJKXJ01",
+                        "CAJKXJ01_mash.tsv:md5,34b832a6f967b2f11ad8652de0f2bb3c"
+                    ],
+                    [
+                        "CAJKXJ01",
+                        "CAJKXJ01_mash.tsv:md5,4661fb299e7596dacfe7fad317660bad"
+                    ],
+                    [
+                        "CAJLGA01",
+                        "CAJLGA01_mash.tsv:md5,22fbb13d4c8fee82529bf62cc545f6af"
+                    ],
+                    [
+                        "CAJLGA01",
+                        "CAJLGA01_mash.tsv:md5,38354b7d89846ce61ac1dcded6301b39"
+                    ]
+                ],
+                "single_genomes_fna_tuples": [
+                    [
+                        "CAJKRY01",
+                        "CAJKRY01.fa:md5,a158ee8609aa6d15e340a1f2cb2cde97"
+                    ],
+                    [
+                        "CAJKXZ01",
+                        "CAJKXZ01.fa:md5,5aa88db381b6cdae1f5831f22759e7ff"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-10-06T15:58:34.142762989"
+    }
+}

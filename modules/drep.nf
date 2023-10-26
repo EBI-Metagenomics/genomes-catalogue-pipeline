@@ -15,6 +15,7 @@ process DREP {
             }
         },
         mode: 'copy',
+        failOnError: true
     )
 
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
