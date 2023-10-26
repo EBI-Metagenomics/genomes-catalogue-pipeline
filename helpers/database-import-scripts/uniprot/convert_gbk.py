@@ -27,7 +27,7 @@ def ingest_taxonomy_file(taxonomy_file, accession):
     with open(taxonomy_file, "r") as file_in:
         for line in file_in:
             if line.startswith(accession):
-                _, species, lineage, taxid, _ = line.strip().split("\t")
+                _, species, lineage, _, taxid, _, _ = line.strip().split("\t")
                 return species, lineage, taxid
     return species, lineage, taxid
 
@@ -78,7 +78,10 @@ REFERENCE   1
     with open(gbk_file, "r") as file_in, open(outfile, "w") as file_out:
         for line in file_in:
             if line.startswith("DEFINITION"):
-                line = line.replace("Genus species strain strain", species)
+                species_to_print = species
+                if species_to_print.endswith("."):
+                    species_to_print = species[:-1]
+                line = line.replace("Genus species strain strain", species_to_print)
                 file_out.write(line)
             elif line.startswith("SOURCE") or re.match(r'^\s*\/organism=', line):
                 line = line.replace("Genus species", species)
