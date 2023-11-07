@@ -86,7 +86,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                     insdc_taxid = gca_to_taxid[gca_accession]
                     taxid_to_report = insdc_taxid
                     #if not taxid == insdc_taxid:  # taxid online doesn't match -> need to recompute lineage
-                    lineage = lookup_lineage_new(insdc_taxid)
+                    lineage = lookup_lineage(insdc_taxid)
                     lowest_taxon = get_lowest_taxon(lineage)[0]
                 else:
                     taxid_to_report = taxid
@@ -104,7 +104,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
 def match_lineage_to_gca_taxid(gca_to_taxid, threads):
     taxids = list(gca_to_taxid.values())
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-        taxid_to_lineage = {taxid: lineage for taxid, lineage in zip(taxids, executor.map(lookup_lineage_new, taxids))}    
+        taxid_to_lineage = {taxid: lineage for taxid, lineage in zip(taxids, executor.map(lookup_lineage, taxids))}    
     return taxid_to_lineage
     
 
@@ -268,42 +268,6 @@ def extract_archaea_info(name, rank):
 
 
 def lookup_lineage(insdc_taxid):
-    command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir",
-               TAXDUMP_PATH, "-I", "1", "-P"]
-    result = subprocess.run(command, input=insdc_taxid, text=True, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, check=True)
-    try:
-        lineage = result.stdout.strip().split("\t")[1]
-        retrieved_name = re.sub("(;[a-z]__)+$", "", lineage).split(";")[-1]
-        retrieved_name = re.sub("[a-z]__", "", retrieved_name)
-        assert retrieved_name, "Could not get retrieved name for lineage {}".format(lineage)
-        if lineage.startswith("k__"):
-            lineage = lineage.replace("k__", "d__")
-        print("Got INSDC lineage", lineage, retrieved_name)
-        #return lineage, retrieved_name
-        return lineage
-    except:
-        try:
-            command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir",
-                       TAXDUMP_PATH_NEW_VER, "-I", "1", "-P"]
-            result = subprocess.run(command, input=insdc_taxid, text=True, stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE, check=True)
-            lineage = result.stdout.strip().split("\t")[1]
-            retrieved_name = re.sub("(;[a-z]__)+$", "", lineage).split(";")[-1]
-            retrieved_name = re.sub("[a-z]__", "", retrieved_name)
-            assert retrieved_name, "Could not get retrieved name for lineage {}".format(lineage)
-            if lineage.startswith("k__"):
-                lineage = lineage.replace("k__", "d__")
-            print("Got INSDC lineage", lineage, retrieved_name)
-            # return lineage, retrieved_name
-            return lineage
-            
-        except:
-            logging.error("Unable to retrieve lineage from taxid {}.".format(insdc_taxid))
-            sys.exit("Aborting.")
-
-
-def lookup_lineage_new(insdc_taxid):
     def get_lineage(insdc_taxid, taxdump_path):
         command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir", taxdump_path, "-I", "1", "-P"]
         result = subprocess.run(command, input=insdc_taxid, text=True, stdout=subprocess.PIPE, 
