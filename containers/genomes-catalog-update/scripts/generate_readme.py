@@ -9,7 +9,8 @@ def main(
     outfile_name,
     biome,
     ver_pipeline,
-    git_link
+    git_link,
+    xlarge
 ):
     (
         num_genomes,
@@ -34,7 +35,8 @@ def main(
         study_list_string,
         biome,
         git_link,
-        archaea
+        archaea,
+        xlarge
     )
 
 
@@ -75,7 +77,8 @@ def print_file(
     study_list,
     biome,
     git_link,
-    archaea
+    archaea,
+    xlarge
 ):
     if archaea:
         phylo_text = """
@@ -87,6 +90,16 @@ def print_file(
         phylo_text = """
     * bac120_iqtree.nwk : A phylogenetic tree for bacterial genomes in Newick format.
     * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes. """
+    if xlarge:
+        xlarge_note = """
+* Due to the size of this catalogue, the clustering process was performed in two phases. First, the entire genome set \
+was split up into random chunks of 25,000 genomes and each chunk was clustered independently. The species representative \
+genomes from all chunks were then pulled together and clustered again. If two or more species representative genomes \
+clustered together in the second round of clustering, their genome clusters from the first round of clustering were \
+combined together. In some cases, this can produce clusters where some of the conspecific genomes share less than 95% ANI. 
+"""
+    else:
+        xlarge_note = "\n"
     
     readme_text = """
 {version} release
@@ -98,8 +111,7 @@ Website URL: {url}
 * Genomes from the following studies were used to generate the catalogue: {study_list}
 * The catalogue was generated using MGnify genomes pipeline v{ver_pipeline}: {git_link}. 
 * A protein catalogue was produced with all protein coding sequences clustered at 100%, 95%, 90% and 50% amino acid identity.
-* A gene catalogue is the collection of nucleotide sequences corresponding to the protein cluster representatives of the 100% identity clustering.
-
+* A gene catalogue is the collection of nucleotide sequences corresponding to the protein cluster representatives of the 100% identity clustering. {xlarge_note}
 
 ## The following files are available for download for the species representative in each species directory within the species_catalogue/ folder:
 
@@ -163,6 +175,7 @@ Website URL: {url}
         num_species=num_species,
         ver_pipeline=ver_pipeline,
         git_link=git_link,
+        xlarge_note=xlarge_note,
         study_list=study_list,
         biome=biome,
         catalog_name=catalog_name,
@@ -201,6 +214,11 @@ def parse_args():
         help="Full link to the github repo release. "
              "Example: https://github.com/EBI-Metagenomics/genomes-pipeline/releases/tag/v1.2.1",
     )
+    parser.add_argument(
+        "--xlarge", action='store_true',
+        help="Specify this flag if the catalogue was generated using the --xlarge flag and "
+             "the number of genomes is over 25,000 (meaning chunked dRep was performed).",
+    )
     return parser.parse_args()
 
 
@@ -211,5 +229,6 @@ if __name__ == "__main__":
         args.outfile_name,
         args.biome,
         args.pipeline_version,
-        args.git_link
+        args.git_link,
+        args.xlarge
     )
