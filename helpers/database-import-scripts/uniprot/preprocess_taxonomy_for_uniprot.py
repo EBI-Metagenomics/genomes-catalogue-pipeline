@@ -30,66 +30,74 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     
     gca_accessions, sample_accessions = parse_metadata(metadata_file)  # key = mgyg, value = gca accession
     mgyg_to_gca, gca_to_taxid = match_taxid_to_gca(gca_accessions, sample_accessions, threads)
+    na_true = False
     if "N/A" in gca_to_taxid:
         gca_to_taxid.pop("N/A")
+        na_true = True
     gca_taxid_to_lineage = match_lineage_to_gca_taxid(gca_to_taxid, threads)  # key = taxid, value = lineage
     
-    selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, DB_DIR)
-    tax_ncbi = select_dump(taxonomy_release, DB_DIR)
-    print("Using the following databases:\n{}\n{}\n{}\n".format(selected_archaea_metadata, selected_bacteria_metadata,
-                                                                tax_ncbi))
+    if na_true or not species_level_taxonomy:
+        # we need to do the taxonomy conversion because we have some genomes without a GCA accession or we are ok
+        # if GCA taxid and lineage taxid diverge because GCA is species-level and our taxonomy is not
+        selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, DB_DIR)
+        tax_ncbi = select_dump(taxonomy_release, DB_DIR)
+        print(
+            "Using the following databases:\n{}\n{}\n{}\n".format(selected_archaea_metadata, selected_bacteria_metadata,
+                                                                  tax_ncbi))
 
-    if taxonomy_version == "1":
-        tax = gtdb_to_ncbi_majority_vote.Translate()
-    else:
-        tax = gtdb_to_ncbi_majority_vote_v2.Translate()
+        if taxonomy_version == "1":
+            tax = gtdb_to_ncbi_majority_vote.Translate()
+        else:
+            tax = gtdb_to_ncbi_majority_vote_v2.Translate()
+            
+        lineage_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, selected_bacteria_metadata, "gtdbtk")
         
-    lineage_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, selected_bacteria_metadata, "gtdbtk")
+        # lookup tax id
+        lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict)  
+       
+        # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
+        # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
         
-    # lookup tax id and print results to file
-    lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict)  
-    # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
-    # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
-    #if not species_level_taxonomy:
-    #    taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
-    taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
+        taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
         
     with open(outfile, "w") as file_out:
-        for key, lowest_taxon in lowest_taxon_mgyg_dict.items():
-            gca_accession = mgyg_to_gca[key] 
-            lineage = lineage_dict[key]
+        for key, gca_accession in mgyg_to_gca.items():
             if gca_accession == "N/A" and species_level_taxonomy:
-                print("Lineage before: {}".format(lineage))
+                lineage = lineage_dict[key]
+                logging.debug("Lineage before: {}".format(lineage))
+                # Change to species level
+                # Todo: run this in bulk for all "N/A"'s in mgyg_to_gca
                 taxid, lowest_taxon, submittable, lineage = get_species_level_taxonomy(lineage)
-                print("Lineage after: {}".format(lineage))
+                logging.debug("Lineage after: {}".format(lineage))
                 taxid_to_report = taxid
+                # Lookup lineage again in case the one from GTDB conversion is outdated
+                if taxid_to_report in gca_taxid_to_lineage:
+                    lineage = gca_taxid_to_lineage[taxid_to_report]
+                else:
+                    lineage = lookup_lineage(taxid_to_report)
                 if not taxid_to_report:
                     taxid_to_report = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
                     lineage = lineage_dict[key]
-                    lowest_taxon = get_lowest_taxon(lineage)[0]
                     if not taxid_to_report:
                         sys.exit("Could not obtain taxid for lineage {}. Aborting.".format(lineage))
+                lowest_taxon = get_lowest_taxon(lineage)[0]
             elif gca_accession.startswith("GCA") and species_level_taxonomy:
                 insdc_taxid = gca_to_taxid[gca_accession]
-                #lineage, lowest_taxon = lookup_lineage(insdc_taxid)
                 lineage = gca_taxid_to_lineage[insdc_taxid]
                 lowest_taxon = get_lowest_taxon(lineage)[0]
-                #lowest_taxon = re.sub("(;[a-z]__)+$", "", lineage).split(";")[-1]
-                #lowest_taxon  = re.sub("[a-z]__", "", lowest_taxon)
                 assert lowest_taxon, "Could not get retrieved name for lineage {}".format(lineage)
                 taxid_to_report = insdc_taxid
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             else:
-                taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
-                lowest_taxon = get_lowest_taxon(lineage)[0]
                 if gca_accession.startswith("GCA"):  # this means there is already a taxid in INSDC for this genome
                     insdc_taxid = gca_to_taxid[gca_accession]
                     taxid_to_report = insdc_taxid
-                    #if not taxid == insdc_taxid:  # taxid online doesn't match -> need to recompute lineage
-                    lineage = lookup_lineage(insdc_taxid)
-                    lowest_taxon = get_lowest_taxon(lineage)[0]
+                    lineage = gca_taxid_to_lineage[taxid_to_report]
                 else:
+                    lineage = lineage_dict[key]
+                    taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
                     taxid_to_report = taxid
+                lowest_taxon = get_lowest_taxon(lineage)[0]
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             species_level = False if lineage.endswith("s__") else True
             if submittable:
