@@ -14,4 +14,4 @@ RUN conda install -c bioconda hmmer && conda clean -afy
 ENV PATH=/opt/conda/bin:${PATH}
 
 # Install mdmparis-defense-finder using pip
-RUN pip install mdmparis-defense-finder
+RUN pip install mdmparis-defense-finder==1.2.0
