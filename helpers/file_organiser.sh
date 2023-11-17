@@ -40,7 +40,7 @@ function GenerateRNACentralJSON {
     echo "Copying GFFs"
     for R in $REPS
     do
-        cp ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/${R}.gff* ${RESULTS_PATH}/additional_data/rnacentral/GFFs/
+        cp ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/${R}.gff* ${RESULTS_PATH}/additional_data/rnacentral/GFFs/
     done
     
     echo "Running JSON generation"
@@ -109,6 +109,38 @@ function RunRNACentralValidator {
     cat ${RESULTS_PATH}/additional_data/rnacentral/validator_output.txt
     exit 1
     fi
+}
+
+
+function GenerateUniprotFiles {
+    echo "Converting taxonomy for Uniprot"
+    mkdir -p ${RESULTS_PATH}/additional_data/uniprot ${RESULTS_PATH}/additional_data/uniprot/uniprot-files
+    if [[ -f ${RESULTS_PATH}/additional_data/gtdb-tk_output.tar.gz ]]
+    then
+        tar -xf ${RESULTS_PATH}/additional_data/gtdb-tk_output.tar.gz
+    fi
+    
+    mitload miniconda && conda activate pybase
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/preprocess_taxonomy_for_uniprot.py \
+    -g ${RESULTS_PATH}/additional_data/gtdb-tk_output/ -r "r214" -v "2" -o ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv
+    
+    echo "Generating Uniprot files"
+    ACCS=$(ls ${RESULTS_PATH}/additional_data/prokka_gbk_species_reps/${F}.gbk | rev | cut -d '/' -f1 | rev | sed "s/\.gbk//")
+    
+    for F in $ACCS; do python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/convert_gbk.py \
+    -g ${RESULTS_PATH}/additional_data/prokka_gbk_species_reps/${F}.gbk \
+    -o ${RESULTS_PATH}/additional_data/uniprot/uniprot-files/${F}_uniprot.gbk \
+    -t ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv; done
+    
+    echo "Generating Uniprot metadata"
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/generate_uniprot_metadata.py \
+    -m ${RESULTS_PATH}/genomes-all_metadata.tsv -o ${RESULTS_PATH}/additional_data/uniprot/${CATALOGUE_FOLDER}_${CATALOGUE_VERSION}_uniprot_metadata.tsv \
+    -p ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv
+    
+    echo "Uniprot cleanup"
+    # gzip the gtdb directory
+    cd ${RESULTS_PATH}/additional_data/
+    tar -czvf gtdb-tk_output.tar.gz gtdb-tk_output && rm -r gtdb-tk_output
 }
 
 
@@ -218,6 +250,7 @@ export REPS=$(cut -f14 genomes-all_metadata.tsv | grep -v "Species" | sort -u)
 GenerateRNACentralJSON
 CheckRNACentralErrors
 RunRNACentralValidator
+GenerateUniprotFiles
 GenerateWebsiteGFFs
 CopyWebsiteFiles
 CopyFTPFiles
