@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# The script organises output from the catalogue generation + Virify + Momofy to prepare it for upload to MGnify
+# The script organises output from the catalogue generation + Virify + Mobilome annotation pipeline to prepare it for upload to MGnify
 
 
 function Usage {
