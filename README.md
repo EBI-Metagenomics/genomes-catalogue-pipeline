@@ -7,36 +7,36 @@ Gurbich TA, Almeida A, Beracochea M, Burdett T, Burgin J, Cochrane G, Raj S, Ric
 Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/genome-viewer.html
 
 ### Tools used in the pipeline
-| Tool/Database      | Version | Purpose |
-| ----------- | ----------- |----------- |
-| CheckM      | 1.1.3       | Determining genome quality       |
-| dRep   | 3.2.2        | Genome clustering       |
-| Mash   | 2.3        | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree      |
-| GUNC   | 1.0.3        | Quality control       |
-| GUNC DB  | 2.0.4        | Database for GUNC       |
-| GTDB-Tk   | 2.3.0        | Assigning taxonomy; generating alignments       |
-| GTDB   | r214        | Database for GTDB-Tk       |
-| Prokka   | 1.14.6        | Protein annotation       |
-| IQ-TREE 2  | 2.2.0.3        | Generating a phylogenetic tree       |
-| Kraken 2   | 2.1.2        | Generating a kraken database       |
-| Bracken   | 2.6.2        | Generating a bracken database       |
-| MMseqs2   | 13.45111        | Generating a protein catalogue       |
-| eggNOG-mapper  | 2.1.11        | Protein annotation (eggNOG, KEGG, COG,  CAZy)       |
-| eggNOG DB  | 5.0       | Database for eggNOG-mapper       |
-| Diamond    | 2.0.11       | Protein annotation (eggNOG)       |
-| InterProScan   | 5.62-94.0      | Protein annotation (InterPro, Pfam)       |
-| CRISPRCasFinder   | 4.3.2        | Annotation of CRISPR arrays       |
-| AMRFinderPlus   | 3.11.4        |   Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation     |
-| AMRFinderPlus DB   | 3.11 2023-02-23.1        | Database for AMRFinderPlus      |
-| SanntiS   | 0.9.3.2        | Biosynthetic gene cluster annotation       |
-| Infernal   | 1.1.4        | RNA predictions       |
-| tRNAscan-SE   | 2.0.9       | tRNA predictions       |
-| Rfam   | 14.9        | Identification of SSU/LSU rRNA and other ncRNAs       |
-| Panaroo   | 1.3.2        | Pan-genome computation       |
-| Seqtk   | 1.3        | Generating a gene catalogue       |
-| VIRify   | -        | Viral sequence annotation       |
-| MoMofy   | 1.0.0        | Mobilome annotation       |
-| samtools   | 1.15       | FASTA indexing       |
+| Tool/Database                    | Version          | Purpose |
+|----------------------------------|------------------|----------- |
+| CheckM                           | 1.1.3            | Determining genome quality       |
+| dRep                             | 3.2.2            | Genome clustering       |
+| Mash                             | 2.3              | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree      |
+| GUNC                             | 1.0.3            | Quality control       |
+| GUNC DB                          | 2.0.4            | Database for GUNC       |
+| GTDB-Tk                          | 2.3.0            | Assigning taxonomy; generating alignments       |
+| GTDB                             | r214             | Database for GTDB-Tk       |
+| Prokka                           | 1.14.6           | Protein annotation       |
+| IQ-TREE 2                        | 2.2.0.3          | Generating a phylogenetic tree       |
+| Kraken 2                         | 2.1.2            | Generating a kraken database       |
+| Bracken                          | 2.6.2            | Generating a bracken database       |
+| MMseqs2                          | 13.45111         | Generating a protein catalogue       |
+| eggNOG-mapper                    | 2.1.11           | Protein annotation (eggNOG, KEGG, COG,  CAZy)       |
+| eggNOG DB                        | 5.0              | Database for eggNOG-mapper       |
+| Diamond                          | 2.0.11           | Protein annotation (eggNOG)       |
+| InterProScan                     | 5.62-94.0        | Protein annotation (InterPro, Pfam)       |
+| CRISPRCasFinder                  | 4.3.2            | Annotation of CRISPR arrays       |
+| AMRFinderPlus                    | 3.11.4           |   Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation     |
+| AMRFinderPlus DB                 | 3.11 2023-02-23.1 | Database for AMRFinderPlus      |
+| SanntiS                          | 0.9.3.2          | Biosynthetic gene cluster annotation       |
+| Infernal                         | 1.1.4            | RNA predictions       |
+| tRNAscan-SE                      | 2.0.9            | tRNA predictions       |
+| Rfam                             | 14.9             | Identification of SSU/LSU rRNA and other ncRNAs       |
+| Panaroo                          | 1.3.2            | Pan-genome computation       |
+| Seqtk                            | 1.3              | Generating a gene catalogue       |
+| VIRify                           | 2.0.0            | Viral sequence annotation       |
+| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 2.0.0-rc.1       | Mobilome annotation       |
+| samtools                         | 1.15             | FASTA indexing       |
 
 ## Setup
 
@@ -57,6 +57,7 @@ The pipeline needs the following reference databases and configuration files (ro
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
 - https://data.ace.uq.edu.au/public/gtdb/data/releases/release214/214.0/auxillary_files/gtdbtk_r214_data.tar.gz
+- ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.11/2023-02-23.1
 
 ### Containers
 
@@ -76,7 +77,7 @@ cd containers && bash build.sh
 
 1. You need to pre-download your data to directories and make sure that genomes are uncompressed. Scripts to fetch genomes from ENA ([fetch_ena.py](https://github.com/EBI-Metagenomics/genomes-pipeline/blob/master/containers/genomes-catalog-update/scripts/fetch_ena.py)) and NCBI ([fetch_ncbi.py](https://github.com/EBI-Metagenomics/genomes-pipeline/blob/master/containers/genomes-catalog-update/scripts/fetch_ncbi.py)) are provided and need to be executed separately from the pipeline. If you have downloaded genomes from both ENA and NCBI, put them into separate folders.
 
-2. When genomes are fetched from ENA using the `fetch_ena.py` script, a CSV file with contamination and completeness statistics is also created in the same directory where genomes are saved to. If you are downloading genomes using a different approach, a CSV file needs to be created manually (each line should be genome accession, % completeness, % contamination). The ENA fetching script also pre-filters genomes to satisfy the QS50 cut-off (QS = % completeness - 5 * % contamination). 
+2. When genomes are fetched from ENA using the `fetch_ena.py` script, a CSV file with contamination and completeness statistics is also created in the same directory where genomes are saved to. If you are downloading genomes using a different approach, a CSV file needs to be created manually (each line should be genome accession, % completeness, % contamination). The ENA fetching script also pre-filters genomes to satisfy the QS50 cut-off (QS = % completeness - 5 * % contamination).
 
 3. You will need the following information to run the pipeline:
  - catalogue name (for example, zebrafish-faecal)
