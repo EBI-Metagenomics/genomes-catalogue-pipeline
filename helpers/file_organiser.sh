@@ -41,7 +41,7 @@ function GenerateRNACentralJSON {
     for R in $REPS
     do
         mkdir -p ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/
-        mv ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/${R}.gff* ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/
+        mv ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/*.gff* ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/
         cp ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/${R}.gff* ${RESULTS_PATH}/additional_data/rnacentral/GFFs/
     done
     
