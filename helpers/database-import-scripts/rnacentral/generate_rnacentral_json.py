@@ -415,7 +415,10 @@ def get_project_accession(biosample):
         study_index = col_names.index("secondary_study_accession")
         for e in elements[1:]:
             if not e == "":
-                projects.append(e.strip().split("\t")[study_index])
+                project_to_add = e.strip().split("\t")[study_index]
+                assert any(project_to_add.startswith(prefix) for prefix in
+                           ["SRP", "ERP", "DRP", "PR"]), "Incorrect project format: {}".format(project_to_add)
+                projects.append(project_to_add)
         return set(projects)
     else:
         logging.error("Error when requesting study accession for biosample {}".format(biosample))
