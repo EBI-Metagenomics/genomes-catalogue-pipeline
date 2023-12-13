@@ -248,6 +248,7 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
     """
     publications = list()
     biosamples = list()
+    ena_format_issue = False
 
     samples_to_check = [genome_sample_accession]
     # Check if there are read files associated with the sample (meaning sample accession points to raw data already)
@@ -275,6 +276,16 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
                 for attribute in sample_attributes:
                     if all([x in attribute["TAG"] for x in ["derived", "from"]]):
                         derived_from_list = re.findall("SAM[A-Z]+\d+|ERS\d+|SRS\d+|DRS\d+", attribute["VALUE"])
+                        if len(derived_from_list) == 0:
+                            logging.warning("Found an issue with derived samples format for sample {}. "
+                                            "Attempting to resolve.".format(genome_sample_accession))
+                            derived_from_list = identify_derived_sample_issue(attribute["VALUE"])
+                            if len(derived_from_list) == 0:
+                                ena_format_issue = True
+                            else:
+                                logging.warning("Resolved the format issue for sample {} successfully.".format(
+                                    genome_sample_accession))
+                                sample_to_check = derived_from_list
                         samples_for_next_iteration = samples_for_next_iteration + derived_from_list
                         sample_is_derived = True
                         break
@@ -296,17 +307,44 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
                     publications_to_add.extend(list(extracted_publications))
             publications.extend(list(publications_to_add))
         else:
-            logging.error("Could not obtain project accessions for sample {}".
+            logging.warning("Could not obtain project accessions for sample {}".
                           format(genome_sample_accession))
     if not biosamples:
-        logging.error("Biosample couldn't be obtained for sample {}".format(genome_sample_accession))
-        if insdc_accession.startswith("CA"):
-            logging.error("Biosample could not be obtained for an ENA genome {}".
-                          format(genome_sample_accession))
-            sys.exit("ERROR: cannot proceed because ENA samples are not found in ENA.")
+        if ena_format_issue is True:
+            logging.warning("Unable to obtain citation information for sample {} due to format errors in ENA. "
+                            "No citations will be reported to RNAcentral for this sample.".format(
+                genome_sample_accession))
+        else:
+            logging.error("Biosample couldn't be obtained for sample {}".format(genome_sample_accession))
+            if insdc_accession.startswith("CA"):
+                logging.error("Biosample could not be obtained for an ENA genome {}".
+                              format(insdc_accession))
+                sys.exit("ERROR: cannot proceed because at least one ENA sample is not found in ENA.")
     return list(filter(None, list(set(publications))))
 
 
+def identify_derived_sample_issue(ena_data):
+    derived_from_list = list()
+    # check if runs were reported instead of sampples
+    runs = re.findall("ERR\d+|SRR\d+|DRR\d+", ena_data)
+    if len(runs) > 0:
+        for run in runs:
+            xml_data = load_xml(run)
+            try:
+                run_links = xml_data["RUN_SET"]["RUN"]["RUN_LINKS"]["RUN_LINK"]
+                for entry in run_links:
+                    # Check if 'DB' is 'ENA-SAMPLE' inside the inner dictionary
+                    if entry.get('XREF_LINK', {}).get('DB') == 'ENA-SAMPLE':
+                        # If present, print the 'ID' value
+                        sample_acc = entry.get('XREF_LINK', {}).get('ID')
+                        if not sample_acc.startswith("SAM"):
+                            sample_acc = convert_bin_sample(sample_acc)
+                            derived_from_list.append(sample_acc)
+            except:
+                logging.warning("Unable to obtain sample accession for  run {} from ENA".format(run))
+    return derived_from_list
+    
+    
 def check_sample_level(genome_sample_accession):
     api_endpoint = "https://www.ebi.ac.uk/ena/portal/api/filereport"
     query = {
@@ -372,9 +410,15 @@ def get_project_accession(biosample):
     if r.ok:
         projects = list()
         elements = r.text.split("\n")
-        for e in elements:
-            if not e.startswith("run_accession") and not e == "":
-                projects.append(e.strip().split("\t")[1])
+        header = elements[0]
+        col_names = header.strip().split("\t")
+        study_index = col_names.index("secondary_study_accession")
+        for e in elements[1:]:
+            if not e == "":
+                project_to_add = e.strip().split("\t")[study_index]
+                assert any(project_to_add.startswith(prefix) for prefix in
+                           ["SRP", "ERP", "DRP", "PR"]), "Incorrect project format: {}".format(project_to_add)
+                projects.append(project_to_add)
         return set(projects)
     else:
         logging.error("Error when requesting study accession for biosample {}".format(biosample))

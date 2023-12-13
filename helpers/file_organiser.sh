@@ -40,6 +40,8 @@ function GenerateRNACentralJSON {
     echo "Copying GFFs"
     for R in $REPS
     do
+        mkdir -p ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/
+        mv ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/*.gff* ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/
         cp ${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/${R}.gff* ${RESULTS_PATH}/additional_data/rnacentral/GFFs/
     done
     
@@ -190,7 +192,7 @@ function ZipAllGenomes {
         SUBFOLDERS=$(ls -d MGYG*)
         for S in $SUBFOLDERS
         do
-            bsub -q production -M 1G -n 1 -o /dev/null "gzip ${S}/MGYG*gff"
+            bsub -q production -M 1G -n 1 -o /dev/null "gzip ${S}/genomes1/MGYG*gff"
         done
         cd ..
     done  
