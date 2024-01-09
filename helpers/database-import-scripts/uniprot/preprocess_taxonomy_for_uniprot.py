@@ -28,17 +28,31 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     if not versions_compatible(taxonomy_version, taxonomy_release):
         sys.exit("GTDB versions {} and {} are not compatible".format(taxonomy_version, taxonomy_release))
     
-    gca_accessions, sample_accessions = parse_metadata(metadata_file)  # key = mgyg, value = gca accession
+    # for each MGYG accession, get the corresponsing GCA (where available) and sample accessions from the metadata file
+    gca_accessions, sample_accessions = parse_metadata(metadata_file)  # key=mgyg, value=gca accession/sample accession
+    
+    # supplement the gca accessions from the metadata table by looking them up in ENA. For each GCA accession, look up
+    # corresponding taxid in ENA
     mgyg_to_gca, gca_to_taxid = match_taxid_to_gca(gca_accessions, sample_accessions, threads)
+    
+    # remove N/A's if present before looking up lineages
     na_true = False
     if "N/A" in gca_to_taxid:
         gca_to_taxid.pop("N/A")
         na_true = True
+        
+    # get a lineage for each taxid (from taxonkit or from ENA if unable)    
     gca_taxid_to_lineage = match_lineage_to_gca_taxid(gca_to_taxid, threads)  # key = taxid, value = lineage
     
-    if na_true or not species_level_taxonomy:
-        # we need to do the taxonomy conversion because we have some genomes without a GCA accession or we are ok
-        # if GCA taxid and lineage taxid diverge because GCA is species-level and our taxonomy is not
+    # check if any taxa are not real species (for example, a species is "metagenome")
+    # we want to remove them and replace with converted ones from GTDB
+    gca_to_taxid, invalid_flag = remove_invalid_taxa(gca_to_taxid, gca_taxid_to_lineage)
+    
+    if na_true or invalid_flag or not species_level_taxonomy:
+        # We need to do the taxonomy conversion because we have some genomes without a GCA accession or we are ok
+        # if GCA taxid and lineage taxid diverge because GCA is species-level and our taxonomy is not or the reported
+        # taxon in GCA is not real (for example, species is "metagenome").
+        # We are using GTDB's converter here.
         selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, DB_DIR)
         tax_ncbi = select_dump(taxonomy_release, DB_DIR)
         print(
@@ -74,7 +88,8 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                 if taxid_to_report in gca_taxid_to_lineage:
                     lineage = gca_taxid_to_lineage[taxid_to_report]
                 else:
-                    lineage = lookup_lineage(taxid_to_report)
+                    if taxid_to_report:
+                        lineage = lookup_lineage(taxid_to_report)
                 if not taxid_to_report:
                     taxid_to_report = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
                     lineage = lineage_dict[key]
@@ -87,6 +102,12 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                 lowest_taxon = get_lowest_taxon(lineage)[0]
                 assert lowest_taxon, "Could not get retrieved name for lineage {}".format(lineage)
                 taxid_to_report = insdc_taxid
+                submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
+            elif gca_accession in gca_to_taxid and gca_to_taxid[gca_accession] == "invalid":
+                lineage = lineage_dict[key]
+                taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
+                taxid_to_report = taxid
+                lowest_taxon = get_lowest_taxon(lineage)[0]
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             else:
                 if gca_accession.startswith("GCA"):  # this means there is already a taxid in INSDC for this genome
@@ -108,6 +129,18 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                 key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level, submittable_print))
     logging.info("Printed results to {}".format(outfile))
 
+
+def remove_invalid_taxa(gca_to_taxid, gca_taxid_to_lineage):
+    invalid_flag = False
+    print("=================== Starting invalid check ===================")
+    for taxid, lineage in gca_taxid_to_lineage.items():
+        lowest_taxon = get_lowest_taxon(lineage)
+        if "metagenome" in lowest_taxon or str(taxid) == "77133" or "d__Viruses" in lineage:
+            print("----------------> FOUND INVALID TAXON", lineage)
+        else:
+            print("Taxon is not invalid")
+    return gca_to_taxid, invalid_flag
+    
 
 def match_lineage_to_gca_taxid(gca_to_taxid, threads):
     taxids = list(gca_to_taxid.values())
@@ -277,6 +310,7 @@ def extract_archaea_info(name, rank):
 
 def lookup_lineage(insdc_taxid):
     def get_lineage(insdc_taxid, taxdump_path):
+        assert insdc_taxid, "Unable to use taxdump for an unknown taxid"
         command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir", taxdump_path, "-I", "1", "-P"]
         result = subprocess.run(command, input=insdc_taxid, text=True, stdout=subprocess.PIPE, 
                                 stderr=subprocess.PIPE, check=True)
@@ -303,7 +337,7 @@ def lookup_lineage(insdc_taxid):
         except Exception as e:
             logging.info("Couldn't find lineage from taxid in taxdump, looking up in ENA.")
             try:
-                lineage = lookup_lineage_on_ena(insdc_taxid)
+                lineage = lookup_lineage_in_ena(insdc_taxid)
                 return lineage
             except Exception as ena_e:
                 logging.error("Unable to retrieve lineage from taxid {} from taxdump and ENA. Taxdump error: {}. "
@@ -311,7 +345,8 @@ def lookup_lineage(insdc_taxid):
                 sys.exit("Aborting.")
 
 
-def lookup_lineage_on_ena(insdc_taxid):
+def lookup_lineage_in_ena(insdc_taxid):
+    assert insdc_taxid, "Cannot lookup lineage in ENA without a taxid"
     url = "https://www.ebi.ac.uk/ena/taxonomy/rest/tax-id/{}".format(insdc_taxid)
     r = run_full_url_request(url)
     file = "ena_lookup_{}.txt".format(insdc_taxid)
