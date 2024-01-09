@@ -309,20 +309,15 @@ def extract_archaea_info(name, rank):
 
 
 def lookup_lineage(insdc_taxid):
-    def get_lineage(insdc_taxid, taxdump_path):
-        assert insdc_taxid, "Unable to use taxdump for an unknown taxid"
+    def get_lineage(taxid, taxdump_path):
+        assert taxid, "Unable to use taxdump for an unknown taxid"
         command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir", taxdump_path, "-I", "1", "-P"]
-        result = subprocess.run(command, input=insdc_taxid, text=True, stdout=subprocess.PIPE, 
+        result = subprocess.run(command, input=taxid, text=True, stdout=subprocess.PIPE, 
                                 stderr=subprocess.PIPE, check=True)
-        lineage = result.stdout.strip().split("\t")[1]
-        retrieved_name = re.sub("(;[a-z]__)+$", "", lineage).split(";")[-1]
-        retrieved_name = re.sub("[a-z]__", "", retrieved_name)
-        # Todo: move assertion to the place where lookup_lineage_new is called
-        # Todo: remove retrieved name, we get it outside of the lookup_lineage_new function
-        assert retrieved_name, "Could not get retrieved name for lineage {}".format(lineage)
-        if lineage.startswith("k__"):
-            lineage = lineage.replace("k__", "d__")
-        return lineage, retrieved_name
+        detected_lineage = result.stdout.strip().split("\t")[1]
+        if detected_lineage.startswith("k__"):
+            detected_lineage = detected_lineage.replace("k__", "d__")
+        return detected_lineage
 
     try:
         lineage, retrieved_name = get_lineage(insdc_taxid, TAXDUMP_PATH)
