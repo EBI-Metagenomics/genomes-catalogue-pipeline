@@ -49,10 +49,9 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     gca_to_taxid, invalid_flag = remove_invalid_taxa(gca_to_taxid, gca_taxid_to_lineage)
     
     if na_true or invalid_flag or not species_level_taxonomy:
-        # We need to do the taxonomy conversion because we have some genomes without a GCA accession or we are ok
-        # if GCA taxid and lineage taxid diverge because GCA is species-level and our taxonomy is not or the reported
-        # taxon in GCA is not real (for example, species is "metagenome").
-        # We are using GTDB's converter here.
+        # If we are here, we have some genomes we were unable to get taxonomy from because we either don't know
+        # the GCA accession or the taxonomy we got from GCA is invalid. We need to use GTDB taxonomy and convert it
+        # to NCBI taxonomy.
         selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, DB_DIR)
         tax_ncbi = select_dump(taxonomy_release, DB_DIR)
         print(
@@ -74,27 +73,31 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         
         taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
     
-    # look up all unknown GCA accessions in bulk
+    # look up all unknown GCA accessions using converted GTDB lineages and updating them in case some species level
+    # taxa names are missing and/or the lineage has outdated taxon names
     if species_level_taxonomy and na_true:
         print("========================= Looking up lineages for unknown GCAs")
         lineages_to_lookup = list(set([lineage_dict[key] for key, value in mgyg_to_gca.items() if value == 'N/A']))
         unknown_gca_mgyg_and_lineage = {k: lineage_dict[k] for k, v in mgyg_to_gca.items() if v == 'N/A'}
-        #with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-        #    na_associated_lineages = {lineage: info_dict for lineage, info_dict in zip(
-        #        lineages_to_lookup, executor.map(get_species_level_taxonomy, lineages_to_lookup))}
         na_associated_lineages = dict()
-        for l in lineages_to_lookup:
-            taxid, name, submittable, lineage = get_species_level_taxonomy(l)
-            na_associated_lineages[l] = {"taxid": taxid,
-                                         "name": name,
-                                         "submittable": submittable,
-                                         "lineage": lineage}
-            
-        # replace old lineage in unknown_gca_mgyg_and_lineage with full info and updated lineage
+
+        # Use ThreadPoolExecutor to parallelize the execution
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            # Submit the tasks and get the Future objects
+            futures = {executor.submit(process_lineage, l): l for l in lineages_to_lookup}
+
+            # Retrieve the results as they become available
+            for future in concurrent.futures.as_completed(futures):
+                lineage = futures[future]
+                try:
+                    result = future.result()
+                    na_associated_lineages[lineage] = result
+                except Exception as e:
+                    print(f"Error processing lineage {lineage}: {e}")
+                    
         for mgyg, lineage in unknown_gca_mgyg_and_lineage.items():
             unknown_gca_mgyg_and_lineage[mgyg] = na_associated_lineages[lineage]
-    
-    
+
     #if species_level_taxonomy and invalid_flag:
 
     with open(outfile, "w") as file_out:
@@ -110,30 +113,31 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                 lowest_taxon = get_lowest_taxon(lineage)[0]
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             elif gca_accession == "N/A" and species_level_taxonomy:
-                lineage = lineage_dict[key]
-                logging.debug("Lineage before: {}".format(lineage))
+                #lineage = lineage_dict[key]
+                #logging.debug("Lineage before: {}".format(lineage))
                 # Change to species level
                 # Todo: run this in bulk for all "N/A"'s in mgyg_to_gca REMOVE THIS BIT
-                taxid, lowest_taxon, submittable, lineage = get_species_level_taxonomy(lineage)
-                source = "GTDB_appended"
-                logging.debug("Lineage after: {}".format(lineage))
-                taxid_to_report = taxid
+                #taxid, lowest_taxon, submittable, lineage = get_species_level_taxonomy(lineage)
+                source = "ENA"
+                #logging.debug("Lineage after: {}".format(lineage))
+                taxid_to_report = unknown_gca_mgyg_and_lineage[key]["taxid"]
+                lineage = unknown_gca_mgyg_and_lineage[key]["lineage"]
                 # Lookup lineage again in case the one from GTDB conversion is outdated
-                if taxid_to_report == unknown_gca_mgyg_and_lineage[key]["taxid"]:
-                    print("OPTION 1, GCA is unknown BUT it's present in the new dictionary")
-                    lineage = unknown_gca_mgyg_and_lineage[key]["lineage"]
-                    source = "ENA"
-                elif taxid_to_report in gca_taxid_to_lineage:
-                    print("OPTION 2, GCA is unknown but taxid is present in gca_taxid_to_lineage")
-                    lineage = gca_taxid_to_lineage[taxid_to_report]
-                    source = "taxonkit/ENA"
-                else:
-                    print("OPTION 3, GCA is unknown and not present in dict")
-                    if taxid_to_report:
-                        print("Taxid is known: {}. Looking up...".format(taxid_to_report))
-                        lineage = lookup_lineage(taxid_to_report)
-                        source = "taxonkit/ENA"
-                        print("Lookup completed")
+                #if taxid_to_report == unknown_gca_mgyg_and_lineage[key]["taxid"]:
+                #    print("OPTION 1, GCA is unknown BUT it's present in the new dictionary")
+                #    lineage = unknown_gca_mgyg_and_lineage[key]["lineage"]
+                #    source = "ENA"
+                #elif taxid_to_report in gca_taxid_to_lineage:
+                #    print("OPTION 2, GCA is unknown but taxid is present in gca_taxid_to_lineage")
+                #    lineage = gca_taxid_to_lineage[taxid_to_report]
+                #    source = "taxonkit/ENA"
+                #else:
+                #    print("OPTION 3, GCA is unknown and not present in dict")
+                #    if taxid_to_report:
+                #        print("Taxid is known: {}. Looking up...".format(taxid_to_report))
+                #        lineage = lookup_lineage(taxid_to_report)
+                #        source = "taxonkit/ENA"
+                #        print("Lookup completed")
                 if not taxid_to_report:
                     taxid_to_report = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
                     lineage = lineage_dict[key]
@@ -181,8 +185,12 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
 
 
 #def update_lineage(lineage, taxid_to_report, species_level_taxonomy):
-    
-    
+
+
+def process_lineage(l):
+    taxid, name, submittable, lineage = get_species_level_taxonomy(l)
+    return {"taxid": taxid, "name": name, "submittable": submittable, "lineage": lineage}
+
 
 def remove_invalid_taxa(gca_to_taxid, gca_taxid_to_lineage):
     invalid_flag = False
