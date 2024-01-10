@@ -73,51 +73,100 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
         
         taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
-        
+    
+    # look up all unknown GCA accessions in bulk
+    if species_level_taxonomy and na_true:
+        print("========================= Looking up lineages for unknown GCAs")
+        lineages_to_lookup = list(set([lineage_dict[key] for key, value in mgyg_to_gca.items() if value == 'N/A']))
+        unknown_gca_mgyg_and_lineage = {k: lineage_dict[k] for k, v in mgyg_to_gca.items() if v == 'N/A'}
+        #with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+        #    na_associated_lineages = {lineage: info_dict for lineage, info_dict in zip(
+        #        lineages_to_lookup, executor.map(get_species_level_taxonomy, lineages_to_lookup))}
+        na_associated_lineages = dict()
+        for l in lineages_to_lookup:
+            taxid, name, submittable, lineage = get_species_level_taxonomy(l)
+            na_associated_lineages[l] = {"taxid": taxid,
+                                         "name": name,
+                                         "submittable": submittable,
+                                         "lineage": lineage}
+            
+        # replace old lineage in unknown_gca_mgyg_and_lineage with full info and updated lineage
+        for mgyg, lineage in unknown_gca_mgyg_and_lineage.items():
+            unknown_gca_mgyg_and_lineage[mgyg] = na_associated_lineages[lineage]
+    
+    
+    #if species_level_taxonomy and invalid_flag:
+
     with open(outfile, "w") as file_out:
         for key, gca_accession in mgyg_to_gca.items():
-            if gca_accession == "N/A" and species_level_taxonomy:
+            source = ""
+            if gca_accession in gca_to_taxid and gca_to_taxid[gca_accession] == "invalid":
+                lineage = lineage_dict[key]
+                source = "GTDB"
+                taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
+                taxid_to_report = taxid
+                #lineage, taxid_to_report = update_lineage(lineage, taxid_to_report, species_level_taxonomy)
+                #source = "updated GTDB"
+                lowest_taxon = get_lowest_taxon(lineage)[0]
+                submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
+            elif gca_accession == "N/A" and species_level_taxonomy:
                 lineage = lineage_dict[key]
                 logging.debug("Lineage before: {}".format(lineage))
                 # Change to species level
-                # Todo: run this in bulk for all "N/A"'s in mgyg_to_gca
+                # Todo: run this in bulk for all "N/A"'s in mgyg_to_gca REMOVE THIS BIT
                 taxid, lowest_taxon, submittable, lineage = get_species_level_taxonomy(lineage)
+                source = "GTDB_appended"
                 logging.debug("Lineage after: {}".format(lineage))
                 taxid_to_report = taxid
                 # Lookup lineage again in case the one from GTDB conversion is outdated
-                if taxid_to_report in gca_taxid_to_lineage:
+                if taxid_to_report == unknown_gca_mgyg_and_lineage[key]["taxid"]:
+                    print("OPTION 1, GCA is unknown BUT it's present in the new dictionary")
+                    lineage = unknown_gca_mgyg_and_lineage[key]["lineage"]
+                    source = "ENA"
+                elif taxid_to_report in gca_taxid_to_lineage:
+                    print("OPTION 2, GCA is unknown but taxid is present in gca_taxid_to_lineage")
                     lineage = gca_taxid_to_lineage[taxid_to_report]
+                    source = "taxonkit/ENA"
                 else:
+                    print("OPTION 3, GCA is unknown and not present in dict")
                     if taxid_to_report:
+                        print("Taxid is known: {}. Looking up...".format(taxid_to_report))
                         lineage = lookup_lineage(taxid_to_report)
+                        source = "taxonkit/ENA"
+                        print("Lookup completed")
                 if not taxid_to_report:
                     taxid_to_report = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
                     lineage = lineage_dict[key]
+                    source = "GTDB"
+                    #Todo: check if I need to modify this lineage (append species name/update)
                     if not taxid_to_report:
                         sys.exit("Could not obtain taxid for lineage {}. Aborting.".format(lineage))
+                    #else:
+                    #    lineage, taxid_to_report = update_lineage(lineage, taxid_to_report, species_level_taxonomy)
+                    #    source = "updated GTDB"
                 lowest_taxon = get_lowest_taxon(lineage)[0]
+                submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             elif gca_accession.startswith("GCA") and species_level_taxonomy:
                 insdc_taxid = gca_to_taxid[gca_accession]
                 lineage = gca_taxid_to_lineage[insdc_taxid]
+                source = "taxonkit/ENA"
                 lowest_taxon = get_lowest_taxon(lineage)[0]
                 assert lowest_taxon, "Could not get retrieved name for lineage {}".format(lineage)
                 taxid_to_report = insdc_taxid
-                submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
-            elif gca_accession in gca_to_taxid and gca_to_taxid[gca_accession] == "invalid":
-                lineage = lineage_dict[key]
-                taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
-                taxid_to_report = taxid
-                lowest_taxon = get_lowest_taxon(lineage)[0]
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             else:
                 if gca_accession.startswith("GCA"):  # this means there is already a taxid in INSDC for this genome
                     insdc_taxid = gca_to_taxid[gca_accession]
                     taxid_to_report = insdc_taxid
                     lineage = gca_taxid_to_lineage[taxid_to_report]
+                    source = "taxonkit/ENA"
                 else:
                     lineage = lineage_dict[key]
+                    source = "GTDB"
                     taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
                     taxid_to_report = taxid
+                    #lineage, taxid_to_report = update_lineage(lineage, taxid_to_report, species_level_taxonomy)
+                    #source = "updated GTDB"
                 lowest_taxon = get_lowest_taxon(lineage)[0]
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             species_level = False if lineage.endswith("s__") else True
@@ -127,18 +176,26 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                 submittable_print = "Not valid for ENA"
             file_out.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
                 key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level, submittable_print))
+            print(key, lineage, source)
     logging.info("Printed results to {}".format(outfile))
 
+
+#def update_lineage(lineage, taxid_to_report, species_level_taxonomy):
+    
+    
 
 def remove_invalid_taxa(gca_to_taxid, gca_taxid_to_lineage):
     invalid_flag = False
     print("=================== Starting invalid check ===================")
-    for taxid, lineage in gca_taxid_to_lineage.items():
-        lowest_taxon = get_lowest_taxon(lineage)
+    for gca_acc, taxid in gca_to_taxid.items():
+        lineage = gca_taxid_to_lineage[taxid]
+        lowest_taxon = get_lowest_taxon(lineage)[0]
         if "metagenome" in lowest_taxon or str(taxid) == "77133" or "d__Viruses" in lineage:
+            invalid_flag = True
+            gca_to_taxid[gca_acc] = "invalid"
             print("----------------> FOUND INVALID TAXON", lineage)
         else:
-            print("Taxon is not invalid")
+            print("Taxon is not invalid: {}".format(lowest_taxon))
     return gca_to_taxid, invalid_flag
     
 
@@ -174,8 +231,11 @@ def get_species_level_taxonomy(lineage):
     else:
         sys.exit("Unknown domain in lineage {}. Aborting".format(lineage))
     if taxid:
+        print("Lineage for unknown GCA before updating {}".format(lineage))
+        lineage = lookup_lineage(taxid)
         if lineage.endswith("__"):
             lineage = lineage + name
+        print("Lineage for unknown GCA after updating {}".format(lineage))
     return taxid, name, submittable, lineage
 
 
@@ -320,17 +380,22 @@ def lookup_lineage(insdc_taxid):
         return detected_lineage
 
     try:
-        lineage, retrieved_name = get_lineage(insdc_taxid, TAXDUMP_PATH)
-        print("Got INSDC lineage", lineage, retrieved_name)
+        lineage = get_lineage(insdc_taxid, TAXDUMP_PATH)
+        if lineage == ";;;;;;":
+            raise Exception("Empty lineage in taxdump for {}".format(insdc_taxid))
+        print("Got INSDC lineage from taxdump", lineage)
         return lineage
     except Exception as e:
         logging.error("Error: {}".format(str(e)))
         try:
-            lineage, retrieved_name = get_lineage(insdc_taxid, TAXDUMP_PATH_NEW_VER)
-            print("Got INSDC lineage", lineage, retrieved_name)
+            lineage = get_lineage(insdc_taxid, TAXDUMP_PATH_NEW_VER)
+            if lineage == ";;;;;;":
+                raise Exception("Empty lineage in taxdump for {}".format(insdc_taxid))
+            print("Got INSDC lineage from taxdump", lineage)
             return lineage
         except Exception as e:
-            logging.info("Couldn't find lineage from taxid in taxdump, looking up in ENA.")
+            logging.info("Couldn't find lineage from taxid {} in taxdump due to error {}, looking up in ENA.".format(
+                insdc_taxid, e))
             try:
                 lineage = lookup_lineage_in_ena(insdc_taxid)
                 return lineage
@@ -503,7 +568,7 @@ def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict):
                     logging.debug("Checking dump lineage".format(lineage))
                     retrieved_name = re.sub(";+$", "", lineage).split(";")[-1]
                     assert retrieved_name, "Could not get retrieved name for lineage {}".format(lineage)
-                    logging.debug("Checking name from dump lineage is".format(retrieved_name))
+                    logging.debug("Checking name from dump lineage is {}".format(retrieved_name))
                     expected_domains_and_phyla = get_domains_and_phyla(lowest_taxon_lineage_dict[taxon_name])
                     logging.debug("expected phyla obtained: {}".format(expected_domains_and_phyla))
                     retrieved_domain = lineage.split(";")[0]
