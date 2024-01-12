@@ -143,6 +143,8 @@ def get_expected_lineage(taxid):
         _, _, rank = query_scientific_name_from_ena(scientific_name, search_rank=True)
         if rank == "no rank" and " " in scientific_name:
             formatted_lineage = formatted_lineage + scientific_name
+        elif not rank and " " in scientific_name:
+            formatted_lineage = formatted_lineage + scientific_name
     return formatted_lineage
 
 
