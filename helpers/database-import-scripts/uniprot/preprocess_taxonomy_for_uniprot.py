@@ -456,7 +456,7 @@ def reformat_lineage(lineage, scientific_name):
             ranks_values[rank] = element
             print(element, submittable, taxid, rank)
     _, _, lowest_rank = query_scientific_name_from_ena(scientific_name, search_rank=True)
-    if not lowest_rank == "no rank":
+    if lowest_rank and not lowest_rank == "no rank":
         if lowest_rank == "subspecies":
             ranks_values["species"] = scientific_name
         else:
