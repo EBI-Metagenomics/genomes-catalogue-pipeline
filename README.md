@@ -22,7 +22,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Bracken                          | 2.6.2            | Generating a bracken database       |
 | MMseqs2                          | 13.45111         | Generating a protein catalogue       |
 | eggNOG-mapper                    | 2.1.11           | Protein annotation (eggNOG, KEGG, COG,  CAZy)       |
-| eggNOG DB                        | 5.0              | Database for eggNOG-mapper       |
+| eggNOG DB                        | 5.0.2            | Database for eggNOG-mapper       |
 | Diamond                          | 2.0.11           | Protein annotation (eggNOG)       |
 | InterProScan                     | 5.62-94.0        | Protein annotation (InterPro, Pfam)       |
 | CRISPRCasFinder                  | 4.3.2            | Annotation of CRISPR arrays       |
