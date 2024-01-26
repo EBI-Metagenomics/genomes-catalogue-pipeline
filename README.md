@@ -22,7 +22,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Bracken                          | 2.6.2            | Generating a bracken database       |
 | MMseqs2                          | 13.45111         | Generating a protein catalogue       |
 | eggNOG-mapper                    | 2.1.11           | Protein annotation (eggNOG, KEGG, COG,  CAZy)       |
-| eggNOG DB                        | 5.0              | Database for eggNOG-mapper       |
+| eggNOG DB                        | 5.0.2            | Database for eggNOG-mapper       |
 | Diamond                          | 2.0.11           | Protein annotation (eggNOG)       |
 | InterProScan                     | 5.62-94.0        | Protein annotation (InterPro, Pfam)       |
 | CRISPRCasFinder                  | 4.3.2            | Annotation of CRISPR arrays       |
@@ -52,7 +52,7 @@ Requirements:
 The pipeline needs the following reference databases and configuration files (roughtly ~150G):
 
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz
-- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db.tgz
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db_5.0.2.tgz
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_14.9/
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
