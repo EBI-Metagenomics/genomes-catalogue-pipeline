@@ -22,30 +22,68 @@ import sys
 
 from Bio import SeqIO
 
+
+def get_indices(tool):
+    cmsearch_indices = {
+        "contig": 0,
+        "gene": 2,
+        "model": 3,
+        "strand": 9,
+        "start": 7,
+        "end": 8,
+    }
+    cmscan_indices = {
+        "contig": 3,
+        "gene": 1,
+        "model": 2,
+        "strand": 11,
+        "start": 9,
+        "end": 10,
+    }
+    if tool == "cmsearch":
+        return cmsearch_indices
+    else:
+        return cmscan_indices
+    
+    
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script detects rRNA")
+    parser = argparse.ArgumentParser(description="Script generates a fasta file for rRNA")
     parser.add_argument(
         "-i", "--input", dest="input", help="Input fasta", required=True
     )
     parser.add_argument(
         "-d", "--drep", dest="drep", help="tblout.deoverlapped", required=True
     )
+    parser.add_argument(
+        "-s", "--source", dest="source", help="Program that generated the tblout file", 
+        choices=['cmsearch', 'cmscan'], required=False, default="cmsearch"
+    )
+    parser.add_argument(
+        "-o", "--outfile", dest="outfile", help="Path to file where the output FASTA will be saved to", 
+        required=False
+    )
     args = parser.parse_args()
     hits = {}
     added = {}
+    idx = get_indices(args.source)
     with open(args.drep, "r") as f:
         for line in f:
             line = line.strip("\n")
+            if line.startswith("#"):
+                continue
             cols = line.split()
-            contig = cols[0]
-            gene = cols[2]
-            strand = cols[9]
+            model = cols[idx["model"]]
+            if model not in ["RF00001", "RF00177", "RF02541"]:
+                continue
+            contig = cols[idx["contig"]]
+            gene = cols[idx["gene"]]
+            strand = cols[idx["strand"]]
             if strand == "+":
-                start = int(cols[7])
-                end = int(cols[8])
+                start = int(cols[idx["start"]])
+                end = int(cols[idx["end"]])
             else:
-                start = int(cols[8])
-                end = int(cols[7])
+                start = int(cols[idx["end"]])
+                end = int(cols[idx["start"]])
             if contig not in added.keys():
                 added[contig] = 1
             else:
@@ -59,7 +97,9 @@ if __name__ == "__main__":
                 len=end - start + 1,
             )
             hits[contig] = [start, end]
-
+    
+    if args.outfile:
+        file_out = open(args.outfile, "w")
     with open(args.input, "r") as f:
         for record in SeqIO.parse(f, "fasta"):
             for contig in hits.keys():
@@ -73,5 +113,10 @@ if __name__ == "__main__":
                         + os.path.basename(sys.argv[2]).split(".")[0]
                         + "__"
                         + contig
-                    )
-                    print("{name}\n{seq}".format(name=name, seq=seq))
+                    )                      
+                    if args.outfile:
+                        file_out.write("{name}\n{seq}\n".format(name=name, seq=seq))
+                    else:
+                        print("{name}\n{seq}".format(name=name, seq=seq))
+    if args.outfile:
+        file_out.close()
