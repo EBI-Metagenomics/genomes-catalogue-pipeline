@@ -25,7 +25,7 @@ rRNAs_obs = {"5S_rRNA": [], "SSU_rRNA_bacteria": [], "LSU_rRNA_bacteria": []}
 rRNAs_merged = {}
 
 
-def get_indices(tool):
+def get_tblout_column_indices(tool):
     cmsearch_indices = {
         "gene": 2,
         "start": 5,
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    idx = get_indices(args.source)
+    idx = get_tblout_column_indices(args.source)
     
     # store start and end position of each hit
     with open(args.input, "r") as f:
