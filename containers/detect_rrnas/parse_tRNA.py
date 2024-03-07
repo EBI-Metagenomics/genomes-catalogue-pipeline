@@ -68,9 +68,10 @@ if __name__ == "__main__":
                         counts = int(line.split(":")[1].split()[0])
                         if (aa_pred in aa or "Met" in aa_pred) and counts > 0:
                             trnas += 1
+        
+        new_line = "{name}\t{trnas}".format(name=os.path.basename(args.input).split("_stats")[0], trnas=trnas)
         if args.output:
             with open(args.output, "w") as file_out:
-                file_out.write("{name}\t{trnas}\n".format(
-                    name=os.path.basename(args.input).split("_stats")[0], trnas=trnas))
+                file_out.write(new_line)
         else:
-            print("{name}\t{trnas}".format(name=os.path.basename(args.input).split("_stats")[0], trnas=trnas))
+            print(new_line)
