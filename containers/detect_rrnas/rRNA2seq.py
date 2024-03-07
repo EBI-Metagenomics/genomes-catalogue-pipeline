@@ -23,7 +23,7 @@ import sys
 from Bio import SeqIO
 
 
-def get_indices(tool):
+def get_tblout_column_indices(tool):
     cmsearch_indices = {
         "contig": 0,
         "gene": 2,
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     hits = {}
     added = {}
-    idx = get_indices(args.source)
+    idx = get_tblout_column_indices(args.source)
     with open(args.drep, "r") as f:
         for line in f:
             line = line.strip("\n")
