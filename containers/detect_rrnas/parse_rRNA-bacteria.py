@@ -103,11 +103,10 @@ if __name__ == "__main__":
                 totalLen += interval[1] - interval[0]
             except:
                 totalLen = 0
+        new_line = "{}\t{}\t{:.2f}\n".format(run_name, rna, float(totalLen) / rRNAs_exp[rna] * 100)
         if args.outfile:
-            file_out.write("{}\t{}\t{:.2f}\n".format(run_name, rna, float(totalLen) / rRNAs_exp[rna] * 100))
+            file_out.write(new_line)
         else:
-            print(
-                "%s\t%s\t%.2f" % (run_name, rna, float(totalLen) / rRNAs_exp[rna] * 100)
-            )
+            print(new_line)
     if args.outfile:
         file_out.close()
