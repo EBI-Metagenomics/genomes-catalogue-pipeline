@@ -82,7 +82,7 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
         query = {
             'result': 'wgs_set',
             'query': 'study_accession="{}" AND assembly_type="metagenome-assembled genome (mag)"'.format(acc),
-            'fields': 'accession,assembly_type,study_accession,sample_accession,fasta_file',
+            'fields': 'accession,assembly_type,study_accession,sample_accession,set_fasta_ftp',
             'format': 'tsv'
         }
         sample_field = 3
