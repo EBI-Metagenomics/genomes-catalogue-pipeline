@@ -1,22 +1,6 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-# This file is part of MGnify genome analysis pipeline.
-#
-# MGnify genome analysis pipeline is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# MGnify genome analysis pipeline is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
-
-
 import argparse
 import logging
 import os
@@ -31,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 API_ENDPOINT = 'https://www.ebi.ac.uk/ena/portal/api/search'
 
 
-def main(input_file, directory, unzip):
+def main(input_file, directory, unzip, bins, ignore_metadata):
     metadata = list()
     studies = get_studies(input_file)
     if not studies:
@@ -39,10 +23,11 @@ def main(input_file, directory, unzip):
         sys.exit(1)
     else:
         for study_acc in studies:
-            metadata.extend(load_study(study_acc, directory, unzip))
+            metadata.extend(load_study(study_acc, directory, unzip, bins, ignore_metadata))
     if not os.path.exists(directory):
         os.makedirs(directory)
-    print_metadata(metadata, args.dir)
+    if not ignore_metadata:
+        print_metadata(metadata, args.dir)
 
 
 def get_studies(input_file):
@@ -82,37 +67,56 @@ def get_biome_studies(biomes):
     return studies_to_add
 
 
-def load_study(acc, directory, unzip):
-    query = {
-        'result': 'wgs_set',
-        'query': 'study_accession="{}" AND assembly_type="metagenome-assembled genome (mag)"'.format(acc),
-        'fields': 'accession,assembly_type,study_accession,sample_accession,fasta_file',
-        'format': 'tsv'
-    }
+def load_study(acc, directory, unzip, bins, ignore_metadata):
+    if bins:
+        query = {
+            'result': 'analysis',
+            'query': 'study_accession="{}" AND assembly_type="binned metagenome"'.format(acc),
+            'fields': 'accession,assembly_type,study_accession,sample_accession,generated_ftp',
+            'format': 'tsv'
+        }
+        sample_field = 4
+        ftp_field = 5
+
+    else:
+        query = {
+            'result': 'wgs_set',
+            'query': 'study_accession="{}" AND assembly_type="metagenome-assembled genome (mag)"'.format(acc),
+            'fields': 'accession,assembly_type,study_accession,sample_accession,fasta_file',
+            'format': 'tsv'
+        }
+        sample_field = 3
+        ftp_field = 4
 
     r = run_request(query, API_ENDPOINT)
 
     study_metadata = list()
     for line in r.text.splitlines():
-        if not line.startswith('accession'):
-            contamination, completeness = get_contamination_completeness(line.strip().split('\t')[3])
-            if not all([contamination, completeness]):
-                logging.error('Missing contamination and/or completeness for MAG {}'.
-                              format(line.strip().split('\t')[3]))
-            if qs50(float(contamination), float(completeness)):
-                ftp_location = line.strip().split('\t')[4]
+        if not line.startswith(('accession', 'analysis_accession')):
+            contamination, completeness = get_contamination_completeness(line.strip().split('\t')[sample_field])
+            if not ignore_metadata:
+                if not all([contamination, completeness]):
+                    logging.error('Missing contamination and/or completeness for MAG {}. Run with --ignore-metadata '
+                                  'flag to download files without metadata.'.
+                                  format(line.strip().split('\t')[sample_field]))
+                    sys.exit(1)
+            if not ignore_metadata and not qs50(float(contamination), float(completeness)):
+                logging.info('MAG did not pass QC: {}, {}, {}'.
+                             format(line.strip().split('\t')[sample_field], completeness, contamination))
+            else:
+                ftp_location = line.strip().split('\t')[ftp_field]
                 if not ftp_location.startswith('ftp://'):
                     ftp_location = 'ftp://' + ftp_location
-                mag_acc = ftp_location.split('/')[-1].split('.')[0]
+                if bins:
+                    mag_acc = line.strip().split('\t')[0]
+                else:
+                    mag_acc = ftp_location.split('/')[-1].split('.')[0]
                 saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
                 if not saved_fasta:
-                    logging.error('Unable to fetch {}'.format(mag_acc))
+                    logging.error('Unable to fetch', mag_acc)
                 else:
                     study_metadata.append('{},{},{}'.format(saved_fasta, completeness, contamination))
                     logging.info('Successfully fetched {}'.format(mag_acc))
-            else:
-                logging.info('MAG did not pass QC: {}, {}, {}'.format(line.strip().split('\t')[3], completeness,
-                                                                      contamination))
     return study_metadata
 
 
@@ -127,8 +131,8 @@ def print_metadata(data, directory):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Takes a list of ENA project accessions and fetches MAGs from ENA.'
-                                                 'The script also creates a metadata file (genome_stats.txt) in the '
-                                                 'same directory')
+                                                 'The script also create a metadata file (genome_stats.txt) in the same'
+                                                 'directory')
     parser.add_argument('-i', '--infile', required=True,
                         help='A file containing a list of ENA project accessions, one accession per line, or'
                              'a list of biomes, one biome per line, to fetch all MAGs belonging to the '
@@ -137,10 +141,15 @@ def parse_args():
                         help='A path to a local directory where MAGs will be downloaded to')
     parser.add_argument('-u', '--unzip', action='store_true',
                         help='Store unzipped fasta files. Default = False')
+    parser.add_argument('-b', '--bins', action='store_true',
+                        help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
+                             'provided in the input file. Default = False')
+    parser.add_argument('--ignore-metadata', action='store_true',
+                        help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
+                             'provided in the input file. Default = False')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.infile, args.dir, args.unzip)
-
+    main(args.infile, args.dir, args.unzip, args.bins, args.ignore_metadata)
