@@ -68,6 +68,7 @@ def get_biome_studies(biomes):
 
 
 def load_study(acc, directory, unzip, bins, ignore_metadata):
+    already_fetched = [i.split('.')[0] for i in os.listdir(directory)]
     if bins:
         query = {
             'result': 'analysis',
@@ -111,12 +112,15 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
                     mag_acc = line.strip().split('\t')[0]
                 else:
                     mag_acc = ftp_location.split('/')[-1].split('.')[0]
-                saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
-                if not saved_fasta:
-                    logging.error('Unable to fetch', mag_acc)
+                if mag_acc in already_fetched:
+                    logging.info(f'Skipping MAG {mag_acc} because it already exist')
                 else:
-                    study_metadata.append('{},{},{}'.format(saved_fasta, completeness, contamination))
-                    logging.info('Successfully fetched {}'.format(mag_acc))
+                    saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
+                    if not saved_fasta:
+                        logging.error('Unable to fetch', mag_acc)
+                    else:
+                        study_metadata.append('{},{},{}'.format(saved_fasta, completeness, contamination))
+                        logging.info('Successfully fetched {}'.format(mag_acc))
     return study_metadata
 
 
