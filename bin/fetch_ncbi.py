@@ -19,6 +19,7 @@
 
 import argparse
 import logging
+import os
 import time
 import urllib.request as request
 import urllib.error as error
@@ -44,12 +45,15 @@ def main():
     failed = 0
     complete = 0
     no_url = 0
+    already_exist = 0
 
     # save accessions to dictionary
     accession_dict = load_accessions(args.infile)
     assert len(accession_dict) > 0, 'No accessions were loaded from infile'
     # add GenBank file locations as arguments to the accessions dictionary
     success = load_locations(accession_dict)
+    # create a list of already fetched genomes in output directory (if any)
+    already_fetched = [i.split('.')[0] for i in os.listdir(args.dir)]
     if not success:
         logging.error('Failed to load the FTP locations')
     else:
@@ -59,15 +63,20 @@ def main():
             if not accession_dict[a]:
                 no_url += 1
             else:
-                logging.info('Downloading {}...'.format(a))
-                result = download_fasta(accession_dict[a], args.dir, a, args.unzip, '')
-                if result:
-                    complete += 1
+                if a in already_fetched:
+                    logging.info(f'Skipping {a} because it already exists')
+                    already_exist += 1
                 else:
-                    failed += 1
-                    logging.error('Could not download {}'.format(accession_dict[a]))
+                    logging.info('Downloading {}...'.format(a))
+                    result = download_fasta(accession_dict[a], args.dir, a, args.unzip, '')
+                    if result:
+                        complete += 1
+                    else:
+                        failed += 1
+                        logging.error('Could not download {}'.format(accession_dict[a]))
 
     logging.info('Total number of accessions provided: {}'.format(len(accession_dict)))
+    logging.info(f'Already pre-fetched: {str(already_exist)}')
     logging.info('Successfully downloaded {} files'.format(complete))
     logging.info('Download failed for {} files'.format(failed))
     logging.info('No URL retrieved for {} files'.format(no_url))
