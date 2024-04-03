@@ -9,20 +9,18 @@ import sys
 from get_ENA_metadata import get_contamination_completeness
 from utils import download_fasta, qs50, run_request
 
-
-logging.basicConfig(level=logging.INFO)
-
 API_ENDPOINT = 'https://www.ebi.ac.uk/ena/portal/api/search'
-
 
 def main(input_file, directory, unzip, bins, ignore_metadata):
     metadata = list()
     studies = get_studies(input_file)
+    logging.debug(f"Got {len(studies)} studies")
     if not studies:
         logging.error('There are no studies to fetch')
         sys.exit(1)
     else:
         for study_acc in studies:
+            logging.debug(f"Processing {study_acc}")
             metadata.extend(load_study(study_acc, directory, unzip, bins, ignore_metadata))
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -113,7 +111,9 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
                 else:
                     mag_acc = ftp_location.split('/')[-1].split('.')[0]
                 if mag_acc in already_fetched:
-                    logging.info(f'Skipping MAG {mag_acc} because it already exist')
+                    logging.info(f'Skipping MAG {mag_acc} because it already exists')
+                    # saving metadata for that MAG
+                    study_metadata.append('{},{},{}'.format('{}.fa.gz'.format(mag_acc), completeness, contamination))
                 else:
                     saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
                     if not saved_fasta:
@@ -151,9 +151,15 @@ def parse_args():
     parser.add_argument('--ignore-metadata', action='store_true',
                         help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
                              'provided in the input file. Default = False')
+    parser.add_argument('--debug', action='store_true', help='set logging to DEBUG')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+        
     main(args.infile, args.dir, args.unzip, args.bins, args.ignore_metadata)
