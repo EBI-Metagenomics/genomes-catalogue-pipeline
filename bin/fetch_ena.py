@@ -21,7 +21,9 @@ def main(input_file, directory, unzip, bins, ignore_metadata):
     else:
         for study_acc in studies:
             logging.debug(f"Processing {study_acc}")
-            metadata.extend(load_study(study_acc, directory, unzip, bins, ignore_metadata))
+            number_of_mags, study_metadata = load_study(study_acc, directory, unzip, bins, ignore_metadata)
+            metadata.extend(study_metadata)
+            logging.debug(f"Found {str(number_of_mags)} MAGs in study {study_acc}")
     if not os.path.exists(directory):
         os.makedirs(directory)
     if not ignore_metadata:
@@ -67,6 +69,7 @@ def get_biome_studies(biomes):
 
 def load_study(acc, directory, unzip, bins, ignore_metadata):
     already_fetched = [i.split('.')[0] for i in os.listdir(directory)]
+    number_of_mags = 0
     if bins:
         query = {
             'result': 'analysis',
@@ -92,6 +95,7 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
     study_metadata = list()
     for line in r.text.splitlines():
         if not line.startswith(('accession', 'analysis_accession')):
+            number_of_mags += 1
             contamination, completeness = get_contamination_completeness(line.strip().split('\t')[sample_field])
             if not ignore_metadata:
                 if not all([contamination, completeness]):
@@ -121,7 +125,7 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
                     else:
                         study_metadata.append('{},{},{}'.format(saved_fasta, completeness, contamination))
                         logging.info('Successfully fetched {}'.format(mag_acc))
-    return study_metadata
+    return number_of_mags, study_metadata
 
 
 def print_metadata(data, directory):
