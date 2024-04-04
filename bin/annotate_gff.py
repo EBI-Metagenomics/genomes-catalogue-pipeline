@@ -231,7 +231,7 @@ def add_gff(in_gff, eggnog_file, ipr_file, sanntis_file, amr_file):
                                 elif pos == 3:
                                     added_annot[protein]["KEGG"] = a
                                 elif pos == 4:
-                                    added_annot[protein]["ontology_term"] = a
+                                    added_annot[protein]["Ontology_term"] = a
                     except Exception:
                         pass
                     try:
