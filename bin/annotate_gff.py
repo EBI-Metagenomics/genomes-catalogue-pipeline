@@ -277,7 +277,7 @@ def add_gff(in_gff, eggnog_file, ipr_file, sanntis_file, amr_file):
                         if a == "AMR":
                             cols[8] = "{};{}".format(cols[8], value)
                         else:
-                            if not value == "-":
+                            if value != "-":
                                 cols[8] = "{};{}={}".format(cols[8], a, value)
                     line = "\t".join(cols)
             out_gff.append(line)
