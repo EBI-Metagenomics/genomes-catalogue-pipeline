@@ -11,6 +11,7 @@ from utils import download_fasta, qs50, run_request
 
 API_ENDPOINT = 'https://www.ebi.ac.uk/ena/portal/api/search'
 
+
 def main(input_file, directory, unzip, bins, ignore_metadata):
     metadata = list()
     studies = get_studies(input_file)
