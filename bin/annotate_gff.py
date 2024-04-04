@@ -394,7 +394,7 @@ if __name__ == "__main__":
         "-e",
         dest="eggnog",
         help="eggnog annotations for the cluster repo",
-        required=False,
+        required=True,
     )
     parser.add_argument(
         "-s",
