@@ -25,6 +25,12 @@ def get_iprs(ipr_annot):
         for line in f:
             cols = line.strip().split("\t")
             protein = cols[0]
+            try:
+                evalue = float(cols[8])
+            except ValueError:
+                continue
+            if evalue > 1e-10:
+                continue
             if protein not in iprs:
                 iprs[protein] = [set(), set()]
             if cols[3] == "Pfam":
@@ -46,6 +52,12 @@ def get_eggnog(eggnog_annot):
             if line.startswith("#"):
                 eggnog_fields = get_eggnog_fields(line)
             else:
+                try:
+                    evalue = float(cols[2])
+                except ValueError:
+                    continue
+                if evalue > 1e-10:
+                    continue
                 protein = cols[0]
                 eggnog = [cols[1]]
                 try:
