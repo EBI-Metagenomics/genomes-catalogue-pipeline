@@ -46,6 +46,9 @@ def main():
     complete = 0
     no_url = 0
     already_exist = 0
+    
+    if not os.path.exists(args.dir):
+        os.makedirs(args.dir)
 
     # save accessions to dictionary
     accession_dict = load_accessions(args.infile)
