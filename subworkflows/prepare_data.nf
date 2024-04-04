@@ -16,6 +16,7 @@ workflow PREPARE_DATA {
         ncbi_assemblies             // channel: path
         genomes_name_start          // val
         genomes_name_end            // val
+        preassigned_accessions      // channel: file | empty
         genomes_prefix              // val
         per_genome_category         // file | empty
         per_study_genomes_category  // file | empty
@@ -56,6 +57,7 @@ workflow PREPARE_DATA {
             FILTER_QS50.out.filtered_genomes,
             genomes_name_start,
             genomes_name_end,
+            preassigned_accessions,
             FILTER_QS50.out.filtered_csv,
             genomes_prefix
         )

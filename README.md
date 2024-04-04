@@ -100,6 +100,7 @@ nextflow run EBI-Metagenomics/genomes-pipeline -c <custom.config> -profile <prof
 --ena_genomes_checkm=<path to genomes quality data> \
 --mgyg_start=0 \
 --mgyg_end=10 \
+--preassigned_accessions=<path to file with preassigned accessions if using>
 --catalogue_name=zebrafish-faecal \
 --catalogue_version="1.0" \
 --ftp_name="zebrafish-faecal" \

@@ -12,12 +12,16 @@ ch_mgyg_index_end = channel.value(params.mgyg_end)
 
 ch_genomes_information = file("NO_FILE_GENOME_CAT")
 ch_study_genomes_information = file("NO_FILE_STUDY_CAT")
+ch_preassigned_accessions = file("NO_FILE_PREASSIGNED_ACCS")
 
 if (params.genomes_information) {
     ch_genomes_information = file(params.genomes_information)
 }
 if (params.study_genomes_information) {
     ch_study_genomes_information = file(params.study_genomes_information)
+}
+if (params.preassigned_accessions) {
+    ch_preassigned_accessions = file(params.preassigned_accessions)
 }
 
 // TODO: Add help message with parameters
@@ -93,6 +97,7 @@ workflow GAP {
         channel.empty(), // ncbi, we are ignoring this ATM
         ch_mgyg_index_start,
         ch_mgyg_index_end,
+        ch_preassigned_accessions,
         ch_genome_prefix,
         ch_genomes_information,
         ch_study_genomes_information
