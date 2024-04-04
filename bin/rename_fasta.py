@@ -49,7 +49,9 @@ def main(
 ):
     names = dict()  # matches old and new names
     if map_file:
-        names = read_map_file(map_file)
+        preassigned_names = read_map_file(map_file)
+    else:
+        preassigned_names = dict()
     files = os.listdir(fasta_file_directory)
     logging.info("Renaming files...")
     if cluster_file:
@@ -57,19 +59,21 @@ def main(
             cluster_file
         ), "Provided cluster information file does not exist"
     for file in files:
-        if file.endswith(("fa", "fasta")) and not file.startswith(prefix):
+        if file.endswith(("fa", "fasta", "fna")) and not file.startswith(prefix):
             if max_number and index > max_number:
                 print("index is bigger than requested number in catalogue")
                 exit(1)
-            if not map_file:
+            if file not in preassigned_names:
                 accession = "{}{}{}".format(
                     prefix, "0" * (num_digits - len(str(index))), str(index)
                 )
                 new_name = "{}.fa".format(accession)
                 names[file] = new_name
+                index += 1
             else:
-                accession = names[file].split(".fa")[0]
-                new_name = names[file]
+                accession = preassigned_names[file]
+                new_name = "{}.fa".format(preassigned_names[file])
+                names[file] = new_name
             if outdir:
                 rename_to_outdir(
                     file,
@@ -86,7 +90,6 @@ def main(
                     os.remove(os.path.join(fasta_file_directory, file))
                 except OSError as e:
                     logging.error("Unable to delete {}: {}".format(file, e))
-            index += 1
     logging.info("Printing names to table...")
     print_table(names, table_file)
     if cluster_file:
@@ -244,7 +247,8 @@ def parse_args():
         "--csv",
         dest="csv",
         required=False,
-        help="CSV file with completeness and contamination",
+        help="CSV file with completeness and contamination. If provided, the genomes inside the file "
+             "will be renamed using their new filenames and saved into a new file.",
     )
 
     parser.add_argument(
@@ -252,8 +256,14 @@ def parse_args():
         dest="map_file",
         required=False,
         help=(
-            "If genomes names were already assigned, mapping file has <old name - new"
-            " name> info"
+            "If genome names were already decided, provide a tsv mapping file that has two columns: "
+            "current file name (with extension) and the full accession (without extension) that should "
+            "be assigned. For example, 'my_beautiful_fasta.fa\tMGYG1234567'. The file does not need "
+            "to include every single genome, it can include only a subset. The rest will be assigned new "
+            "accessions automatically. "
+            "IMPORTANT: make sure that if only a subset of genomes is present "
+            "in the mapping file, the range of new names for the rest of the genomes does not overlap "
+            "with the names in the mapping file to avoid assigning the same name to multiple genomes."
         ),
     )
     return parser.parse_args()
