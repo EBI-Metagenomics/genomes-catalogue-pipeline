@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
+import http.client
 import os
 import urllib.request as request
 import urllib.parse
@@ -54,11 +55,15 @@ def download_fasta(url, folder, accession, unzip, checksum):
                     with open(outpath, 'wb') as out:
                         out.write(content)
                 break
-            except (error.HTTPError, error.URLError) as e:
-                print('Could not retrieve URL', url, ' Reason:', e.reason)
+            except (error.HTTPError, error.URLError, http.client.IncompleteRead) as e:
+                print('Could not retrieve URL', url, ' Reason:',
+                      "Incomplete read" if isinstance(e, http.client.IncompleteRead) else e.reason)
                 print('Retrying...')
                 attempt += 1
                 time.sleep(sleep_time)
+                if isinstance(e, http.client.IncompleteRead) and os.path.isfile(outpath):
+                    print("Removing file")
+                    os.remove(outpath)
         if not os.path.exists(outpath) or os.path.getsize(outpath) == 0:
             return None
         else:
