@@ -46,7 +46,7 @@ def process_metadata_table(metadata_table):
     study_list = set()
     version = ""
     catalog_name = ""
-    archaea = False
+    archaea = 0
     with open(metadata_table, "r") as meta_in:
         for line in meta_in:
             if not line.startswith("Genome"):
@@ -58,9 +58,9 @@ def process_metadata_table(metadata_table):
                     subfields = fields[19].strip().split("/")
                     catalog_name = subfields[7]
                     version = subfields[8]
-                if not archaea:
-                    if "d__Archaea" in line:
-                        archaea = True
+                # count representatives that are archaea
+                if "d__Archaea" in line and fields[13] == fields[0]:
+                    archaea += 1
     total_genomes = "{:,}".format(total_genomes)
     num_reps = "{:,}".format(len(reps))
     return total_genomes, num_reps, study_list, version, catalog_name, archaea
@@ -80,7 +80,7 @@ def print_file(
     archaea,
     xlarge
 ):
-    if archaea:
+    if archaea > 2:
         phylo_text = """
     * ar53_iqtree.nwk : A phylogenetic tree for archaeal genomes in Newick format.
     * bac120_iqtree.nwk : A phylogenetic tree for bacterial genomes in Newick format.
