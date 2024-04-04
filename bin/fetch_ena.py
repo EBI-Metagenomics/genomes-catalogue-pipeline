@@ -1,6 +1,22 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
+# This file is part of MGnify genome analysis pipeline.
+#
+# MGnify genome analysis pipeline is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# MGnify genome analysis pipeline is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
+
+
 import argparse
 import logging
 import os
@@ -9,21 +25,22 @@ import sys
 from get_ENA_metadata import get_contamination_completeness
 from utils import download_fasta, qs50, run_request
 
-
-logging.basicConfig(level=logging.INFO)
-
 API_ENDPOINT = 'https://www.ebi.ac.uk/ena/portal/api/search'
 
 
 def main(input_file, directory, unzip, bins, ignore_metadata):
     metadata = list()
     studies = get_studies(input_file)
+    logging.debug(f"Got {len(studies)} studies")
     if not studies:
         logging.error('There are no studies to fetch')
         sys.exit(1)
     else:
         for study_acc in studies:
-            metadata.extend(load_study(study_acc, directory, unzip, bins, ignore_metadata))
+            logging.debug(f"Processing {study_acc}")
+            number_of_mags, study_metadata = load_study(study_acc, directory, unzip, bins, ignore_metadata)
+            metadata.extend(study_metadata)
+            logging.debug(f"Found {str(number_of_mags)} MAGs in study {study_acc}")
     if not os.path.exists(directory):
         os.makedirs(directory)
     if not ignore_metadata:
@@ -68,6 +85,8 @@ def get_biome_studies(biomes):
 
 
 def load_study(acc, directory, unzip, bins, ignore_metadata):
+    already_fetched = [i.split('.')[0] for i in os.listdir(directory)]
+    number_of_mags = 0
     if bins:
         query = {
             'result': 'analysis',
@@ -93,6 +112,7 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
     study_metadata = list()
     for line in r.text.splitlines():
         if not line.startswith(('accession', 'analysis_accession')):
+            number_of_mags += 1
             contamination, completeness = get_contamination_completeness(line.strip().split('\t')[sample_field])
             if not ignore_metadata:
                 if not all([contamination, completeness]):
@@ -111,13 +131,18 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
                     mag_acc = line.strip().split('\t')[0]
                 else:
                     mag_acc = ftp_location.split('/')[-1].split('.')[0]
-                saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
-                if not saved_fasta:
-                    logging.error('Unable to fetch', mag_acc)
+                if mag_acc in already_fetched:
+                    logging.info(f'Skipping MAG {mag_acc} because it already exists')
+                    # saving metadata for that MAG
+                    study_metadata.append('{},{},{}'.format('{}.fa.gz'.format(mag_acc), completeness, contamination))
                 else:
-                    study_metadata.append('{},{},{}'.format(saved_fasta, completeness, contamination))
-                    logging.info('Successfully fetched {}'.format(mag_acc))
-    return study_metadata
+                    saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
+                    if not saved_fasta:
+                        logging.error('Unable to fetch', mag_acc)
+                    else:
+                        study_metadata.append('{},{},{}'.format(saved_fasta, completeness, contamination))
+                        logging.info('Successfully fetched {}'.format(mag_acc))
+    return number_of_mags, study_metadata
 
 
 def print_metadata(data, directory):
@@ -131,8 +156,8 @@ def print_metadata(data, directory):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Takes a list of ENA project accessions and fetches MAGs from ENA.'
-                                                 'The script also create a metadata file (genome_stats.txt) in the same'
-                                                 'directory')
+                                                 'The script also creates a metadata file (genome_stats.txt) in the '
+                                                 'same directory')
     parser.add_argument('-i', '--infile', required=True,
                         help='A file containing a list of ENA project accessions, one accession per line, or'
                              'a list of biomes, one biome per line, to fetch all MAGs belonging to the '
@@ -147,9 +172,15 @@ def parse_args():
     parser.add_argument('--ignore-metadata', action='store_true',
                         help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
                              'provided in the input file. Default = False')
+    parser.add_argument('--debug', action='store_true', help='set logging to DEBUG')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+        
     main(args.infile, args.dir, args.unzip, args.bins, args.ignore_metadata)
