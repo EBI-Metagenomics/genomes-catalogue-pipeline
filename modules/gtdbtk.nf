@@ -43,7 +43,19 @@ process GTDBTK {
     --extension fna \
     --skip_ani_screen \
     --out_dir gtdbtk_results
-
+    
+    process_gtdb_unknowns.py -i gtdbtk_results -p processed
+    
+    if [ -e gtdbtk_results/classify/processed_gtdbtk.bac120.summary.tsv ]
+    then
+        mv gtdbtk_results/classify/processed_gtdbtk.bac120.summary.tsv gtdbtk_results/classify/gtdbtk.bac120.summary.tsv
+    fi
+    
+    if [ -e gtdbtk_results/classify/processed_gtdbtk.ar53.summary.tsv ]
+    then
+        mv gtdbtk_results/classify/processed_gtdbtk.ar53.summary.tsv gtdbtk_results/classify/gtdbtk.ar53.summary.tsv
+    fi
+    
     tar -czf gtdbtk_results.tar.gz gtdbtk_results
     """
 
