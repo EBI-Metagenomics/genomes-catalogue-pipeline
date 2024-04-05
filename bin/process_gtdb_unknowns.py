@@ -80,7 +80,7 @@ def parse_args():
         ),
     )
     parser.add_argument(
-        "-o",
+        "-p",
         "--output-prefix",
         help=(
             "Prefix to assign to the output files."
