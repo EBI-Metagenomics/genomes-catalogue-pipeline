@@ -44,6 +44,8 @@ def get_contamination_completeness(sample_id):
                 )
         else:
             pass
+    contamination = contamination.replace(" ", "").replace("%", "")
+    completeness = completeness.replace(" ", "").replace("%", "")
     return contamination, completeness
 
 
