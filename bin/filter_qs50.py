@@ -23,7 +23,7 @@ import shutil
 
 
 def main(input_folder, checkm, output, output_csv, remove, filter):
-    genome_list = [_ for _ in os.listdir(input_folder) if _.endswith(("fa", "fna"))]
+    genome_list = [_ for _ in os.listdir(input_folder) if _.endswith(("fa", "fna", "fasta"))]
     remove_list = load_checkm(checkm, genome_list, output_csv)
     print_result(remove_list, output)
     output_genomes = os.path.basename(input_folder) + '_filtered'
