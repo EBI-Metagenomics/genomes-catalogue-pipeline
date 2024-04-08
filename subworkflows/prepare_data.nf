@@ -3,7 +3,7 @@
  */
 
 include { MERGE_NCBI_ENA } from '../modules/merge_ncbi_ena'
-include { CHECKM } from '../modules/checkm'
+include { CHECKM } from '../modules/checkm2'
 include { FILTER_QS50 } from '../modules/filter_qs50'
 include { RENAME_FASTA } from '../modules/rename_fasta'
 include { GENERATE_EXTRA_WEIGHT } from '../modules/generate_extra_weight'
