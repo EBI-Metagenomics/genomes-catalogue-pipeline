@@ -3,10 +3,14 @@
      Input validation
     ~~~~~~~~~~~~~~~~~~
 */
-ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
-ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
+if (params.ena_genomes) {
+    ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
+    ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
+}
 
-ch_ncbi_genomes = channel.fromPath(params.ncbi_genomes)
+if (params.ncbi_genomes) {
+    ch_ncbi_genomes = channel.fromPath(params.ncbi_genomes, checkIfExists: true)
+}
 
 // TODO: Validate
 ch_mgyg_index_start = channel.value(params.mgyg_start)
