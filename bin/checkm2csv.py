@@ -44,15 +44,21 @@ if __name__ == "__main__":
         print("genome,completeness,contamination,strain_heterogeneity")
 
     with open(args.input, "r") as f:
-        next(f)
-        for line in f:
-            if "INFO:" in line:
-                continue
-            if "Completeness" in line and "Contamination" in line:
-                continue
-            cols = line.strip("\n").split("\t")
-            genome = cols[0]
-            complet = cols[-3]
-            cont = cols[-2]
-            strain = cols[-1]
-            print("%s.fa,%s,%s,%s" % (genome, complet, cont, strain))
+        if args.checkm2:
+            next(f)
+            for line in f:
+                genome, complet, cont = line.split("\t")[:3]
+                print("{},{},{}".format(genome, complet, cont))
+        else:
+            next(f)
+            for line in f:
+                if "INFO:" in line:
+                    continue
+                if "Completeness" in line and "Contamination" in line:
+                    continue
+                cols = line.strip("\n").split("\t")
+                genome = cols[0]
+                complet = cols[-3]
+                cont = cols[-2]
+                strain = cols[-1]
+                print("{},{},{},{}".format(genome, complet, cont, strain))

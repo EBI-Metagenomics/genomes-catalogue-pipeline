@@ -28,7 +28,7 @@ process CHECKM {
     add_extensions_to_checkm.py -i checkm_output -d ${assemblies_folder}
     
     # to csv #
-    checkm2csv.py -i checkm_output --checkm2 > checkm_quality.csv
+    checkm2csv.py -i checkm_output/quality_report.tsv --checkm2 > checkm_quality.csv
     """
 
     stub:
