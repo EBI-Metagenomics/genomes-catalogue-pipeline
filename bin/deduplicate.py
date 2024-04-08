@@ -77,8 +77,12 @@ if __name__ == "__main__":
         )
     )
     input_group = parser.add_mutually_exclusive_group()
-    input_group.add_argument("-f", "--fastas", help="The fasta files paths", nargs="+")
-    input_group.add_argument("-i", "--input-folder", help="Folder with fasta files")
+    input_group.add_argument("-f", "--fastas", help="List of fasta files paths. "
+                                                    "Use this argument when you want to specify a list of genome paths. "
+                                                    "Manually exclusive argument for -i", nargs="+")
+    input_group.add_argument("-i", "--input-folder", help="Folder with fasta files. "
+                                                          "Use this argument when you have a directory of genomes. "
+                                                          "Manually exclusive argument for -f")
     parser.add_argument(
         "-o",
         "--outdir",
