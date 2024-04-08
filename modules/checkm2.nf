@@ -20,7 +20,7 @@ process CHECKM {
     --input ${assemblies_folder} \
     -x fa \
     --output-directory checkm_output \
-    --database_path ${checkm2_db}
+    --database_path ${ch_checkm2_db}
     
     # add in extensions #
     add_extensions_to_checkm.py -i checkm_output -d ${assemblies_folder}
