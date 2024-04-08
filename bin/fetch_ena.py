@@ -124,7 +124,6 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
                 logging.info('MAG did not pass QC: {}, {}, {}'.
                              format(line.strip().split('\t')[sample_field], completeness, contamination))
             else:
-                print(line)
                 ftp_location = line.strip().split('\t')[ftp_field]
                 if not ftp_location.startswith('ftp://'):
                     ftp_location = 'ftp://' + ftp_location
