@@ -16,7 +16,6 @@
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
 
-import sys
 import argparse
 
 if __name__ == "__main__":
@@ -27,13 +26,22 @@ if __name__ == "__main__":
         "-i",
         "--input",
         dest="input",
-        help="checkm_results.tab: checkm output log",
+        help="checkm_results.tab (for CheckM) or quality_report.tsv (for CheckM2)",
         required=True,
+    )
+    parser.add_argument(
+        "--checkm2",
+        action='store_true',
+        help="Use flag if input is produced by CheckM2; default: False",
+        default=False,
     )
 
     args = parser.parse_args()
-
-    print("genome,completeness,contamination,strain_heterogeneity")
+    
+    if args.checkm2:
+        print("genome,completeness,contamination")
+    else:
+        print("genome,completeness,contamination,strain_heterogeneity")
 
     with open(args.input, "r") as f:
         next(f)
