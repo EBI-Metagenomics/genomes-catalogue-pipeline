@@ -109,7 +109,8 @@ workflow GAP {
         ch_preassigned_accessions,
         ch_genome_prefix,
         ch_genomes_information,
-        ch_study_genomes_information
+        ch_study_genomes_information,
+        ch_checkm2_db
     )
 
     // needs a more elegant solution here

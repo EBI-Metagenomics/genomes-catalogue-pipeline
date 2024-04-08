@@ -8,6 +8,7 @@ process CHECKM {
 
     input:
     path assemblies_folder
+    path ch_checkm2_db
 
     output:
     path "checkm_quality.csv", emit: checkm_csv

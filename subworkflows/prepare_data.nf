@@ -20,13 +20,15 @@ workflow PREPARE_DATA {
         genomes_prefix              // val
         per_genome_category         // file | empty
         per_study_genomes_category  // file | empty
+        ch_checkm2_db
     main:
         genomes_ch = channel.empty()
         genomes_checkm_ch = channel.empty()
 
         if (ncbi_assemblies.toList() == true && ena_assemblies.toList() == true) {
             CHECKM(
-                ncbi_assemblies
+                ncbi_assemblies,
+                ch_checkm2_db
             )
             MERGE_NCBI_ENA(
                 ena_assemblies,
