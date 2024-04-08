@@ -3,10 +3,8 @@
      Input validation
     ~~~~~~~~~~~~~~~~~~
 */
-if (params.ena_genomes) {
-    ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
-    ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
-}
+ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
+ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
 
 if (params.ncbi_genomes) {
     ch_ncbi_genomes = channel.fromPath(params.ncbi_genomes, checkIfExists: true)
@@ -105,7 +103,7 @@ workflow GAP {
     PREPARE_DATA(
         ch_ena_genomes,
         ch_ena_genomes_checkm,
-        ch_ncbi_genomes, // ncbi, we are ignoring this ATM
+        ch_ncbi_genomes,
         ch_mgyg_index_start,
         ch_mgyg_index_end,
         ch_preassigned_accessions,

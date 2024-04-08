@@ -36,7 +36,7 @@ workflow PREPARE_DATA {
             )
             // Merged genomes folders and checkm values //
             genomes_ch = MERGE_NCBI_ENA.out.genomes
-            genomes_checkm_ch = CHECKM.out.checkm_csv
+            genomes_checkm_ch = MERGE_NCBI_ENA.out.merged_checkm_csv
         } else if (ncbi_assemblies.toList() == true) {
             CHECKM(
                 ncbi_assemblies

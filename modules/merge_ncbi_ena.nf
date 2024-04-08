@@ -12,7 +12,7 @@ process MERGE_NCBI_ENA {
 
     output:
     path "merged_genomes", emit: genomes
-    path "merged_genomes.csv", emit: merged_checm_csv
+    path "merged_genomes.csv", emit: merged_checkm_csv
 
     script:
     """
