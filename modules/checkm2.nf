@@ -15,6 +15,8 @@ process CHECKM {
 
     script:
     """
+    change_extensions.py -i ${assemblies_folder}
+    
     checkm2 predict \
     --threads ${task.cpus} \
     --input ${assemblies_folder} \
