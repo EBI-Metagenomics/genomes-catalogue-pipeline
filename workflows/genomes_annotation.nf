@@ -11,6 +11,9 @@ if (params.ena_genomes) {
 if (params.ncbi_genomes) {
     ch_ncbi_genomes = channel.fromPath(params.ncbi_genomes, checkIfExists: true)
 }
+else {
+    ch_ncbi_genomes = channel.empty()
+}
 
 // TODO: Validate
 ch_mgyg_index_start = channel.value(params.mgyg_start)
