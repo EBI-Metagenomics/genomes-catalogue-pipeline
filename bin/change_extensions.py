@@ -39,7 +39,7 @@ def change_file_extensions(directory_path):
 def main():
     parser = argparse.ArgumentParser(description='The script changes extensions of genomes in the '
                                                  'NCBI folder to .fa.')
-    parser.add_argument('--i', dest='input_folder', required=True, help='Input folder name where genomes are located.')
+    parser.add_argument('-i', dest='input_folder', required=True, help='Input folder name where genomes are located.')
 
     args = parser.parse_args()
     input_folder = args.input_folder
