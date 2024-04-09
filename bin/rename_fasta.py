@@ -31,6 +31,7 @@ def read_map_file(map_file):
         for line in file_in:
             line = line.strip().split("\t")
             mapping[line[0]] = line[1]
+    assert len(list(mapping.values())) == len(set(mapping.values())), "Repeat names in file {}".format(map_file)
     return mapping
 
 
