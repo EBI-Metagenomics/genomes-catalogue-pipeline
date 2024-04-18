@@ -118,16 +118,13 @@ def get_metadata(acc):
     project = "N/A"
     biosample = "N/A"
     if acc.startswith("ERZ"):
-        try:
-            json_data_erz = load_xml(acc)
-            biosample = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["SAMPLE_REF"]["IDENTIFIERS"]["EXTERNAL_ID"]["#text"]
-            project = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["STUDY_REF"]["IDENTIFIERS"]["SECONDARY_ID"]
-        except:
-            logging.info("Missing metadata in ENA XML for sample {}. Using API instead.".format(acc))
-            try:
-                biosample, project = ena_api_request(acc)
-            except:
-                logging.exception("Could not obtain biosample and project information for {}".format(acc))
+        json_data_erz = load_xml(acc)
+        biosample = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["SAMPLE_REF"][
+            "IDENTIFIERS"
+        ]["EXTERNAL_ID"]["#text"]
+        project = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["STUDY_REF"]["IDENTIFIERS"][
+            "SECONDARY_ID"
+        ]
     elif acc.startswith("GUT"):
         pass
     elif acc.startswith("GCA"):
@@ -158,7 +155,7 @@ def get_metadata(acc):
             json_data_sample = load_xml(biosample)
             try:
                 converted_sample = json_data_sample["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"][
-                "PRIMARY_ID"
+                    "PRIMARY_ID"
                 ]
             except:
                 converted_sample = biosample
@@ -168,7 +165,7 @@ def get_metadata(acc):
             json_data_project = load_xml(project)
             try:
                 converted_project = json_data_project["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"][
-                "SECONDARY_ID"
+                    "SECONDARY_ID"
                 ]
             except:
                 converted_project = project
@@ -195,7 +192,7 @@ def ena_api_request(acc):
         logging.error("Cannot obtain metadata from ENA")
         sys.exit()
     return biosample, project
-    
+
 
 @retry(tries=5, delay=10, backoff=1.5)
 def run_request(acc, url):
