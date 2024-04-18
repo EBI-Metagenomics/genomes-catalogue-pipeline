@@ -118,13 +118,16 @@ def get_metadata(acc):
     project = "N/A"
     biosample = "N/A"
     if acc.startswith("ERZ"):
-        json_data_erz = load_xml(acc)
-        biosample = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["SAMPLE_REF"][
-            "IDENTIFIERS"
-        ]["EXTERNAL_ID"]["#text"]
-        project = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["STUDY_REF"]["IDENTIFIERS"][
-            "SECONDARY_ID"
-        ]
+        try:
+            json_data_erz = load_xml(acc)
+            biosample = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["SAMPLE_REF"]["IDENTIFIERS"]["EXTERNAL_ID"]["#text"]
+            project = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["STUDY_REF"]["IDENTIFIERS"]["SECONDARY_ID"]
+        except:
+            logging.info("Missing metadata in ENA XML for sample {}. Using API instead.".format(acc))
+            try:
+                biosample, project = ena_api_request(acc)
+            except:
+                logging.exception("Could not obtain biosample and project information for {}".format(acc))
     elif acc.startswith("GUT"):
         pass
     elif acc.startswith("GCA"):
