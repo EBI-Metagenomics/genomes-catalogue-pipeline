@@ -109,7 +109,7 @@ def load_xml(sample_id):
             json_data = json.loads(json_dump)
             return json_data
         else:
-            print("Could not retrieve xml for sample", sample_id)
+            print("Could not retrieve xml for accession", sample_id)
             print(r.text)
             return None
 
