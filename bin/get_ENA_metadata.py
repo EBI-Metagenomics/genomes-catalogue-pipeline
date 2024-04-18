@@ -21,6 +21,7 @@ import json
 
 import requests
 import xmltodict
+import time
 
 
 def get_contamination_completeness(sample_id):
@@ -86,17 +87,31 @@ def get_gca_location(sample_id):
 
 
 def load_xml(sample_id):
+    retry_attempts = 5
+    retry_delay_min = 10
     xml_url = "https://www.ebi.ac.uk/ena/browser/api/xml/{}".format(sample_id)
-    r = requests.get(xml_url)
-    if r.ok:
-        data_dict = xmltodict.parse(r.content)
-        json_dump = json.dumps(data_dict)
-        json_data = json.loads(json_dump)
-        return json_data
-    else:
-        print("Could not retrieve xml for sample", sample_id)
-        print(r.text)
-        return None
+
+    for attempt in range(1, retry_attempts + 1):
+        r = requests.get(xml_url)
+        if not r.ok:
+            retry_delay = retry_delay_min * attempt
+            if r.status_code == 500:
+                print(f"Received HTTP 500 error for sample {sample_id}. Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+                continue
+            else:
+                print(f"Unable to fetch xml for sample {sample_id}. Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+                continue
+        if r.ok:
+            data_dict = xmltodict.parse(r.content)
+            json_dump = json.dumps(data_dict)
+            json_data = json.loads(json_dump)
+            return json_data
+        else:
+            print("Could not retrieve xml for sample", sample_id)
+            print(r.text)
+            return None
 
 
 def load_gca_json(sample_id):
