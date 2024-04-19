@@ -73,7 +73,7 @@ def get_location_from_id(id, db):
         data_json = json.loads(data_raw)
         try:
             geographic_location = \
-                data_json['result']['39283299']['sampledata'].split('display_name="geographic location">')[1].split(
+                data_json['result'][id]['sampledata'].split('display_name="geographic location">')[1].split(
                     '</Attribute>')[0]
             return geographic_location
         except:
@@ -86,3 +86,6 @@ def get_sample_location_from_ncbi(accession):
     location = get_location_from_id(id, "biosample")
     return location
 
+acc = "SAMN39283356"
+loc = get_sample_location_from_ncbi(acc)
+print(loc)
