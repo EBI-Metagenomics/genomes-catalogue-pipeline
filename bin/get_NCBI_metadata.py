@@ -85,7 +85,3 @@ def get_sample_location_from_ncbi(accession):
     id = get_ncbi_api_id(accession, "biosample")
     location = get_location_from_id(id, "biosample")
     return location
-
-acc = "SAMN39283356"
-loc = get_sample_location_from_ncbi(acc)
-print(loc)
