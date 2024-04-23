@@ -193,21 +193,34 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
         ch_gtdb_db
     )
-
-    /* IQTree need at least 3 sequences. */
-    gtdbtk_user_msa_bac120 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.first {
-        file(it).countFasta() > 2
+    
+    /* 
+    IQTree need at least 3 sequences, but it's too slow for more than 2000 sequences so we use FastTree in that case
+    */
+    def treeCreationCriteria = treeCriteria {
+        iqtree: file(it).countFasta() > 2 && file(it).countFasta() < 2000
+        fasttree: file(it).countFasta() >= 2000
     }
+
+    GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
+    
     IQTREE_BAC(
-        gtdbtk_user_msa_bac120,
+        gtdbtk_user_msa_bac120.iqtree,
         channel.value("bac120")
     )
-    /* IQTree need at least 3 sequences. */
-    gtdbtk_user_msa_ar53 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53.first {
-        file(it).countFasta() > 2
-    }
+    FASTTREE_BAC(
+        gtdbtk_user_msa_bac120.fasttree,
+        channel.value("bac120")
+    )
+
+    GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
+
     IQTREE_AR(
-        gtdbtk_user_msa_ar53,
+        gtdbtk_user_msa_ar53.iqtree,
+        channel.value("ar53")
+    )
+    FASTTREE_AR(
+        gtdbtk_user_msa_ar53.fasttree,
         channel.value("ar53")
     )
 
