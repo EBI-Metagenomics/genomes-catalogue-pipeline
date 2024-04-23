@@ -197,7 +197,7 @@ workflow GAP {
     /*
     IQTree need at least 3 sequences, but it's too slow for more than 2000 sequences so we use FastTree in that case
     */
-    def treeCreationCriteria = treeCriteria {
+    def treeCreationCriteria = branchCriteria {
         iqtree: file(it).countFasta() > 2 && file(it).countFasta() < 2000
         fasttree: file(it).countFasta() >= 2000
     }
