@@ -24,8 +24,8 @@ import time
 
 NCBI_SEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 NCBI_SUMMARY_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
-RETRY_ATTEMPTS = 5
-RETRY_DELAY_MIN = 10
+RETRY_ATTEMPTS = 3
+RETRY_DELAY_MIN = 15
 
 
 def get_json(url):

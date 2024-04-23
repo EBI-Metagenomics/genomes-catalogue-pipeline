@@ -87,8 +87,8 @@ def get_gca_location(sample_id):
 
 
 def load_xml(sample_id):
-    retry_attempts = 5
-    retry_delay_min = 10
+    retry_attempts = 3
+    retry_delay_min = 15
     xml_url = "https://www.ebi.ac.uk/ena/browser/api/xml/{}".format(sample_id)
 
     for attempt in range(1, retry_attempts + 1):
