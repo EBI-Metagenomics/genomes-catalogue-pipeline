@@ -50,8 +50,8 @@ include { ANNONTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
 include { IQTREE as IQTREE_AR } from '../modules/iqtree'
-include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { FASTTREE as FASTTREE_BAC } from '../modules/fasttree'
+include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
 include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
@@ -193,17 +193,17 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
         ch_gtdb_db
     )
-    
-    /* 
+
+    /*
     IQTree need at least 3 sequences, but it's too slow for more than 2000 sequences so we use FastTree in that case
     */
-    def treeCreationCriteria = treeCriteria {
+    def treeCreationCriteria = branchCriteria {
         iqtree: file(it).countFasta() > 2 && file(it).countFasta() < 2000
         fasttree: file(it).countFasta() >= 2000
     }
 
     GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
-    
+
     IQTREE_BAC(
         gtdbtk_user_msa_bac120.iqtree,
         channel.value("bac120")
