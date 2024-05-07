@@ -25,7 +25,7 @@ workflow PREPARE_DATA {
         genomes_ch = channel.empty()
         genomes_checkm_ch = channel.empty()
 
-        if (ncbi_assemblies.toList() && ena_assemblies.toList()) {
+        if ( ncbi_assemblies && ena_assemblies ) {
             CHECKM(
                 ncbi_assemblies,
                 ch_checkm2_db
@@ -39,13 +39,13 @@ workflow PREPARE_DATA {
             // Merged genomes folders and checkm values //
             genomes_ch = MERGE_NCBI_ENA.out.genomes
             genomes_checkm_ch = MERGE_NCBI_ENA.out.merged_checkm_csv
-        } else if (ncbi_assemblies.toList()) {
+        } else if ( ncbi_assemblies ) {
             CHECKM(
                 ncbi_assemblies
             )
             genomes_ch = ncbi_assemblies
             genomes_checkm_ch = CHECKM.out.checkm_csv
-        } else if (ena_assemblies) {
+        } else if ( ena_assemblies ) {
             genomes_ch = ena_assemblies
             genomes_checkm_ch = ena_genomes_checkm
         }
