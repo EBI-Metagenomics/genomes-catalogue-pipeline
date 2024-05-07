@@ -95,7 +95,7 @@ def initialize_weights_dict(genomes_dir, name_mapping=None):
         # Get the new name from the mapping, otherwise keep the current one
         genome = name_mapping_dict.get(genome_file, genome_file)
         print(f"{genome_file} -> {genome}")
-        if genome.strip().split(".")[-1] not in ["fa", "fasta"]:
+        if genome.strip().split(".")[-1] not in ["fa", "fasta", "fna"]:
             logging.info(f"Not analyzing {genome} - not a fasta file.")
         else:
             if not extension:
