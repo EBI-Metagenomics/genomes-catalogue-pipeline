@@ -1,4 +1,4 @@
-process CHECKM {
+process CHECKM2 {
 
     publishDir "${params.outdir}/checkm", mode: "copy"
 
