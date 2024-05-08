@@ -38,7 +38,7 @@ def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
     # If a name mapping file is provided, the code will use the names on the mapping file
     # as the expectation is that the genomes_dir will contain the MAGs/Isolates under a
     # different name space, but all the other files will use the names in the mapping file
-    extra_weights, extension, name_mapping_dict = initialize_weights_dict(
+    extra_weights, extension, name_mapping_dict, original_extensions = initialize_weights_dict(
         genomes_dir, name_mapping=name_mapping
     )
 
@@ -69,7 +69,7 @@ def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
 
     extra_weights = check_table(extra_weights)
 
-    print_results(extra_weights, outfile, name_mapping_dict=name_mapping_dict)
+    print_results(extra_weights, outfile, original_extensions, name_mapping_dict=name_mapping_dict)
 
 
 def initialize_weights_dict(genomes_dir, name_mapping=None):
@@ -84,6 +84,7 @@ def initialize_weights_dict(genomes_dir, name_mapping=None):
     extra_weights = {}
     genomes_dir_contents = os.listdir(genomes_dir)
     extension = ""
+    original_extensions = dict()
 
     name_mapping_dict = {}
     if name_mapping:
@@ -102,8 +103,11 @@ def initialize_weights_dict(genomes_dir, name_mapping=None):
             if not extension:
                 extension = genome.strip().split(".")[-1]
             # Add to result dictionary #
-            extra_weights[os.path.splitext(genome)[0]] = ""
-    return extra_weights, extension, name_mapping_dict
+            genome_base_name, ext = os.path.splitext(genome)
+            extra_weights[genome_base_name] = ""
+            original_extensions[genome_base_name] = ext
+            
+    return extra_weights, extension, name_mapping_dict, original_extensions
 
 
 def add_study_info(study_info_file, extra_weights):
@@ -277,12 +281,16 @@ def check_table(extra_weights):
     return extra_weights
 
 
-def print_results(extra_weights, outfile, name_mapping_dict):
+def print_results(extra_weights, outfile, original_extensions, name_mapping_dict):
     """Generate the result tsv file."""
     with open(outfile, "w") as table_out:
         table_writer = csv.writer(table_out, delimiter="\t")
         for genome_name, weight in extra_weights.items():
             genome_name = next((key for key, value in name_mapping_dict.items() if value == genome_name), genome_name)
+            if not any(genome_name.endswith(ext) for ext in [".fa", ".fasta", ".fna"]):
+                ext = original_extensions.get(genome_name, "")
+                if ext:
+                    genome_name = "{}{}".format(genome_name, ext)
             table_writer.writerow([genome_name, weight])
 
 
