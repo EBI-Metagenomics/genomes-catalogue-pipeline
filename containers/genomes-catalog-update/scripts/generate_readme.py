@@ -95,11 +95,16 @@ def print_file(
     * ar53_{tree_tool_ar}.nwk : A phylogenetic tree for archaeal genomes in Newick format.
     * bac120_{tree_tool_bac}.nwk : A phylogenetic tree for bacterial genomes in Newick format.
     * ar53_alignment.faa.gz : A multiple sequence alignment for archaeal genomes.
-    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes."""
+    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes.""".format(
+            tree_tool_ar=tree_tool_ar,
+            tree_tool_bac=tree_tool_bac
+        )
     else:
         phylo_text = """
     * bac120_{tree_tool_bac}.nwk : A phylogenetic tree for bacterial genomes in Newick format.
-    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes. """
+    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes. """.format(
+            tree_tool_bac=tree_tool_bac
+        )
     if xlarge:
         xlarge_note = """
 * Due to the size of this catalogue, the clustering process was performed in two phases. First, the entire genome set \
@@ -179,8 +184,6 @@ Website URL: {url}
         - protein_catalogue-90_eggNOG.tsv : eggNOG annotation results of the protein catalogue.
         - protein_catalogue-90_InterProScan.tsv : InterProScan annotation results of the protein catalogue.
     """.format(
-        tree_tool_ar=tree_tool_ar,
-        tree_tool_bac=tree_tool_bac,
         version=version,
         url=cat_url,
         num_genomes=num_genomes,
