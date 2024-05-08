@@ -33,7 +33,7 @@ workflow PREPARE_DATA {
             MERGE_NCBI_ENA(
                 ena_assemblies,
                 ncbi_assemblies,
-                CHECKM.out.checkm_csv,
+                CHECKM2.out.checkm_csv,
                 ena_genomes_checkm
             )
             // Merged genomes folders and checkm values //
