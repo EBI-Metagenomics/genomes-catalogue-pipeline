@@ -23,11 +23,11 @@ import pandas as pd
 import re
 import sys
 
-import requests
 from retry import retry
 
 from assembly_stats import run_assembly_stats
 from get_ENA_metadata import get_location, load_xml, get_gca_location
+from get_NCBI_metadata import *
 
 logging.basicConfig(level=logging.INFO)
 
@@ -45,6 +45,7 @@ def main(
     ftp_name,
     ftp_version,
     gunc_failed,
+    disable_ncbi_lookup,
 ):
     # table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50',	'GC_content',
     #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
@@ -63,7 +64,7 @@ def main(
     df, reps = add_species_rep(df, clusters_file)
     df = add_taxonomy(df, taxonomy_file, genome_list, reps)
     logging.info("Added species reps and taxonomy")
-    df = add_sample_project_loc(df, original_accessions, geofile)
+    df = add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup)
     logging.info("Added locations")
     df = add_ftp(df, genome_list, ftp_name, ftp_version, reps)
     df.set_index("Genome", inplace=True)
@@ -84,13 +85,13 @@ def add_ftp(df, genome_list, catalog_ftp_name, catalog_version, species_reps):
     return df
 
 
-def add_sample_project_loc(df, original_accessions, geofile):
+def add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup):
     countries_continents = load_geography(geofile)
     metadata = dict()
     for col_name in ["Sample_accession", "Study_accession", "Country", "Continent"]:
         metadata.setdefault(col_name, dict())
     for new_acc, original_acc in original_accessions.items():
-        sample, project, loc = get_metadata(original_acc)
+        sample, project, loc = get_metadata(original_acc, disable_ncbi_lookup)
         metadata["Sample_accession"][new_acc] = sample
         metadata["Study_accession"][new_acc] = project
         metadata["Country"][new_acc] = loc
@@ -113,7 +114,8 @@ def load_geography(geofile):
     return geography
 
 
-def get_metadata(acc):
+def get_metadata(acc, disable_ncbi_lookup):
+    warnings_out = open("warnings.txt", "w")
     location = None
     project = "N/A"
     biosample = "N/A"
@@ -144,7 +146,24 @@ def get_metadata(acc):
         if acc.startswith("GCA"):
             location = get_gca_location(biosample)
         else:
-            location = get_location(biosample)
+            try:
+                location = get_location(biosample)
+            except:
+                if not disable_ncbi_lookup:
+                    logging.info(
+                        "Unable to get location from ENA for sample {} which is unexpected. Trying NCBI.".format(biosample))
+                    warnings_out.write("Had to get location from NCBI for sample {}".format(biosample))
+                    location = get_sample_location_from_ncbi(biosample)
+                    logging.error(
+                        "MAJOR WARNING: had to get location for sample {} from NCBI. Location acquired: {}".format(
+                            biosample,
+                            location))
+                else:
+                    logging.warning(
+                        "Unable to obtain location for sample {}, which is unexpected. Unable to look up the location "
+                        "in NCBI because the --disable-ncbi-lookup flag is used. Returning 'not provided'".format(
+                            biosample))
+                    location = "not provided"
     if not location:
         logging.warning("Unable to obtain location for sample {}".format(biosample))
         location = "not provided"
@@ -155,7 +174,7 @@ def get_metadata(acc):
             json_data_sample = load_xml(biosample)
             try:
                 converted_sample = json_data_sample["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"][
-                "PRIMARY_ID"
+                    "PRIMARY_ID"
                 ]
             except:
                 converted_sample = biosample
@@ -165,7 +184,7 @@ def get_metadata(acc):
             json_data_project = load_xml(project)
             try:
                 converted_project = json_data_project["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"][
-                "SECONDARY_ID"
+                    "SECONDARY_ID"
                 ]
             except:
                 converted_project = project
@@ -173,6 +192,7 @@ def get_metadata(acc):
         converted_sample = "FILL"
         converted_project = "FILL"
         location = "FILL"
+    warnings_out.close()
     return converted_sample, converted_project, location
 
 
@@ -192,7 +212,7 @@ def ena_api_request(acc):
         logging.error("Cannot obtain metadata from ENA")
         sys.exit()
     return biosample, project
-    
+
 
 @retry(tries=5, delay=10, backoff=1.5)
 def run_request(acc, url):
@@ -442,6 +462,11 @@ def parse_args():
         required=True,
         help="Catalog version for the ftp (for example, v1.0",
     )
+    parser.add_argument(
+        "--disable-ncbi-lookup",
+        action='store_true',
+        help="Use this flag not to use NCBI as the fallback source of sample location. Default: False",
+    )
     return parser.parse_args()
 
 
@@ -460,4 +485,5 @@ if __name__ == "__main__":
         args.ftp_name,
         args.ftp_version,
         args.gunc_failed,
+        args.disable_ncbi_lookup,
     )
