@@ -3,7 +3,7 @@
  */
 
 include { MERGE_NCBI_ENA } from '../modules/merge_ncbi_ena'
-include { CHECKM } from '../modules/checkm'
+include { CHECKM2 } from '../modules/checkm2'
 include { FILTER_QS50 } from '../modules/filter_qs50'
 include { RENAME_FASTA } from '../modules/rename_fasta'
 include { GENERATE_EXTRA_WEIGHT } from '../modules/generate_extra_weight'
@@ -20,30 +20,32 @@ workflow PREPARE_DATA {
         genomes_prefix              // val
         per_genome_category         // file | empty
         per_study_genomes_category  // file | empty
+        ch_checkm2_db
     main:
         genomes_ch = channel.empty()
         genomes_checkm_ch = channel.empty()
 
-        if (ncbi_assemblies.toList() == true && ena_assemblies.toList() == true) {
-            CHECKM(
-                ncbi_assemblies
+        if ( ncbi_assemblies && ena_assemblies ) {
+            CHECKM2(
+                ncbi_assemblies,
+                ch_checkm2_db
             )
             MERGE_NCBI_ENA(
                 ena_assemblies,
                 ncbi_assemblies,
-                CHECKM.out.checkm_csv,
+                CHECKM2.out.checkm_csv,
                 ena_genomes_checkm
             )
             // Merged genomes folders and checkm values //
             genomes_ch = MERGE_NCBI_ENA.out.genomes
-            genomes_checkm_ch = CHECKM.out.checkm_csv
-        } else if (ncbi_assemblies.toList() == true) {
-            CHECKM(
+            genomes_checkm_ch = MERGE_NCBI_ENA.out.merged_checkm_csv
+        } else if ( ncbi_assemblies ) {
+            CHECKM2(
                 ncbi_assemblies
             )
             genomes_ch = ncbi_assemblies
             genomes_checkm_ch = CHECKM.out.checkm_csv
-        } else if (ena_assemblies) {
+        } else if ( ena_assemblies ) {
             genomes_ch = ena_assemblies
             genomes_checkm_ch = ena_genomes_checkm
         }

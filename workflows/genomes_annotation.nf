@@ -5,8 +5,12 @@
 */
 ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
 ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
+ch_ncbi_genomes = []
 
-// TODO: Validate
+if (params.ncbi_genomes) {
+    ch_ncbi_genomes = channel.fromPath(params.ncbi_genomes, checkIfExists: true)
+}
+
 ch_mgyg_index_start = channel.value(params.mgyg_start)
 ch_mgyg_index_end = channel.value(params.mgyg_end)
 
@@ -85,6 +89,8 @@ ch_ftp_version = channel.value(params.ftp_version)
 
 ch_amrfinder_plus_db = file(params.amrfinder_plus_db)
 
+ch_checkm2_db = file(params.checkm2_db)
+
 /*
     ~~~~~~~~~~~~~~~~~~
        Run workflow
@@ -96,13 +102,14 @@ workflow GAP {
     PREPARE_DATA(
         ch_ena_genomes,
         ch_ena_genomes_checkm,
-        channel.empty(), // ncbi, we are ignoring this ATM
+        ch_ncbi_genomes,
         ch_mgyg_index_start,
         ch_mgyg_index_end,
         ch_preassigned_accessions,
         ch_genome_prefix,
         ch_genomes_information,
-        ch_study_genomes_information
+        ch_study_genomes_information,
+        ch_checkm2_db
     )
 
     // needs a more elegant solution here
