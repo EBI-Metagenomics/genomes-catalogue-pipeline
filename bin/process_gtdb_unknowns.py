@@ -55,6 +55,8 @@ def process_file(input_file, prefix, input_folder):
                     new_taxonomy = "d__;p__;c__;o__;f__;g__;s__"
                 if new_taxonomy:
                     line = line.replace(taxonomy, new_taxonomy)
+                    genome = line.split("\t")[0]
+                    logging.info("Replaced taxonomy for genome {} from {} to {}".format(genome, taxonomy, new_taxonomy))
                     replacement_flag = True
                 file_out.write(line)
         if not replacement_flag:
