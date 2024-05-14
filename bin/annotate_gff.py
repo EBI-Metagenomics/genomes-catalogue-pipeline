@@ -25,6 +25,12 @@ def get_iprs(ipr_annot):
         for line in f:
             cols = line.strip().split("\t")
             protein = cols[0]
+            try:
+                evalue = float(cols[8])
+            except ValueError:
+                continue
+            if evalue > 1e-10:
+                continue
             if protein not in iprs:
                 iprs[protein] = [set(), set()]
             if cols[3] == "Pfam":
@@ -32,7 +38,8 @@ def get_iprs(ipr_annot):
                 iprs[protein][0].add(pfam)
             if len(cols) > 12:
                 ipr = cols[11]
-                iprs[protein][1].add(ipr)
+                if not ipr == "-":
+                    iprs[protein][1].add(ipr)
     return iprs
 
 
@@ -45,26 +52,37 @@ def get_eggnog(eggnog_annot):
             if line.startswith("#"):
                 eggnog_fields = get_eggnog_fields(line)
             else:
+                try:
+                    evalue = float(cols[2])
+                except ValueError:
+                    continue
+                if evalue > 1e-10:
+                    continue
                 protein = cols[0]
                 eggnog = [cols[1]]
                 try:
                     cog = cols[eggnog_fields["cog_func"]]
-                    cog = cog.split()
+                    cog = list(cog)
                     if len(cog) > 1:
                         cog = ["R"]
                 except Exception:
                     cog = ["NA"]
                 kegg = cols[eggnog_fields["KEGG_ko"]].split(",")
-                eggnogs[protein] = [eggnog, cog, kegg]
+                go = cols[eggnog_fields["GOs"]]
+                eggnogs[protein] = [eggnog, cog, kegg, go]
     return eggnogs
 
 
 def get_eggnog_fields(line):
     cols = line.strip().split("\t")
+    try:
+        index_of_go = cols.index("GOs")
+    except ValueError:
+        sys.exit("Cannot find the GO terms column.")
     if cols[8] == "KEGG_ko" and cols[15] == "CAZy":
-        eggnog_fields = {"KEGG_ko": 8, "cog_func": 20}
+        eggnog_fields = {"KEGG_ko": 8, "cog_func": 20, "GOs": index_of_go}
     elif cols[11] == "KEGG_ko" and cols[18] == "CAZy":
-        eggnog_fields = {"KEGG_ko": 11, "cog_func": 6}
+        eggnog_fields = {"KEGG_ko": 11, "cog_func": 6, "GOs": index_of_go}
     else:
         sys.exit("Cannot parse eggNOG - unexpected field order or naming")
     return eggnog_fields
@@ -224,6 +242,8 @@ def add_gff(in_gff, eggnog_file, ipr_file, sanntis_file, amr_file):
                                     added_annot[protein]["COG"] = a
                                 elif pos == 3:
                                     added_annot[protein]["KEGG"] = a
+                                elif pos == 4:
+                                    added_annot[protein]["Ontology_term"] = a
                     except Exception:
                         pass
                     try:
@@ -257,7 +277,8 @@ def add_gff(in_gff, eggnog_file, ipr_file, sanntis_file, amr_file):
                         if a == "AMR":
                             cols[8] = "{};{}".format(cols[8], value)
                         else:
-                            cols[8] = "{};{}={}".format(cols[8], a, value)
+                            if value != "-":
+                                cols[8] = "{};{}={}".format(cols[8], a, value)
                     line = "\t".join(cols)
             out_gff.append(line)
     return out_gff
@@ -376,15 +397,15 @@ if __name__ == "__main__":
         help="GFF input file",
     )
     parser.add_argument(
-        "-e",
-        dest="eggnong",
-        help="eggnog annontations for the clutser repo",
+        "-i",
+        dest="ips",
+        help="InterproScan annotations results for the cluster rep",
         required=True,
     )
     parser.add_argument(
-        "-i",
-        dest="ips",
-        help="InterproScan annontations results for the cluster rep",
+        "-e",
+        dest="eggnog",
+        help="eggnog annotations for the cluster repo",
         required=True,
     )
     parser.add_argument(
@@ -414,7 +435,7 @@ if __name__ == "__main__":
 
     extended_gff = add_gff(
         in_gff=gff,
-        eggnog_file=args.eggnong,
+        eggnog_file=args.eggnog,
         ipr_file=args.ips,
         sanntis_file=args.sanntis,
         amr_file=args.amr,

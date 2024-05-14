@@ -38,7 +38,7 @@ def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
     # If a name mapping file is provided, the code will use the names on the mapping file
     # as the expectation is that the genomes_dir will contain the MAGs/Isolates under a
     # different name space, but all the other files will use the names in the mapping file
-    extra_weights, extension, name_mapping_dict = initialize_weights_dict(
+    extra_weights, extension, name_mapping_dict, original_extensions = initialize_weights_dict(
         genomes_dir, name_mapping=name_mapping
     )
 
@@ -46,6 +46,7 @@ def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
         extra_weights = add_study_info(study_info, extra_weights)
     if genome_info:
         extra_weights = add_genome_info(genome_info, extra_weights)
+    print("Extra weights after adding weight", extra_weights)
 
     empty_ncbi_records = set()
     for record in extra_weights:
@@ -68,7 +69,7 @@ def main(genome_info, study_info, outfile, genomes_dir, name_mapping):
 
     extra_weights = check_table(extra_weights)
 
-    print_results(extra_weights, outfile, name_mapping_dict=name_mapping_dict)
+    print_results(extra_weights, outfile, original_extensions, name_mapping_dict=name_mapping_dict)
 
 
 def initialize_weights_dict(genomes_dir, name_mapping=None):
@@ -83,26 +84,30 @@ def initialize_weights_dict(genomes_dir, name_mapping=None):
     extra_weights = {}
     genomes_dir_contents = os.listdir(genomes_dir)
     extension = ""
+    original_extensions = dict()
 
     name_mapping_dict = {}
     if name_mapping:
         with open(name_mapping, "r") as nm_f:
             tsv_reader = csv.reader(nm_f, delimiter="\t")
             for old_name, new_name in tsv_reader:
-                name_mapping_dict[new_name] = old_name
+                name_mapping_dict[new_name] = os.path.splitext(old_name)[0]
 
     for genome_file in genomes_dir_contents:
         # Get the new name from the mapping, otherwise keep the current one
         genome = name_mapping_dict.get(genome_file, genome_file)
         print(f"{genome_file} -> {genome}")
-        if genome.strip().split(".")[-1] not in ["fa", "fasta"]:
+        if genome_file.strip().split(".")[-1] not in ["fa", "fasta", "fna"]:
             logging.info(f"Not analyzing {genome} - not a fasta file.")
         else:
             if not extension:
                 extension = genome.strip().split(".")[-1]
             # Add to result dictionary #
-            extra_weights[genome] = ""
-    return extra_weights, extension, name_mapping_dict
+            genome_base_name, ext = os.path.splitext(genome)
+            extra_weights[genome_base_name] = ""
+            original_extensions[genome_base_name] = ext
+            
+    return extra_weights, extension, name_mapping_dict, original_extensions
 
 
 def add_study_info(study_info_file, extra_weights):
@@ -175,7 +180,7 @@ def run_ena_request(study):
     }
     r = run_request(query, ENA_ENDPOINT)
     return r.content.decode()
-    
+
 
 def run_ncbi_request(study):
     query = {
@@ -206,8 +211,9 @@ def add_genome_info(genome_info_file, extra_weights):
         tsv_reader = csv.reader(file_in, delimiter="\t")
         for genome, genome_type in tsv_reader:
             weight = assign_weight(genome_type)
-            if genome in extra_weights:
-                extra_weights[genome] = weight
+            genome_base_name = os.path.splitext(genome)[0]
+            if genome_base_name in extra_weights:
+                extra_weights[genome_base_name] = weight
             else:
                 logging.warning(
                     "Extra weight information for genome {} was provided but genome is"
@@ -275,12 +281,16 @@ def check_table(extra_weights):
     return extra_weights
 
 
-def print_results(extra_weights, outfile, name_mapping_dict):
+def print_results(extra_weights, outfile, original_extensions, name_mapping_dict):
     """Generate the result tsv file."""
     with open(outfile, "w") as table_out:
         table_writer = csv.writer(table_out, delimiter="\t")
         for genome_name, weight in extra_weights.items():
             genome_name = next((key for key, value in name_mapping_dict.items() if value == genome_name), genome_name)
+            if not any(genome_name.endswith(ext) for ext in [".fa", ".fasta", ".fna"]):
+                ext = original_extensions.get(genome_name, "")
+                if ext:
+                    genome_name = "{}{}".format(genome_name, ext)
             table_writer.writerow([genome_name, weight])
 
 

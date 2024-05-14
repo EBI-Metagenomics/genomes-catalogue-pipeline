@@ -5,19 +5,27 @@
 */
 ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
 ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
+ch_ncbi_genomes = []
 
-// TODO: Validate
+if (params.ncbi_genomes) {
+    ch_ncbi_genomes = channel.fromPath(params.ncbi_genomes, checkIfExists: true)
+}
+
 ch_mgyg_index_start = channel.value(params.mgyg_start)
 ch_mgyg_index_end = channel.value(params.mgyg_end)
 
 ch_genomes_information = file("NO_FILE_GENOME_CAT")
 ch_study_genomes_information = file("NO_FILE_STUDY_CAT")
+ch_preassigned_accessions = file("NO_FILE_PREASSIGNED_ACCS")
 
 if (params.genomes_information) {
     ch_genomes_information = file(params.genomes_information)
 }
 if (params.study_genomes_information) {
     ch_study_genomes_information = file(params.study_genomes_information)
+}
+if (params.preassigned_accessions) {
+    ch_preassigned_accessions = file(params.preassigned_accessions)
 }
 
 // TODO: Add help message with parameters
@@ -46,6 +54,8 @@ include { ANNONTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
 include { IQTREE as IQTREE_AR } from '../modules/iqtree'
+include { FASTTREE as FASTTREE_BAC } from '../modules/fasttree'
+include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
 include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
@@ -79,6 +89,8 @@ ch_ftp_version = channel.value(params.ftp_version)
 
 ch_amrfinder_plus_db = file(params.amrfinder_plus_db)
 
+ch_checkm2_db = file(params.checkm2_db)
+
 /*
     ~~~~~~~~~~~~~~~~~~
        Run workflow
@@ -90,12 +102,14 @@ workflow GAP {
     PREPARE_DATA(
         ch_ena_genomes,
         ch_ena_genomes_checkm,
-        channel.empty(), // ncbi, we are ignoring this ATM
+        ch_ncbi_genomes,
         ch_mgyg_index_start,
         ch_mgyg_index_end,
+        ch_preassigned_accessions,
         ch_genome_prefix,
         ch_genomes_information,
-        ch_study_genomes_information
+        ch_study_genomes_information,
+        ch_checkm2_db
     )
 
     // needs a more elegant solution here
@@ -187,20 +201,33 @@ workflow GAP {
         ch_gtdb_db
     )
 
-    /* IQTree need at least 3 sequences. */
-    gtdbtk_user_msa_bac120 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.first {
-        file(it).countFasta() > 2
+    /*
+    IQTree need at least 3 sequences, but it's too slow for more than 2000 sequences so we use FastTree in that case
+    */
+    def treeCreationCriteria = branchCriteria {
+        iqtree: file(it).countFasta() > 2 && file(it).countFasta() < 2000
+        fasttree: file(it).countFasta() >= 2000
     }
+
+    GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
+
     IQTREE_BAC(
-        gtdbtk_user_msa_bac120,
+        gtdbtk_user_msa_bac120.iqtree,
         channel.value("bac120")
     )
-    /* IQTree need at least 3 sequences. */
-    gtdbtk_user_msa_ar53 = GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53.first {
-        file(it).countFasta() > 2
-    }
+    FASTTREE_BAC(
+        gtdbtk_user_msa_bac120.fasttree,
+        channel.value("bac120")
+    )
+
+    GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
+
     IQTREE_AR(
-        gtdbtk_user_msa_ar53,
+        gtdbtk_user_msa_ar53.iqtree,
+        channel.value("ar53")
+    )
+    FASTTREE_AR(
+        gtdbtk_user_msa_ar53.fasttree,
         channel.value("ar53")
     )
 

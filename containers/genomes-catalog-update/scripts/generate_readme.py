@@ -40,13 +40,20 @@ def main(
     )
 
 
+def get_tree_tool(count):
+    if count > 1999:
+        return "fasttree"
+    else:
+        return "iqtree"
+    
+    
 def process_metadata_table(metadata_table):
     total_genomes = 0
     reps = set()
     study_list = set()
     version = ""
     catalog_name = ""
-    archaea = False
+    archaea = 0
     with open(metadata_table, "r") as meta_in:
         for line in meta_in:
             if not line.startswith("Genome"):
@@ -58,9 +65,9 @@ def process_metadata_table(metadata_table):
                     subfields = fields[19].strip().split("/")
                     catalog_name = subfields[7]
                     version = subfields[8]
-                if not archaea:
-                    if "d__Archaea" in line:
-                        archaea = True
+                # count representatives that are archaea
+                if "d__Archaea" in line and fields[13] == fields[0]:
+                    archaea += 1
     total_genomes = "{:,}".format(total_genomes)
     num_reps = "{:,}".format(len(reps))
     return total_genomes, num_reps, study_list, version, catalog_name, archaea
@@ -80,16 +87,24 @@ def print_file(
     archaea,
     xlarge
 ):
-    if archaea:
+    bacteria = int(num_species.replace(",", "")) - archaea
+    tree_tool_ar = get_tree_tool(archaea)
+    tree_tool_bac = get_tree_tool(bacteria)
+    if archaea > 2:
         phylo_text = """
-    * ar53_iqtree.nwk : A phylogenetic tree for archaeal genomes in Newick format.
-    * bac120_iqtree.nwk : A phylogenetic tree for bacterial genomes in Newick format.
+    * ar53_{tree_tool_ar}.nwk : A phylogenetic tree for archaeal genomes in Newick format.
+    * bac120_{tree_tool_bac}.nwk : A phylogenetic tree for bacterial genomes in Newick format.
     * ar53_alignment.faa.gz : A multiple sequence alignment for archaeal genomes.
-    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes."""
+    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes.""".format(
+            tree_tool_ar=tree_tool_ar,
+            tree_tool_bac=tree_tool_bac
+        )
     else:
         phylo_text = """
-    * bac120_iqtree.nwk : A phylogenetic tree for bacterial genomes in Newick format.
-    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes. """
+    * bac120_{tree_tool_bac}.nwk : A phylogenetic tree for bacterial genomes in Newick format.
+    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes. """.format(
+            tree_tool_bac=tree_tool_bac
+        )
     if xlarge:
         xlarge_note = """
 * Due to the size of this catalogue, the clustering process was performed in two phases. First, the entire genome set \

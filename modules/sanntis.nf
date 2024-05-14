@@ -30,16 +30,18 @@ process SANNTIS {
     if (interproscan_tsv.extension == "gz") {
         """
         gunzip -c ${interproscan_tsv} > interproscan.tsv
-        sanntis \
-        --ip-file interproscan.tsv \
-        --outfile ${cluster_name}_sanntis.gff \
+        sanntis \\
+        --ip-file interproscan.tsv \\
+        --outfile ${cluster_name}_sanntis.gff \\
+        --cpu ${task.cpus} \\
         ${prokka_gbk}
         """
     } else {
         """
-        sanntis \
-        --ip-file ${interproscan_tsv} \
-        --outfile ${cluster_name}_sanntis.gff \
+        sanntis \\
+        --ip-file ${interproscan_tsv} \\
+        --outfile ${cluster_name}_sanntis.gff \\
+        --cpu ${task.cpus} \\
         ${prokka_gbk}
         """
     }
