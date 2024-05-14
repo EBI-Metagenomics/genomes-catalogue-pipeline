@@ -6,12 +6,20 @@ import csv
 import hashlib
 import logging
 import shutil
+import os
+import gzip
 from pathlib import Path
 
 from Bio import SeqIO
 
 logging.basicConfig(level=logging.INFO)
 
+def open_fasta_file(filename):
+    if filename.endswith('.gz'):
+        f = gzip.open(filename, "rt")
+    else:
+        f = open(filename, "rt")
+    return f
 
 def main(fastas, outdir):
     file_hashes = {}  # filename, whole-file-checksum
@@ -25,9 +33,11 @@ def main(fastas, outdir):
     for fasta in fastas:
         fasta_name = Path(fasta).stem
         fasta_hashes = []
-        for record in SeqIO.parse(fasta, "fasta"):
+        handle = open_fasta_file(fasta)
+        for record in SeqIO.parse(handle, "fasta"):
             hash_object = hashlib.md5(str(record.seq).encode())
             fasta_hashes.append(hash_object.hexdigest())
+        handle.close()
         sorted_hashes = sorted(fasta_hashes)
         # TODO: this is not the fastest way of doing this
         #       as we are writing and reading the file
@@ -66,7 +76,13 @@ if __name__ == "__main__":
             " files."
         )
     )
-    parser.add_argument("-f", "--fastas", help="The fasta files paths", nargs="+")
+    input_group = parser.add_mutually_exclusive_group()
+    input_group.add_argument("-f", "--fastas", help="List of fasta files paths. "
+                                                    "Use this argument when you want to specify a list of genome paths. "
+                                                    "Manually exclusive argument for -i", nargs="+")
+    input_group.add_argument("-i", "--input-folder", help="Folder with fasta files. "
+                                                          "Use this argument when you have a directory of genomes. "
+                                                          "Manually exclusive argument for -f")
     parser.add_argument(
         "-o",
         "--outdir",
@@ -74,5 +90,9 @@ if __name__ == "__main__":
         help="The output folder for the deduplicated fasta files and the report tsv",
     )
     args = parser.parse_args()
-
-    main(args.fastas, args.outdir)
+    fastas = []
+    if args.input_folder:
+        fastas = [os.path.join(args.input_folder, i) for i in os.listdir(args.input_folder)]
+    else:
+        fastas = args.fastas
+    main(fastas, args.outdir)

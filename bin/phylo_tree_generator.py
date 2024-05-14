@@ -59,7 +59,7 @@ def main():
     args = parse_args()
     for item in read_tsv(args.tsv_file):
         genome = item[0]
-        lineage = item[1].split(";")
+        lineage = item[1].replace("d__;", "d__Unclassified;").split(";")
         add_to_json(json_root, genome, lineage)
     write_output(json_root, args.out)
 

@@ -23,6 +23,7 @@ process RENAME_FASTA {
     path genomes
     val start_number
     val max_number
+    path preassigned_accessions
     path check_csv
     // optional
     val prefix
@@ -34,6 +35,11 @@ process RENAME_FASTA {
 
     script:
     genomes_prefix = prefix ? prefix : "MGYG"
+    
+    def args = ""
+    if (preassigned_accessions.name != "NO_FILE_PREASSIGNED_ACCS") {
+        args += "--map-file ${preassigned_accessions} "
+    }
     """
     rename_fasta.py -d ${genomes} \
     -p ${genomes_prefix} \
@@ -41,7 +47,8 @@ process RENAME_FASTA {
     --max ${max_number} \
     -t name_mapping.tsv \
     -o renamed_genomes \
-    --csv ${check_csv}
+    --csv ${check_csv} \
+    ${args}
     """
 
     stub:

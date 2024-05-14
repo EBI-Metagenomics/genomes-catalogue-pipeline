@@ -51,6 +51,8 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file):
                     n50 = int(cols[4])
                     gc_content = float(cols[5])
                     tax_lineage = cols[14]
+                    if tax_lineage.startswith("d__;p__;"):
+                        tax_lineage = "d__unclassified"
                     rna_5s = float(cols[8])
                     rna_16s = float(cols[9])
                     rna_23s = float(cols[10])

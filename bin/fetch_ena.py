@@ -32,6 +32,8 @@ def main(input_file, directory, unzip, bins, ignore_metadata):
     metadata = list()
     studies = get_studies(input_file)
     logging.debug(f"Got {len(studies)} studies")
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     if not studies:
         logging.error('There are no studies to fetch')
         sys.exit(1)
@@ -41,8 +43,6 @@ def main(input_file, directory, unzip, bins, ignore_metadata):
             number_of_mags, study_metadata = load_study(study_acc, directory, unzip, bins, ignore_metadata)
             metadata.extend(study_metadata)
             logging.debug(f"Found {str(number_of_mags)} MAGs in study {study_acc}")
-    if not os.path.exists(directory):
-        os.makedirs(directory)
     if not ignore_metadata:
         print_metadata(metadata, args.dir)
 
@@ -94,8 +94,8 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
             'fields': 'accession,assembly_type,study_accession,sample_accession,generated_ftp',
             'format': 'tsv'
         }
-        sample_field = 4
-        ftp_field = 5
+        sample_field = 3
+        ftp_field = 4
 
     else:
         query = {
@@ -113,8 +113,8 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
     for line in r.text.splitlines():
         if not line.startswith(('accession', 'analysis_accession')):
             number_of_mags += 1
-            contamination, completeness = get_contamination_completeness(line.strip().split('\t')[sample_field])
             if not ignore_metadata:
+                contamination, completeness = get_contamination_completeness(line.strip().split('\t')[sample_field])
                 if not all([contamination, completeness]):
                     logging.error('Missing contamination and/or completeness for MAG {}. Run with --ignore-metadata '
                                   'flag to download files without metadata.'.
@@ -134,13 +134,15 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
                 if mag_acc in already_fetched:
                     logging.info(f'Skipping MAG {mag_acc} because it already exists')
                     # saving metadata for that MAG
-                    study_metadata.append('{},{},{}'.format('{}.fa.gz'.format(mag_acc), completeness, contamination))
+                    if not ignore_metadata:
+                        study_metadata.append('{},{},{}'.format('{}.fa.gz'.format(mag_acc), completeness, contamination))
                 else:
                     saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
                     if not saved_fasta:
                         logging.error('Unable to fetch', mag_acc)
                     else:
-                        study_metadata.append('{},{},{}'.format(saved_fasta, completeness, contamination))
+                        if not ignore_metadata:
+                            study_metadata.append('{},{},{}'.format(saved_fasta, completeness, contamination))
                         logging.info('Successfully fetched {}'.format(mag_acc))
     return number_of_mags, study_metadata
 
