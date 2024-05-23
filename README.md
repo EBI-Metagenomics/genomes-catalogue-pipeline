@@ -1,4 +1,4 @@
-# MGnify genomes analysis pipeline
+# MGnify genomes catalogue pipeline
 
 [MGnify](https://www.ebi.ac.uk/metagenomics/) A pipeline to perform taxonomic and functional annotation and to generate a catalogue from a set of isolate and/or metagenome-assembled genomes (MAGs) using the workflow described in the following publication:
 
