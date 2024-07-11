@@ -1,6 +1,6 @@
 process GTDBTK {
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.gtdb-tk:v2.3.0'
+    container 'quay.io/biocontainers/gtdbtk:2.4.0--pyhdfd78af_1'
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
 
     publishDir(
