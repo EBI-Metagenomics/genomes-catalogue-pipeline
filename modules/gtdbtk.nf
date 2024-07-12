@@ -22,7 +22,7 @@ process GTDBTK {
 
     input:
     path genomes_fna, stageAs: "genomes_dir/*"
-    val extension,
+    val extension
     path gtdbtk_refdata
 
     output:
