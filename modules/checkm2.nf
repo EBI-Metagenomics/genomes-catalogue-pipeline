@@ -1,9 +1,9 @@
 process CHECKM2 {
 
     publishDir(
-        path: "${params.outdir}/checkm",
+        path: "${params.outdir}",
         pattern: "checkm_quality.csv",
-        saveAs: { "additional_data/intermediate_files/checkm_quality.csv" },
+        saveAs: { "additional_data/intermediate_files/checkm_quality_ncbi_genomes.csv" },
         mode: "copy"
     )
 
