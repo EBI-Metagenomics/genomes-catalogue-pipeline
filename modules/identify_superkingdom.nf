@@ -18,7 +18,7 @@ process IDENTIFY_SUPERKINGDOM {
 
     script:
     """
-    identify_superkingdom.py -i gtdb_summary_tsv
+    identify_superkingdom.py -i ${gtdb_summary_tsv}
     """
 
     stub:
