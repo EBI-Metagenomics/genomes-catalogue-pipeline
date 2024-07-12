@@ -137,8 +137,11 @@ workflow GAP {
     )
     
     GTDBTK(
-        cluster_reps_fnas,
-        gtdbtk_refdata
+        dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] }) \
+        .mix(dereplicated_genomes.out.many_genomes_fna_tuples.map({ it[1] })) \
+        .collect(),
+        channel.value("fa"), // genome file extension
+        ch_gtdb_db
     )
 
     gtdbtk_tables_ch = channel.empty() \

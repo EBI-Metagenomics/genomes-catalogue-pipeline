@@ -22,6 +22,7 @@ process GTDBTK {
 
     input:
     path genomes_fna, stageAs: "genomes_dir/*"
+    val extension,
     path gtdbtk_refdata
 
     output:
@@ -40,7 +41,7 @@ process GTDBTK {
     --cpus ${task.cpus} \
     --pplacer_cpus ${task.cpus} \
     --genome_dir genomes_dir \
-    --extension fna \
+    --extension ${extension} \
     --skip_ani_screen \
     --out_dir gtdbtk_results
     
