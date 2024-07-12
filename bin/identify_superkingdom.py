@@ -37,9 +37,9 @@ def main(infile, outdir):
                     domain = "Archaea"
                 else:
                     domain = "Undefined"
-            outfile = "{}_{}.txt".format(genome, domain)
-            with open(os.path.join(outdir, outfile), "w") as file_out:
-                file_out.write("{}\n".format(domain))
+                outfile = "{}_{}.txt".format(genome, domain)
+                with open(os.path.join(outdir, outfile), "w") as file_out:
+                    file_out.write("{}\n".format(domain))
 
 
 def parse_args():
