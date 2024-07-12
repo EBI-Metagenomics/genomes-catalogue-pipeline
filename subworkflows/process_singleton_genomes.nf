@@ -37,6 +37,7 @@ workflow PROCESS_SINGLETON_GENOMES {
     take:
         singleton_cluster_tuple
         genomes_checkm
+        gtdbtk_table_tsv
         gunc_db
     main:
 

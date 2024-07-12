@@ -39,11 +39,12 @@ if (params.preassigned_accessions) {
 include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
+include { GTDBTK } from '../modules/gtdbtk'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
 include { ANNOTATE } from '../subworkflows/annotate'
-include { GTDBTK_AND_METADATA } from '../subworkflows/gtdbtk_and_metadata'
+include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
 include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
@@ -134,6 +135,15 @@ workflow GAP {
     MASH_TO_NWK(
         dereplicated_genomes.out.mash_splits | flatten
     )
+    
+    GTDBTK(
+        cluster_reps_fnas,
+        gtdbtk_refdata
+    )
+
+    gtdbtk_tables_ch = channel.empty() \
+        .mix(GTDBTK.out.gtdbtk_summary_bac120, GTDBTK.out.gtdbtk_summary_arc53) \
+        .collectFile(name: 'gtdbtk.summary.tsv')
 
     PROCESS_MANY_GENOMES(
         dereplicated_genomes.out.many_genomes_fna_tuples
@@ -142,6 +152,7 @@ workflow GAP {
     PROCESS_SINGLETON_GENOMES(
         dereplicated_genomes.out.single_genomes_fna_tuples,
         PREPARE_DATA.out.genomes_checkm.first(),
+        gtdbtk_tables_ch,
         ch_gunc_db
     )
 
@@ -186,7 +197,7 @@ workflow GAP {
         ch_rfam_rrna_models
     )
 
-    GTDBTK_AND_METADATA(
+    METADATA_AND_PHYLOTREE(
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
         PREPARE_DATA.out.extra_weight_table,
@@ -198,18 +209,18 @@ workflow GAP {
         ch_ftp_version,
         ch_geo_metadata,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
-        ch_gtdb_db
+        gtdbtk_tables_ch
     )
 
     /*
-    IQTree need at least 3 sequences, but it's too slow for more than 2000 sequences so we use FastTree in that case
+    IQTree needs at least 3 sequences, but it's too slow for more than 2000 sequences so we use FastTree in that case
     */
     def treeCreationCriteria = branchCriteria {
         iqtree: file(it).countFasta() > 2 && file(it).countFasta() < 2000
         fasttree: file(it).countFasta() >= 2000
     }
 
-    GTDBTK_AND_METADATA.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
+    GTDBTK.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
 
     IQTREE_BAC(
         gtdbtk_user_msa_bac120.iqtree,
@@ -220,7 +231,7 @@ workflow GAP {
         channel.value("bac120")
     )
 
-    GTDBTK_AND_METADATA.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
+    GTDBTK.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
 
     IQTREE_AR(
         gtdbtk_user_msa_ar53.iqtree,
@@ -324,13 +335,13 @@ workflow GAP {
 
     GENOME_SUMMARY_JSON(
         files_for_json_summary,
-        GTDBTK_AND_METADATA.out.metadata_tsv.first(),
+        METADATA_AND_PHYLOTREE.out.metadata_tsv.first(),
         ch_biome
     )
 
     KRAKEN_SWF(
-        GTDBTK_AND_METADATA.out.gtdbtk_summary_bac120,
-        GTDBTK_AND_METADATA.out.gtdbtk_summary_arc53,
+        GTDBTK.out.gtdbtk_summary_bac120,
+        GTDBTK.out.gtdbtk_summary_arc53,
         cluster_reps_fnas.map({ it[1] })
     )
 
