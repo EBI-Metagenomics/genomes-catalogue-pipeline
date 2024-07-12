@@ -40,6 +40,7 @@ include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
 include { GTDBTK } from '../modules/gtdbtk'
+include { IDENTIFY_SUPERKINGDOM } from '../modules/identify_superkingdom'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
@@ -149,6 +150,10 @@ workflow GAP {
     gtdbtk_tables_ch = channel.empty() \
         .mix(GTDBTK.out.gtdbtk_summary_bac120, GTDBTK.out.gtdbtk_summary_arc53) \
         .collectFile(name: 'gtdbtk.summary.tsv')
+        
+    IDENTIFY_SUPERKINGDOM(
+        gtdbtk_tables_ch
+    )
 
     PROCESS_MANY_GENOMES(
         dereplicated_genomes.out.many_genomes_fna_tuples
