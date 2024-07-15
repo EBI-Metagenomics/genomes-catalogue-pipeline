@@ -154,7 +154,16 @@ workflow GAP {
     IDENTIFY_SUPERKINGDOM(
         gtdbtk_tables_ch
     )
-
+    
+    accessions_with_kingdoms_ch = IDENTIFY_SUPERKINGDOM.out.detected_superkingdoms.flatMap { file ->
+        file.readLines().collect { line ->
+            def (genomeName, kingdom) = line.split(',')
+            [genomeName, kingdom]
+        }
+    }
+        
+    accessions_with_kingdoms_ch.view()
+    
     PROCESS_MANY_GENOMES(
         dereplicated_genomes.out.many_genomes_fna_tuples
     )
