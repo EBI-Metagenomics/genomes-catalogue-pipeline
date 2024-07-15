@@ -43,6 +43,7 @@ include { GTDBTK } from '../modules/gtdbtk'
 include { IDENTIFY_DOMAIN } from '../modules/identify_domain'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
+include { GENERATE_COMBINED_QC_REPORT } from '../modules/generate_combined_qc_report'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
 include { ANNOTATE } from '../subworkflows/annotate'
 include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
@@ -171,6 +172,12 @@ workflow GAP {
         PREPARE_DATA.out.genomes_checkm.first(),
         accessions_with_domains_ch,
         ch_gunc_db
+    )
+    
+    GENERATE_COMBINED_QC_REPORT(
+        PREPARE_DATA.out.qs50_failed,
+        PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
+        gtdbtk_tables_ch
     )
 
     MMSEQ_SWF(
