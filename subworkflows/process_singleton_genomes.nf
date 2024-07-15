@@ -37,10 +37,14 @@ workflow PROCESS_SINGLETON_GENOMES {
     take:
         singleton_cluster_tuple
         genomes_checkm
-        gtdbtk_table_tsv
+        accessions_with_domains_tuples
         gunc_db
     main:
-
+    
+        singleton_cluster_tuple_with_domain = singleton_cluster_tuple \
+        .join(accessions_with_domains_tuples) \
+        .filter({ !it[2].contains('Undefined') })
+        
         GUNC(
             singleton_cluster_tuple,
             genomes_checkm,

@@ -161,9 +161,7 @@ workflow GAP {
             [genomeName, domain]
         }
     }
-        
-    accessions_with_kingdoms_ch.view()
-    
+            
     PROCESS_MANY_GENOMES(
         dereplicated_genomes.out.many_genomes_fna_tuples
     )
@@ -171,7 +169,7 @@ workflow GAP {
     PROCESS_SINGLETON_GENOMES(
         dereplicated_genomes.out.single_genomes_fna_tuples,
         PREPARE_DATA.out.genomes_checkm.first(),
-        gtdbtk_tables_ch,
+        accessions_with_domains_ch,
         ch_gunc_db
     )
 
