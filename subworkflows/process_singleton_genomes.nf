@@ -46,7 +46,7 @@ workflow PROCESS_SINGLETON_GENOMES {
         .filter({ !it[2].contains('Undefined') })
         
         GUNC(
-            singleton_cluster_tuple,
+            singleton_cluster_tuple_with_domain,
             genomes_checkm,
             gunc_db
         )
