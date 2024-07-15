@@ -30,7 +30,7 @@ def main(qc, gunc, gtdb, outfile):
                 file_out.write("{}\tDid not pass GUNC\n".format(line.strip()))
         with open(gtdb, 'r') as file_in:
             for line in file_in:
-                parts = line.strip().split('\t')
+                parts = line.strip().split(',')
                 if parts[1] == "Undefined":
                     file_out.write("{}\tUnknown taxonomic domain\n".format(parts[0]))
 
