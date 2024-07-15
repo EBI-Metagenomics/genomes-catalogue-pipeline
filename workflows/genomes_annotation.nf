@@ -177,7 +177,7 @@ workflow GAP {
     GENERATE_COMBINED_QC_REPORT(
         PREPARE_DATA.out.qs50_failed,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
-        gtdbtk_tables_ch
+        IDENTIFY_DOMAIN.out.gtdb_summary_tsv
     )
 
     MMSEQ_SWF(
