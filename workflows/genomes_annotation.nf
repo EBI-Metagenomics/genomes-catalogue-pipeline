@@ -40,7 +40,7 @@ include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
 include { GTDBTK } from '../modules/gtdbtk'
-include { IDENTIFY_SUPERKINGDOM } from '../modules/identify_superkingdom'
+include { IDENTIFY_DOMAIN } from '../modules/identify_domain'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
@@ -151,14 +151,14 @@ workflow GAP {
         .mix(GTDBTK.out.gtdbtk_summary_bac120, GTDBTK.out.gtdbtk_summary_arc53) \
         .collectFile(name: 'gtdbtk.summary.tsv')
         
-    IDENTIFY_SUPERKINGDOM(
+    IDENTIFY_DOMAIN(
         gtdbtk_tables_ch
     )
     
-    accessions_with_kingdoms_ch = IDENTIFY_SUPERKINGDOM.out.detected_superkingdoms.flatMap { file ->
+    accessions_with_domains_ch = IDENTIFY_DOMAIN.out.detected_domains.flatMap { file ->
         file.readLines().collect { line ->
-            def (genomeName, kingdom) = line.split(',')
-            [genomeName, kingdom]
+            def (genomeName, domain) = line.split(',')
+            [genomeName, domain]
         }
     }
         
