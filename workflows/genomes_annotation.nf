@@ -39,7 +39,8 @@ if (params.preassigned_accessions) {
 include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
-include { GTDBTK } from '../modules/gtdbtk'
+include { GTDBTK as GTDBTK_QC } from '../modules/gtdbtk'
+include { GTDBTK as GTDBTK_TAX } from '../modules/gtdbtk'
 include { IDENTIFY_DOMAIN } from '../modules/identify_domain'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
@@ -138,7 +139,7 @@ workflow GAP {
         dereplicated_genomes.out.mash_splits | flatten
     )
     
-    GTDBTK(
+    GTDBTK_QC(
         dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] }) \
         .mix(dereplicated_genomes.out.many_genomes_fna_tuples.filter {
             it[1].name.contains(it[0])
@@ -148,12 +149,12 @@ workflow GAP {
         ch_gtdb_db
     )
 
-    gtdbtk_tables_ch = channel.empty() \
-        .mix(GTDBTK.out.gtdbtk_summary_bac120, GTDBTK.out.gtdbtk_summary_arc53) \
+    gtdbtk_tables_qc_ch = channel.empty() \
+        .mix(GTDBTK_QC.out.gtdbtk_summary_bac120, GTDBTK_QC.out.gtdbtk_summary_arc53) \
         .collectFile(name: 'gtdbtk.summary.tsv')
         
     IDENTIFY_DOMAIN(
-        gtdbtk_tables_ch
+        gtdbtk_tables_qc_ch
     )
     
     accessions_with_domains_ch = IDENTIFY_DOMAIN.out.detected_domains.flatMap { file ->
@@ -179,7 +180,28 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
         IDENTIFY_DOMAIN.out.detected_domains
     )
+    
+    undefined_accessions = accessions_with_domains_ch.filter { it[1] == 'Undefined' }.map { it[0] }.collect()  
+    if (undefined_accessions.size() == 0) {
+        gtdbtk_tables_ch = gtdbtk_tables_qc_ch
+        GTDBTK_TAX.output = GTDBTK_QC.output
+    } else {
+        GTDBTK_TAX(
+            dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] }) \
+            .filter { tuple -> !undefined_accessions.contains(tuple[0]) } \
+            .mix(dereplicated_genomes.out.many_genomes_fna_tuples.filter {
+                it[1].name.contains(it[0])
+            }.map({ it[1] })) \
+            .collect(),
+            channel.value("fa"), // genome file extension
+            ch_gtdb_db
+        )
 
+        gtdbtk_tables_ch = channel.empty() \
+            .mix(GTDBTK_TAX.out.gtdbtk_summary_bac120, GTDBTK_TAX.out.gtdbtk_summary_arc53) \
+            .collectFile(name: 'gtdbtk.summary.tsv')
+    }
+    
     MMSEQ_SWF(
         PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),
         PROCESS_SINGLETON_GENOMES.out.prokka_faa.map({ it[1] }).collectFile(name: "singleton_prokka.faa"),
@@ -244,7 +266,7 @@ workflow GAP {
         fasttree: file(it).countFasta() >= 2000
     }
 
-    GTDBTK.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
+    GTDBTK_TAX.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
 
     IQTREE_BAC(
         gtdbtk_user_msa_bac120.iqtree,
@@ -255,7 +277,7 @@ workflow GAP {
         channel.value("bac120")
     )
 
-    GTDBTK.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
+    GTDBTK_TAX.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
 
     IQTREE_AR(
         gtdbtk_user_msa_ar53.iqtree,
@@ -364,8 +386,8 @@ workflow GAP {
     )
 
     KRAKEN_SWF(
-        GTDBTK.out.gtdbtk_summary_bac120,
-        GTDBTK.out.gtdbtk_summary_arc53,
+        GTDBTK_TAX.out.gtdbtk_summary_bac120,
+        GTDBTK_TAX.out.gtdbtk_summary_arc53,
         cluster_reps_fnas.map({ it[1] })
     )
 
