@@ -194,7 +194,25 @@ workflow GAP {
     
     //gtdbtk_tables_ch = gtdbtk_tables_qc_ch
     // GTDBTK_TAX.output = GTDBTK_QC.output
+    // gunc_removed_genomes = Channel
+    //     .fromPath(PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt)
+    //    .splitText()
+    gunc_removed_genomes = PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.map { file_path ->
+        def contents = file(file_path).splitText()
+        return contents
+    }.collect()
+    gunc_removed_genomes.view()
+    ids_to_remove = gunc_removed_genomes.collect { it[0] }.toSet()
+    dereplicated_genomes.out.single_genomes_fna_tuples.view()
+    dereplicated_genomes.out.single_genomes_fna_tuples
+    .map { record ->
+        def id = record[0]
+        def status = gunc_removed_genomes.contains(id) ? 'to_remove' : 'to_keep'
+        return [id, record[1], status]
+    }
+    .view()
 
+    
     GTDBTK_TAX(
         dereplicated_genomes.out.single_genomes_fna_tuples \
         //  .filter { it -> !undefined_accessions.contains(it[0]) } \

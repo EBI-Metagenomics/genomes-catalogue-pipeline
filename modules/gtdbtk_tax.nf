@@ -42,8 +42,13 @@ process GTDBTK_TAX {
 
 
     script:
-    // TODO: tweak the cpus based on the number of genomes
     """
+    if [ -s ${failed_gunc_file} ] || [ \$(echo "${undefined_taxonomy_ch}" | wc -c) -gt 3 ]
+    then
+        # Some genomes were removed, we need to rerun GTDB-Tk
+        echo "Yes"
+    fi
+    
     GTDBTK_DATA_PATH=/opt/gtdbtk_refdata \
     gtdbtk classify_wf \
     --cpus ${task.cpus} \
