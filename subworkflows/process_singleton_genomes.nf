@@ -54,8 +54,9 @@ workflow PROCESS_SINGLETON_GENOMES {
         PROKKA(
             GUNC.out.cluster_gunc_result.filter({
                 it[2].name.contains('_complete.txt')
-            }).map({ cluster_name, cluster_fasta, cluster_gunc ->
-                return tuple(cluster_name, cluster_fasta)
+            }).join(accessions_with_domains_tuples
+            ).map({ cluster_name, cluster_fasta, cluster_gunc, cluster_domain ->
+                return tuple(cluster_name, cluster_fasta, cluster_domain)
             })
         )
 

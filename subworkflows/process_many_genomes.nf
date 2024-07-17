@@ -14,7 +14,7 @@ workflow PROCESS_MANY_GENOMES {
     main:
 
         PROKKA(
-            many_genomes_clusters
+            many_genomes_clusters.join(accessions_with_domains_tuples)
         )
 
         // Group by cluster
