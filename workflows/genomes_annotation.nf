@@ -39,8 +39,8 @@ if (params.preassigned_accessions) {
 include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
-include { GTDBTK as GTDBTK_QC } from '../modules/gtdbtk'
-include { GTDBTK as GTDBTK_TAX } from '../modules/gtdbtk'
+include { GTDBTK as GTDBTK_QC } from '../modules/gtdbtk_qc'
+include { GTDBTK as GTDBTK_TAX } from '../modules/gtdbtk_tax'
 include { IDENTIFY_DOMAIN } from '../modules/identify_domain'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
@@ -165,7 +165,8 @@ workflow GAP {
     }
             
     PROCESS_MANY_GENOMES(
-        dereplicated_genomes.out.many_genomes_fna_tuples
+        dereplicated_genomes.out.many_genomes_fna_tuples,
+        accessions_with_domains_ch
     )
 
     PROCESS_SINGLETON_GENOMES(
@@ -180,27 +181,39 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
         IDENTIFY_DOMAIN.out.detected_domains
     )
+
+    // undefined_accessions = accessions_with_domains_ch.filter { it[1] == 'Undefined' }.map { it[0] }.collect()
+    accessions_with_domains_ch
+    .branch {
+        defined: it[1] != "Undefined"
+        return it[0]
+        undefined: it[1] == "Undefined"
+        return it[0]
+    }
+    .set { domain_splits }
     
-    undefined_accessions = accessions_with_domains_ch.filter { it[1] == 'Undefined' }.map { it[0] }.collect()  
-    if (undefined_accessions.size() == 0) {
-        gtdbtk_tables_ch = gtdbtk_tables_qc_ch
-        GTDBTK_TAX.output = GTDBTK_QC.output
-    } else {
-        GTDBTK_TAX(
-            dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] }) \
-            .filter { tuple -> !undefined_accessions.contains(tuple[0]) } \
+    //gtdbtk_tables_ch = gtdbtk_tables_qc_ch
+    // GTDBTK_TAX.output = GTDBTK_QC.output
+
+    GTDBTK_TAX(
+        dereplicated_genomes.out.single_genomes_fna_tuples \
+        //  .filter { it -> !undefined_accessions.contains(it[0]) } \
+            .map({ it[1] }) \
             .mix(dereplicated_genomes.out.many_genomes_fna_tuples.filter {
                 it[1].name.contains(it[0])
-            }.map({ it[1] })) \
-            .collect(),
-            channel.value("fa"), // genome file extension
-            ch_gtdb_db
-        )
+        }.map({ it[1] })) \
+        .collect(),
+        channel.value("fa"), // genome file extension
+        ch_gtdb_db,
+        domain_splits.undefined,
+        PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
+        GTDBTK_QC.output
+    )
 
-        gtdbtk_tables_ch = channel.empty() \
-            .mix(GTDBTK_TAX.out.gtdbtk_summary_bac120, GTDBTK_TAX.out.gtdbtk_summary_arc53) \
-            .collectFile(name: 'gtdbtk.summary.tsv')
-    }
+    gtdbtk_tables_ch = channel.empty() \
+        .mix(GTDBTK_TAX.out.gtdbtk_summary_bac120, GTDBTK_TAX.out.gtdbtk_summary_arc53) \
+        .collectFile(name: 'gtdbtk.summary.tsv')
+
     
     MMSEQ_SWF(
         PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),

@@ -10,6 +10,7 @@ include { PROKKA } from '../modules/prokka'
 workflow PROCESS_MANY_GENOMES {
     take:
         many_genomes_clusters // list<tuple(cluster_name, genome_fna)>
+        accessions_with_domains_tuples
     main:
 
         PROKKA(
