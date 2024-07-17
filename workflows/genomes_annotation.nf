@@ -202,17 +202,45 @@ workflow GAP {
         line.trim()
         }
         return contents
-    }.collect()
-    gunc_removed_genomes.view()
-    ids_to_remove = gunc_removed_genomes.collect { it[0] }.toSet()
-    dereplicated_genomes.out.single_genomes_fna_tuples.view()
-    dereplicated_genomes.out.single_genomes_fna_tuples
-    .map { record ->
-        def id = record[0]
-        def status = gunc_removed_genomes.contains(id) ? 'to_remove' : 'to_keep'
-        return [id, record[1], status]
-    }
-    .view()
+    }.flatten().map(it -> [it, "to_remove"])
+    undefined_genomes = domain_splits.undefined.map(it -> [it, "to_remove"])
+    //undefined_genomes.view()
+    //gunc_removed_genomes.view()
+    // gunc_to_remove = gunc_removed_genomes.map(it -> [it, "to_remove"])
+    //gunc_to_remove.view()
+    //list_ch = ['MGYG000300005', 'MGYG000300006', 'MGYG000300007']
+    //list2_ch = ['MGYG000300000']
+    //println "list1 is of type: ${list_ch.getClass().getName()}"
+    //println "gunc is of type: ${gunc_removed_genomes.getClass().getName()}"
+    //println "split is of type: ${undefined_genomes.getClass().getName()}"
+    //println "arraylist is of type: ${arrayList.getClass().getName()}"
+    //if (list2_ch == undefined_genomes) {
+    //println "The lists are equivalent."
+    //    } else {
+    //println "The lists are not equivalent."
+    //}
+    combined_list_to_remove = gunc_removed_genomes.concat(undefined_genomes)
+    filtered_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples \
+        .join(combined_list_to_remove, remainder: true) \
+        .filter { it -> it[2] == null} \
+        .map { it -> [it[0], it[1]] }
+    filtered_fna_tuples.view()
+    //dereplicated_genomes.out.single_genomes_fna_tuples
+    //.map { record ->
+    //    def id = record[0]
+    //    println "ID is ${id}"
+    //    // def status = (gunc_removed_genomes.contains(id) || undefined_genomes.contains(id)) ? 'to_remove' : 'to_keep'
+    //    def status = (undefined_genomes.contains(id)) ? 'to_remove' : 'to_keep'
+
+    //    println "status is ${status}"
+    //    return [id, record[1], status]
+    //}
+    //.view()
+    
+    
+    // dereplicated_genomes.out.single_genomes_fna_tuples.filter{
+    //    it[0].findAll{ list_ch.contains(it[0]) }
+    //}.view()
 
     
     GTDBTK_TAX(
