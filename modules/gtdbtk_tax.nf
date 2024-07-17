@@ -24,13 +24,12 @@ process GTDBTK_TAX {
     path genomes_fna, stageAs: "genomes_dir/*"
     val extension
     path gtdbtk_refdata
-    val undefined_taxonomy_ch
-    path failed_gunc_file
-    path qc_gtdbtk_summary_bac120
-    path qc_gtdbtk_summary_arc53
-    path qc_gtdbtk_user_msa_bac120
-    path qc_gtdbtk_user_msa_ar53
-    path qc_gtdbtk_output_tarball
+    val removed_genomes_count
+    path qc_gtdbtk_summary_bac120, stageAs: "qc_gtdbtk.bac120.summary.tsv"
+    path qc_gtdbtk_summary_arc53, stageAs: "qc_gtdbtk.ar53.summary.tsv"
+    path qc_gtdbtk_user_msa_bac120, stageAs: "qc_gtdbtk.bac120.user_msa.fasta.gz"
+    path qc_gtdbtk_user_msa_ar53, stageAs: "qc_gtdbtk.ar53.user_msa.fasta.gz"
+    path qc_gtdbtk_output_tarball, stageAs: "qc_gtdbtk_results.tar.gz"
     
 
     output:
@@ -43,34 +42,54 @@ process GTDBTK_TAX {
 
     script:
     """
-    if [ -s ${failed_gunc_file} ] || [ \$(echo "${undefined_taxonomy_ch}" | wc -c) -gt 3 ]
+    if [ ${removed_genomes_count} > 0 ]
     then
         # Some genomes were removed, we need to rerun GTDB-Tk
-        echo "Yes"
-    fi
-    
-    GTDBTK_DATA_PATH=/opt/gtdbtk_refdata \
-    gtdbtk classify_wf \
-    --cpus ${task.cpus} \
-    --pplacer_cpus ${task.cpus} \
-    --genome_dir genomes_dir \
-    --extension ${extension} \
-    --skip_ani_screen \
-    --out_dir gtdbtk_results
-    
-    process_gtdb_unknowns.py -i gtdbtk_results -p processed
-    
-    if [ -e gtdbtk_results/classify/processed_gtdbtk.bac120.summary.tsv ]
-    then
-        mv gtdbtk_results/classify/processed_gtdbtk.bac120.summary.tsv gtdbtk_results/classify/gtdbtk.bac120.summary.tsv
-    fi
-    
-    if [ -e gtdbtk_results/classify/processed_gtdbtk.ar53.summary.tsv ]
-    then
-        mv gtdbtk_results/classify/processed_gtdbtk.ar53.summary.tsv gtdbtk_results/classify/gtdbtk.ar53.summary.tsv
-    fi
-    
-    tar -czf gtdbtk_results.tar.gz gtdbtk_results
+        echo "We need to rerun GTDB-Tk; removed count is ${removed_genomes_count}"
+
+        GTDBTK_DATA_PATH=/opt/gtdbtk_refdata \
+        gtdbtk classify_wf \
+        --cpus ${task.cpus} \
+        --pplacer_cpus ${task.cpus} \
+        --genome_dir genomes_dir \
+        --extension ${extension} \
+        --skip_ani_screen \
+        --out_dir gtdbtk_results
+        
+        process_gtdb_unknowns.py -i gtdbtk_results -p processed
+        
+        if [ -e gtdbtk_results/classify/processed_gtdbtk.bac120.summary.tsv ]
+        then
+            mv gtdbtk_results/classify/processed_gtdbtk.bac120.summary.tsv gtdbtk_results/classify/gtdbtk.bac120.summary.tsv
+        fi
+        
+        if [ -e gtdbtk_results/classify/processed_gtdbtk.ar53.summary.tsv ]
+        then
+            mv gtdbtk_results/classify/processed_gtdbtk.ar53.summary.tsv gtdbtk_results/classify/gtdbtk.ar53.summary.tsv
+        fi
+        
+        tar -czf gtdbtk_results.tar.gz gtdbtk_results
+    else
+         mkdir gtdbtk_results && mkdir gtdbtk_results/classify && mkdir gtdbtk_results/align
+         if [ -s qc_gtdbtk.bac120.summary.tsv ]
+         then
+             cp qc_gtdbtk.bac120.summary.tsv gtdbtk_results/classify/gtdbtk.bac120.summary.tsv
+         fi
+         if [ -s qc_gtdbtk.ar53.summary.tsv ]
+         then
+             cp qc_gtdbtk.ar53.summary.tsv gtdbtk_results/classify/gtdbtk.ar53.summary.tsv
+         fi
+         if [ -s qc_gtdbtk.bac120.user_msa.fasta.gz ]
+         then
+             cp qc_gtdbtk.bac120.user_msa.fasta.gz gtdbtk_results/align/tdbtk.bac120.user_msa.fasta.gz
+         fi
+         if [ -s qc_gtdbtk.ar53.user_msa.fasta.gz ]
+         then
+             cp qc_gtdbtk.ar53.user_msa.fasta.gz gtdbtk_results/align/gtdbtk.ar53.user_msa.fasta.gz
+         fi
+         cp qc_gtdbtk_results.tar.gz gtdbtk_results.tar.gz
+         
+    fi    
     """
 
     stub:

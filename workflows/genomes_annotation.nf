@@ -182,7 +182,7 @@ workflow GAP {
         IDENTIFY_DOMAIN.out.detected_domains
     )
 
-    // undefined_accessions = accessions_with_domains_ch.filter { it[1] == 'Undefined' }.map { it[0] }.collect()
+    // Separate accessions into those we don't know domain for (Undefined) and those that we do
     accessions_with_domains_ch
     .branch {
         defined: it[1] != "Undefined"
@@ -192,60 +192,26 @@ workflow GAP {
     }
     .set { domain_splits }
     
-    //gtdbtk_tables_ch = gtdbtk_tables_qc_ch
-    // GTDBTK_TAX.output = GTDBTK_QC.output
-    // gunc_removed_genomes = Channel
-    //     .fromPath(PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt)
-    //    .splitText()
+    // Add "to_remove" to accessions that have an undefined domain
+    undefined_genomes = domain_splits.undefined.map(it -> [it, "to_remove"])
+    
+    // Do the same with genomes that were removed by GUNC (these are loaded from file first)
     gunc_removed_genomes = PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.map { file_path ->
         def contents = file(file_path).splitText().collect { line ->
         line.trim()
         }
         return contents
     }.flatten().map(it -> [it, "to_remove"])
-    undefined_genomes = domain_splits.undefined.map(it -> [it, "to_remove"])
-    //undefined_genomes.view()
-    //gunc_removed_genomes.view()
-    // gunc_to_remove = gunc_removed_genomes.map(it -> [it, "to_remove"])
-    //gunc_to_remove.view()
-    //list_ch = ['MGYG000300005', 'MGYG000300006', 'MGYG000300007']
-    //list2_ch = ['MGYG000300000']
-    //println "list1 is of type: ${list_ch.getClass().getName()}"
-    //println "gunc is of type: ${gunc_removed_genomes.getClass().getName()}"
-    //println "split is of type: ${undefined_genomes.getClass().getName()}"
-    //println "arraylist is of type: ${arrayList.getClass().getName()}"
-    //if (list2_ch == undefined_genomes) {
-    //println "The lists are equivalent."
-    //    } else {
-    //println "The lists are not equivalent."
-    //}
+    
+    // Make a single set of tuples to remove, then remove these from fna tuples for singleton genomes
     combined_list_to_remove = gunc_removed_genomes.concat(undefined_genomes)
-    filtered_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples \
+    filtered_single_genome_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples \
         .join(combined_list_to_remove, remainder: true) \
         .filter { it -> it[2] == null} \
         .map { it -> [it[0], it[1]] }
-    filtered_fna_tuples.view()
-    //dereplicated_genomes.out.single_genomes_fna_tuples
-    //.map { record ->
-    //    def id = record[0]
-    //    println "ID is ${id}"
-    //    // def status = (gunc_removed_genomes.contains(id) || undefined_genomes.contains(id)) ? 'to_remove' : 'to_keep'
-    //    def status = (undefined_genomes.contains(id)) ? 'to_remove' : 'to_keep'
-
-    //    println "status is ${status}"
-    //    return [id, record[1], status]
-    //}
-    //.view()
-    
-    
-    // dereplicated_genomes.out.single_genomes_fna_tuples.filter{
-    //    it[0].findAll{ list_ch.contains(it[0]) }
-    //}.view()
-
     
     GTDBTK_TAX(
-        dereplicated_genomes.out.single_genomes_fna_tuples \
-        //  .filter { it -> !undefined_accessions.contains(it[0]) } \
+        filtered_single_genome_fna_tuples \
             .map({ it[1] }) \
             .mix(dereplicated_genomes.out.many_genomes_fna_tuples.filter {
                 it[1].name.contains(it[0])
@@ -253,8 +219,7 @@ workflow GAP {
         .collect(),
         channel.value("fa"), // genome file extension
         ch_gtdb_db,
-        domain_splits.undefined.collect(),
-        PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
+        combined_list_to_remove.count(),
         GTDBTK_QC.output
     )
 
