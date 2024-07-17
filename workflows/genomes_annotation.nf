@@ -198,7 +198,9 @@ workflow GAP {
     //     .fromPath(PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt)
     //    .splitText()
     gunc_removed_genomes = PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.map { file_path ->
-        def contents = file(file_path).splitText()
+        def contents = file(file_path).splitText().collect { line ->
+        line.trim()
+        }
         return contents
     }.collect()
     gunc_removed_genomes.view()
