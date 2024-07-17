@@ -24,9 +24,13 @@ process GTDBTK_TAX {
     path genomes_fna, stageAs: "genomes_dir/*"
     val extension
     path gtdbtk_refdata
-    undefined_taxonomy_ch
-    failed_gunc_file
-    qc_output
+    val undefined_taxonomy_ch
+    path failed_gunc_file
+    path qc_gtdbtk_summary_bac120
+    path qc_gtdbtk_summary_arc53
+    path qc_gtdbtk_user_msa_bac120
+    path qc_gtdbtk_user_msa_ar53
+    path qc_gtdbtk_output_tarball
     
 
     output:

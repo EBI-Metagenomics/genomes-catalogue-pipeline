@@ -205,7 +205,7 @@ workflow GAP {
         .collect(),
         channel.value("fa"), // genome file extension
         ch_gtdb_db,
-        domain_splits.undefined,
+        domain_splits.undefined.collect(),
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
         GTDBTK_QC.output
     )
