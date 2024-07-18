@@ -35,7 +35,6 @@ def main(qc, gunc, gtdb, outfile):
                     file_out.write("{}\tUnknown taxonomic domain\n".format(parts[0]))
 
 
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
