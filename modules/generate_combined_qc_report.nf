@@ -3,7 +3,7 @@ process GENERATE_COMBINED_QC_REPORT {
     publishDir(
         path: "${params.outdir}",
         pattern: "combined_removed_genomes_report.txt",
-        saveAs: { "additional_data/intermediate_files/combined_removed_genomes_report.txt" },
+        saveAs: { "additional_data/combined_removed_genomes_report.txt" },
         mode: "copy",
         failOnError: true
     )
