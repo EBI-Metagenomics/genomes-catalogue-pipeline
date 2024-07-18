@@ -82,7 +82,7 @@ process GTDBTK_TAX {
          fi
          if [ -s qc_gtdbtk.bac120.user_msa.fasta.gz ]
          then
-             cp qc_gtdbtk.bac120.user_msa.fasta.gz gtdbtk_results/align/tdbtk.bac120.user_msa.fasta.gz
+             cp qc_gtdbtk.bac120.user_msa.fasta.gz gtdbtk_results/align/gtdbtk.bac120.user_msa.fasta.gz
          fi
          if [ -s qc_gtdbtk.ar53.user_msa.fasta.gz ]
          then
