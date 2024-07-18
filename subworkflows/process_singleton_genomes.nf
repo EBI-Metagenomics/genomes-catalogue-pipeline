@@ -26,9 +26,12 @@ process COLLECT_FAILED_GUNC {
     rm -f gunc_failed.txt || true
     touch gunc_failed.txt
     for GUNC_FAILED in failed_gunc/*; do
-        name=\$(basename \$GUNC_FAILED)
-        genome_name="\${name%"_gunc_empty.txt"}"
-        echo \$genome_name >> gunc_failed.txt
+        if [ \$GUNC_FAILED != "failed_gunc/NO_FILE" ]
+        then
+            name=\$(basename \$GUNC_FAILED)
+            genome_name="\${name%"_gunc_empty.txt"}"
+            echo \$genome_name >> gunc_failed.txt
+        fi
     done
     """
 }
@@ -65,7 +68,7 @@ workflow PROCESS_SINGLETON_GENOMES {
                 it[2].name.contains('_gunc_empty.txt')
             }).map({ cluster_name, cluster_fasta, cluster_gunc ->
                 return cluster_gunc
-            }).collect()
+            }).collect().ifEmpty(file("NO_FILE"))
         )
 
     emit:
