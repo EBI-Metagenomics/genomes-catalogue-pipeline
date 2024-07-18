@@ -42,7 +42,7 @@ process GTDBTK_TAX {
 
     script:
     """
-    if [ ${removed_genomes_count} > 0 ]
+    if [ ${removed_genomes_count} -gt 0 ]
     then
         # Some genomes were removed, we need to rerun GTDB-Tk
         echo "We need to rerun GTDB-Tk; removed count is ${removed_genomes_count}"
@@ -70,6 +70,7 @@ process GTDBTK_TAX {
         
         tar -czf gtdbtk_results.tar.gz gtdbtk_results
     else
+         echo "No genomes were removed; reusing GTDB-Tk results from QC."
          mkdir gtdbtk_results && mkdir gtdbtk_results/classify && mkdir gtdbtk_results/align
          if [ -s qc_gtdbtk.bac120.summary.tsv ]
          then
