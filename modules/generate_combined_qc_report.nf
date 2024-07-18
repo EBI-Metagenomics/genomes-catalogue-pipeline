@@ -2,8 +2,8 @@ process GENERATE_COMBINED_QC_REPORT {
    
     publishDir(
         path: "${params.outdir}",
-        pattern: "combined_removed_genomes_report.txt",
-        saveAs: { "additional_data/combined_removed_genomes_report.txt" },
+        pattern: "combined_QC_failed_report.txt",
+        saveAs: { "additional_data/combined_QC_failed_report.txt" },
         mode: "copy",
         failOnError: true
     )
@@ -16,7 +16,7 @@ process GENERATE_COMBINED_QC_REPORT {
     path gtdbtk_failed
 
     output:
-    path "combined_removed_genomes_report.txt", emit: combined_qc_report
+    path "combined_QC_failed_report.txt", emit: combined_qc_report
 
     script:
     """
@@ -24,11 +24,11 @@ process GENERATE_COMBINED_QC_REPORT {
     --qc ${qc_filtered} \
     --gunc ${gunc_failed} \
     --gtdb ${gtdbtk_failed} \
-    -o combined_removed_genomes_report.txt
+    -o combined_QC_failed_report.txt
     """
 
     stub:
     """
-    touch combined_qc_report.txt
+    touch combined_QC_failed_report.txt
     """
 }
