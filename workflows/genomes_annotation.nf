@@ -220,7 +220,11 @@ workflow GAP {
         channel.value("fa"), // genome file extension
         ch_gtdb_db,
         combined_list_to_remove.count(),
-        GTDBTK_QC.output
+        GTDBTK_QC.out.gtdbtk_summary_bac120.ifEmpty(file("EMPTY")),
+        GTDBTK_QC.out.gtdbtk_summary_arc53.ifEmpty(file("EMPTY")),
+        GTDBTK_QC.out.gtdbtk_user_msa_bac120.ifEmpty(file("EMPTY")),
+        GTDBTK_QC.out.gtdbtk_user_msa_ar53.ifEmpty(file("EMPTY")),
+        GTDBTK_QC.out.gtdbtk_output_tarball
     )
 
     gtdbtk_tables_ch = channel.empty() \
