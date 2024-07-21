@@ -36,7 +36,7 @@ process GECCO_RUN {
     then
         mv ${cluster_name}.clusters.gff ${cluster_name}_gecco.gff
     else
-        touch ${cluster_name}_gecco.gff
+        echo "##gff-version 3" > ${cluster_name}_gecco.gff
     fi
 
     """
