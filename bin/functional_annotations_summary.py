@@ -21,7 +21,6 @@ import sys
 import argparse
 from argparse import RawTextHelpFormatter
 
-
 E_VALUE_CUTOFF = 1e-10
 
 
@@ -138,7 +137,7 @@ def parse_ipr(ipr_results):
                 evalue = float(cols[8])
             except ValueError:
                 continue
-            if evalue > 1e-10:
+            if evalue > E_VALUE_CUTOFF:
                 continue
             ipr_hits.add(cols[0])
         return ipr_hits
