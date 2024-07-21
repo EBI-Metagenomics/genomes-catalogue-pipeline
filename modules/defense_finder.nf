@@ -2,7 +2,7 @@ process DEFENSE_FINDER {
 
     tag "${cluster_name}"
 
-    container 'biocontainers/defense-finder:1.2.0--pyhdfd78af_0'
+    container 'quay.io/biocontainers/defense-finder:1.2.0--pyhdfd78af_0'
 
     input:
     tuple val(cluster_name), path(faa), path(prokka_gff)
