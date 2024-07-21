@@ -35,6 +35,8 @@ process GECCO_RUN {
     if [ -e ${cluster_name}.clusters.gff ]
     then
         mv ${cluster_name}.clusters.gff ${cluster_name}_gecco.gff
+    else
+        touch ${cluster_name}_gecco.gff
     fi
 
     """
