@@ -250,6 +250,10 @@ workflow GAP {
     cluster_reps_gbks = PROCESS_MANY_GENOMES.out.rep_prokka_gbk.mix(
         PROCESS_SINGLETON_GENOMES.out.prokka_gbk
     )
+    
+    cluster_reps_gbks = PROCESS_MANY_GENOMES.out.rep_prokka_gff.mix(
+        PROCESS_SINGLETON_GENOMES.out.prokka_gff
+    )
 
     all_prokka_fna = PROCESS_SINGLETON_GENOMES.out.prokka_fna.mix(
         PROCESS_MANY_GENOMES.out.prokka_fnas
@@ -265,12 +269,15 @@ workflow GAP {
         MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
         all_prokka_fna,
         cluster_reps_gbks,
+        cluster_reps_faas,
+        cluster_reps_gffs,
         species_reps_names_list,
         ch_interproscan_db,
         ch_eggnog_db,
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
-        ch_rfam_rrna_models
+        ch_rfam_rrna_models,
+        defense_finder_db
     )
 
     METADATA_AND_PHYLOTREE(

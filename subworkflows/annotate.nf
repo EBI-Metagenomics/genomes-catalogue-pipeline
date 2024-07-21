@@ -8,6 +8,7 @@ include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
 include { PER_GENOME_ANNONTATION_GENERATOR } from '../modules/per_genome_annotations'
 include { DETECT_RRNA } from '../modules/detect_rrna'
 include { SANNTIS } from '../modules/sanntis'
+include { DEFENSE_FINDER } from '../modules/defense_finder'
 
 
 process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
@@ -49,12 +50,15 @@ workflow ANNOTATE {
         mmseq_90_cluster_rep_faa
         prokka_fnas
         prokka_gbk
+        prokka_faa
+        prokka_gff
         species_reps_names_list
         interproscan_db
         eggnog_db
         eggnog_diamond_db
         eggnog_data_dir
         cmmodels_db
+        defense_finder_db
     main:
 
         mmseq_90_chunks = mmseq_90_cluster_rep_faa.flatten().splitFasta(
@@ -112,6 +116,11 @@ workflow ANNOTATE {
             prokka_fnas,
             cmmodels_db
         )
+        
+        DEFENSE_FINDER(
+            prokka_faa.join(prokka_gff),
+            defense_finder_db
+        )
 
         // Group by cluster //
         per_genome_ips_annotations = PER_GENOME_ANNONTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
@@ -133,4 +142,5 @@ workflow ANNOTATE {
         eggnog_annotation_tsvs = per_genome_eggnog_annotations
         rrna_outs = DETECT_RRNA.out.rrna_out_results.collect()
         sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
+        defense_finder_gffs = DEFENSE_FINDER.out.gff
 }
