@@ -22,6 +22,9 @@ import argparse
 from argparse import RawTextHelpFormatter
 
 
+E_VALUE_CUTOFF = 1e-10
+
+
 def get_kegg_cats(kegg):
     kegg_cats = {}
     with open(kegg, "r") as f:
@@ -62,6 +65,12 @@ def parse_eggnog(eggnog_results):
                 eggnog_fields = get_eggnog_fields(line)
             else:
                 cols = line.strip("\n").split("\t")
+                try:
+                    evalue = float(cols[2])
+                except ValueError:
+                    continue
+                if evalue > E_VALUE_CUTOFF:
+                    continue
                 eggnog_hits.add(cols[0])
                 ko = cols[eggnog_fields["KEGG_ko"]].split(",")
                 ko_mod = cols[eggnog_fields["KEGG_Module"]].split(",")
@@ -125,6 +134,12 @@ def parse_ipr(ipr_results):
         ipr_hits = set()
         for line in f:
             cols = line.strip("\n").split("\t")
+            try:
+                evalue = float(cols[8])
+            except ValueError:
+                continue
+            if evalue > 1e-10:
+                continue
             ipr_hits.add(cols[0])
         return ipr_hits
 
