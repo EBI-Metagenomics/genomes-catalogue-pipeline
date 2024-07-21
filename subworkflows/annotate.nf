@@ -9,6 +9,7 @@ include { PER_GENOME_ANNONTATION_GENERATOR } from '../modules/per_genome_annotat
 include { DETECT_RRNA } from '../modules/detect_rrna'
 include { SANNTIS } from '../modules/sanntis'
 include { DEFENSE_FINDER } from '../modules/defense_finder'
+include { DBCAN } from '../modules/dbcan'
 
 
 process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
@@ -58,7 +59,8 @@ workflow ANNOTATE {
         eggnog_diamond_db
         eggnog_data_dir
         cmmodels_db
-        defense_finder_db
+        defense_finder_db,
+        dbcan_db
     main:
 
         mmseq_90_chunks = mmseq_90_cluster_rep_faa.flatten().splitFasta(
@@ -121,6 +123,11 @@ workflow ANNOTATE {
             prokka_faa.join(prokka_gff),
             defense_finder_db
         )
+        
+        DBCAN(
+            prokka_faa.join(prokka_gff),
+            dbcan_db
+        )        
 
         // Group by cluster //
         per_genome_ips_annotations = PER_GENOME_ANNONTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
@@ -143,4 +150,5 @@ workflow ANNOTATE {
         rrna_outs = DETECT_RRNA.out.rrna_out_results.collect()
         sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
         defense_finder_gffs = DEFENSE_FINDER.out.gff
+        dbcan_gffs = DBCAN.out.dbcan_gff
 }
