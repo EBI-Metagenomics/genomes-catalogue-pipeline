@@ -18,7 +18,7 @@ process DBCAN {
 
     input:
     tuple val(cluster_name), path(faa), path(gff)
-    tuple path(dbcan_db, stageAs: "dbcan_db")
+    path(dbcan_db, stageAs: "dbcan_db")
 
     output:
     tuple val(cluster_name), path("dbcan/${cluster_name}_dbcan.gff")  , emit: dbcan_gff
