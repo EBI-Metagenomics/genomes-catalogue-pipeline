@@ -251,7 +251,7 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.prokka_gbk
     )
     
-    cluster_reps_gbks = PROCESS_MANY_GENOMES.out.rep_prokka_gff.mix(
+    cluster_reps_gffs = PROCESS_MANY_GENOMES.out.rep_prokka_gff.mix(
         PROCESS_SINGLETON_GENOMES.out.prokka_gff
     )
 
