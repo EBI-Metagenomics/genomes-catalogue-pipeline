@@ -99,6 +99,8 @@ ch_defense_finder_db = file(params.defense_finder_db)
 
 ch_dbcan_db = file(params.dbcan_db)
 
+ch_antismash_db = file(params.antismash_db)
+
 /*
     ~~~~~~~~~~~~~~~~~~
        Run workflow
@@ -282,7 +284,8 @@ workflow GAP {
         ch_eggnog_data_dir,
         ch_rfam_rrna_models,
         ch_defense_finder_db,
-        ch_dbcan_db
+        ch_dbcan_db,
+        ch_antismash_db
     )
 
     METADATA_AND_PHYLOTREE(

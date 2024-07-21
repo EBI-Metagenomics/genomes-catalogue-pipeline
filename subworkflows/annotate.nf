@@ -8,6 +8,7 @@ include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
 include { PER_GENOME_ANNONTATION_GENERATOR } from '../modules/per_genome_annotations'
 include { DETECT_RRNA } from '../modules/detect_rrna'
 include { SANNTIS } from '../modules/sanntis'
+include { ANTISMASH } from '../modules/antismash'
 include { DEFENSE_FINDER } from '../modules/defense_finder'
 include { DBCAN } from '../modules/dbcan'
 
@@ -61,6 +62,7 @@ workflow ANNOTATE {
         cmmodels_db
         defense_finder_db
         dbcan_db
+        antismash_db
     main:
 
         mmseq_90_chunks = mmseq_90_cluster_rep_faa.flatten().splitFasta(
@@ -127,7 +129,12 @@ workflow ANNOTATE {
         DBCAN(
             prokka_faa.join(prokka_gff),
             dbcan_db
-        )        
+        ) 
+        
+        ANTISMASH(
+            prokka_gbk,
+            antismash_db
+        )               
 
         // Group by cluster //
         per_genome_ips_annotations = PER_GENOME_ANNONTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
@@ -151,4 +158,5 @@ workflow ANNOTATE {
         sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
         defense_finder_gffs = DEFENSE_FINDER.out.gff
         dbcan_gffs = DBCAN.out.dbcan_gff
+        antismash_gffs = ANTISMASH.out.antismash_gff
 }
