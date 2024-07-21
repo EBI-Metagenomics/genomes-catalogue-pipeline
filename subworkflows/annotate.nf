@@ -59,7 +59,7 @@ workflow ANNOTATE {
         eggnog_diamond_db
         eggnog_data_dir
         cmmodels_db
-        defense_finder_db,
+        defense_finder_db
         dbcan_db
     main:
 
