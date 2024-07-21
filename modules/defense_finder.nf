@@ -1,6 +1,18 @@
 process DEFENSE_FINDER {
 
     tag "${cluster_name}"
+    
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                String cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2);
+                return "species_catalogue/${cluster_prefix}/${cluster_name}/genome/${cluster_name}_defense_finder.gff"
+            }
+        },
+        mode: 'copy',
+        failOnError: true
+    )
 
     container 'quay.io/biocontainers/defense-finder:1.2.0--pyhdfd78af_0'
 
