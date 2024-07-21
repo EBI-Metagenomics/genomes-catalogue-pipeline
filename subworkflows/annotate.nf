@@ -11,6 +11,7 @@ include { SANNTIS } from '../modules/sanntis'
 include { ANTISMASH } from '../modules/antismash'
 include { DEFENSE_FINDER } from '../modules/defense_finder'
 include { DBCAN } from '../modules/dbcan'
+include { GECCO_RUN } from '../modules/gecco'
 
 
 process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
@@ -134,7 +135,11 @@ workflow ANNOTATE {
         ANTISMASH(
             prokka_gbk,
             antismash_db
-        )               
+        )     
+        
+        GECCO_RUN(
+            prokka_gbk    
+        )     
 
         // Group by cluster //
         per_genome_ips_annotations = PER_GENOME_ANNONTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
@@ -159,4 +164,5 @@ workflow ANNOTATE {
         defense_finder_gffs = DEFENSE_FINDER.out.gff
         dbcan_gffs = DBCAN.out.dbcan_gff
         antismash_gffs = ANTISMASH.out.antismash_gff
+        gecco_gffs = GECCO_RUN.out.gecco_gff
 }
