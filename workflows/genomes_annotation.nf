@@ -161,7 +161,8 @@ workflow GAP {
         .collectFile(name: 'gtdbtk.summary.tsv')
         
     IDENTIFY_DOMAIN(
-        gtdbtk_tables_qc_ch
+        gtdbtk_tables_qc_ch,
+        dereplicated_genomes.out.drep_split_text
     )
     
     accessions_with_domains_ch = IDENTIFY_DOMAIN.out.detected_domains.flatMap { file ->

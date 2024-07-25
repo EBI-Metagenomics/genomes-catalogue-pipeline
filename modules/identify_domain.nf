@@ -12,13 +12,14 @@ process IDENTIFY_DOMAIN {
 
     input:
     path gtdb_summary_tsv
+    path cluster_splits
 
     output:
     path "domains.csv", emit: detected_domains
 
     script:
     """
-    identify_domain.py -i ${gtdb_summary_tsv} -o domains.csv
+    identify_domain.py -i ${gtdb_summary_tsv} -o domains.csv -c ${cluster_splits}
     """
 
     stub:
