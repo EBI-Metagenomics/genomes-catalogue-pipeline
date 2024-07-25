@@ -52,6 +52,7 @@ include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
+include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 include { DETECT_NCRNA } from '../modules/detect_ncrna'
 include { INDEX_FNA } from '../modules/index_fna'
 include { ANNONTATE_GFF } from '../modules/annotate_gff'
@@ -346,6 +347,10 @@ workflow GAP {
     FUNCTIONAL_ANNOTATION_SUMMARY(
         faa_and_annotations,
         ch_kegg_classes
+    )
+    
+    KEGG_COMPLETENESS(
+        ANNOTATE.out.eggnog_annotation_tsvs
     )
 
     DETECT_NCRNA(
