@@ -20,7 +20,7 @@ process KEGG_COMPLETENESS {
     tuple val(cluster), file(eggnog_annotation_tsvs)
 
     output:
-    tuple val(cluster), path("*summary.kegg_pathways.tsv"), emit: pathways
+    tuple val(cluster), path("*_kegg_pathways.tsv"), emit: pathways
 
     script:
     """
@@ -30,11 +30,13 @@ process KEGG_COMPLETENESS {
     give_pathways \\
     -l ${cluster}_kos.txt \\
     -o ${cluster}
+    
+    mv ${cluster}.kegg.summary.kegg_pathways.tsv ${cluster}_kegg_pathways.tsv
     """
 
     stub:
     """
-    touch ${cluster}.kegg.summary.kegg_pathways.tsv
+    touch ${cluster}_kegg_pathways.tsv
 
     """
 }
