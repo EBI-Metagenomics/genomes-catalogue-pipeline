@@ -31,7 +31,7 @@ process KEGG_COMPLETENESS {
     -l ${cluster}_kos.txt \\
     -o ${cluster}
     
-    mv ${cluster}.kegg.summary.kegg_pathways.tsv ${cluster}_kegg_pathways.tsv
+    mv ${cluster}.summary.kegg_pathways.tsv ${cluster}_kegg_pathways.tsv
     """
 
     stub:
