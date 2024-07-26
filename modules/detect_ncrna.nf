@@ -59,9 +59,9 @@ process DETECT_NCRNA {
     path rfam_ncrna_models
 
     output:
-    tuple val(cluster_name), path('*.ncrna.deoverlap.tbl'), emit: ncrna_tblout
-    tuple val(cluster_name), path('*_rRNAs.out'), emit: rrna_out_results
-    tuple val(cluster_name), path('*_rRNAs.fasta'), emit: rrna_fasta_results
+    tuple val(fasta.baseName), path('*.ncrna.deoverlap.tbl'), emit: ncrna_tblout
+    tuple val(fasta.baseName), path('*_rRNAs.out'), emit: rrna_out_results
+    tuple val(fasta.baseName), path('*_rRNAs.fasta'), emit: rrna_fasta_results
 
     script:
     """

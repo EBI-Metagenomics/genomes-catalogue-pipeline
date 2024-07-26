@@ -293,13 +293,13 @@ workflow GAP {
         accessions_with_domains_ch,
         ch_rfam_ncrna_models
     )
-
+    
     METADATA_AND_PHYLOTREE(
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
         PREPARE_DATA.out.extra_weight_table,
         PREPARE_DATA.out.genomes_checkm,
-        DETECT_RNA.out.rrna_outs,
+        DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
         PREPARE_DATA.out.genomes_name_mapping,
         dereplicated_genomes.out.drep_split_text,
         ch_ftp_name,
