@@ -392,20 +392,29 @@ workflow GAP {
     )
 
     // REPS //
-    ANNONTATE_GFF(
+    ANNOTATE_GFF(
         cluster_reps_gff.join(
-            reps_ips
-        ).join(
-           reps_eggnog
-        ).join(
-            ANNOTATE.out.sanntis_annotation_gffs
+            reps_eggnog
         ).join(
             reps_ncrna
         ).join(
-            CRISPRCAS_FINDER.out.hq_gff
+            DETECT_RNA.out.trna_gff
         ).join(
-            AMRFINDER_PLUS.out.amrfinder_tsv
-        )
+            CRISPRCAS_FINDER.out.hq_gff, remainder: true
+        ).join(
+            AMRFINDER_PLUS.out.amrfinder_tsv, remainder: true
+        ).join(
+            ANTISMASH.out.antismash_gff, remainder: true
+        ).join(
+            GECCO_RUN.out.gecco_gff, remainder: true
+        ).join(
+            DBCAN.out.dbcan_gff, remainder: true
+        ).join(
+            DEFENSE_FINDER.out.gff, remainder: true
+        ).join(
+            reps_ips
+        ).join(
+            ANNOTATE.out.sanntis_annotation_gffs, remainder: true
     )
 
     /* This operation will generate a list of tuples for the json generation
