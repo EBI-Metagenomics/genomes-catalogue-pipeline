@@ -17,7 +17,7 @@ process DETECT_TRNA {
                 def output_file = file(filename);
                 def genome_id = fasta.baseName;
                 if ( output_file.name.contains("_tRNA_20aa") ) {
-                    return "additional_data/rRNA_outs_new/${genome_id}/${output_file.name}";
+                    return "additional_data/rRNA_outs/${genome_id}/${output_file.name}";
                 }
                 return null;
             }

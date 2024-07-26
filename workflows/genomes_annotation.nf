@@ -284,7 +284,6 @@ workflow GAP {
         ch_eggnog_db,
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
-        ch_rfam_rrna_models,
         ch_defense_finder_db,
         ch_dbcan_db,
         ch_antismash_db
@@ -301,7 +300,7 @@ workflow GAP {
         all_prokka_fna.map({ it[1] }).collect(),
         PREPARE_DATA.out.extra_weight_table,
         PREPARE_DATA.out.genomes_checkm,
-        ANNOTATE.out.rrna_outs,
+        DETECT_RNA.out.rrna_outs,
         PREPARE_DATA.out.genomes_name_mapping,
         dereplicated_genomes.out.drep_split_text,
         ch_ftp_name,

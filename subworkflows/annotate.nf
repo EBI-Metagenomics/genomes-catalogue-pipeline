@@ -6,7 +6,6 @@ include { IPS } from '../modules/interproscan'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ORTHOLOGS } from '../modules/eggnog'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
 include { PER_GENOME_ANNONTATION_GENERATOR } from '../modules/per_genome_annotations'
-include { DETECT_RRNA } from '../modules/detect_rrna'
 include { SANNTIS } from '../modules/sanntis'
 include { ANTISMASH } from '../modules/antismash'
 include { DEFENSE_FINDER } from '../modules/defense_finder'
@@ -60,7 +59,6 @@ workflow ANNOTATE {
         eggnog_db
         eggnog_diamond_db
         eggnog_data_dir
-        cmmodels_db
         defense_finder_db
         dbcan_db
         antismash_db
@@ -115,12 +113,6 @@ workflow ANNOTATE {
             species_reps_names_list,
             mmseq_90_tsv
         )
-
-        // RRNA detection in all the genomes //
-        DETECT_RRNA(
-            prokka_fnas,
-            cmmodels_db
-        )
         
         DEFENSE_FINDER(
             prokka_faa.join(prokka_gff),
@@ -159,7 +151,6 @@ workflow ANNOTATE {
     emit:
         ips_annotation_tsvs = per_genome_ips_annotations
         eggnog_annotation_tsvs = per_genome_eggnog_annotations
-        rrna_outs = DETECT_RRNA.out.rrna_out_results.collect()
         sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
         defense_finder_gffs = DEFENSE_FINDER.out.gff
         dbcan_gffs = DBCAN.out.dbcan_gff

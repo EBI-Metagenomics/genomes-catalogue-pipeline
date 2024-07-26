@@ -23,5 +23,5 @@ workflow DETECT_RNA {
     emit:
         trna_count = DETECT_TRNA.out.trna_count
         ncrna_tblout = DETECT_NCRNA.out.ncrna_tblout
-
+        rrna_outs = DETECT_NCRNA.out.rrna_out_results.join(DETECT_TRNA.out.trna_out)
 }

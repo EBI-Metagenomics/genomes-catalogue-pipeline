@@ -8,7 +8,7 @@ process DETECT_NCRNA {
         saveAs: {
             filename -> {
                 def result_file = file(filename);
-                return "additional_data/ncrna_deoverlapped_species_reps_new/${fasta.baseName}.ncrna.deoverlap.tbl";
+                return "additional_data/ncrna_deoverlapped_species_reps/${fasta.baseName}.ncrna.deoverlap.tbl";
             }
         },
         mode: 'copy'
@@ -45,7 +45,7 @@ process DETECT_NCRNA {
                 def output_file = file(filename);
                 def genome_id = fasta.baseName;
                 if ( output_file.name.contains("_rRNAs") ) {
-                    return "additional_data/rRNA_outs_new/${genome_id}/${output_file.name}";
+                    return "additional_data/rRNA_outs/${genome_id}/${output_file.name}";
                 }
                 return null;
             }
