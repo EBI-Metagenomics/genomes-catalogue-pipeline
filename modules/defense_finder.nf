@@ -21,7 +21,7 @@ process DEFENSE_FINDER {
     path(defense_finder_db)
 
     output:
-    path("defense_finder_output/${cluster_name}_defense_finder.gff"), emit: gff
+    tuple val(cluster_name), path("defense_finder_output/${cluster_name}_defense_finder.gff"), emit: gff
 
     script:
     """
