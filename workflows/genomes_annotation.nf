@@ -49,11 +49,11 @@ include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
 include { ANNOTATE } from '../subworkflows/annotate'
 include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
 include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
+include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
 include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
-include { DETECT_NCRNA } from '../modules/detect_ncrna'
 include { INDEX_FNA } from '../modules/index_fna'
 include { ANNONTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
@@ -289,6 +289,12 @@ workflow GAP {
         ch_dbcan_db,
         ch_antismash_db
     )
+    
+    DETECT_RNA(
+        all_prokka_fna,
+        accessions_with_domains_ch,
+        ch_rfam_ncrna_models
+    )
 
     METADATA_AND_PHYLOTREE(
         cluster_reps_fnas.map({ it[1]}).collect(),
@@ -354,11 +360,6 @@ workflow GAP {
         ANNOTATE.out.eggnog_annotation_tsvs
     )
 
-    DETECT_NCRNA(
-        all_prokka_fna,
-        ch_rfam_ncrna_models
-    )
-
     INDEX_FNA(
         all_prokka_fna
     )
@@ -376,7 +377,7 @@ workflow GAP {
     reps_eggnog = ANNOTATE.out.eggnog_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
-    reps_ncrna = DETECT_NCRNA.out.ncrna_tblout.filter {
+    reps_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
         it[1].name.contains(it[0])
     }
 
