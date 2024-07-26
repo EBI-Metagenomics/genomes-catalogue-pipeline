@@ -80,7 +80,6 @@ ch_eggnog_db = file(params.eggnog_db)
 ch_eggnog_diamond_db = file(params.eggnong_diamond_db)
 ch_eggnog_data_dir = file(params.eggnong_data_dir)
 
-ch_rfam_rrna_models = file(params.rfam_rrna_models)
 ch_rfam_ncrna_models = file(params.rfam_ncrna_models)
 
 ch_geo_metadata = file(params.geo_metadata)
