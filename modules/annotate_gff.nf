@@ -73,12 +73,6 @@ process ANNOTATE_GFF {
         df_flag = "--defense-finder ${df_gff}"
     }
     """
-    annotate_gff.py \
-    -g ${gff} \
-
-    -e ${eggnog_annotations_tsv} \
-    -r ${ncrna_tsv} \
-    ${crisprcas_flag} ${sanntis_flag} ${amrfinder_flag}
     
     annotate_gff.py \
     -g ${gff} \
