@@ -55,7 +55,7 @@ include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
 include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 include { INDEX_FNA } from '../modules/index_fna'
-include { ANNONTATE_GFF } from '../modules/annotate_gff'
+include { ANNOTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
 include { IQTREE as IQTREE_AR } from '../modules/iqtree'
@@ -404,17 +404,18 @@ workflow GAP {
         ).join(
             AMRFINDER_PLUS.out.amrfinder_tsv, remainder: true
         ).join(
-            ANTISMASH.out.antismash_gff, remainder: true
+            ANNOTATE.out.antismash_gffs, remainder: true
         ).join(
-            GECCO_RUN.out.gecco_gff, remainder: true
+            ANNOTATE.out.gecco_gffs, remainder: true
         ).join(
-            DBCAN.out.dbcan_gff, remainder: true
+            ANNOTATE.out.dbcan_gffs, remainder: true
         ).join(
-            DEFENSE_FINDER.out.gff, remainder: true
+            ANNOTATE.out.defense_finder_gffs, remainder: true
         ).join(
             reps_ips
         ).join(
             ANNOTATE.out.sanntis_annotation_gffs, remainder: true
+        )
     )
 
     /* This operation will generate a list of tuples for the json generation
@@ -428,7 +429,7 @@ workflow GAP {
         file(core_genes)       // only for many_genomes clusters otherwise empty
     )
     */
-    files_for_json_summary = ANNONTATE_GFF.out.annotated_gff.join(
+    files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
         FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
     ).join(
         cluster_reps_faa

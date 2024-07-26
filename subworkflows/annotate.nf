@@ -1,11 +1,11 @@
 /*
- * Functional annontation of the genomes of the cluster reps
+ * Functional annotation of the genomes of the cluster reps
 */
 
 include { IPS } from '../modules/interproscan'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ORTHOLOGS } from '../modules/eggnog'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
-include { PER_GENOME_ANNONTATION_GENERATOR } from '../modules/per_genome_annotations'
+include { PER_GENOME_ANNOTATION_GENERATOR } from '../modules/per_genome_annotations'
 include { SANNTIS } from '../modules/sanntis'
 include { ANTISMASH } from '../modules/antismash'
 include { DEFENSE_FINDER } from '../modules/defense_finder'
@@ -92,7 +92,7 @@ workflow ANNOTATE {
             eggnog_data_dir
         )
 
-        interproscan_annotations = IPS.out.ips_annontations.collectFile(
+        interproscan_annotations = IPS.out.ips_annotations.collectFile(
             name: "ips_annotations.tsv",
         )
         eggnog_mapper_annotations = EGGNOG_MAPPER_ANNOTATIONS.out.annotations.collectFile(
@@ -107,7 +107,7 @@ workflow ANNOTATE {
             mmseq_90_tarball
         )
 
-        PER_GENOME_ANNONTATION_GENERATOR(
+        PER_GENOME_ANNOTATION_GENERATOR(
             interproscan_annotations,
             eggnog_mapper_annotations,
             species_reps_names_list,
@@ -134,12 +134,12 @@ workflow ANNOTATE {
         )     
 
         // Group by cluster //
-        per_genome_ips_annotations = PER_GENOME_ANNONTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
+        per_genome_ips_annotations = PER_GENOME_ANNOTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
             def key = file.name.toString().tokenize('_').get(0)
             return tuple(key, file)
         }
 
-        per_genome_eggnog_annotations = PER_GENOME_ANNONTATION_GENERATOR.out.eggnog_annotation_tsvs | flatten | map { file ->
+        per_genome_eggnog_annotations = PER_GENOME_ANNOTATION_GENERATOR.out.eggnog_annotation_tsvs | flatten | map { file ->
             def key = file.name.toString().tokenize('_').get(0)
             return tuple(key, file)
         }

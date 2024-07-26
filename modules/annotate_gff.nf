@@ -1,4 +1,4 @@
-process ANNONTATE_GFF {
+process ANNOTATE_GFF {
 
     tag "${cluster}"
 
@@ -42,7 +42,7 @@ process ANNONTATE_GFF {
         file(dbcan_gff),
         file(df_gff),
         file(ips_annotations_tsv),
-        file(sanntis_annotations_gff),
+        file(sanntis_annotations_gff)
     
     output:
     tuple val(cluster), path("*_annotated.gff"), emit: annotated_gff
