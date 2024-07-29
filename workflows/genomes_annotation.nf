@@ -140,10 +140,12 @@ workflow GAP {
     )
     
     GTDBTK_QC(
-        dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] }) \
-        .mix(dereplicated_genomes.out.many_genomes_fna_tuples.filter {
-            it[1].name.contains(it[0])
-        }.map({ it[1] })) \
+      dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] })
+          .mix(
+              dereplicated_genomes.out.many_genomes_fna_tuples.filter { it[1].name.contains(it[0]) }
+                  .map({ it[1] })
+          )
+          .collect(),
         .collect(),
         channel.value("fa"), // genome file extension
         ch_gtdb_db
