@@ -145,7 +145,6 @@ workflow GAP {
               dereplicated_genomes.out.many_genomes_fna_tuples.filter { it[1].name.contains(it[0]) }
                   .map({ it[1] })
           )
-          .collect(),
         .collect(),
         channel.value("fa"), // genome file extension
         ch_gtdb_db
