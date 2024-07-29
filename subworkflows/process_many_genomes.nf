@@ -10,7 +10,7 @@ include { PROKKA } from '../modules/prokka'
 workflow PROCESS_MANY_GENOMES {
     take:
         many_genomes_clusters // list<tuple(cluster_name, genome_fna)>
-        accessions_with_domains_tuples
+        accessions_with_domains_tuples // tuple( mgyg_accession, domain ) - the domain is either "Bacteria", "Archea" or "Undefined"
     main:
 
         PROKKA(
