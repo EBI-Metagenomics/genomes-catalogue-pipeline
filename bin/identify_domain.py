@@ -26,6 +26,8 @@ def main(infile, outfile):
             if line.startswith("user_genome"):
                 pass
             else:
+                # Parse GTDB output lines where the first 2 fields look like this:
+                # MGYG000300003\td__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__Chromatiales;f__Sedimenticolaceae;g__;s__
                 genome, taxonomy = line.strip().split("\t")[0], line.strip().split("\t")[1]
                 first_segment = taxonomy.split(";")[0]
                 if first_segment.lower().endswith("bacteria"):
