@@ -41,7 +41,7 @@ include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
 include { GTDBTK_QC } from '../modules/gtdbtk_qc'
 include { GTDBTK_TAX } from '../modules/gtdbtk_tax'
-include { IDENTIFY_DOMAIN } from '../modules/identify_domain'
+include { PARSE_DOMAIN } from '../modules/parse_domain'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { GENERATE_COMBINED_QC_REPORT } from '../modules/generate_combined_qc_report'
@@ -153,11 +153,11 @@ workflow GAP {
         .mix(GTDBTK_QC.out.gtdbtk_summary_bac120, GTDBTK_QC.out.gtdbtk_summary_arc53) \
         .collectFile(name: 'gtdbtk.summary.tsv')
         
-    IDENTIFY_DOMAIN(
+    PARSE_DOMAIN(
         gtdbtk_tables_qc_ch
     )
     
-    accessions_with_domains_ch = IDENTIFY_DOMAIN.out.detected_domains.flatMap { file ->
+    accessions_with_domains_ch = PARSE_DOMAIN.out.detected_domains.flatMap { file ->
         file.readLines().collect { line ->
             def (genomeName, domain) = line.split(',')
             [genomeName, domain]
@@ -179,7 +179,7 @@ workflow GAP {
     GENERATE_COMBINED_QC_REPORT(
         PREPARE_DATA.out.qs50_failed,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
-        IDENTIFY_DOMAIN.out.detected_domains
+        PARSE_DOMAIN.out.detected_domains
     )
 
     // Separate accessions into those we don't know domain for (Undefined) and those that we do

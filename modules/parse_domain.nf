@@ -1,4 +1,4 @@
-process IDENTIFY_DOMAIN {
+process PARSE_DOMAIN {
    
     publishDir(
         path: "${params.outdir}",
@@ -18,7 +18,7 @@ process IDENTIFY_DOMAIN {
 
     script:
     """
-    identify_domain.py -i ${gtdb_summary_tsv} -o domains.csv
+    parse_domain.py -i ${gtdb_summary_tsv} -o domains.csv
     """
 
     stub:
