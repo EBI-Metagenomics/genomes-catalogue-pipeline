@@ -39,6 +39,5 @@ process KEGG_COMPLETENESS {
     stub:
     """
     touch ${cluster}_kegg_pathways.tsv
-
     """
 }
