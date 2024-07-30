@@ -208,8 +208,8 @@ workflow GAP {
     combined_list_to_remove = gunc_removed_genomes.concat(undefined_genomes)
     filtered_single_genome_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples \
         .join(combined_list_to_remove, remainder: true) \
-        .filter { it -> it[2] == null} \
-        .map { it -> [it[0], it[1]] }
+        .filter { genome_name, fa_path, remove_flag -> remove_flag == null} \
+        .map { genome_name, fa_path, remove_flag -> [genome_name, fa_path] }
     
     GTDBTK_TAX(
         filtered_single_genome_fna_tuples 
