@@ -76,4 +76,5 @@ workflow PREPARE_DATA {
         genomes_checkm = RENAME_FASTA.out.renamed_checkm
         genomes_name_mapping = RENAME_FASTA.out.rename_mapping
         extra_weight_table = GENERATE_EXTRA_WEIGHT.out.extra_weight_table
+        qs50_failed = FILTER_QS50.out.failed_genomes
 }

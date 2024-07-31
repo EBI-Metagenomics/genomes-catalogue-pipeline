@@ -1,13 +1,11 @@
 /* TODO: improve description
- * GTDB TK for taxonomic assignment
  * Phylogenetic tree generation and metadata colleciton.
 */
 
-include { GTDBTK } from '../modules/gtdbtk'
 include { METADATA_TABLE } from '../modules/metadata_table'
 include { PHYLO_TREE } from '../modules/phylo_tree'
 
-workflow GTDBTK_AND_METADATA {
+workflow METADATA_AND_PHYLOTREE {
 
     take:
         cluster_reps_fnas // list of .fna files for the cluster reps
@@ -21,18 +19,8 @@ workflow GTDBTK_AND_METADATA {
         ftp_version
         geo_metadata
         gunc_failed_txt
-        gtdbtk_refdata
+        gtdbtk_tables_ch
     main:
-        GTDBTK(
-            cluster_reps_fnas,
-            gtdbtk_refdata
-        )
-
-        gtdbtk_tables_ch = channel.empty().mix(
-            GTDBTK.out.gtdbtk_summary_bac120,
-            GTDBTK.out.gtdbtk_summary_arc53
-        ).collectFile(name: 'gtdbtk.summary.tsv')
-
         METADATA_TABLE(
             all_genomes_fnas,
             extra_weights_tsv,
@@ -50,11 +38,6 @@ workflow GTDBTK_AND_METADATA {
         PHYLO_TREE(gtdbtk_tables_ch)
 
     emit:
-        gtdbtk_folder = gtdbtk_tables_ch
-        gtdbtk_user_msa_bac120 = GTDBTK.out.gtdbtk_user_msa_bac120
-        gtdbtk_user_msa_ar53 = GTDBTK.out.gtdbtk_user_msa_ar53
-        gtdbtk_summary_bac120 = GTDBTK.out.gtdbtk_summary_bac120
-        gtdbtk_summary_arc53 = GTDBTK.out.gtdbtk_summary_arc53
         metadata_tsv = METADATA_TABLE.out.metadata_tsv
         phylo_tree = PHYLO_TREE.out.phylo_tree
 }

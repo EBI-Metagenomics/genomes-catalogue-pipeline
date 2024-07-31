@@ -47,7 +47,7 @@ process PROKKA {
     label 'process_light'
 
     input:
-    tuple val(cluster_name), path(fasta)
+    tuple val(cluster_name), path(fasta), val(domain)
 
     output:
     tuple val(cluster_name), file("${fasta.baseName}_prokka/${fasta.baseName}.gff"), emit: gff
@@ -64,7 +64,7 @@ process PROKKA {
 
     prokka ${fasta.baseName}_cleaned.fasta \
     --cpus ${task.cpus} \
-    --kingdom 'Bacteria' \
+    --kingdom ${domain} \
     --outdir ${fasta.baseName}_prokka \
     --prefix ${fasta.baseName} \
     --force \
