@@ -28,7 +28,7 @@ from utils import download_fasta, qs50, run_request
 API_ENDPOINT = 'https://www.ebi.ac.uk/ena/portal/api/search'
 
 
-def main(input_file, directory, unzip, bins, ignore_metadata, do_not_filter):
+def main(input_file, directory, unzip, bins, ignore_metadata, skip_filter):
     metadata = list()
     studies = get_studies(input_file)
     logging.debug(f"Got {len(studies)} studies")
@@ -41,7 +41,7 @@ def main(input_file, directory, unzip, bins, ignore_metadata, do_not_filter):
         for study_acc in studies:
             logging.debug(f"Processing {study_acc}")
             number_of_mags, study_metadata = load_study(study_acc, directory, unzip, bins, ignore_metadata,
-                                                        do_not_filter)
+                                                        skip_filter)
             metadata.extend(study_metadata)
             logging.debug(f"Found {str(number_of_mags)} MAGs in study {study_acc}")
     if not ignore_metadata:
@@ -85,7 +85,7 @@ def get_biome_studies(biomes):
     return studies_to_add
 
 
-def load_study(acc, directory, unzip, bins, ignore_metadata, do_not_filter):
+def load_study(acc, directory, unzip, bins, ignore_metadata, skip_filter):
     already_fetched = [i.split('.')[0] for i in os.listdir(directory)]
     number_of_mags = 0
     if bins:
@@ -121,7 +121,7 @@ def load_study(acc, directory, unzip, bins, ignore_metadata, do_not_filter):
                                   'flag to download files without metadata.'.
                                   format(line.strip().split('\t')[sample_field]))
                     sys.exit(1)
-            if not ignore_metadata and not qs50(float(contamination), float(completeness)) and not do_not_filter:
+            if not ignore_metadata and not qs50(float(contamination), float(completeness)) and not skip_filter:
                 logging.info('MAG did not pass QC: {}, {}, {}'.
                              format(line.strip().split('\t')[sample_field], completeness, contamination))
             else:
@@ -175,8 +175,8 @@ def parse_args():
     parser.add_argument('--ignore-metadata', action='store_true',
                         help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
                              'provided in the input file. Default = False')
-    parser.add_argument('--do-not-filter', action='store_true', help='Do not skip genomes that fail QS50 check. '
-                                                                     'Default = False')
+    parser.add_argument('--skip-filter', action='store_true', help='Do not skip genomes that fail QS50 check. '
+                                                                   'Default = False')
     parser.add_argument('--debug', action='store_true', help='set logging to DEBUG')
     return parser.parse_args()
 
@@ -188,4 +188,4 @@ if __name__ == '__main__':
     else:
         logging.basicConfig(level=logging.INFO)
         
-    main(args.infile, args.dir, args.unzip, args.bins, args.ignore_metadata, args.do_not_filter)
+    main(args.infile, args.dir, args.unzip, args.bins, args.ignore_metadata, args.skip_filter)
