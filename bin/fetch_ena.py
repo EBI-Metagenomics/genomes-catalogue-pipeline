@@ -162,7 +162,7 @@ def parse_args():
                                                  'The script also creates a metadata file (genome_stats.txt) in the '
                                                  'same directory')
     parser.add_argument('-i', '--infile', required=True,
-                        help='A file containing a list of ENA project accessions, one accession per line, or'
+                        help='A file containing a list of ENA project accessions, one accession per line, or '
                              'a list of biomes, one biome per line, to fetch all MAGs belonging to the '
                              'specified biomes')
     parser.add_argument('-d', '--dir', required=True,
