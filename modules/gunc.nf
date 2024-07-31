@@ -1,7 +1,7 @@
 
 process GUNC {
 
-    tag "${fasta.name}"
+    tag "${cluster_name}"
 
     publishDir(
         path: "${params.outdir}/additional_data/intermediate_files/gunc/",

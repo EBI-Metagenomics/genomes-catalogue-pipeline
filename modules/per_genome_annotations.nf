@@ -5,7 +5,7 @@
  * representative genome
 */
 
-process PER_GENOME_ANNONTATION_GENERATOR {
+process PER_GENOME_ANNOTATION_GENERATOR {
 
     publishDir(
         path: "${params.outdir}",

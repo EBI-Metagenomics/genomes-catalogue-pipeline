@@ -49,12 +49,13 @@ include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
 include { ANNOTATE } from '../subworkflows/annotate'
 include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
 include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
+include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
-include { DETECT_NCRNA } from '../modules/detect_ncrna'
+include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 include { INDEX_FNA } from '../modules/index_fna'
-include { ANNONTATE_GFF } from '../modules/annotate_gff'
+include { ANNOTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
 include { IQTREE as IQTREE_AR } from '../modules/iqtree'
@@ -79,7 +80,6 @@ ch_eggnog_db = file(params.eggnog_db)
 ch_eggnog_diamond_db = file(params.eggnong_diamond_db)
 ch_eggnog_data_dir = file(params.eggnong_data_dir)
 
-ch_rfam_rrna_models = file(params.rfam_rrna_models)
 ch_rfam_ncrna_models = file(params.rfam_ncrna_models)
 
 ch_geo_metadata = file(params.geo_metadata)
@@ -94,6 +94,12 @@ ch_ftp_version = channel.value(params.ftp_version)
 ch_amrfinder_plus_db = file(params.amrfinder_plus_db)
 
 ch_checkm2_db = file(params.checkm2_db)
+
+ch_defense_finder_db = file(params.defense_finder_db)
+
+ch_dbcan_db = file(params.dbcan_db)
+
+ch_antismash_db = file(params.antismash_db)
 
 /*
     ~~~~~~~~~~~~~~~~~~
@@ -155,7 +161,8 @@ workflow GAP {
         .collectFile(name: 'gtdbtk.summary.tsv')
         
     PARSE_DOMAIN(
-        gtdbtk_tables_qc_ch
+        gtdbtk_tables_qc_ch,
+        dereplicated_genomes.out.drep_split_text
     )
     
     accessions_with_domains_ch = PARSE_DOMAIN.out.detected_domains.flatMap { file ->
@@ -255,6 +262,10 @@ workflow GAP {
     cluster_reps_gbks = PROCESS_MANY_GENOMES.out.rep_prokka_gbk.mix(
         PROCESS_SINGLETON_GENOMES.out.prokka_gbk
     )
+    
+    cluster_reps_gffs = PROCESS_MANY_GENOMES.out.rep_prokka_gff.mix(
+        PROCESS_SINGLETON_GENOMES.out.prokka_gff
+    )
 
     all_prokka_fna = PROCESS_SINGLETON_GENOMES.out.prokka_fna.mix(
         PROCESS_MANY_GENOMES.out.prokka_fnas
@@ -270,20 +281,30 @@ workflow GAP {
         MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
         all_prokka_fna,
         cluster_reps_gbks,
+        cluster_reps_faas,
+        cluster_reps_gffs,
         species_reps_names_list,
         ch_interproscan_db,
         ch_eggnog_db,
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
-        ch_rfam_rrna_models
+        ch_defense_finder_db,
+        ch_dbcan_db,
+        ch_antismash_db
     )
-
+    
+    DETECT_RNA(
+        all_prokka_fna,
+        accessions_with_domains_ch,
+        ch_rfam_ncrna_models
+    )
+    
     METADATA_AND_PHYLOTREE(
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
         PREPARE_DATA.out.extra_weight_table,
         PREPARE_DATA.out.genomes_checkm,
-        ANNOTATE.out.rrna_outs,
+        DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
         PREPARE_DATA.out.genomes_name_mapping,
         dereplicated_genomes.out.drep_split_text,
         ch_ftp_name,
@@ -337,10 +358,9 @@ workflow GAP {
         faa_and_annotations,
         ch_kegg_classes
     )
-
-    DETECT_NCRNA(
-        all_prokka_fna,
-        ch_rfam_ncrna_models
+    
+    KEGG_COMPLETENESS(
+        ANNOTATE.out.eggnog_annotation_tsvs
     )
 
     INDEX_FNA(
@@ -360,7 +380,7 @@ workflow GAP {
     reps_eggnog = ANNOTATE.out.eggnog_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
-    reps_ncrna = DETECT_NCRNA.out.ncrna_tblout.filter {
+    reps_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
         it[1].name.contains(it[0])
     }
 
@@ -377,19 +397,29 @@ workflow GAP {
     )
 
     // REPS //
-    ANNONTATE_GFF(
+    ANNOTATE_GFF(
         cluster_reps_gff.join(
-            reps_ips
-        ).join(
-           reps_eggnog
-        ).join(
-            ANNOTATE.out.sanntis_annotation_gffs
+            reps_eggnog
         ).join(
             reps_ncrna
         ).join(
-            CRISPRCAS_FINDER.out.hq_gff
+            DETECT_RNA.out.trna_gff
         ).join(
-            AMRFINDER_PLUS.out.amrfinder_tsv
+            CRISPRCAS_FINDER.out.hq_gff, remainder: true
+        ).join(
+            AMRFINDER_PLUS.out.amrfinder_tsv, remainder: true
+        ).join(
+            ANNOTATE.out.antismash_gffs, remainder: true
+        ).join(
+            ANNOTATE.out.gecco_gffs, remainder: true
+        ).join(
+            ANNOTATE.out.dbcan_gffs, remainder: true
+        ).join(
+            ANNOTATE.out.defense_finder_gffs, remainder: true
+        ).join(
+            reps_ips
+        ).join(
+            ANNOTATE.out.sanntis_annotation_gffs, remainder: true
         )
     )
 
@@ -404,7 +434,7 @@ workflow GAP {
         file(core_genes)       // only for many_genomes clusters otherwise empty
     )
     */
-    files_for_json_summary = ANNONTATE_GFF.out.annotated_gff.join(
+    files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
         FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
     ).join(
         cluster_reps_faa

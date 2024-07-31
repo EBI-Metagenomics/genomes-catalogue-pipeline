@@ -12,13 +12,15 @@ process PARSE_DOMAIN {
 
     input:
     path gtdb_summary_tsv
+    path cluster_splits
 
     output:
     path "domains.csv", emit: detected_domains
 
     script:
     """
-    parse_domain.py -i ${gtdb_summary_tsv} -o domains.csv
+    parse_domain.py -i ${gtdb_summary_tsv} -o domains.csv -c ${cluster_splits}
+
     """
 
     stub:
