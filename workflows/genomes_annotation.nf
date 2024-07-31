@@ -41,7 +41,7 @@ include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
 include { GTDBTK_QC } from '../modules/gtdbtk_qc'
 include { GTDBTK_TAX } from '../modules/gtdbtk_tax'
-include { IDENTIFY_DOMAIN } from '../modules/identify_domain'
+include { PARSE_DOMAIN } from '../modules/parse_domain'
 include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { GENERATE_COMBINED_QC_REPORT } from '../modules/generate_combined_qc_report'
@@ -146,10 +146,11 @@ workflow GAP {
     )
     
     GTDBTK_QC(
-        dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] }) \
-        .mix(dereplicated_genomes.out.many_genomes_fna_tuples.filter {
-            it[1].name.contains(it[0])
-        }.map({ it[1] })) \
+      dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] })
+          .mix(
+              dereplicated_genomes.out.many_genomes_fna_tuples.filter { it[1].name.contains(it[0]) }
+                  .map({ it[1] })
+          )
         .collect(),
         channel.value("fa"), // genome file extension
         ch_gtdb_db
@@ -159,12 +160,12 @@ workflow GAP {
         .mix(GTDBTK_QC.out.gtdbtk_summary_bac120, GTDBTK_QC.out.gtdbtk_summary_arc53) \
         .collectFile(name: 'gtdbtk.summary.tsv')
         
-    IDENTIFY_DOMAIN(
+    PARSE_DOMAIN(
         gtdbtk_tables_qc_ch,
         dereplicated_genomes.out.drep_split_text
     )
     
-    accessions_with_domains_ch = IDENTIFY_DOMAIN.out.detected_domains.flatMap { file ->
+    accessions_with_domains_ch = PARSE_DOMAIN.out.detected_domains.flatMap { file ->
         file.readLines().collect { line ->
             def (genomeName, domain) = line.split(',')
             [genomeName, domain]
@@ -186,7 +187,7 @@ workflow GAP {
     GENERATE_COMBINED_QC_REPORT(
         PREPARE_DATA.out.qs50_failed,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
-        IDENTIFY_DOMAIN.out.detected_domains
+        PARSE_DOMAIN.out.detected_domains
     )
 
     // Separate accessions into those we don't know domain for (Undefined) and those that we do
@@ -214,15 +215,19 @@ workflow GAP {
     combined_list_to_remove = gunc_removed_genomes.concat(undefined_genomes)
     filtered_single_genome_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples \
         .join(combined_list_to_remove, remainder: true) \
-        .filter { it -> it[2] == null} \
-        .map { it -> [it[0], it[1]] }
+        .filter { genome_name, fa_path, remove_flag -> remove_flag == null} \
+        .map { genome_name, fa_path, remove_flag -> [genome_name, fa_path] }
     
     GTDBTK_TAX(
-        filtered_single_genome_fna_tuples \
-            .map({ it[1] }) \
-            .mix(dereplicated_genomes.out.many_genomes_fna_tuples.filter {
-                it[1].name.contains(it[0])
-        }.map({ it[1] })) \
+        filtered_single_genome_fna_tuples 
+        .map({ it[1] }) 
+        .mix( 
+            dereplicated_genomes.out.many_genomes_fna_tuples 
+                .filter { 
+                    it[1].name.contains(it[0])
+                }
+                .map({ it[1] })
+        ) 
         .collect(),
         channel.value("fa"), // genome file extension
         ch_gtdb_db,
