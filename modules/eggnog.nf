@@ -42,6 +42,7 @@ process EGGNOG_MAPPER {
         --cpu ${task.cpus} \
         --annotate_hits_table ${annotation_hit_table} \
         --dbmem \
+        --tax_scope 'prokaryota_broad' \
         -o ${annotation_hit_table.baseName}
         """
     else
