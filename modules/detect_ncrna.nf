@@ -7,8 +7,11 @@ process DETECT_NCRNA {
         path: "${params.outdir}",
         saveAs: {
             filename -> {
-                def result_file = file(filename);
-                return "additional_data/ncrna_deoverlapped_species_reps/${fasta.baseName}.ncrna.deoverlap.tbl";
+                def output_file = file(filename);
+                def is_rep = fasta.baseName == cluster_name;
+                if ( is_rep && output_file.name.contains("ncrna.deoverlap.tbl" )) {
+                    return "additional_data/ncrna_deoverlapped_species_reps/${fasta.baseName}.ncrna.deoverlap.tbl";
+                }
             }
         },
         mode: 'copy'
