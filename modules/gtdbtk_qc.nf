@@ -1,27 +1,11 @@
-process GTDBTK {
+process GTDBTK_QC {
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.gtdb-tk:v2.3.0'
+    container 'quay.io/biocontainers/gtdbtk:2.4.0--pyhdfd78af_1'
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
-
-    publishDir(
-        path: "${params.outdir}/",
-        saveAs: {
-            filename -> {
-                def output_file = file(filename);
-                def name = output_file.getName();
-                def extension = output_file.getExtension();
-                if ( name  == "gtdbtk_results.tar.gz" ) {
-                    return "additional_data/${name}";
-                }
-                return null;
-            }
-        },
-        mode: 'copy',
-        failOnError: true
-    )
 
     input:
     path genomes_fna, stageAs: "genomes_dir/*"
+    val extension
     path gtdbtk_refdata
 
     output:
@@ -40,7 +24,7 @@ process GTDBTK {
     --cpus ${task.cpus} \
     --pplacer_cpus ${task.cpus} \
     --genome_dir genomes_dir \
-    --extension fna \
+    --extension ${extension} \
     --skip_ani_screen \
     --out_dir gtdbtk_results
     

@@ -1,6 +1,11 @@
 process CHECKM2 {
 
-    publishDir "${params.outdir}/checkm", mode: "copy"
+    publishDir(
+        path: "${params.outdir}",
+        pattern: "checkm_quality.csv",
+        saveAs: { "additional_data/intermediate_files/checkm_quality_ncbi_genomes.csv" },
+        mode: "copy"
+    )
 
     container 'quay.io/biocontainers/checkm2:1.0.1--pyh7cba7a3_0'
 

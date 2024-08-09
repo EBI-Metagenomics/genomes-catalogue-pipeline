@@ -26,9 +26,12 @@ process COLLECT_FAILED_GUNC {
     rm -f gunc_failed.txt || true
     touch gunc_failed.txt
     for GUNC_FAILED in failed_gunc/*; do
-        name=\$(basename \$GUNC_FAILED)
-        genome_name="\${name%"_gunc_empty.txt"}"
-        echo \$genome_name >> gunc_failed.txt
+        if [ \$GUNC_FAILED != "failed_gunc/NO_FILE" ]
+        then
+            name=\$(basename \$GUNC_FAILED)
+            genome_name="\${name%"_gunc_empty.txt"}"
+            echo \$genome_name >> gunc_failed.txt
+        fi
     done
     """
 }
@@ -37,11 +40,16 @@ workflow PROCESS_SINGLETON_GENOMES {
     take:
         singleton_cluster_tuple
         genomes_checkm
+        accessions_with_domains_tuples
         gunc_db
     main:
-
+    
+        singleton_cluster_tuple_with_domain = singleton_cluster_tuple \
+        .join(accessions_with_domains_tuples) \
+        .filter({ !it[2].contains('Undefined') })
+        
         GUNC(
-            singleton_cluster_tuple,
+            singleton_cluster_tuple_with_domain,
             genomes_checkm,
             gunc_db
         )
@@ -49,8 +57,9 @@ workflow PROCESS_SINGLETON_GENOMES {
         PROKKA(
             GUNC.out.cluster_gunc_result.filter({
                 it[2].name.contains('_complete.txt')
-            }).map({ cluster_name, cluster_fasta, cluster_gunc ->
-                return tuple(cluster_name, cluster_fasta)
+            }).join(accessions_with_domains_tuples
+            ).map({ cluster_name, cluster_fasta, cluster_gunc, cluster_domain ->
+                return tuple(cluster_name, cluster_fasta, cluster_domain)
             })
         )
 
@@ -59,7 +68,7 @@ workflow PROCESS_SINGLETON_GENOMES {
                 it[2].name.contains('_gunc_empty.txt')
             }).map({ cluster_name, cluster_fasta, cluster_gunc ->
                 return cluster_gunc
-            }).collect()
+            }).collect().ifEmpty(file("NO_FILE"))
         )
 
     emit:

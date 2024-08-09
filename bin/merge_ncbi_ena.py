@@ -51,12 +51,7 @@ def parse_args():
 
 def copy_genomes(data, outname):
     for item in os.listdir(data):
-        if (
-            item.endswith("fa")
-            or item.endswith("fa.gz")
-            or item.endswith("fasta")
-            or item.endswith("fasta.gz")
-        ):
+        if item.endswith(("fa", "fa.gz", "fasta", "fasta.gz", "fna", "fna.gz")):
             copy(
                 os.path.join(data, item), os.path.join(outname, os.path.basename(item))
             )

@@ -1,7 +1,7 @@
 
 process GUNC {
 
-    tag "${fasta.name}"
+    tag "${cluster_name}"
 
     publishDir(
         path: "${params.outdir}/additional_data/intermediate_files/gunc/",
@@ -20,7 +20,7 @@ process GUNC {
     container 'quay.io/microbiome-informatics/genomes-pipeline.gunc:1.0.3'
 
     input:
-    tuple val(cluster_name), path(fasta)
+    tuple val(cluster_name), path(fasta), val(domain)
     file genomes_checkm
     file gunc_db
 

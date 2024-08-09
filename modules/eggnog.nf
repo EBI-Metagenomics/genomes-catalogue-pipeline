@@ -11,7 +11,7 @@ process EGGNOG_MAPPER {
     file fasta
     // on mode "mapper" will be ignored, submit an empty path (channel.path("NO_FILE"))
     file annotation_hit_table
-    val mode // mapper or annontations
+    val mode // mapper or annotations
     path eggnog_db
     path eggnog_diamond_db
     path eggnog_data_dir
@@ -42,6 +42,7 @@ process EGGNOG_MAPPER {
         --cpu ${task.cpus} \
         --annotate_hits_table ${annotation_hit_table} \
         --dbmem \
+        --tax_scope 'prokaryota_broad' \
         -o ${annotation_hit_table.baseName}
         """
     else

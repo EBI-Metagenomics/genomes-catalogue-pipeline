@@ -21,6 +21,8 @@ import sys
 import argparse
 from argparse import RawTextHelpFormatter
 
+E_VALUE_CUTOFF = 1e-10
+
 
 def get_kegg_cats(kegg):
     kegg_cats = {}
@@ -62,6 +64,12 @@ def parse_eggnog(eggnog_results):
                 eggnog_fields = get_eggnog_fields(line)
             else:
                 cols = line.strip("\n").split("\t")
+                try:
+                    evalue = float(cols[2])
+                except ValueError:
+                    continue
+                if evalue > E_VALUE_CUTOFF:
+                    continue
                 eggnog_hits.add(cols[0])
                 ko = cols[eggnog_fields["KEGG_ko"]].split(",")
                 ko_mod = cols[eggnog_fields["KEGG_Module"]].split(",")
@@ -125,6 +133,12 @@ def parse_ipr(ipr_results):
         ipr_hits = set()
         for line in f:
             cols = line.strip("\n").split("\t")
+            try:
+                evalue = float(cols[8])
+            except ValueError:
+                continue
+            if evalue > E_VALUE_CUTOFF:
+                continue
             ipr_hits.add(cols[0])
         return ipr_hits
 
@@ -147,13 +161,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "-e",
         dest="eggnong",
-        help="eggnog annontations for the clutser rep",
+        help="eggnog annotations for the clutser rep",
         required=True,
     )
     parser.add_argument(
         "-i",
         dest="ips",
-        help="InterproScan annontations results for the cluster rep",
+        help="InterproScan annotations results for the cluster rep",
         required=True,
     )
     parser.add_argument(

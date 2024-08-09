@@ -60,7 +60,7 @@ def main(
             cluster_file
         ), "Provided cluster information file does not exist"
     for file in files:
-        if file.endswith(("fa", "fasta", "fna")) and not file.startswith(prefix):
+        if file.endswith(("fa", "fasta", "fna")):
             if max_number and index > max_number:
                 print("index is bigger than requested number in catalogue")
                 exit(1)
