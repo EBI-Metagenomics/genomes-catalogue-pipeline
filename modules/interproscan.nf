@@ -14,7 +14,7 @@ process IPS {
     path interproscan_db
 
     output:
-    path '*.IPS.tsv', emit: ips_annontations
+    path '*.IPS.tsv', emit: ips_annotations
 
     script:
     """

@@ -133,10 +133,13 @@ Website URL: {url}
 - genome/
     * [species_accession]_amrfinderplus.tsv : AMR annotations produced by AMRFinderPlus.
     * [species_accession]_annotation_coverage.tsv : A summary of annotation coverage.
+    * [species_accession]_antismash.gff : AntiSMASH output file containing biosynthetic gene cluster information.
     * [species_accession]_cazy_summary.tsv : CAZy summary parsed from the eggNOG annotation file.
     * [species_accession]_cog_summary.tsv : COG summary parsed from the eggNOG annotation file.
     * [species_accession]_crisprcasfinder.gff : Unfiltered CRISPRCasFinder results file, including calls that have evidence level 1 and are less likely to be genuine.
     * [species_accession]_crisprcasfinder.tsv : Additional data for CRISPRCasFinder records reported in [species_accession]_crisprcasfinder.gff.
+    * [species_accession]_dbcan.gff : dbCAN annotation file containing putative polysaccharide utilisation loci, predicted substrates and functions of member genes.
+    * [species_accession]_defense_finder.gff : Anti-phage system annotations.
     * [species_accession]_eggNOG.tsv : eggNOG annotations of the protein coding sequences.
     * [species_accession].faa : Protein sequence FASTA file of the species representative.
     * [species_accession].fna : DNA sequence FASTA file of the genome assembly of the species representative.
@@ -145,6 +148,7 @@ Website URL: {url}
     * [species_accession]_InterProScan.tsv : InterProScan annotation of the protein coding sequences.
     * [species_accession]_kegg_classes.tsv : KEGG classes and their counts.
     * [species_accession]_kegg_modules.tsv : KEGG modules and their counts.
+    * [species_accession]_kegg_pathways.tsv : KEGG pathway completeness.
     * [species_accession]_mobilome.gff : Annotated viral sequence and mobile elements.
     * [species_accession]_rRNAs.fasta : rRNA sequence FASTA file.
     * [species_accession]_sanntis.gff : SanntiS output file containing biosynthetic gene cluster information.
