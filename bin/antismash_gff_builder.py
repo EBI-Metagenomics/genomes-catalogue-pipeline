@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument('-o', '--output', required=True, type=str, help='Output GFF3 file name')
     parser.add_argument('--cds_tag', default='ID', type=str,
                         help='Type of CDS ID tag to use in the GFF3 (to account for CDS identifier changes between'
-                             'tools) (default: locus_tag)')  
+                             'tools) (default: ID)')  
     args = parser.parse_args()
 
     return args.input, args.output, args.cds_tag
