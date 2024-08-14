@@ -8,6 +8,7 @@ include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
 include { PER_GENOME_ANNOTATION_GENERATOR } from '../modules/per_genome_annotations'
 include { SANNTIS } from '../modules/sanntis'
 include { ANTISMASH } from '../modules/antismash'
+include { ANTISMASH_MAKE_GFF } from '../modules/antismash_make_gff'
 include { DEFENSE_FINDER } from '../modules/defense_finder'
 include { DBCAN } from '../modules/dbcan'
 include { GECCO_RUN } from '../modules/gecco'
@@ -127,6 +128,10 @@ workflow ANNOTATE {
         ANTISMASH(
             prokka_gbk,
             antismash_db
+        )
+        
+        ANTISMASH_MAKE_GFF(
+            ANTISMASH.out.antismash_json
         )     
         
         GECCO_RUN(
@@ -154,6 +159,6 @@ workflow ANNOTATE {
         sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
         defense_finder_gffs = DEFENSE_FINDER.out.gff
         dbcan_gffs = DBCAN.out.dbcan_gff
-        antismash_gffs = ANTISMASH.out.antismash_gff
+        antismash_gffs = ANTISMASH_MAKE_GFF.out.antismash_gff
         gecco_gffs = GECCO_RUN.out.gecco_gff
 }

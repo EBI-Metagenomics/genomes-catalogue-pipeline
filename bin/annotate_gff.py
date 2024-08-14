@@ -212,13 +212,17 @@ def get_bgcs(bgc_file, prokka_gff, tool):
                         if a.startswith("Type="):
                             type_value = a.split("=")[1]
                 elif tool == "antismash":
-                    if feature != "CDS":
+                    if feature != "gene":
                         continue
+                    type_value = ""
+                    as_product = ""
                     for a in annotations.split(
                         ";"
                     ):  # go through all parts of the annotation field
-                        if a.startswith("function="):
+                        if a.startswith("as_type="):
                             type_value = a.split("=")[1]
+                        elif a.startswith("as_gene_clusters="):
+                            as_product = a.split("=")[1]
                 # save cluster positions to a dictionary where key = contig name,
                 # value = list of position pairs (list of lists)
                 cluster_positions.setdefault(contig, list()).append(
@@ -244,6 +248,8 @@ def get_bgcs(bgc_file, prokka_gff, tool):
                         "_".join([start_pos, end_pos]),
                         {"bgc_function": type_value},
                     )
+                    if as_product:
+                        tool_result[contig]["_".join([start_pos, end_pos])]["bgc_product"] = as_product
     # identify CDSs that fall into each of the clusters annotated by the BGC tool
     with open(prokka_gff, "r") as gff_in:
         for line in gff_in:
@@ -300,6 +306,9 @@ def get_bgcs(bgc_file, prokka_gff, tool):
                                 ]["bgc_function"],
                             },
                         )
+                        if "bgc_product" in tool_result[contig][matching_interval]:
+                            bgc_annotations[cds_id]["antismash_product"] = tool_result[contig][matching_interval][
+                                "bgc_product"]
             elif line.startswith("##FASTA"):
                 break
     return bgc_annotations
