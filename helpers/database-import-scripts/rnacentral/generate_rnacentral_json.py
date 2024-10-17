@@ -10,6 +10,7 @@ import os
 import pytz
 import re
 import sys
+import time
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -24,6 +25,7 @@ logging.basicConfig(level=logging.WARNING)
 SKIP_CMSCAN = SKIP_GFF = GOOD = BAD_SEQUENCE = 0
 skip_short = list()
 skip_total = list()
+ERROR_404 = list()
 
 
 def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
@@ -64,6 +66,13 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
             BAD_SEQUENCE))
         file_out.write("Genomes not processed because cmsearch output is missing\t{}\n".format(SKIP_CMSCAN))
         file_out.write("Genomes not processed because GFF is missing (cmsearch output exists)\t{}\n".format(SKIP_GFF))
+    if len(ERROR_404) > 0:
+        print("WARNING: these samples are not found in ENA: {}. \nThis only makes sense if they are private. Check that"
+              " it is the case (this is rare but possible; the marine catalogue is known to have some private "
+              "samples), otherwise investigate the source of the issue with ENA. "
+              "Missing samples are written to file rnacentral_samples_not_in_ena.txt".format(",".join(ERROR_404)))
+        with open("rnacentral_samples_not_in_ena.txt", "w") as error_404_out:
+            error_404_out.write("\n".join(ERROR_404))
     
 
 def get_date():
@@ -269,7 +278,7 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
                         # there is no XML for this sample, we can't get samples it is derived from
                         sample_attributes = list()
                 except:
-                    # There is XML but it's format is wrong and we can't parse it
+                    # There is XML but its format is wrong and we can't parse it
                     logging.exception("Unable to process XML for sample {}".format(sample_to_check))
                     sys.exit()
                 sample_is_derived = False
@@ -368,13 +377,16 @@ def run_request(query, api_endpoint):
 
 
 def convert_bin_sample(biosample):
-    xml_data = load_xml(biosample)
-    try:
-        biosample = xml_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["EXTERNAL_ID"]["#text"] \
-            if xml_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["EXTERNAL_ID"]["@namespace"] == "BioSample" \
-            else biosample
-    except:
+    if biosample in ERROR_404:
         logging.error("Could not convert sample {}".format(biosample))
+    else:
+        xml_data = load_xml(biosample)
+        try:
+            biosample = xml_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["EXTERNAL_ID"]["#text"] \
+                if xml_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["EXTERNAL_ID"]["@namespace"] == "BioSample" \
+                else biosample
+        except:
+            logging.error("Could not convert sample {}".format(biosample))
     return biosample
 
 
@@ -428,16 +440,30 @@ def get_project_accession(biosample):
 
 
 def load_xml(sample_id, insdc_accession=None):
+    if sample_id in ERROR_404:
+        logging.warning("Not attempting to retrieve xml for sample {}. Reason: sample is not in ENA".format(
+            sample_id))
+        return None
     xml_url = 'https://www.ebi.ac.uk/ena/browser/api/xml/{}'.format(sample_id)
     try:
         r = run_xml_request(xml_url)
     except:
-        if insdc_accession.startswith("C"):
-            logging.error("Unable to get XML for sample {}, ENA genome {}".format(sample_id, insdc_accession))
-            sys.exit()
+        if r is None:
+            if insdc_accession.startswith("C"):
+                logging.error("Unable to get XML for sample {}, ENA genome {}".format(sample_id, insdc_accession))
+                sys.exit()
+            else:
+                logging.warning("Unable to get XML for accession {}. Skipping.".format(sample_id))
+                return None
         else:
-            logging.warning("Unable to get XML for accession {}. Skipping.".format(sample_id))
-            return None
+            if r.status_code == 404:
+                logging.warning("Sample {} does not seem to be present in ENA".format(sample_id))
+                ERROR_404.append(sample_id)
+                return None
+            else:
+                logging.error("There is an unexpected error requesting data from ENA for sample {}: {}".format(
+                    sample_id, r.text))
+                sys.exit()
     if r.ok:
         try:
             data_dict = xmltodict.parse(r.content)
@@ -449,14 +475,40 @@ def load_xml(sample_id, insdc_accession=None):
             print(r.text)
     else:
         logging.error('Could not retrieve xml for accession {}'.format(sample_id))
-        logging.error(r.text)
+        if r.status_code == 404:
+            logging.warning("Reason: sample is not in ENA")
+            if sample_id not in ERROR_404:
+                ERROR_404.append(sample_id)
+        else:
+            logging.error("Error in full: {}".format(r.text))
         return None
 
 
-@retry(tries=5, delay=10, backoff=1.5)
 def run_xml_request(xml_url):
-    r = requests.get(xml_url)
-    r.raise_for_status()
+    attempt = 0
+    max_attempts = 3
+    delay = 20
+    r = None
+    while attempt < max_attempts:
+        if attempt > 0:
+            time.sleep(delay * attempt)
+        try:
+            r = requests.get(xml_url)
+            r.raise_for_status()
+            return r
+        except requests.exceptions.HTTPError as http_err:
+            attempt += 1
+            if r is not None and r.status_code == 404:
+                print(f"Error: 404 Not Found for URL: {xml_url}.")
+                # try one more time, unlikely that this error will resolve itself
+                if attempt < 2:
+                    attempt = 2  # bumping attempt up so that there is only one rerun
+                    print("Trying one more time...")
+            else:
+                print(f"HTTP error occurred: {http_err}. Retrying...")
+        except Exception as err:
+            attempt += 1
+            print(f"An unexpected error occurred: {err}. Retrying...")
     return r
 
 
