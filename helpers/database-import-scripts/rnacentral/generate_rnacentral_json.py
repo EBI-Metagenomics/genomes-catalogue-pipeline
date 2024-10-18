@@ -28,7 +28,10 @@ skip_total = list()
 ERROR_404 = list()
 
 
-def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
+def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previous_json):
+    if previous_json:
+        previous_json_data = load_previous_json(previous_json)
+        previous_primary_ids = get_primary_ids(previous_json_data)
     produced_date = get_date()
     rfam_lengths = load_rfam(rfam_info)
     check_inputs_existence(deoverlap_dir, gff_dir, fasta_dir)
@@ -52,6 +55,14 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
                         mgnify_accession, sample_accession, taxonomy, deoverlap_dir, gff_dir, fasta_dir, rfam_lengths,
                         sample_publication_mapping, catalogue_name, reported_project, insdc_accession)
                     if json_data:
+                        if previous_json:
+                            # Check which entries are different in this version and bump the version in the json
+                            for index, new_entry in enumerate(json_data):
+                                if new_entry["primaryId"] in previous_primary_ids:
+                                    old_entry = get_entry(previous_json_data, json_data[0]["primaryId"], "data")
+                                    new_entry = get_entry(json_data, json_data[0]["primaryId"], None)
+                                    if old_entry != new_entry:
+                                        json_data = up_the_version(json_data, index)
                         final_dict["data"].extend(json_data)
     final_dict["metaData"] = metadata_json
     with open(outfile, "w") as file_out:
@@ -73,6 +84,34 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
               "Missing samples are written to file rnacentral_samples_not_in_ena.txt".format(",".join(ERROR_404)))
         with open("rnacentral_samples_not_in_ena.txt", "w") as error_404_out:
             error_404_out.write("\n".join(ERROR_404))
+
+
+def up_the_version(json_data, index):
+    json_data[index]['version'] = str(int(json_data[index]['version']) + 1)
+    return json_data 
+    
+    
+def get_entry(json_data, primary_id, top_level):
+    if top_level:
+        json_data_for_iteration = json_data[top_level]
+    else:
+        json_data_for_iteration = json_data
+    for entry in json_data_for_iteration:
+        if entry['primaryId'] == primary_id:
+            return entry
+    
+
+def get_primary_ids(json_data):
+    previous_primary_ids = list()
+    for entry in json_data['data']:
+        previous_primary_ids.append(entry["primaryId"])
+    return previous_primary_ids
+
+    
+def load_previous_json(file):
+    with open(file, "r") as file_in:
+        previous_json_data = json.load(file_in)
+    return previous_json_data
     
 
 def get_date():
@@ -313,7 +352,7 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
             for project in project_accessions:
                 extracted_publications = get_publications_from_xml(project)
                 if extracted_publications:
-                    publications_to_add.extend(list(extracted_publications))
+                    publications_to_add.extend(sorted(list(extracted_publications)))
             publications.extend(list(publications_to_add))
         else:
             logging.warning("Could not obtain project accessions for sample {}".
@@ -481,6 +520,8 @@ def load_xml(sample_id, insdc_accession=None):
                 ERROR_404.append(sample_id)
         else:
             logging.error("Error in full: {}".format(r.text))
+            sys.exit("Program is exiting - unable to query ENA for sample {}. Error code {}".format(sample_id, 
+                                                                                                    r.status_code))
         return None
 
 
@@ -607,9 +648,15 @@ def parse_args():
                         help='Path to the directory containing GFF files.')
     parser.add_argument('-f', '--fasta-dir', required=True,
                         help='Path to the directory containing genomes fasta files.')
+    parser.add_argument('--previous-json', required=False,
+                        help='Only use this flag if the catalogue has been reannotated (ncRNAs have been called '
+                             'previously and submitted to RNAcentral). This is only possible if the current '
+                             'catalogue is an updated version of a previously generated catalogue. If that is the '
+                             'case, provide the previous RNAcentral JSON here.')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.rfam_info, args.metadata, args.outfile, args.deoverlap_dir, args.gff_dir, args.fasta_dir)
+    main(args.rfam_info, args.metadata, args.outfile, args.deoverlap_dir, args.gff_dir, args.fasta_dir, 
+         args.previous_json)
