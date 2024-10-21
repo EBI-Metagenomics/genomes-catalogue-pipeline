@@ -77,6 +77,7 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previo
             BAD_SEQUENCE))
         file_out.write("Genomes not processed because cmsearch output is missing\t{}\n".format(SKIP_CMSCAN))
         file_out.write("Genomes not processed because GFF is missing (cmsearch output exists)\t{}\n".format(SKIP_GFF))
+    logging.info("Script execution is completed. JSON is saved to {}".format(outfile))
     if len(ERROR_404) > 0:
         print("WARNING: these samples are not found in ENA: {}. \nThis only makes sense if they are private. Check that"
               " it is the case (this is rare but possible; the marine catalogue is known to have some private "
