@@ -59,9 +59,9 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previo
                             # Check which entries are different in this version and bump the version in the json
                             for index, new_entry in enumerate(json_data):
                                 if new_entry["primaryId"] in previous_primary_ids:
-                                    old_entry = get_entry(previous_json_data, json_data[0]["primaryId"], "data")
-                                    new_entry = get_entry(json_data, json_data[0]["primaryId"], None)
-                                    if old_entry is not None and old_entry != new_entry:
+                                    old_entry = get_entry(previous_json_data, json_data[index]["primaryId"], "data")
+                                    new_entry = get_entry(json_data, json_data[index]["primaryId"], None)
+                                    if old_entry != new_entry:
                                         json_data = up_the_version(json_data, index, old_entry["version"])
                         final_dict["data"].extend(json_data)
     final_dict["metaData"] = metadata_json
@@ -174,9 +174,12 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
     global SKIP_CMSCAN, SKIP_GFF, GOOD, BAD_SEQUENCE
     deoverlap_path = os.path.join(deoverlap_dir, "{}.cmscan-deoverlap.tbl".format(mgnify_accession))
     if not os.path.exists(deoverlap_path):
-        logging.warning("cmscan file for accession {} doesn't exist. Skipping.".format(mgnify_accession))
-        SKIP_CMSCAN += 1
-        return None
+        # check if the naming has changed
+        deoverlap_path = os.path.join(deoverlap_dir, "{}.ncrna.deoverlap.tbl".format(mgnify_accession))
+        if not os.path.exists(deoverlap_path):
+            logging.warning("cmscan file for accession {} doesn't exist. Skipping.".format(mgnify_accession))
+            SKIP_CMSCAN += 1
+            return None
     try:
         gff_path = glob.glob(os.path.join(gff_dir, mgnify_accession + ".*"))[0]
     except:
@@ -375,7 +378,7 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
                 logging.error("Biosample could not be obtained for an ENA genome {}".
                               format(insdc_accession))
                 sys.exit("ERROR: cannot proceed because at least one ENA sample is not found in ENA.")
-    return list(filter(None, list(set(publications))))
+    return sorted(list(filter(None, list(set(publications)))))
 
 
 def identify_derived_sample_issue(ena_data):
