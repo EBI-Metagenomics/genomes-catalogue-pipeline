@@ -61,8 +61,8 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previo
                                 if new_entry["primaryId"] in previous_primary_ids:
                                     old_entry = get_entry(previous_json_data, json_data[0]["primaryId"], "data")
                                     new_entry = get_entry(json_data, json_data[0]["primaryId"], None)
-                                    if old_entry != new_entry:
-                                        json_data = up_the_version(json_data, index)
+                                    if old_entry is not None and old_entry != new_entry:
+                                        json_data = up_the_version(json_data, index, old_entry["version"])
                         final_dict["data"].extend(json_data)
     final_dict["metaData"] = metadata_json
     with open(outfile, "w") as file_out:
@@ -86,8 +86,8 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previo
             error_404_out.write("\n".join(ERROR_404))
 
 
-def up_the_version(json_data, index):
-    json_data[index]['version'] = str(int(json_data[index]['version']) + 1)
+def up_the_version(json_data, index, old_version):
+    json_data[index]['version'] = str(int(old_version) + 1)
     return json_data 
     
     
@@ -186,11 +186,12 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
     hits_to_report = get_good_hits(deoverlap_path, rfam_lengths)
 
     dict_list = list()
+    
+    read_function = gzip.open if gff_path.endswith('.gz') else open
+    fasta_file = glob.glob(os.path.join(fasta_dir, mgnify_accession + ".*"))[0]
+    seq_records = SeqIO.to_dict(SeqIO.parse(fasta_file, "fasta"))
 
     if len(hits_to_report.keys()) > 0:
-        fasta_file = glob.glob(os.path.join(fasta_dir, mgnify_accession + ".*"))[0]
-        seq_records = SeqIO.to_dict(SeqIO.parse(fasta_file, "fasta"))
-        read_function = gzip.open if gff_path.endswith('.gz') else open
         with read_function(gff_path, "rt") as f:
             for line in f:
                 if line.startswith(">"):
@@ -198,11 +199,14 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                 elif line.startswith("#"):
                     pass
                 else:
-                    if "INFERNAL" in line:
-                        fields = line.strip().split("\t")
+                    fields = line.strip().split("\t")
+                    if fields[1].startswith(("INFERNAL", "tRNAscan-SE")):
                         contig, start, end, strand, annotation = fields[0], int(fields[3]), int(fields[4]), fields[6], \
                                                                  fields[8]
-                        if contig in hits_to_report and [start, end] in hits_to_report[contig]:
+                        # Only process ncRNA records that are either good quality infernal hits 
+                        # (i.e. included in hits_to_report) or tRNAscan-SE hits
+                        if (contig in hits_to_report and [start, end] in hits_to_report[contig]) or \
+                                fields[1].startswith("tRNAscan-SE"):
                             GOOD += 1
                             data_dict = dict()
                             data_dict["primaryId"] = get_primary_id(annotation)
@@ -211,9 +215,15 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                             if not pass_seq_check(data_dict["sequence"]):
                                 BAD_SEQUENCE += 1
                                 continue
-                            data_dict["name"] = get_seq_name(annotation)
+                            data_dict["name"] = get_seq_name(annotation, fields[1])
                             data_dict["version"] = "1"
-                            data_dict["sourceModel"] = "RFAM:{}".format(get_rfam_accession(annotation))
+                            if fields[1].startswith("INFERNAL"):
+                                data_dict["sourceModel"] = "RFAM:{}".format(get_annotation_record(annotation, "rfam"))
+                            else:
+                                data_dict["sourceModel"] = "TRNASCANSE:{}".format(get_annotation_record(annotation, 
+                                                                                                        "isotype"))
+                                data_dict["sequenceFeatures"] = {"anticodon": get_annotation_record(annotation, 
+                                                                                                    "anticodon")}
                             data_dict["genomeLocations"] = make_genome_locations(contig, start, end, strand,
                                                                                  mgnify_accession)
                             data_dict["url"] = \
@@ -233,24 +243,17 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                                          "doesn't match between the GFF and the deoverlapped file.".
                                          format(contig, start, end))
                             skip_total.append("{}_{}_{}".format(contig, start, end))
-    else:
-        read_function = gzip.open if gff_path.endswith('.gz') else open
-        with read_function(gff_path, "rt") as f:
-            for line in f:
-                if line.startswith(">"):
-                    break
-                elif line.startswith("#"):
-                    pass
-                else:
-                    if "INFERNAL" in line:
-                        fields = line.strip().split("\t")
-                        contig, start, end, strand, annotation = fields[0], int(fields[3]), int(fields[4]), fields[6], \
-                                                                 fields[8]
-                        skip_total.append("{}_{}_{}".format(contig, start, end))
     # TO DO: Print a warning if there are no hits in GFF but there are hits in hits_to_report
     return dict_list, sample_publication_mapping
-
-
+        
+        
+def get_annotation_record(annotation, field):
+    parts = annotation.strip().split(";")
+    for part in parts:
+        if part.startswith(field):
+            return part.split("=")[1]
+        
+    
 def pass_seq_check(seq):
     count_n = seq.lower().count('n')
     total_length = len(seq)
@@ -260,15 +263,19 @@ def pass_seq_check(seq):
         return False
     
     
-def get_seq_name(annotation):
+def get_seq_name(annotation, annotation_source):
     """Return the name of the matched sequence.
 
     :param annotation: annotation from one line in the GFF line
     :return: name of ncRNA
     """
+    if "INFERNAL" in annotation_source:
+        search_term = "product"
+    else:
+        search_term = "gene_biotype"
     parts = annotation.strip().split(";")
     for p in parts:
-        if p.startswith("product="):
+        if p.startswith("{}=".format(search_term)):
             return p.split("=")[1]
     return ""
 
@@ -567,18 +574,6 @@ def get_sequence(seq_records, contig, start, end, strand):
     if strand == "-":
         seq = Seq(seq).reverse_complement()
     return str(seq).upper()
-
-
-def get_rfam_accession(annotation):
-    """Returns Rfam accession from the GFF annotation field.
-
-    :param annotation: Contents of the annotation fields for one feature in a GFF.
-    :return: Rfam accession
-    """
-    parts = annotation.strip().split(";")
-    for part in parts:
-        if part.startswith("rfam"):
-            return part.split("=")[1]
 
 
 def get_primary_id(annotation):
