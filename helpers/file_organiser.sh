@@ -51,11 +51,18 @@ function GenerateRNACentralJSON {
 
     echo "Running JSON generation"
     mitload miniconda && conda activate pybase
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/generate_rnacentral_json.py \
+    rna_cmd="python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/generate_rnacentral_json.py \
     -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/rfam_model_lengths_14.9.txt \
     -m "${RESULTS_PATH}/genomes-all_metadata.tsv" -o "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json" \
     -d "${RESULTS_PATH}/additional_data/ncrna_deoverlapped_species_reps/" -g "${RESULTS_PATH}/additional_data/rnacentral/GFFs/ "\
-     -f "${RESULTS_PATH}/additional_data/mgyg_genomes/"
+     -f "${RESULTS_PATH}/additional_data/mgyg_genomes/""
+     
+    if [[ -n $PREV_JSON_PATH ]]; then
+        rna_cmd="$rna_cmd --previous-json $PREV_JSON_PATH"
+    fi
+    
+    eval $rna_cmd
+
 
     echo "Removing GFFs"
     rm -r "${RESULTS_PATH}/additional_data/rnacentral/GFFs/"
@@ -203,12 +210,13 @@ function ZipAllGenomes {
 }
 
 
-while getopts 'd:f:v:r:' flag; do
+while getopts 'd:f:v:r:j:' flag; do
     case "${flag}" in
         d) export SAVE_TO_PATH=$OPTARG ;;
         f) export CATALOGUE_FOLDER=$OPTARG ;;
         v) export CATALOGUE_VERSION=$OPTARG ;;
         r) export RESULTS_PATH=$OPTARG ;;
+        j) PREV_JSON_PATH=$OPTARG ;;
         *) Usage exit 1 ;;
     esac
 done
@@ -218,6 +226,9 @@ if [[ -z $SAVE_TO_PATH ]] || [[ -z $CATALOGUE_FOLDER ]] || [[ -z $RESULTS_PATH ]
   Usage
 fi
 
+if [[ -n "$PREV_JSON_PATH" ]]; then
+    export PREV_JSON_PATH
+fi
 
 GenerateDirectories
 cd "${RESULTS_PATH}"
