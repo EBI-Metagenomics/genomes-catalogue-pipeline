@@ -331,36 +331,42 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
                          "derived from".format(genome_sample_accession))
             samples_for_next_iteration = list()
             for sample_to_check in samples_to_check:
-                xml_data = load_xml(sample_to_check, insdc_accession)
-                try:
-                    if xml_data:
-                        sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
-                    else:
-                        # there is no XML for this sample, we can't get samples it is derived from
-                        sample_attributes = list()
-                except:
-                    # There is XML but its format is wrong and we can't parse it
-                    logging.exception("Unable to process XML for sample {}".format(sample_to_check))
-                    sys.exit()
-                sample_is_derived = False
-                for attribute in sample_attributes:
-                    if all([x in attribute["TAG"] for x in ["derived", "from"]]):
-                        derived_from_list = re.findall("SAM[A-Z]+\d+|ERS\d+|SRS\d+|DRS\d+", attribute["VALUE"])
-                        if len(derived_from_list) == 0:
-                            logging.warning("Found an issue with derived samples format for sample {}. "
-                                            "Attempting to resolve.".format(genome_sample_accession))
-                            derived_from_list = identify_derived_sample_issue(attribute["VALUE"])
-                            if len(derived_from_list) == 0:
-                                ena_format_issue = True
-                            else:
-                                logging.warning("Resolved the format issue for sample {} successfully.".format(
-                                    genome_sample_accession))
-                                sample_to_check = derived_from_list
-                        samples_for_next_iteration = samples_for_next_iteration + derived_from_list
-                        sample_is_derived = True
-                        break
-                if not sample_is_derived:  # we found the raw read sample
+                if check_sample_level(sample_to_check):
+                    # The sample contains raw data, hence we won't look at whether it's derived
                     biosamples.append(sample_to_check)
+                else:
+                    # Look at the metadata to identify if the sample is derived and what sample it's derived from
+                    xml_data = load_xml(sample_to_check, insdc_accession)
+                    try:
+                        if xml_data:
+                            sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"][
+                                "SAMPLE_ATTRIBUTE"]
+                        else:
+                            # there is no XML for this sample, we can't get samples it is derived from
+                            sample_attributes = list()
+                    except:
+                        # There is XML but its format is wrong and we can't parse it
+                        logging.exception("Unable to process XML for sample {}".format(sample_to_check))
+                        sys.exit()
+                    sample_is_derived = False
+                    for attribute in sample_attributes:
+                        if all([x in attribute["TAG"] for x in ["derived", "from"]]):
+                            derived_from_list = re.findall("SAM[A-Z]+\d+|ERS\d+|SRS\d+|DRS\d+", attribute["VALUE"])
+                            if len(derived_from_list) == 0:
+                                logging.warning("Found an issue with derived samples format for sample {}. "
+                                                "Attempting to resolve.".format(genome_sample_accession))
+                                derived_from_list = identify_derived_sample_issue(attribute["VALUE"])
+                                if len(derived_from_list) == 0:
+                                    ena_format_issue = True
+                                else:
+                                    logging.warning("Resolved the format issue for sample {} successfully.".format(
+                                        genome_sample_accession))
+                                    sample_to_check = derived_from_list
+                            samples_for_next_iteration = samples_for_next_iteration + derived_from_list
+                            sample_is_derived = True
+                            break
+                    if not sample_is_derived:  # we found the raw read sample
+                        biosamples.append(sample_to_check)
             samples_to_check = samples_for_next_iteration
     # now we are working with raw read samples
     for biosample in biosamples:
