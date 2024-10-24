@@ -19,7 +19,7 @@ from retry import retry
 import urllib.parse
 import xmltodict
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 
 # Define variables for stats report
 SKIP_CMSCAN = SKIP_GFF = GOOD = BAD_SEQUENCE = 0
@@ -41,6 +41,7 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previo
     final_dict = dict()
     final_dict.setdefault("data", list())
     with open(metadata, "r") as f:
+        logging.info("Starting to load metadata...")
         for line in f:
             if not line.startswith("Genome"):
                 parts = line.strip().split("\t")
@@ -51,6 +52,7 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previo
                     metadata_json, catalogue_name = generate_metadata_dict(ftp, produced_date)
                 # only process species reps
                 if mgnify_accession == species_rep:
+                    logging.info("Looking up accession {}".format(mgnify_accession))
                     json_data, sample_publication_mapping = generate_data_dict(
                         mgnify_accession, sample_accession, taxonomy, deoverlap_dir, gff_dir, fasta_dir, rfam_lengths,
                         sample_publication_mapping, catalogue_name, reported_project, insdc_accession)
@@ -64,9 +66,12 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previo
                                     if old_entry != new_entry:
                                         json_data = up_the_version(json_data, index, old_entry["version"])
                         final_dict["data"].extend(json_data)
+                    logging.info("Done with accession {}".format(mgnify_accession))
     final_dict["metaData"] = metadata_json
+    logging.info("Done loading data, preparing the JSON file...")
     with open(outfile, "w") as file_out:
         json.dump(final_dict, file_out, indent=5)
+    logging.info("Printing stats...")
     skip_other = set(skip_total) - set(skip_short)
     with open(outfile + ".report", "w") as file_out:
         file_out.write("Total hits reported in JSON\t{}\n".format(GOOD))
@@ -309,6 +314,8 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
     biosamples = list()
     ena_format_issue = False
 
+    infinite_loop_protection = 0  # count iterations to break a potential infinite loop when traversing samples in ENA
+
     samples_to_check = [genome_sample_accession]
     # Check if there are read files associated with the sample (meaning sample accession points to raw data already)
     # If that's the case, there is no need to convert the sample accession to the raw data one
@@ -318,6 +325,10 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
     else:
         # keep going through levels of samples until we get to the raw read samples
         while samples_to_check:
+            infinite_loop_protection += 1
+            if infinite_loop_protection > 20:
+                sys.exit("Exiting: Sample {} results in an infinite loop when trying to find the sample it's "
+                         "derived from".format(genome_sample_accession))
             samples_for_next_iteration = list()
             for sample_to_check in samples_to_check:
                 xml_data = load_xml(sample_to_check, insdc_accession)
