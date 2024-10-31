@@ -80,7 +80,7 @@ class TestRNAcentralScript(unittest.TestCase):
             taxonomy="d__Bacteria;p__Bacillota_I;c__Bacilli_A;o__RF39;f__UBA660;g__Scybalousia;s__Scybalousia sp946639185", 
             deoverlap_dir=os.path.join(script_dir, "fixtures", "generate_rnacentral_json"),
             gff_dir=os.path.join(script_dir, "fixtures", "generate_rnacentral_json", "GFF"),
-            fasta_dir=os.path.join(script_dir, "fixtures", "generate_rnacentral_json"),
+            fasta_dir=os.path.join(script_dir, "fixtures", "generate_rnacentral_json", "FASTA"),
             rfam_lengths=self.rfam_lengths, 
             sample_publication_mapping=dict(),
             catalogue_name="sheep rumen catalogue", 
