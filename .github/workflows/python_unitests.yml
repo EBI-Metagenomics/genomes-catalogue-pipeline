@@ -20,4 +20,4 @@ jobs:
         pip install -U -r requirements-test.txt
     - name: Testing
       run: |
-        PYTHONPATH="$PYTHONPATH:bin" pytest
+        PYTHONPATH="$PYTHONPATH:bin:helpers/database-import-scripts/uniprot" pytest
