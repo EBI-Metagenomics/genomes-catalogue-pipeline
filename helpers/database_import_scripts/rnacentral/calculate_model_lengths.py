@@ -20,7 +20,10 @@ def main(rfam_file, output):
                     if rfam_lengths[name] == model_length:
                         pass
                     else:
-                        print("ERROR: same name occurs multiple times and lengths do not match", name)
+                        print(
+                            "ERROR: same name occurs multiple times and lengths do not match",
+                            name,
+                        )
                 else:
                     rfam_lengths[name] = model_length
                     name = ""
@@ -30,17 +33,27 @@ def main(rfam_file, output):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Script produces a file with lengths of Rfam covariance models."
-                                                 "The resulting file is necessary for running the JSON generating"
-                                                 "script and only needs to be produced once unless the Rfam.cm"
-                                                 "file is updated.")
-    parser.add_argument('-r', '--rfam-file', required=True,
-                        help='Path to the Rfam.cm file containing concatinated Rfam models.')
-    parser.add_argument('-o', '--output', required=True,
-                        help='Path to the output file where the lengths of models will be saved to.')
+    parser = argparse.ArgumentParser(
+        description="Script produces a file with lengths of Rfam covariance models."
+        "The resulting file is necessary for running the JSON generating"
+        "script and only needs to be produced once unless the Rfam.cm"
+        "file is updated."
+    )
+    parser.add_argument(
+        "-r",
+        "--rfam-file",
+        required=True,
+        help="Path to the Rfam.cm file containing concatinated Rfam models.",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        required=True,
+        help="Path to the output file where the lengths of models will be saved to.",
+    )
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = parse_args()
     main(args.rfam_file, args.output)

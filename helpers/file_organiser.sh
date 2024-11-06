@@ -45,8 +45,8 @@ function GenerateRNACentralJSON {
     
     echo "Running JSON generation"
     mitload miniconda && conda activate pybase
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/generate_rnacentral_json.py \
-    -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/rfam_model_lengths_14.9.txt \
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/rnacentral/generate_rnacentral_json.py \
+    -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/rnacentral/rfam_model_lengths_14.9.txt \
     -m ${RESULTS_PATH}/genomes-all_metadata.tsv -o ${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json \
     -d ${RESULTS_PATH}/additional_data/ncrna_deoverlapped_species_reps/ -g ${RESULTS_PATH}/additional_data/rnacentral/GFFs/ \
      -f ${RESULTS_PATH}/additional_data/mgyg_genomes/
@@ -121,19 +121,19 @@ function GenerateUniprotFiles {
     fi
     
     mitload miniconda && conda activate pybase
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/preprocess_taxonomy_for_uniprot.py \
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/uniprot/preprocess_taxonomy_for_uniprot.py \
     -g ${RESULTS_PATH}/additional_data/gtdb-tk_output/ -r "r214" -v "2" -o ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv
     
     echo "Generating Uniprot files"
     ACCS=$(ls ${RESULTS_PATH}/additional_data/prokka_gbk_species_reps/${F}.gbk | rev | cut -d '/' -f1 | rev | sed "s/\.gbk//")
     
-    for F in $ACCS; do python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/convert_gbk.py \
+    for F in $ACCS; do python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/uniprot/convert_gbk.py \
     -g ${RESULTS_PATH}/additional_data/prokka_gbk_species_reps/${F}.gbk \
     -o ${RESULTS_PATH}/additional_data/uniprot/uniprot-files/${F}_uniprot.gbk \
     -t ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv; done
     
     echo "Generating Uniprot metadata"
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/generate_uniprot_metadata.py \
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/uniprot/generate_uniprot_metadata.py \
     -m ${RESULTS_PATH}/genomes-all_metadata.tsv -o ${RESULTS_PATH}/additional_data/uniprot/${CATALOGUE_FOLDER}_${CATALOGUE_VERSION}_uniprot_metadata.tsv \
     -p ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv
     
