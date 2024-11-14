@@ -128,14 +128,16 @@ function RunRNACentralValidator {
 function GenerateUniprotFiles {
     echo "Converting taxonomy for Uniprot"
     mkdir -p ${RESULTS_PATH}/additional_data/uniprot ${RESULTS_PATH}/additional_data/uniprot/uniprot-files
-    if [[ -f ${RESULTS_PATH}/additional_data/gtdb-tk_output.tar.gz ]]
+    if [[ -f ${RESULTS_PATH}/additional_data/gtdbtk_results.tar.gz ]]
     then
-        tar -xf ${RESULTS_PATH}/additional_data/gtdb-tk_output.tar.gz
+        tar -xf ${RESULTS_PATH}/additional_data/gtdbtk_results.tar.gz
     fi
     
     mitload miniconda && conda activate pybase
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/uniprot/preprocess_taxonomy_for_uniprot.py \
-    -g ${RESULTS_PATH}/additional_data/gtdb-tk_output/ -r "r214" -v "2" -o ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/preprocess_taxonomy_for_uniprot.py \
+    -g ${RESULTS_PATH}/additional_data/gtdbtk_results/ -r "r214" -v "2" \
+    -m ${RESULTS_PATH}/ftp/genomes-all_metadata.tsv --species-level-taxonomy -t 4 \
+    -o ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv
     
     echo "Generating Uniprot files"
     ACCS=$(ls ${RESULTS_PATH}/additional_data/prokka_gbk_species_reps/${F}.gbk | rev | cut -d '/' -f1 | rev | sed "s/\.gbk//")
@@ -153,7 +155,12 @@ function GenerateUniprotFiles {
     echo "Uniprot cleanup"
     # gzip the gtdb directory
     cd ${RESULTS_PATH}/additional_data/
-    tar -czvf gtdb-tk_output.tar.gz gtdb-tk_output && rm -r gtdb-tk_output
+    if [[ ! -f ${RESULTS_PATH}/additional_data/gtdbtk_results.tar.gz ]]
+    then
+        tar -czvf ${RESULTS_PATH}/additional_data/gtdbtk_results.tar.gz gtdbtk_results && rm -r gtdbtk_results
+    else
+        rm -r gtdbtk_results
+    fi
 }
 
 
