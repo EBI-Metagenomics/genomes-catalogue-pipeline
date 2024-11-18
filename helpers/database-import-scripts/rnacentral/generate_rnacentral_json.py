@@ -135,13 +135,13 @@ def get_date():
 
 def check_inputs_existence(deoverlap_dir, gff_dir, fasta_dir):
     if not os.path.exists(deoverlap_dir):
-        logging.exception("cmscan deoverlap directory doesn't exist")
+        logging.exception("cmscan deoverlap directory doesn't exist. Expected path: {}".format(deoverlap_dir))
         sys.exit()
     if not os.path.exists(gff_dir):
-        logging.exception("GFF directory doesn't exist")
+        logging.exception("GFF directory doesn't exist. Expected path: {}".format(gff_dir))
         sys.exit()
     if not os.path.exists(fasta_dir):
-        logging.exception("Fasta directory doesn't exist")
+        logging.exception("Fasta directory doesn't exist. Expected path: {}".format(fasta_dir))
         sys.exit()
     
     
@@ -183,13 +183,15 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
         # check if the naming has changed
         deoverlap_path = os.path.join(deoverlap_dir, "{}.ncrna.deoverlap.tbl".format(mgnify_accession))
         if not os.path.exists(deoverlap_path):
-            logging.warning("cmscan file for accession {} doesn't exist. Skipping.".format(mgnify_accession))
+            logging.warning("cmscan file for accession {} doesn't exist. Expected file path: {}. "
+                            "Skipping.".format(mgnify_accession, deoverlap_path))
             SKIP_CMSCAN += 1
             return None
     try:
         gff_path = glob.glob(os.path.join(gff_dir, mgnify_accession + ".*"))[0]
     except:
-        logging.warning("GFF file for accession {} doesn't exist. Skipping.".format(mgnify_accession))
+        logging.warning("GFF file for accession {} doesn't exist. Expected to find the file in folder {}. "
+                        "Skipping.".format(mgnify_accession, gff_dir))
         SKIP_GFF += 1
         return None
     hits_to_report = get_good_hits(deoverlap_path, rfam_lengths)
