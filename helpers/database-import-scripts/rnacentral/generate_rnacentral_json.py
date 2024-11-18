@@ -394,7 +394,7 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
                 genome_sample_accession))
         else:
             logging.error("Biosample couldn't be obtained for sample {}".format(genome_sample_accession))
-            if insdc_accession.startswith("CA"):
+            if not insdc_accession.startswith(("GCA", "NA", "GUT_")):
                 logging.error("Biosample could not be obtained for an ENA genome {}".
                               format(insdc_accession))
                 sys.exit("ERROR: cannot proceed because at least one ENA sample is not found in ENA.")
@@ -518,7 +518,7 @@ def load_xml(sample_id, insdc_accession=None):
         r = run_xml_request(xml_url)
     except:
         if r is None:
-            if insdc_accession.startswith("C"):
+            if not insdc_accession.startswith(("GCA", "GUT_", "NA")):
                 logging.error("Unable to get XML for sample {}, ENA genome {}".format(sample_id, insdc_accession))
                 sys.exit()
             else:
