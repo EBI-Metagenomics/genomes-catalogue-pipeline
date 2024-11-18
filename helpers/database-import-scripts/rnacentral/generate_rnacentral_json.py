@@ -19,7 +19,7 @@ from retry import retry
 import urllib.parse
 import xmltodict
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 # Define variables for stats report
 SKIP_CMSCAN = SKIP_GFF = GOOD = BAD_SEQUENCE = 0
