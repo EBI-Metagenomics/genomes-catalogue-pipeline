@@ -10,6 +10,7 @@ import os
 import pytz
 import re
 import sys
+import time
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -24,9 +25,13 @@ logging.basicConfig(level=logging.WARNING)
 SKIP_CMSCAN = SKIP_GFF = GOOD = BAD_SEQUENCE = 0
 skip_short = list()
 skip_total = list()
+ERROR_404 = list()
 
 
-def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
+def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir, previous_json):
+    if previous_json:
+        previous_json_data = load_previous_json(previous_json)
+        previous_primary_ids = get_primary_ids(previous_json_data)
     produced_date = get_date()
     rfam_lengths = load_rfam(rfam_info)
     check_inputs_existence(deoverlap_dir, gff_dir, fasta_dir)
@@ -36,6 +41,7 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
     final_dict = dict()
     final_dict.setdefault("data", list())
     with open(metadata, "r") as f:
+        logging.info("Starting to load metadata...")
         for line in f:
             if not line.startswith("Genome"):
                 parts = line.strip().split("\t")
@@ -46,14 +52,26 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
                     metadata_json, catalogue_name = generate_metadata_dict(ftp, produced_date)
                 # only process species reps
                 if mgnify_accession == species_rep:
+                    logging.info("Looking up accession {}".format(mgnify_accession))
                     json_data, sample_publication_mapping = generate_data_dict(
                         mgnify_accession, sample_accession, taxonomy, deoverlap_dir, gff_dir, fasta_dir, rfam_lengths,
                         sample_publication_mapping, catalogue_name, reported_project, insdc_accession)
                     if json_data:
+                        if previous_json:
+                            # Check which entries are different in this version and bump the version in the json
+                            for index, new_entry in enumerate(json_data):
+                                if new_entry["primaryId"] in previous_primary_ids:
+                                    old_entry = get_entry(previous_json_data, json_data[index]["primaryId"], "data")
+                                    new_entry = get_entry(json_data, json_data[index]["primaryId"], None)
+                                    if old_entry != new_entry:
+                                        json_data = up_the_version(json_data, index, old_entry["version"])
                         final_dict["data"].extend(json_data)
+                    logging.info("Done with accession {}".format(mgnify_accession))
     final_dict["metaData"] = metadata_json
+    logging.info("Done loading data, preparing the JSON file...")
     with open(outfile, "w") as file_out:
         json.dump(final_dict, file_out, indent=5)
+    logging.info("Printing stats...")
     skip_other = set(skip_total) - set(skip_short)
     with open(outfile + ".report", "w") as file_out:
         file_out.write("Total hits reported in JSON\t{}\n".format(GOOD))
@@ -64,6 +82,42 @@ def main(rfam_info, metadata, outfile, deoverlap_dir, gff_dir, fasta_dir):
             BAD_SEQUENCE))
         file_out.write("Genomes not processed because cmsearch output is missing\t{}\n".format(SKIP_CMSCAN))
         file_out.write("Genomes not processed because GFF is missing (cmsearch output exists)\t{}\n".format(SKIP_GFF))
+    logging.info("Script execution is completed. JSON is saved to {}".format(outfile))
+    if len(ERROR_404) > 0:
+        print("WARNING: these samples are not found in ENA: {}. \nThis only makes sense if they are private. Check that"
+              " it is the case (this is rare but possible; the marine catalogue is known to have some private "
+              "samples), otherwise investigate the source of the issue with ENA. "
+              "Missing samples are written to file rnacentral_samples_not_in_ena.txt".format(",".join(ERROR_404)))
+        with open("rnacentral_samples_not_in_ena.txt", "w") as error_404_out:
+            error_404_out.write("\n".join(ERROR_404))
+
+
+def up_the_version(json_data, index, old_version):
+    json_data[index]['version'] = str(int(old_version) + 1)
+    return json_data 
+    
+    
+def get_entry(json_data, primary_id, top_level):
+    if top_level:
+        json_data_for_iteration = json_data[top_level]
+    else:
+        json_data_for_iteration = json_data
+    for entry in json_data_for_iteration:
+        if entry['primaryId'] == primary_id:
+            return entry
+    
+
+def get_primary_ids(json_data):
+    previous_primary_ids = list()
+    for entry in json_data['data']:
+        previous_primary_ids.append(entry["primaryId"])
+    return previous_primary_ids
+
+    
+def load_previous_json(file):
+    with open(file, "r") as file_in:
+        previous_json_data = json.load(file_in)
+    return previous_json_data
     
 
 def get_date():
@@ -81,13 +135,13 @@ def get_date():
 
 def check_inputs_existence(deoverlap_dir, gff_dir, fasta_dir):
     if not os.path.exists(deoverlap_dir):
-        logging.exception("cmscan deoverlap directory doesn't exist")
+        logging.exception("cmscan deoverlap directory doesn't exist. Expected path: {}".format(deoverlap_dir))
         sys.exit()
     if not os.path.exists(gff_dir):
-        logging.exception("GFF directory doesn't exist")
+        logging.exception("GFF directory doesn't exist. Expected path: {}".format(gff_dir))
         sys.exit()
     if not os.path.exists(fasta_dir):
-        logging.exception("Fasta directory doesn't exist")
+        logging.exception("Fasta directory doesn't exist. Expected path: {}".format(fasta_dir))
         sys.exit()
     
     
@@ -126,23 +180,29 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
     global SKIP_CMSCAN, SKIP_GFF, GOOD, BAD_SEQUENCE
     deoverlap_path = os.path.join(deoverlap_dir, "{}.cmscan-deoverlap.tbl".format(mgnify_accession))
     if not os.path.exists(deoverlap_path):
-        logging.warning("cmscan file for accession {} doesn't exist. Skipping.".format(mgnify_accession))
-        SKIP_CMSCAN += 1
-        return None
+        # check if the naming has changed
+        deoverlap_path = os.path.join(deoverlap_dir, "{}.ncrna.deoverlap.tbl".format(mgnify_accession))
+        if not os.path.exists(deoverlap_path):
+            logging.warning("cmscan file for accession {} doesn't exist. Expected file path: {}. "
+                            "Skipping.".format(mgnify_accession, deoverlap_path))
+            SKIP_CMSCAN += 1
+            return None
     try:
         gff_path = glob.glob(os.path.join(gff_dir, mgnify_accession + ".*"))[0]
     except:
-        logging.warning("GFF file for accession {} doesn't exist. Skipping.".format(mgnify_accession))
+        logging.warning("GFF file for accession {} doesn't exist. Expected to find the file in folder {}. "
+                        "Skipping.".format(mgnify_accession, gff_dir))
         SKIP_GFF += 1
         return None
     hits_to_report = get_good_hits(deoverlap_path, rfam_lengths)
 
     dict_list = list()
+    
+    read_function = gzip.open if gff_path.endswith('.gz') else open
+    fasta_file = glob.glob(os.path.join(fasta_dir, mgnify_accession + ".*"))[0]
+    seq_records = SeqIO.to_dict(SeqIO.parse(fasta_file, "fasta"))
 
     if len(hits_to_report.keys()) > 0:
-        fasta_file = glob.glob(os.path.join(fasta_dir, mgnify_accession + ".*"))[0]
-        seq_records = SeqIO.to_dict(SeqIO.parse(fasta_file, "fasta"))
-        read_function = gzip.open if gff_path.endswith('.gz') else open
         with read_function(gff_path, "rt") as f:
             for line in f:
                 if line.startswith(">"):
@@ -150,11 +210,14 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                 elif line.startswith("#"):
                     pass
                 else:
-                    if "INFERNAL" in line:
-                        fields = line.strip().split("\t")
+                    fields = line.strip().split("\t")
+                    if fields[1].startswith(("INFERNAL", "tRNAscan-SE")):
                         contig, start, end, strand, annotation = fields[0], int(fields[3]), int(fields[4]), fields[6], \
                                                                  fields[8]
-                        if contig in hits_to_report and [start, end] in hits_to_report[contig]:
+                        # Only process ncRNA records that are either good quality infernal hits 
+                        # (i.e. included in hits_to_report) or tRNAscan-SE hits
+                        if (contig in hits_to_report and [start, end] in hits_to_report[contig]) or \
+                                fields[1].startswith("tRNAscan-SE"):
                             GOOD += 1
                             data_dict = dict()
                             data_dict["primaryId"] = get_primary_id(annotation)
@@ -163,9 +226,15 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                             if not pass_seq_check(data_dict["sequence"]):
                                 BAD_SEQUENCE += 1
                                 continue
-                            data_dict["name"] = get_seq_name(annotation)
+                            data_dict["name"] = get_seq_name(annotation, fields[1])
                             data_dict["version"] = "1"
-                            data_dict["sourceModel"] = "RFAM:{}".format(get_rfam_accession(annotation))
+                            if fields[1].startswith("INFERNAL"):
+                                data_dict["sourceModel"] = "RFAM:{}".format(get_annotation_record(annotation, "rfam"))
+                            else:
+                                data_dict["sourceModel"] = "TRNASCANSE:{}".format(get_annotation_record(annotation, 
+                                                                                                        "isotype"))
+                                data_dict["sequenceFeatures"] = {"anticodon": get_annotation_record(annotation, 
+                                                                                                    "anticodon")}
                             data_dict["genomeLocations"] = make_genome_locations(contig, start, end, strand,
                                                                                  mgnify_accession)
                             data_dict["url"] = \
@@ -185,24 +254,17 @@ def generate_data_dict(mgnify_accession, sample_accession, taxonomy, deoverlap_d
                                          "doesn't match between the GFF and the deoverlapped file.".
                                          format(contig, start, end))
                             skip_total.append("{}_{}_{}".format(contig, start, end))
-    else:
-        read_function = gzip.open if gff_path.endswith('.gz') else open
-        with read_function(gff_path, "rt") as f:
-            for line in f:
-                if line.startswith(">"):
-                    break
-                elif line.startswith("#"):
-                    pass
-                else:
-                    if "INFERNAL" in line:
-                        fields = line.strip().split("\t")
-                        contig, start, end, strand, annotation = fields[0], int(fields[3]), int(fields[4]), fields[6], \
-                                                                 fields[8]
-                        skip_total.append("{}_{}_{}".format(contig, start, end))
     # TO DO: Print a warning if there are no hits in GFF but there are hits in hits_to_report
     return dict_list, sample_publication_mapping
-
-
+        
+        
+def get_annotation_record(annotation, field):
+    parts = annotation.strip().split(";")
+    for part in parts:
+        if part.startswith(field):
+            return part.split("=")[1]
+        
+    
 def pass_seq_check(seq):
     count_n = seq.lower().count('n')
     total_length = len(seq)
@@ -212,15 +274,19 @@ def pass_seq_check(seq):
         return False
     
     
-def get_seq_name(annotation):
+def get_seq_name(annotation, annotation_source):
     """Return the name of the matched sequence.
 
     :param annotation: annotation from one line in the GFF line
     :return: name of ncRNA
     """
+    if "INFERNAL" in annotation_source:
+        search_term = "product"
+    else:
+        search_term = "gene_biotype"
     parts = annotation.strip().split(";")
     for p in parts:
-        if p.startswith("product="):
+        if p.startswith("{}=".format(search_term)):
             return p.split("=")[1]
     return ""
 
@@ -250,6 +316,8 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
     biosamples = list()
     ena_format_issue = False
 
+    infinite_loop_protection = 0  # count iterations to break a potential infinite loop when traversing samples in ENA
+
     samples_to_check = [genome_sample_accession]
     # Check if there are read files associated with the sample (meaning sample accession points to raw data already)
     # If that's the case, there is no need to convert the sample accession to the raw data one
@@ -259,38 +327,48 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
     else:
         # keep going through levels of samples until we get to the raw read samples
         while samples_to_check:
+            infinite_loop_protection += 1
+            if infinite_loop_protection > 20:
+                sys.exit("Exiting: Sample {} results in an infinite loop when trying to find the sample it's "
+                         "derived from".format(genome_sample_accession))
             samples_for_next_iteration = list()
             for sample_to_check in samples_to_check:
-                xml_data = load_xml(sample_to_check, insdc_accession)
-                try:
-                    if xml_data:
-                        sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"]["SAMPLE_ATTRIBUTE"]
-                    else:
-                        # there is no XML for this sample, we can't get samples it is derived from
-                        sample_attributes = list()
-                except:
-                    # There is XML but it's format is wrong and we can't parse it
-                    logging.exception("Unable to process XML for sample {}".format(sample_to_check))
-                    sys.exit()
-                sample_is_derived = False
-                for attribute in sample_attributes:
-                    if all([x in attribute["TAG"] for x in ["derived", "from"]]):
-                        derived_from_list = re.findall("SAM[A-Z]+\d+|ERS\d+|SRS\d+|DRS\d+", attribute["VALUE"])
-                        if len(derived_from_list) == 0:
-                            logging.warning("Found an issue with derived samples format for sample {}. "
-                                            "Attempting to resolve.".format(genome_sample_accession))
-                            derived_from_list = identify_derived_sample_issue(attribute["VALUE"])
-                            if len(derived_from_list) == 0:
-                                ena_format_issue = True
-                            else:
-                                logging.warning("Resolved the format issue for sample {} successfully.".format(
-                                    genome_sample_accession))
-                                sample_to_check = derived_from_list
-                        samples_for_next_iteration = samples_for_next_iteration + derived_from_list
-                        sample_is_derived = True
-                        break
-                if not sample_is_derived:  # we found the raw read sample
+                if check_sample_level(sample_to_check):
+                    # The sample contains raw data, hence we won't look at whether it's derived
                     biosamples.append(sample_to_check)
+                else:
+                    # Look at the metadata to identify if the sample is derived and what sample it's derived from
+                    xml_data = load_xml(sample_to_check, insdc_accession)
+                    try:
+                        if xml_data:
+                            sample_attributes = xml_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"][
+                                "SAMPLE_ATTRIBUTE"]
+                        else:
+                            # there is no XML for this sample, we can't get samples it is derived from
+                            sample_attributes = list()
+                    except:
+                        # There is XML but its format is wrong and we can't parse it
+                        logging.exception("Unable to process XML for sample {}".format(sample_to_check))
+                        sys.exit()
+                    sample_is_derived = False
+                    for attribute in sample_attributes:
+                        if all([x in attribute["TAG"] for x in ["derived", "from"]]):
+                            derived_from_list = re.findall("SAM[A-Z]+\d+|ERS\d+|SRS\d+|DRS\d+", attribute["VALUE"])
+                            if len(derived_from_list) == 0:
+                                logging.warning("Found an issue with derived samples format for sample {}. "
+                                                "Attempting to resolve.".format(genome_sample_accession))
+                                derived_from_list = identify_derived_sample_issue(attribute["VALUE"])
+                                if len(derived_from_list) == 0:
+                                    ena_format_issue = True
+                                else:
+                                    logging.warning("Resolved the format issue for sample {} successfully.".format(
+                                        genome_sample_accession))
+                                    sample_to_check = derived_from_list
+                            samples_for_next_iteration = samples_for_next_iteration + derived_from_list
+                            sample_is_derived = True
+                            break
+                    if not sample_is_derived:  # we found the raw read sample
+                        biosamples.append(sample_to_check)
             samples_to_check = samples_for_next_iteration
     # now we are working with raw read samples
     for biosample in biosamples:
@@ -304,7 +382,7 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
             for project in project_accessions:
                 extracted_publications = get_publications_from_xml(project)
                 if extracted_publications:
-                    publications_to_add.extend(list(extracted_publications))
+                    publications_to_add.extend(sorted(list(extracted_publications)))
             publications.extend(list(publications_to_add))
         else:
             logging.warning("Could not obtain project accessions for sample {}".
@@ -316,11 +394,11 @@ def get_publications(genome_sample_accession, reported_project, insdc_accession)
                 genome_sample_accession))
         else:
             logging.error("Biosample couldn't be obtained for sample {}".format(genome_sample_accession))
-            if insdc_accession.startswith("CA"):
+            if not insdc_accession.startswith(("GCA", "NA", "GUT_")):
                 logging.error("Biosample could not be obtained for an ENA genome {}".
                               format(insdc_accession))
                 sys.exit("ERROR: cannot proceed because at least one ENA sample is not found in ENA.")
-    return list(filter(None, list(set(publications))))
+    return sorted(list(filter(None, list(set(publications)))))
 
 
 def identify_derived_sample_issue(ena_data):
@@ -368,13 +446,16 @@ def run_request(query, api_endpoint):
 
 
 def convert_bin_sample(biosample):
-    xml_data = load_xml(biosample)
-    try:
-        biosample = xml_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["EXTERNAL_ID"]["#text"] \
-            if xml_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["EXTERNAL_ID"]["@namespace"] == "BioSample" \
-            else biosample
-    except:
+    if biosample in ERROR_404:
         logging.error("Could not convert sample {}".format(biosample))
+    else:
+        xml_data = load_xml(biosample)
+        try:
+            biosample = xml_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["EXTERNAL_ID"]["#text"] \
+                if xml_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["EXTERNAL_ID"]["@namespace"] == "BioSample" \
+                else biosample
+        except:
+            logging.error("Could not convert sample {}".format(biosample))
     return biosample
 
 
@@ -428,16 +509,30 @@ def get_project_accession(biosample):
 
 
 def load_xml(sample_id, insdc_accession=None):
+    if sample_id in ERROR_404:
+        logging.warning("Not attempting to retrieve xml for sample {}. Reason: sample is not in ENA".format(
+            sample_id))
+        return None
     xml_url = 'https://www.ebi.ac.uk/ena/browser/api/xml/{}'.format(sample_id)
     try:
         r = run_xml_request(xml_url)
     except:
-        if insdc_accession.startswith("C"):
-            logging.error("Unable to get XML for sample {}, ENA genome {}".format(sample_id, insdc_accession))
-            sys.exit()
+        if r is None:
+            if not insdc_accession.startswith(("GCA", "GUT_", "NA")):
+                logging.error("Unable to get XML for sample {}, ENA genome {}".format(sample_id, insdc_accession))
+                sys.exit()
+            else:
+                logging.warning("Unable to get XML for accession {}. Skipping.".format(sample_id))
+                return None
         else:
-            logging.warning("Unable to get XML for accession {}. Skipping.".format(sample_id))
-            return None
+            if r.status_code == 404:
+                logging.warning("Sample {} does not seem to be present in ENA".format(sample_id))
+                ERROR_404.append(sample_id)
+                return None
+            else:
+                logging.error("There is an unexpected error requesting data from ENA for sample {}: {}".format(
+                    sample_id, r.text))
+                sys.exit()
     if r.ok:
         try:
             data_dict = xmltodict.parse(r.content)
@@ -449,14 +544,42 @@ def load_xml(sample_id, insdc_accession=None):
             print(r.text)
     else:
         logging.error('Could not retrieve xml for accession {}'.format(sample_id))
-        logging.error(r.text)
+        if r.status_code == 404:
+            logging.warning("Reason: sample is not in ENA")
+            if sample_id not in ERROR_404:
+                ERROR_404.append(sample_id)
+        else:
+            logging.error("Error in full: {}".format(r.text))
+            sys.exit("Program is exiting - unable to query ENA for sample {}. Error code {}".format(sample_id, 
+                                                                                                    r.status_code))
         return None
 
 
-@retry(tries=5, delay=10, backoff=1.5)
 def run_xml_request(xml_url):
-    r = requests.get(xml_url)
-    r.raise_for_status()
+    attempt = 0
+    max_attempts = 3
+    delay = 20
+    r = None
+    while attempt < max_attempts:
+        if attempt > 0:
+            time.sleep(delay * attempt)
+        try:
+            r = requests.get(xml_url)
+            r.raise_for_status()
+            return r
+        except requests.exceptions.HTTPError as http_err:
+            attempt += 1
+            if r is not None and r.status_code == 404:
+                print(f"Error: 404 Not Found for URL: {xml_url}.")
+                # try one more time, unlikely that this error will resolve itself
+                if attempt < 2:
+                    attempt = 2  # bumping attempt up so that there is only one rerun
+                    print("Trying one more time...")
+            else:
+                print(f"HTTP error occurred: {http_err}. Retrying...")
+        except Exception as err:
+            attempt += 1
+            print(f"An unexpected error occurred: {err}. Retrying...")
     return r
 
 
@@ -474,18 +597,6 @@ def get_sequence(seq_records, contig, start, end, strand):
     if strand == "-":
         seq = Seq(seq).reverse_complement()
     return str(seq).upper()
-
-
-def get_rfam_accession(annotation):
-    """Returns Rfam accession from the GFF annotation field.
-
-    :param annotation: Contents of the annotation fields for one feature in a GFF.
-    :return: Rfam accession
-    """
-    parts = annotation.strip().split(";")
-    for part in parts:
-        if part.startswith("rfam"):
-            return part.split("=")[1]
 
 
 def get_primary_id(annotation):
@@ -555,9 +666,15 @@ def parse_args():
                         help='Path to the directory containing GFF files.')
     parser.add_argument('-f', '--fasta-dir', required=True,
                         help='Path to the directory containing genomes fasta files.')
+    parser.add_argument('--previous-json', required=False,
+                        help='Only use this flag if the catalogue has been reannotated (ncRNAs have been called '
+                             'previously and submitted to RNAcentral). This is only possible if the current '
+                             'catalogue is an updated version of a previously generated catalogue. If that is the '
+                             'case, provide the previous RNAcentral JSON here.')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.rfam_info, args.metadata, args.outfile, args.deoverlap_dir, args.gff_dir, args.fasta_dir)
+    main(args.rfam_info, args.metadata, args.outfile, args.deoverlap_dir, args.gff_dir, args.fasta_dir, 
+         args.previous_json)
