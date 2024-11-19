@@ -74,12 +74,12 @@ def main(input_folder, remove_list_file, outfile):
                 file_out.write("{}\n".format(sample))
             for genome in missing_genomes:
                 file_out.write("{}\n".format(genome))
-        # Exiting because the pipeline needs to fail. The user should evaluate the missing genomes and either 
+        # The user should evaluate the missing genomes and either 
         # resolve the issue if the missing status is incorrect or add them to the list of genomes to be 
         # removed from the catalogue
-        sys.exit("Missing genomes and samples are saved to {}. Check that these are indeed missing in ENA, "
-                 "add them to the file containing a list of genomes to remove and restart the pipeline.".
-                 format(outfile))
+        logging.error("Missing genomes and samples are saved to {}. Check that these are indeed missing in ENA, "
+                      "add them to the file containing a list of genomes to remove and restart the pipeline.".
+                      format(outfile))
     else:
         logging.info("No missing genomes or samples found in the previous version of the catalogue")
 
