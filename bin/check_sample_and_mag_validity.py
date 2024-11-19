@@ -34,7 +34,7 @@ def main(input_folder, remove_list_file, outfile):
         sys.exit("Provided input folder {} does not contain a metadata table in the expected location: "
                  "{} or the file is empty.".format(input_folder, metadata_table_file))
     if remove_list_file is not None:
-        remove_list = load_remove_list(remove_list_file)
+        remove_list = load_remove_list(remove_list_file, metadata_table_file)
     else:
         remove_list = list()
     sample_mag_dictionary = load_metadata_table(metadata_table_file, remove_list)
@@ -96,16 +96,45 @@ def run_full_url_request(full_url):
     return r
 
 
-def load_remove_list(remove_list_file):
+def load_remove_list(remove_list_file, metadata_table_file):
     remove_list = list()
+    translation_dict = dict()  # dictionary to translate MGYG accessions to INSDC accessions
     with open(remove_list_file, "r") as f:
         for line in f:
             line = line.strip()
-            if line not in remove_list:
-                remove_list.append(line)
+            if line.startswith("MGYG"):
+                if not translation_dict:
+                    translation_dict = load_translation(metadata_table_file)
+                try:
+                    acc = translation_dict[line]
+                except:
+                    sys.exit("Removal of genome {} was requested but it is not present in the metadata file {}".
+                             format(line, metadata_table_file))
             else:
-                logging.warning("Accession {} appears in file {} several times".format(line, remove_list_file))
+                acc = line
+            if acc not in remove_list:
+                remove_list.append(acc)
+            else:
+                logging.warning("Accession {} appears in file {} several times".format(acc, remove_list_file))
     return remove_list
+
+
+def load_translation(metadata_table_file):
+    translation_dict = dict()
+    with open(metadata_table_file, "r") as f:
+        header = f.readline().strip()
+        header_fields = header.split("\t")
+        try:
+            mgyg_index = header_fields.index("Genome")
+            insdc_index = header_fields.index("Genome_accession")
+        except ValueError:
+            sys.exit("Unable to locate the genome and genome_accession fields in file {}".format(metadata_table_file))
+        for line in f:
+            parts = line.strip().split("\t")
+            mgyg = parts[mgyg_index]
+            insdc_acc = parts[insdc_index]
+            translation_dict[mgyg] = insdc_acc
+    return translation_dict
     
 
 def load_metadata_table(metadata_table_file, remove_list):
@@ -118,7 +147,7 @@ def load_metadata_table(metadata_table_file, remove_list):
             acc_index = header_fields.index("Genome_accession")
             sample_index = header_fields.index("Sample_accession")
         except ValueError as e:
-            print("Field not found:", e)
+            sys.exit("Unable to load the metadata table. Field not found:", e)
         for line in f:
             parts = line.strip().split("\t")
             acc = parts[acc_index]
