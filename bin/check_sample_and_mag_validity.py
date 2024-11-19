@@ -131,9 +131,10 @@ def load_metadata_table(metadata_table_file, remove_list):
                 matches_in_remove_list += 1
     assert len(sample_mag_dictionary) > 0, ("There was an error loading data from the metadata table {}. "
                                             "No records were obtained".format(metadata_table_file))
-    assert matches_in_remove_list > 0, ("None of the genomes in remove_list are present in the metadata table file {}. "
-                                        "Check that the list of genomes to remove is correct".
-                                        format(metadata_table_file))
+    if len(remove_list) > 0:
+        assert matches_in_remove_list > 0, ("None of the genomes in remove_list are present in the metadata table file "
+                                            "{}. Check that the list of genomes to remove is correct".
+                                            format(metadata_table_file))
     return sample_mag_dictionary
     
     
