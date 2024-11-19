@@ -6,10 +6,10 @@ import os
 from pathlib import Path
 
 script_dir = Path(__file__).resolve().parent
-rnacentral_dir = script_dir / '../../helpers/database-import-scripts/rnacentral'
+rnacentral_dir = script_dir / '../../helpers/database_import_scripts/rnacentral'
 rnacentral_dir = rnacentral_dir.resolve()
 
-generate_json = importlib.import_module("helpers.database-import-scripts.rnacentral.generate_rnacentral_json")
+generate_json = importlib.import_module("helpers.database_import_scripts.rnacentral.generate_rnacentral_json")
 generate_metadata_dict = generate_json.generate_metadata_dict
 get_good_hits = generate_json.get_good_hits
 load_rfam = generate_json.load_rfam

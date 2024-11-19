@@ -51,8 +51,8 @@ function GenerateRNACentralJSON {
 
     echo "Running JSON generation"
     mitload miniconda && conda activate pybase
-    rna_cmd="python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/generate_rnacentral_json.py \
-    -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/rfam_model_lengths_14.9.txt \
+    rna_cmd="python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/rnacentral/generate_rnacentral_json.py \
+    -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/rnacentral/rfam_model_lengths_14.9.txt \
     -m "${RESULTS_PATH}/genomes-all_metadata.tsv" -o "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json" \
     -d "${RESULTS_PATH}/additional_data/ncrna_deoverlapped_species_reps/" -g "${RESULTS_PATH}/additional_data/rnacentral/GFFs/ "\
      -f "${RESULTS_PATH}/additional_data/mgyg_genomes/""
@@ -134,7 +134,7 @@ function GenerateUniprotFiles {
     fi
     
     mitload miniconda && conda activate pybase
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/uniprot/preprocess_taxonomy_for_uniprot.py \
+    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database_import_scripts/uniprot/preprocess_taxonomy_for_uniprot.py \
     -g ${RESULTS_PATH}/additional_data/gtdbtk_results/ -r "r214" -v "2" \
     -m ${RESULTS_PATH}/ftp/genomes-all_metadata.tsv --species-level-taxonomy -t 4 \
     -o ${RESULTS_PATH}/additional_data/uniprot/preprocessed_taxonomy.tsv
