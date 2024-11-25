@@ -28,6 +28,14 @@ if (params.preassigned_accessions) {
     ch_preassigned_accessions = file(params.preassigned_accessions)
 }
 
+// Update pipeline
+if (params.update_catalogue_path) {
+    ch_previous_catalogue_location = file(params.update_catalogue_path)
+} 
+if (params.remove_genomes) {
+    ch_remove_genomes = file(params.remove_genomes)
+}
+
 // TODO: Add help message with parameters
 
 /*
@@ -36,6 +44,7 @@ if (params.preassigned_accessions) {
     ~~~~~~~~~~~~~~~~
 */
 
+include { PREPARE_UPDATE } from '../subworkflows/prepare_update'
 include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
@@ -108,6 +117,13 @@ ch_antismash_db = file(params.antismash_db)
 */
 
 workflow GAP {
+
+    if ( params.update_catalogue_path ){
+        PREPARE_UPDATE(
+            ch_previous_catalogue_location,
+            ch_remove_genomes
+        )
+    }
 
     PREPARE_DATA(
         ch_ena_genomes,
