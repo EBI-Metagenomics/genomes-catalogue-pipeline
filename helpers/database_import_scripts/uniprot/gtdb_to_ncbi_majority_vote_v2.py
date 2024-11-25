@@ -9,6 +9,8 @@ from os.path import join
 
 import dendropy
 
+sys.setrecursionlimit(2000)
+
 logging.basicConfig(level=logging.DEBUG)
 
 PATH_BAC120_TREE_FILE = join("classify", '{prefix}.bac120.classify.tree')
