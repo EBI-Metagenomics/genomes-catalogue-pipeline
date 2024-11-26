@@ -167,7 +167,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                 submittable_print = "Not valid for ENA"
             file_out.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
                 key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level, submittable_print))
-            logging.debug(key, lineage, source)
+            logging.debug("{} {} {}".format(key, lineage, source))
     logging.info("Printed results to {}".format(outfile))
 
 
@@ -452,7 +452,7 @@ def reformat_lineage(lineage, scientific_name):
                 higher_level = True
                 logging.info("Scientific name {} is already part of lineage {}".format(scientific_name, lineage))
             ranks_values[rank] = element
-            logging.debug(element, submittable, taxid, rank)
+            logging.debug("{} {} {} {}".format(element, submittable, taxid, rank))
     _, _, lowest_rank = query_scientific_name_from_ena(scientific_name, search_rank=True)
     if lowest_rank and not lowest_rank == "no rank":
         if lowest_rank == "subspecies":
@@ -769,7 +769,8 @@ def select_dump(taxonomy_release, db_dir):
     dump_dict = {
         "r202": "fullnamelineage_2020-11-01.dmp",
         "r207": "fullnamelineage_2022-03-01.dmp",
-        "r214": "fullnamelineage_2022-12-01.dmp"
+        "r214": "fullnamelineage_2022-12-01.dmp",
+        "r220": "fullnamelineage_2023-09-12.dmp"
     }
     return os.path.join(db_dir, dump_dict[taxonomy_release])
     
@@ -816,8 +817,8 @@ def parse_args():
                         help='Path to the output file where the modified file will be stored.')
     parser.add_argument('-v', '--taxonomy-version', choices=['1', '2'], default="2",
                         help='Version of GTDB-Tk, "1" or "2". Default = "2".')
-    parser.add_argument('-r', '--taxonomy-release', choices=['r202', 'r207', 'r214'], default="r214",
-                        help='Version of GTDB-Tk, "r202", "r207" or "r214". Default = "r214".')
+    parser.add_argument('-r', '--taxonomy-release', choices=['r202', 'r207', 'r214', 'r220'], default="r220",
+                        help='Version of GTDB-Tk, "r202", "r207", "r214", "r220". Default = "r220".')
     parser.add_argument('-m', '--metadata', required=True,
                         help='Path to the metadata table.')
     parser.add_argument('-s', '--species-level-taxonomy', action='store_true',
