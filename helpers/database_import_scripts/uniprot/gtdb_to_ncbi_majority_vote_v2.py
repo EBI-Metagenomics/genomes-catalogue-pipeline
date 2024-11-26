@@ -396,7 +396,7 @@ class Translate(object):
             # get NCBI majority vote classification for
             # any genomes only placed in the backbone tree
             remaining_gids = set(gtdbtk_assignments) - processed_gids
-            if len(remaining_gids) > 0:
+            if len(remaining_gids) > 0 and backbone_tree:
                 self.logger.info(f' - parsing {backbone_tree}')
                 tree = dendropy.Tree.get_from_path(backbone_tree,
                                                     schema='newick',
@@ -422,6 +422,11 @@ class Translate(object):
                     # check if genome must be classified based
                     # on its placement in the backbone tree
                     if gid not in remaining_gids:
+                        continue
+                    if gid not in leaf_node_map:
+                        logging.info("Unable to assign NCBI taxon to {} because it is not in leaf node map. "
+                                     "Assigning {}".format(gid, gtdb_taxa))
+                        fout[gid] = ";".join(gtdb_taxa)
                         continue
 
                     ncbi_rep_ids = self.get_ncbi_descendants(
