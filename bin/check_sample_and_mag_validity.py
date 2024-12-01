@@ -101,8 +101,8 @@ def load_remove_list(remove_list_file, metadata_table_file):
     translation_dict = dict()  # dictionary to translate MGYG accessions to INSDC accessions
     with open(remove_list_file, "r") as f:
         for line in f:
-            line = line.strip()
-            if line.startswith("MGYG"):
+            col1 = line.strip().split("\t")[0]
+            if col1.startswith("MGYG"):
                 if not translation_dict:
                     translation_dict = load_translation(metadata_table_file)
                 try:
@@ -111,7 +111,7 @@ def load_remove_list(remove_list_file, metadata_table_file):
                     sys.exit("Removal of genome {} was requested but it is not present in the metadata file {}".
                              format(line, metadata_table_file))
             else:
-                acc = line
+                acc = col1
             if acc not in remove_list:
                 remove_list.append(acc)
             else:
@@ -189,8 +189,9 @@ def parse_args():
         "--remove-list",
         required=False,
         help=(
-            "Path to the file containing a list of MAGs that should be removed from the catalogue during the update "
-            "process."
+            "Path to a tab-delimited file containing MAGs that should be removed from the catalogue during the update "
+            "process. First column is the genome accession (MGYG or INSDC accession), second column is the reason for "
+            "removal."
         ),
     )
     parser.add_argument(
