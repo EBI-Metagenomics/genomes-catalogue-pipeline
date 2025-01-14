@@ -28,7 +28,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     if not versions_compatible(taxonomy_version, taxonomy_release):
         sys.exit("GTDB versions {} and {} are not compatible".format(taxonomy_version, taxonomy_release))
     
-    # for each MGYG accession, get the corresponsing GCA (where available) and sample accessions from the metadata file
+    # for each MGYG accession, get the corresponding GCA (where available) and sample accessions from the metadata file
     gca_accessions, sample_accessions = parse_metadata(metadata_file)  # key=mgyg, value=gca accession/sample accession
     
     # supplement the gca accessions from the metadata table by looking them up in ENA. For each GCA accession, look up
@@ -770,7 +770,7 @@ def select_dump(taxonomy_release, db_dir):
         "r202": "fullnamelineage_2020-11-01.dmp",
         "r207": "fullnamelineage_2022-03-01.dmp",
         "r214": "fullnamelineage_2022-12-01.dmp",
-        "r220": "fullnamelineage_2023-09-12.dmp"
+        "r220": "fullnamelineage_2023-09-01.dmp"
     }
     return os.path.join(db_dir, dump_dict[taxonomy_release])
     
@@ -814,11 +814,11 @@ def parse_args():
     parser.add_argument('-g', '--gtdbtk-folder', required=True,
                         help='Path to the GTDB-Tk output folder.')
     parser.add_argument('-o', '--outfile', required=True,
-                        help='Path to the output file where the modified file will be stored.')
+                        help='Path to the output file where the preprocessed taxonomy file will be stored.')
     parser.add_argument('-v', '--taxonomy-version', choices=['1', '2'], default="2",
                         help='Version of GTDB-Tk, "1" or "2". Default = "2".')
     parser.add_argument('-r', '--taxonomy-release', choices=['r202', 'r207', 'r214', 'r220'], default="r220",
-                        help='Version of GTDB-Tk, "r202", "r207", "r214", "r220". Default = "r220".')
+                        help='Version of GTDB, "r202", "r207", "r214", "r220". Default = "r220".')
     parser.add_argument('-m', '--metadata', required=True,
                         help='Path to the metadata table.')
     parser.add_argument('-s', '--species-level-taxonomy', action='store_true',
