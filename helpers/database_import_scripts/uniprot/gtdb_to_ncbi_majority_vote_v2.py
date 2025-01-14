@@ -11,7 +11,7 @@ import dendropy
 
 sys.setrecursionlimit(2000)
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 PATH_BAC120_TREE_FILE = join("classify", '{prefix}.bac120.classify.tree')
 PATH_BACKBONE_BAC120_TREE_FILE = join("classify", '{prefix}.backbone.bac120.classify.tree')
