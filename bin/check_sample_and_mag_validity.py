@@ -29,6 +29,8 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(input_folder, remove_list_file, outfile):
+    if not outfile:
+        outfile = "GENOME_CHECK_FAILED_ACCESSIONS"
     metadata_table_file = os.path.join(input_folder, "ftp", "genomes-all_metadata.tsv")
     if not os.path.isfile(metadata_table_file) and os.path.getsize(metadata_table_file) > 0:
         sys.exit("Provided input folder {} does not contain a metadata table in the expected location: "
@@ -82,11 +84,9 @@ def main(input_folder, remove_list_file, outfile):
                       format(outfile))
     else:
         logging.info("No missing genomes or samples found in the previous version of the catalogue")
-
-
-def prune_mag_list(sample_mag_dictionary, remove_list):
-    pruned_sample_mag_dicionary = dict()
-    return pruned_sample_mag_dicionary
+        # create an empty file
+        with open("GENOME_CHECK_ALL_GENOMES_OK", "w") as file_out:
+            pass
     
     
 @retry(tries=3, delay=10, backoff=1.5)
@@ -197,9 +197,10 @@ def parse_args():
     parser.add_argument(
         "-o",
         "--outfile",
-        required=True,
+        required=False,
         help=(
-            "Path to the file where MAGs that are no longer available in ENA will be printed."
+            "Path to the file where MAGs that are no longer available in ENA will be printed. If no outfile is "
+            "specified, output will be saved to GENOME_CHECK_FAILED_ACCESSIONS"
         ),
     )
     return parser.parse_args()
