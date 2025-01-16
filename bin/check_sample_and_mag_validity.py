@@ -106,7 +106,7 @@ def load_remove_list(remove_list_file, metadata_table_file):
                 if not translation_dict:
                     translation_dict = load_translation(metadata_table_file)
                 try:
-                    acc = translation_dict[line]
+                    acc = translation_dict[col1]
                 except:
                     sys.exit("Removal of genome {} was requested but it is not present in the metadata file {}".
                              format(line, metadata_table_file))
