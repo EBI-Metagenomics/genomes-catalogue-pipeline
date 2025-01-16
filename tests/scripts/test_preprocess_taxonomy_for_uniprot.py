@@ -49,7 +49,7 @@ class TestPreprocessTaxonomyForUniprot(unittest.TestCase):
         )
         self.assertEqual(
             lineage1,
-            "d__Bacteria;p__Bacillota_I;c__Bacilli_A;o__RFN20;f__CAG-826;g__UBA3207;s__UBA3207 sp946183335",
+            "sk__Bacteria;p__Bacillota_I;c__Bacilli_A;o__RFN20;f__CAG-826;g__UBA3207;s__UBA3207 sp946183335",
         )
         self.assertEqual(submittable1, False)
         self.assertEqual(name1, "UBA3207 sp946183335")
