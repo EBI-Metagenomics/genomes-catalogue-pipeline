@@ -21,39 +21,47 @@ TAXDUMP_PATH = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipelin
 TAXDUMP_PATH_NEW_VER = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/Taxonkit/new_taxdump_2023-11-01"
 DB_DIR = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/"
 
+DUMP_DICT = {
+    "r202": "2020-11-01",
+    "r207": "2022-03-01",
+    "r214": "2022-12-01",
+    "r220": "2023-09-01"
+}
+
 
 def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_file, species_level_taxonomy, threads):
     if not os.path.isdir(gtdbtk_folder):
         sys.exit("GTDB folder {} is not a directory. EXITING.".format(gtdbtk_folder))
     if not versions_compatible(taxonomy_version, taxonomy_release):
         sys.exit("GTDB versions {} and {} are not compatible".format(taxonomy_version, taxonomy_release))
-    
+
     # for each MGYG accession, get the corresponding GCA (where available) and sample accessions from the metadata file
     gca_accessions, sample_accessions = parse_metadata(metadata_file)  # key=mgyg, value=gca accession/sample accession
-    
+
     # supplement the gca accessions from the metadata table by looking them up in ENA. For each GCA accession, look up
     # corresponding taxid in ENA
     mgyg_to_gca, gca_to_taxid = match_taxid_to_gca(gca_accessions, sample_accessions, threads)
-    
+
     # remove N/A's if present before looking up lineages
     na_true = False
     if "N/A" in gca_to_taxid:
         gca_to_taxid.pop("N/A")
         na_true = True
-        
+
     # get a lineage for each taxid (from taxonkit or from ENA if unable)    
     gca_taxid_to_lineage = match_lineage_to_gca_taxid(gca_to_taxid, threads)  # key = taxid, value = lineage
-    
+
     # check if any taxa are not real species (for example, a species is "metagenome")
     # we want to remove them and replace with converted ones from GTDB
     gca_to_taxid, invalid_flag = remove_invalid_taxa(gca_to_taxid, gca_taxid_to_lineage)
-    
+
     if na_true or invalid_flag or not species_level_taxonomy:
         # If we are here, we have some genomes we were unable to get taxonomy from because we either don't know
         # the GCA accession or the taxonomy we got from GCA is invalid. We need to use GTDB taxonomy and convert it
         # to NCBI taxonomy.
         selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, DB_DIR)
-        tax_ncbi = select_dump(taxonomy_release, DB_DIR)
+        tax_ncbi = select_dump(taxonomy_release)
+        assert os.path.exists(tax_ncbi), "Taxonomy release {} does not exist".format(tax_ncbi)
         print(
             "Using the following databases:\n{}\n{}\n{}\n".format(selected_archaea_metadata, selected_bacteria_metadata,
                                                                   tax_ncbi))
@@ -62,17 +70,17 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
             tax = gtdb_to_ncbi_majority_vote.Translate()
         else:
             tax = gtdb_to_ncbi_majority_vote_v2.Translate()
-            
+
         lineage_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, selected_bacteria_metadata, "gtdbtk")
-        
+
         # lookup tax id
-        lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict)  
-       
+        lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict)
+
         # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
         # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
-        
+
         taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
-    
+
     # look up all unknown GCA accessions using converted GTDB lineages and updating them in case some species level
     # taxa names are missing and/or the lineage has outdated taxon names
     if species_level_taxonomy and na_true:
@@ -94,14 +102,13 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                     na_associated_lineages[lineage] = result
                 except Exception as e:
                     print(f"Error processing lineage {lineage}: {e}")
-                    
+
         for mgyg, lineage in unknown_gca_mgyg_and_lineage.items():
             unknown_gca_mgyg_and_lineage[mgyg] = na_associated_lineages[lineage]
-        
+
     with open(outfile, "w") as file_out:
         for key, gca_accession in mgyg_to_gca.items():
             logging.debug("Processing {}".format(key))
-            source = ""
             if gca_accession in gca_to_taxid and gca_to_taxid[gca_accession] == "invalid":
                 logging.debug("In invalid")
                 lineage = lineage_dict[key]
@@ -129,12 +136,15 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                         gtdb_taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
                         logging.debug("No taxid to report so using GTDBs: {}".format(gtdb_taxid))
                         taxid_to_report, lineage = recover_possible_new_name(gtdb_taxid)
-                        logging.debug("Tried to recover possible new name. Result taxid {} lineage {}".format(taxid_to_report, lineage))
+                        logging.debug(
+                            "Tried to recover possible new name. Result taxid {} lineage {}".format(taxid_to_report,
+                                                                                                    lineage))
                         if not taxid_to_report:
                             source = "GTDB"
                             lineage = lineage_dict[key]
                             taxid_to_report = gtdb_taxid
-                            logging.debug("That didnt work so reporting GTDB: lineage {} taxid {}".format(lineage, taxid_to_report))
+                            logging.debug("That didnt work so reporting GTDB: lineage {} taxid {}".format(lineage,
+                                                                                                          taxid_to_report))
                 logging.debug("Done processing {}".format(key))
                 lowest_taxon = get_lowest_taxon(lineage)[0]
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
@@ -182,26 +192,27 @@ def remove_invalid_taxa(gca_to_taxid, gca_taxid_to_lineage):
     for gca_acc, taxid in gca_to_taxid.items():
         lineage = gca_taxid_to_lineage[taxid]
         lowest_taxon = get_lowest_taxon(lineage)[0]
-        if "metagenome" in lowest_taxon or str(taxid) == "77133" or "d__Viruses" in lineage:
+        if "metagenome" in lowest_taxon or str(taxid) == "77133" or any(
+            x in lineage for x in ["d__Viruses", "sk__Viruses"]):
             invalid_flag = True
             gca_to_taxid[gca_acc] = "invalid"
             logging.debug("----------------> FOUND INVALID TAXON", lineage)
         else:
             logging.debug("Taxon is not invalid: {}".format(lowest_taxon))
     return gca_to_taxid, invalid_flag
-    
+
 
 def match_lineage_to_gca_taxid(gca_to_taxid, threads):
     logging.debug("Function match_lineage_to_gca_taxid")
     taxids = list(gca_to_taxid.values())
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-        taxid_to_lineage = {taxid: lineage for taxid, lineage in zip(taxids, executor.map(lookup_lineage, taxids))}    
+        taxid_to_lineage = {taxid: lineage for taxid, lineage in zip(taxids, executor.map(lookup_lineage, taxids))}
     return taxid_to_lineage
-    
+
 
 def match_taxid_to_gca(gca_accessions, sample_accessions, threads):
     logging.debug("Function match_taxid_to_gca")
-    mgyg_to_gca = dict()  
+    mgyg_to_gca = dict()
     for mgyg, sample in sample_accessions.items():
         if mgyg in gca_accessions:
             mgyg_to_gca[mgyg] = gca_accessions[mgyg]
@@ -211,8 +222,8 @@ def match_taxid_to_gca(gca_accessions, sample_accessions, threads):
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
         gca_to_taxid = {gca_acc: taxid for gca_acc, taxid in zip(gca_list, executor.map(lookup_taxid_online, gca_list))}
     return mgyg_to_gca, gca_to_taxid
- 
- 
+
+
 def recover_possible_new_name(gtdb_taxid):
     logging.debug("Function recover_possible_new_name")
     try:
@@ -221,17 +232,17 @@ def recover_possible_new_name(gtdb_taxid):
         return "", ""
     taxid, _, _, full_lineage = get_species_level_taxonomy(ena_lineage)
     return taxid, full_lineage
-    
+
 
 def get_species_level_taxonomy(lineage):
     lowest_taxon, lowest_rank = get_lowest_taxon(lineage)
-    if lineage.startswith("k__"):
-        lineage = lineage.replace("k__", "d__")
-    if lineage.lower().startswith("d__b"):
+    if lineage.startswith(("k__", "d__")):
+        lineage = lineage.replace("k__", "sk__").replace("d__", "sk__")
+    if lineage.lower().startswith("sk__b"):
         submittable, name, taxid = extract_bacteria_info(lowest_taxon, lowest_rank)
-    elif lineage.lower().startswith("d__a"):
+    elif lineage.lower().startswith("sk__a"):
         submittable, name, taxid = extract_archaea_info(lowest_taxon, lowest_rank)
-    elif lineage.lower().startswith("d__e"):
+    elif lineage.lower().startswith("sk__e"):
         submittable, name, taxid = extract_eukaryota_info(lowest_taxon, lowest_rank)
     else:
         sys.exit("Unknown domain in lineage {}. Aborting".format(lineage))
@@ -284,7 +295,7 @@ def extract_eukaryota_info(name, rank):
     if '*' in name:
         return nonsubmittable
 
-    if rank == "d":
+    if rank in ["d", "sk"]:
         name = "uncultured eukaryote"
         submittable, taxid = query_scientific_name_from_ena(name)
         return submittable, name, taxid
@@ -311,7 +322,7 @@ def extract_bacteria_info(name, rank):
     logging.debug("Function extract_bacteria_info")
     if rank == "s":
         name = name
-    elif rank == "d":
+    elif rank in ["d", "sk"]:
         name = "uncultured bacterium"
     elif rank in ["f", "o", "c", "p"]:
         name = "uncultured {} bacterium".format(name)
@@ -339,7 +350,7 @@ def extract_bacteria_info(name, rank):
                 name = "Candidatus Scatovivens sp."
         submittable, taxid = query_scientific_name_from_ena(name)
     if not submittable:
-        if name.startswith("uncultured"): 
+        if name.startswith("uncultured"):
             if name.endswith("sp.") or "Candidatus" in name:
                 logging.debug("Removing uncultured")
                 name = name.replace("uncultured ", "")
@@ -353,7 +364,7 @@ def extract_archaea_info(name, rank):
     logging.debug("Function extract_archaea_info")
     if rank == "s":
         name = name
-    elif rank == "d":
+    elif rank in ["d", "sk"]:
         name = "uncultured archaeon"
     elif rank == "p":
         if "Euryarchaeota" in name:
@@ -366,7 +377,7 @@ def extract_archaea_info(name, rank):
         name = "uncultured {} archaeon".format(name)
     elif rank == "g":
         name = "uncultured {} sp.".format(name)
-    
+
     logging.debug("Looking up name {}".format(name))
     submittable, taxid = query_scientific_name_from_ena(name, search_rank=False)
     if not submittable:
@@ -385,17 +396,17 @@ def extract_archaea_info(name, rank):
 
 def lookup_lineage(insdc_taxid):
     logging.debug("Function lookup_lineage")
-    
+
     def get_lineage(taxid, taxdump_path):
         assert taxid, "Unable to use taxdump for an unknown taxid"
         command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir", taxdump_path, "-I", "1", "-P"]
-        result = subprocess.run(command, input=taxid, text=True, stdout=subprocess.PIPE, 
+        result = subprocess.run(command, input=taxid, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
         detected_lineage = result.stdout.strip().split("\t")[1]
-        if detected_lineage.startswith("k__"):
-            detected_lineage = detected_lineage.replace("k__", "d__")
+        if detected_lineage.lower().startswith(("k__bacteria", "k__archaea")):
+            detected_lineage = detected_lineage.replace("k__", "sk__")
         return detected_lineage
-    
+
     logging.info("Looking up lineage for taxid {} in ENA".format(insdc_taxid))
     try:
         lineage = lookup_lineage_in_ena(insdc_taxid)
@@ -434,7 +445,7 @@ def lookup_lineage_in_ena(insdc_taxid):
     logging.debug("Scientific name is {}".format(scientific_name))
     reformatted_lineage = reformat_lineage(lineage, scientific_name)
     return reformatted_lineage
-    
+
 
 def reformat_lineage(lineage, scientific_name):
     logging.debug("Function reformat_lineage")
@@ -446,8 +457,6 @@ def reformat_lineage(lineage, scientific_name):
         logging.debug(element)
         if element and not element.isspace():
             submittable, taxid, rank = query_scientific_name_from_ena(element, search_rank=True)
-            if rank == ("superkingdom"):
-                rank = "kingdom"
             if element.lower() == scientific_name.lower() and rank not in ["subspecies", "species"]:
                 higher_level = True
                 logging.info("Scientific name {} is already part of lineage {}".format(scientific_name, lineage))
@@ -466,17 +475,22 @@ def reformat_lineage(lineage, scientific_name):
             if "species" not in ranks_values:
                 ranks_values["species"] = scientific_name
             else:
-                logging.debug("Unresolved placement of scientific name {} in lineage {}".format(scientific_name, lineage))
-    ranks = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
-    reformatted_lineage = ';'.join([f'{rank[0]}__{ranks_values.get(rank, "")}' for rank in ranks])
-    logging.debug("Detected rank {} for scientific name {} in function reformat_lineage. After adding this to existing ranks we get {}. Formatted lineage now is {}.".format(lowest_rank, scientific_name, ranks_values, reformatted_lineage))
+                logging.debug(
+                    "Unresolved placement of scientific name {} in lineage {}".format(scientific_name, lineage))
+    ranks = ['superkingdom', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
+    reformatted_lineage = ';'.join(
+        [f'{"sk" if rank == "superkingdom" else rank[0]}__{ranks_values.get(rank, "")}' for rank in ranks]
+    )
+    logging.debug(
+        "Detected rank {} for scientific name {} in function reformat_lineage. After adding this to existing ranks we get {}. Formatted lineage now is {}.".format(
+            lowest_rank, scientific_name, ranks_values, reformatted_lineage))
     if reformatted_lineage.startswith("k__"):
-        reformatted_lineage = reformatted_lineage.replace("k__", "d__")
-    
+        reformatted_lineage = reformatted_lineage.replace("k__", "sk__")
+
     logging.debug(reformatted_lineage)
     return reformatted_lineage
-    
-    
+
+
 def parse_metadata(metadata_file):
     gca_accessions = dict()
     sample_accessions = dict()
@@ -519,7 +533,7 @@ def get_gca_accession(sample):
     else:
         logging.error("Failed to load data from ENA API when querying sample {}".format(sample))
         sys.exit("Aborting.")
-    
+
 
 def lookup_taxid_online(gca_acc):
     logging.debug("Function lookup_taxid_online")
@@ -540,8 +554,8 @@ def lookup_taxid_online(gca_acc):
         return taxid
     else:
         sys.exit("Failed to fetch taxid for GCA accession {}. Aborting.".format(gca_acc))
-        
-    
+
+
 def load_synonyms():
     namesdump = os.path.join(TAXDUMP_PATH, "names.dmp")
     synonym_dict = dict()
@@ -555,17 +569,19 @@ def load_synonyms():
                 name = re.sub("^\s+|\s+$", "", name)
                 synonym_dict.setdefault(taxid, list()).append(name)
     return synonym_dict
-    
-    
+
+
 def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict):
     logging.debug("Function run_taxonkit_on_dict")
-    input_data = "\n".join(set(lowest_taxon_mgyg_dict.values()))  # remove duplicate taxa and save all lines to a variable
+    input_data = "\n".join(
+        set(lowest_taxon_mgyg_dict.values()))  # remove duplicate taxa and save all lines to a variable
     command = ["/homes/tgurbich/Taxonkit/taxonkit", "name2taxid", "--data-dir", TAXDUMP_PATH]
     try:
         result = subprocess.run(command, input=input_data, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
         taxid_dict = process_taxonkit_output(result.stdout)
-        filtered_taxid_dict = filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict)  # resolve cases where multiple taxid are assigned to taxon
+        filtered_taxid_dict = filter_taxid_dict(taxid_dict,
+                                                lowest_taxon_lineage_dict)  # resolve cases where multiple taxid are assigned to taxon
         return filtered_taxid_dict
     except subprocess.CalledProcessError as e:
         print("Error:", e.stderr)
@@ -594,7 +610,7 @@ def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict):
             filtered_taxid_dict[taxon_name][lowest_taxon_lineage_dict[taxon_name][0]] = taxid_list[0]
         else:
             # if we are here, the taxon name has multiple taxids associated with it
-            success = False 
+            success = False
             logging.debug("\n\n\n------------------> resolving duplicate {} {}".format(taxon_name, taxid_list))
             # go through taxids and identify the ones we need to keep
             for taxid in taxid_list:
@@ -620,8 +636,8 @@ def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict):
                                 matching_lineage = pick_lineage(retrieved_domain, phylum,
                                                                 lowest_taxon_lineage_dict[taxon_name], lineage)
                                 if compare_positions(lineage, matching_lineage, taxon_name) and \
-                                        last_non_empty_segment_position(lineage) == \
-                                        last_non_empty_segment_position(matching_lineage):
+                                    last_non_empty_segment_position(lineage) == \
+                                    last_non_empty_segment_position(matching_lineage):
                                     logging.debug("Positions match")
                                     success = True
                                     logging.debug("Saving {}".format(matching_lineage))
@@ -631,13 +647,13 @@ def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict):
                                     else:
                                         logging.debug("###################### Multiple matching taxids: {}".format(
                                             matching_lineage))
-                                        
+
                                 else:
                                     logging.debug("levels are different")
                             else:
                                 matching_lineage = pick_lineage(retrieved_domain, phylum,
                                                                 lowest_taxon_lineage_dict[taxon_name], lineage)
-                                if (taxon_name in synonyms[taxid] and last_non_empty_segment_position(lineage) == 
+                                if (taxon_name in synonyms[taxid] and last_non_empty_segment_position(lineage) ==
                                     last_non_empty_segment_position(matching_lineage)):
                                     success = True
                                     logging.debug("Resolved lineage through synonyms")
@@ -656,7 +672,7 @@ def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict):
                     logging.error("Error when processing taxid {}: {}".format(taxid, e))
                     sys.exit("Unable to find lineages for taxid {}".format(taxid))
             if not success:
-                sys.exit("Unable to resolve taxonomy of {}. EXITING.".format(taxon_name)) 
+                sys.exit("Unable to resolve taxonomy of {}. EXITING.".format(taxon_name))
     return filtered_taxid_dict
 
 
@@ -665,13 +681,13 @@ def last_non_empty_segment_position(lineage_string):
     # Remove taxonomy levels if present
     if "s__" in lineage_string:
         lineage_string = re.sub("[a-z]__", "", lineage_string)
-        
+
     # Remove last semicolon if present
     if lineage_string.endswith(";"):
         lineage_string = lineage_string[:-1]
-    
+
     position = None
-    
+
     # Split the input string using semicolons as delimiters
     segments = lineage_string.split(';')
 
@@ -684,13 +700,13 @@ def last_non_empty_segment_position(lineage_string):
     if position is None:
         sys.exit("Could not find last non-empty position in lineage {}".format(lineage_string))
     return position
-    
-    
+
+
 def compare_positions(lineage1, lineage2, search_term):
     # Split the input strings into segments using semicolon as the delimiter
     segments1 = lineage1.split(';')
     segments2 = lineage2.split(';')
-    
+
     position1 = position2 = None
 
     # Iterate through the segments in both strings
@@ -713,7 +729,7 @@ def pick_lineage(expected_domain, expected_phylum, lineage_list, dump_lineage):
         for lineage in lineage_list:
             domain, phylum = [part.replace("d__", "").replace("p__", "") for part in lineage.split(";")[:2]]
             if domain == expected_domain and phylum == expected_phylum and \
-                    last_non_empty_segment_position(lineage) == last_non_empty_segment_position(dump_lineage):
+                last_non_empty_segment_position(lineage) == last_non_empty_segment_position(dump_lineage):
                 return lineage
     sys.exit("ERROR: could not resolve lineages: {} {} {}".format(expected_domain, expected_phylum, lineage_list))
 
@@ -755,25 +771,19 @@ def get_lowest_taxa(tax_dict):
     for key, value in lowest_taxon_lineage_dict.items():
         lowest_taxon_lineage_dict[key] = list(set(value))  # remove repeat lineages
     return lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict
-    
-    
+
+
 def get_lowest_taxon(lineage):
     elements = lineage.strip().split(";")
     for i in reversed(elements):
         if not i.endswith("__"):
             return i.split("__")[1], i.split("__")[0]
     sys.exit("Could not obtain lowest taxon from lineage {}".format(lineage))
-    
-    
-def select_dump(taxonomy_release, db_dir):
-    dump_dict = {
-        "r202": "fullnamelineage_2020-11-01.dmp",
-        "r207": "fullnamelineage_2022-03-01.dmp",
-        "r214": "fullnamelineage_2022-12-01.dmp",
-        "r220": "fullnamelineage_2023-09-01.dmp"
-    }
-    return os.path.join(db_dir, dump_dict[taxonomy_release])
-    
+
+
+def select_dump(taxonomy_release):
+    return os.path.join(DB_DIR, f"new_taxdump_{DUMP_DICT[taxonomy_release]}", "fullnamelineage.dmp")
+
 
 def select_metadata(taxonomy_release, db_dir):
     bac_prefix = "bac120_metadata_"
@@ -785,7 +795,7 @@ def select_metadata(taxonomy_release, db_dir):
         ar_filename = "{}{}.tsv".format(ar_prefix_new, taxonomy_release)
     bac_filename = "{}{}.tsv".format(bac_prefix, taxonomy_release)
     return os.path.join(db_dir, ar_filename), os.path.join(db_dir, bac_filename)
-    
+
 
 def versions_compatible(taxonomy_version, taxonomy_release):
     if taxonomy_version == "2" and taxonomy_release == "r202":
@@ -807,7 +817,7 @@ def run_query_request(api_url, query_params):
     r.raise_for_status()
     return r
 
-    
+
 def parse_args():
     parser = argparse.ArgumentParser(description="The script takes in a GTDB-Tk output folder and "
                                                  "outputs NCBI taxonomy.")
@@ -830,6 +840,5 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.gtdbtk_folder, args.outfile, args.taxonomy_version, args.taxonomy_release, args.metadata, 
+    main(args.gtdbtk_folder, args.outfile, args.taxonomy_version, args.taxonomy_release, args.metadata,
          args.species_level_taxonomy, args.threads)
-    
