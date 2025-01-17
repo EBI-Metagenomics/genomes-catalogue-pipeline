@@ -1,7 +1,7 @@
 process CHECK_GENOME_VALIDITY {
 
     publishDir(
-        "${params.outdir}/additional_data/intermediate_files/",
+        "${params.outdir}/additional_data/update_execution_reports/",
         pattern: "GENOME_CHECK_*",
         mode: "copy",
         failOnError: true
@@ -18,18 +18,19 @@ process CHECK_GENOME_VALIDITY {
     file(remove_list_file)
     
     output:
-    file("GENOME_CHECK_*")    
+    path("GENOME_CHECK_*"), emit: genome_validity_result    
     
     script:
     """
-    if [ -f GENOME_CHECK_FAILED_ACCESSIONS ]; then
-        rm GENOME_CHECK_FAILED_ACCESSIONS
-    fi
+    # Remove any pre-existing script results
+    rm -f GENOME_CHECK_FAILED_ACCESSIONS GENOME_CHECK_ALL_GENOMES_OK GENOME_CHECK_ERROR_FLAG
+    
+    # Run checks
     check_sample_and_mag_validity.py -i ${previous_catalogue_location} -r ${remove_list_file}
+    
     # Check if any genomes failed checks
     if [ -f GENOME_CHECK_FAILED_ACCESSIONS ]; then
         echo "Error: some genomes can no longer be found in ENA. Check that this is correct. If so, add them to the remove list and restart the pipeline." >&2
-        exit 1
     fi
     """
     

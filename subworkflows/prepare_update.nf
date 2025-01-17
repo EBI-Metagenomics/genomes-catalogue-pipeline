@@ -19,5 +19,12 @@ workflow PREPARE_UPDATE {
                 previous_catalogue_location,
                 remove_genomes
             )
+            CHECK_GENOME_VALIDITY.out.genome_validity_result.view { file -> 
+                if (file.name == "GENOME_CHECK_FAILED_ACCESSIONS" ){
+                    error "Some genomes from the previous catalogue version could not be found in ENA. \
+Review the report, add genomes that are correctly missing from ENA to the removal list, and restart the pipeline. \
+Report: ${params.outdir}/additional_data/update_execution_reports/GENOME_CHECK_FAILED_ACCESSIONS"
+                }
+            }
         }
 }
