@@ -1,11 +1,11 @@
 process CHECK_GENOME_VALIDITY {
 
-    //publishDir(
-    //    "${params.outdir}/additional_data/intermediate_files/",
-    //    pattern: "GENOME_CHECK_*",
-    //    mode: "copy",
-    //    failOnError: true
-    //)
+    publishDir(
+        "${params.outdir}/additional_data/intermediate_files/",
+        pattern: "GENOME_CHECK_*",
+        mode: "copy",
+        failOnError: true
+    )
     
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
     
