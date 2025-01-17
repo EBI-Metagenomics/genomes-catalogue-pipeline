@@ -14,6 +14,13 @@ workflow PREPARE_UPDATE {
         CHECK_CATALOGUE_STRUCTURE(
             previous_catalogue_location
         )
+        CHECK_CATALOGUE_STRUCTURE.out.check_catalogue_structure_result.view { file -> 
+            if (file.name == "PREVIOUS_CATALOGUE_STRUCTURE_ERRORS.txt" ){
+                error "There are missing files or folders in the catalogue to be updated. \
+Fix the errors listed in ${params.outdir}/additional_data/update_execution_reports/PREVIOUS_CATALOGUE_STRUCTURE_ERRORS.txt and restart the pipeline."
+             }
+        }
+        
         if ( !skip_genome_validity_check ) {
             CHECK_GENOME_VALIDITY(
                 previous_catalogue_location,
