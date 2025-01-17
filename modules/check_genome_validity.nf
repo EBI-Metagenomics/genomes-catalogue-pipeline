@@ -22,6 +22,9 @@ process CHECK_GENOME_VALIDITY {
     
     script:
     """
+    if [ -f GENOME_CHECK_FAILED_ACCESSIONS ]; then
+        rm GENOME_CHECK_FAILED_ACCESSIONS
+    fi
     check_sample_and_mag_validity.py -i ${previous_catalogue_location} -r ${remove_list_file}
     # Check if any genomes failed checks
     if [ -f GENOME_CHECK_FAILED_ACCESSIONS ]; then

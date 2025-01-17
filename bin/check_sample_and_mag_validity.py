@@ -35,7 +35,7 @@ def main(input_folder, remove_list_file, outfile):
     if not os.path.isfile(metadata_table_file) and os.path.getsize(metadata_table_file) > 0:
         sys.exit("Provided input folder {} does not contain a metadata table in the expected location: "
                  "{} or the file is empty.".format(input_folder, metadata_table_file))
-    if remove_list_file is not None:
+    if remove_list_file is not None and os.path.exists(remove_list_file):
         remove_list = load_remove_list(remove_list_file, metadata_table_file)
     else:
         remove_list = list()
