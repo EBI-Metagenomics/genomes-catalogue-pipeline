@@ -17,6 +17,7 @@ ch_mgyg_index_end = channel.value(params.mgyg_end)
 ch_genomes_information = file("NO_FILE_GENOME_CAT")
 ch_study_genomes_information = file("NO_FILE_STUDY_CAT")
 ch_preassigned_accessions = file("NO_FILE_PREASSIGNED_ACCS")
+ch_remove_genomes = file("NO_FILE_REMOVE_GENOMES")
 
 if (params.genomes_information) {
     ch_genomes_information = file(params.genomes_information)
