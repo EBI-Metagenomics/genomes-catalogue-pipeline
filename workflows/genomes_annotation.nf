@@ -121,7 +121,8 @@ workflow GAP {
     if ( params.update_catalogue_path ){
         PREPARE_UPDATE(
             ch_previous_catalogue_location,
-            ch_remove_genomes
+            ch_remove_genomes,
+            params.skip_genome_validity_check
         )
     }
 
