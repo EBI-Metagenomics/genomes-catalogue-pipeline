@@ -20,13 +20,13 @@ ch_preassigned_accessions = file("NO_FILE_PREASSIGNED_ACCS")
 ch_remove_genomes = file("NO_FILE_REMOVE_GENOMES")
 
 if (params.genomes_information) {
-    ch_genomes_information = file(params.genomes_information)
+    ch_genomes_information = file(params.genomes_information, checkIfExists: true)
 }
 if (params.study_genomes_information) {
-    ch_study_genomes_information = file(params.study_genomes_information)
+    ch_study_genomes_information = file(params.study_genomes_information, checkIfExists: true)
 }
 if (params.preassigned_accessions) {
-    ch_preassigned_accessions = file(params.preassigned_accessions)
+    ch_preassigned_accessions = file(params.preassigned_accessions, checkIfExists: true)
 }
 
 // Update pipeline
@@ -34,7 +34,7 @@ if (params.update_catalogue_path) {
     ch_previous_catalogue_location = file(params.update_catalogue_path)
 } 
 if (params.remove_genomes) {
-    ch_remove_genomes = file(params.remove_genomes)
+    ch_remove_genomes = file(params.remove_genomes, checkIfExists: true)
 }
 
 // TODO: Add help message with parameters
