@@ -20,8 +20,10 @@ workflow PREPARE_UPDATE {
         )
         CHECK_CATALOGUE_STRUCTURE.out.check_catalogue_structure_result.view { file -> 
             if (file.name == "PREVIOUS_CATALOGUE_STRUCTURE_ERRORS.txt" ){
-                error "There are missing files or folders in the catalogue to be updated. \
-Fix the errors listed in ${params.outdir}/additional_data/update_execution_reports/PREVIOUS_CATALOGUE_STRUCTURE_ERRORS.txt and restart the pipeline."
+                error """
+                There are missing files or folders in the catalogue to be updated. 
+                Fix the errors listed in ${params.outdir}/additional_data/update_execution_reports/PREVIOUS_CATALOGUE_STRUCTURE_ERRORS.txt and restart the pipeline.
+                """.stripIndent().trim()
              }
         }
         
@@ -32,9 +34,11 @@ Fix the errors listed in ${params.outdir}/additional_data/update_execution_repor
             )
             CHECK_GENOME_VALIDITY.out.genome_validity_result.view { file -> 
                 if (file.name == "GENOME_CHECK_FAILED_ACCESSIONS" ){
-                    error "Some genomes from the previous catalogue version could not be found in ENA. \
-Review the report, add genomes that are correctly missing from ENA to the removal list, and restart the pipeline. \
-Report: ${params.outdir}/additional_data/update_execution_reports/GENOME_CHECK_FAILED_ACCESSIONS"
+                    error """
+                    Some genomes from the previous catalogue version could not be found in ENA. 
+                    Review the report, add genomes that are correctly missing from ENA to the removal list, and restart the pipeline. 
+                    Report: \${params.outdir}/additional_data/update_execution_reports/GENOME_CHECK_FAILED_ACCESSIONS
+                    """.stripIndent().trim()
                 }
             }
         }
