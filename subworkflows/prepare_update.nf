@@ -4,12 +4,15 @@
  
 include { CHECK_CATALOGUE_STRUCTURE } from '../modules/check_catalogue_structure'
 include { CHECK_GENOME_VALIDITY } from '../modules/check_genome_validity'
+include { CHECKM2 as CHECKM2_CATALOGUE } from '../modules/checkm2'
  
 workflow PREPARE_UPDATE {
     take:
         previous_catalogue_location     // channel: file
         remove_genomes                  // channel: file
         skip_genome_validity_check      // true/false
+        rerun_checkm2                   // true/false
+        ch_checkm2_db
     main:
         CHECK_CATALOGUE_STRUCTURE(
             previous_catalogue_location
@@ -33,5 +36,12 @@ Review the report, add genomes that are correctly missing from ENA to the remova
 Report: ${params.outdir}/additional_data/update_execution_reports/GENOME_CHECK_FAILED_ACCESSIONS"
                 }
             }
+        }
+        
+        if ( rerun_checkm2 ) {
+            CHECKM2_CATALOGUE(
+                "${previous_catalogue_location}/additional_data/mgyg_genomes/",
+                ch_checkm2_db
+            )
         }
 }

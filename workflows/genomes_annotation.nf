@@ -123,7 +123,9 @@ workflow GAP {
         PREPARE_UPDATE(
             ch_previous_catalogue_location,
             ch_remove_genomes,
-            params.skip_genome_validity_check
+            params.skip_genome_validity_check,
+            params.rerun_checkm2,
+            ch_checkm2_db
         )
     }
 
