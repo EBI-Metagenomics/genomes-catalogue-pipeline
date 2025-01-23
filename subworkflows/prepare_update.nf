@@ -5,6 +5,7 @@
 include { CHECK_CATALOGUE_STRUCTURE } from '../modules/check_catalogue_structure'
 include { CHECK_GENOME_VALIDITY } from '../modules/check_genome_validity'
 include { CHECKM2 as CHECKM2_CATALOGUE } from '../modules/checkm2'
+include { EXTRACT_CHECKM_INFO } from '../modules/extract_checkm_info'
  
 workflow PREPARE_UPDATE {
     take:
@@ -43,5 +44,14 @@ Report: ${params.outdir}/additional_data/update_execution_reports/GENOME_CHECK_F
                 "${previous_catalogue_location}/additional_data/mgyg_genomes/",
                 ch_checkm2_db
             )
+            previous_version_quality = CHECKM2_CATALOGUE.out.checkm_csv
         }
+        else {
+            EXTRACT_CHECKM_INFO(
+                "${previous_catalogue_location}/ftp/genomes-all_metadata.tsv"
+            )
+            previous_version_quality = EXTRACT_CHECKM_INFO.out.quality_csv
+        }
+    emit:
+        previous_version_quality = previous_version_quality
 }
