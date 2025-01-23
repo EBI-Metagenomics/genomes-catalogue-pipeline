@@ -1,8 +1,8 @@
 process CHECKM2 {
 
     container 'quay.io/biocontainers/checkm2:1.0.1--pyh7cba7a3_0'
-
-    label 'process_medium'
+    
+    errorStrategy = { task.attempt <= 3 ? 'retry' : 'finish' }
 
     input:
     path assemblies_folder
