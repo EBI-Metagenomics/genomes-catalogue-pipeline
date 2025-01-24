@@ -22,18 +22,18 @@ class TestMAGValidityScript(unittest.TestCase):
         self.expected_file_no_remove_list = os.path.join(self.test_data_dir, "expected_result_no_remove_list.txt")
     
     def test_empty_remove_list(self):
-        check_validity_main(self.test_data_dir, None, self.outfile1)
+        check_validity_main(self.test_data_dir, None, self.outfile1, 16)
         self.assertTrue(
             filecmp.cmp(self.outfile1, self.expected_file_no_remove_list, shallow=False),
             "The output file does not match the expected results"
         )
         
     def test_with_remove_list(self):
-        check_validity_main(self.test_data_dir, self.removal_file, self.outfile2)
+        check_validity_main(self.test_data_dir, self.removal_file, self.outfile2, 16)
         self.assertFalse(os.path.exists(self.outfile2))
     
     def test_remove_mgyg(self):
-        check_validity_main(self.test_data_dir, self.removal_file_mgyg, self.outfile3)
+        check_validity_main(self.test_data_dir, self.removal_file_mgyg, self.outfile3, 16)
         self.assertFalse(os.path.exists(self.outfile3))
         
         
