@@ -147,7 +147,11 @@ def get_mash_clusters(mash_result, current_list, new_strain_list):
             genome = line.strip().split()[1].split('/')[-1]
             species_rep = line.strip().split()[0].split('/')[-1]
             score = line.strip().split()[2]
-            if species_rep in current_list and genome in new_strain_list and 0.05 >= float(score) >= 0.001:
+            # the actual similarity interval we need to place a strain into its cluster is between 0.05 and 0.001
+            # the interval below is extended because mash is not sufficiently accurate. It might have had a match
+            # with a genome that is not a species rep that was within the interval while its match with the
+            # species rep falls outside the interval
+            if species_rep in current_list and genome in new_strain_list and 0.1 >= float(score) >= 0.0001:
                 if genome not in cluster_filter:
                     clusters.setdefault(species_rep, []).append(genome)
                     cluster_filter.setdefault(genome, dict())
@@ -162,6 +166,10 @@ def get_mash_clusters(mash_result, current_list, new_strain_list):
                         cluster_filter[genome]['match'] = species_rep
                         cluster_filter[genome]['score'] = float(score)
                         logging.info('Reassigned genome {} to {}'.format(genome, cluster_filter[genome]['match']))
+    logging.info("------------------> Final cluster placement <--------------------")
+    logging.info("New strain\tAssigned cluster\tDistance from current species rep")
+    for genome in cluster_filter.keys():
+        logging.info("{}\t{}\t{}".format(genome, cluster_filter[genome]['match'], cluster_filter[genome]['score']))
     return clusters
 
 
