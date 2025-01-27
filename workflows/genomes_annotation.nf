@@ -141,6 +141,14 @@ workflow GAP {
         ch_study_genomes_information,
         ch_checkm2_db
     )
+    
+    if ( params.update_catalogue_path ){
+        UPDATE_CLUSTERS(
+            ch_previous_catalogue_location,
+            ch_remove_genomes,
+            PREPARE_UPDATE.out.previous_version_quality
+        )
+    }
 
     // needs a more elegant solution here
     dereplicated_genomes = channel.empty()
