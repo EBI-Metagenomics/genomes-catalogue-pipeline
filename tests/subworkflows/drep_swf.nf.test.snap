@@ -1,0 +1,51 @@
+{
+    "Should run and generate the correct clusters": {
+        "content": [
+            [
+                [
+                    "CAJKXJ01",
+                    "CAJKRE01.fa:md5,fad2872eadba37a05f09e79f5597e1a2"
+                ],
+                [
+                    "CAJKXJ01",
+                    "CAJKXJ01.fa:md5,2245de698b5ee5eceb25f209809ed63e"
+                ],
+                [
+                    "CAJLGA01",
+                    "CAJJTO01.fa:md5,e032af9224260f649a30aa52c82c0430"
+                ],
+                [
+                    "CAJLGA01",
+                    "CAJKGB01.fa:md5,07a29193c470aed0eb0f4ea65246e731"
+                ],
+                [
+                    "CAJLGA01",
+                    "CAJLGA01.fa:md5,cfe38cfeb08f5fbfc74b634fb96c1ac8"
+                ]
+            ],
+            [
+                [
+                    "CAJKRY01",
+                    "CAJKRY01.fa:md5,a158ee8609aa6d15e340a1f2cb2cde97"
+                ],
+                [
+                    "CAJKXZ01",
+                    "CAJKXZ01.fa:md5,5aa88db381b6cdae1f5831f22759e7ff"
+                ]
+            ],
+            [
+                "clusters_split.txt:md5,9b9685884b8053282e833146376b9765"
+            ],
+            [
+                [
+                    "CAJKXJ01_mash.tsv:md5,4835fe5cc4aa775e486cdd8127ab1eb0",
+                    "CAJLGA01_mash.tsv:md5,f271fb5d89852877b1b5ad4295038f3a"
+                ]
+            ],
+            [
+                "extra_weight_table.txt:md5,bd8ee0d704794a8fc0d26583aafb05fd"
+            ]
+        ],
+        "timestamp": "2023-01-27T23:26:09+0000"
+    }
+}

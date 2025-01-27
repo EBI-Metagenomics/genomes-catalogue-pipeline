@@ -1,8 +1,0 @@
-threads: 8
-gffs:
-  - class: File
-    path: ../../../../input_example/small_set/results/prokka/CAJKRY01.gff
-  - class: File
-    path: ../../../../input_example/small_set/results/prokka/CAJKRY01.gff
-
-panaroo_outfolder: panaroo-output

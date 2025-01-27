@@ -1,0 +1,15 @@
+{
+    "Should run without failures for bac120": {
+        "content": [
+            {
+                "tree": [
+                    [
+                        "bac120",
+                        "bac120_iqtree.nwk:md5,91f5c0b85baf19933a2575b79d897df0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2023-02-13T13:41:19+0000"
+    }
+}

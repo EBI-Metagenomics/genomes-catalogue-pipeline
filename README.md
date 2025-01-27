@@ -1,142 +1,149 @@
-# MGnify genome analysis pipeline
+# MGnify genomes catalogue pipeline
 
-MGnify CWL pipeline to characterize a set of isolate or metagenome-assembled genomes (MAGs) using the workflow described in the following publication: 
+[MGnify](https://www.ebi.ac.uk/metagenomics/) A pipeline to perform taxonomic and functional annotation and to generate a catalogue from a set of isolate and/or metagenome-assembled genomes (MAGs) using the workflow described in the following publication:
 
-A Almeida, S Nayfach, M Boland, F Strozzi, M Beracochea, ZJ Shi, KS Pollard, E Sakharova, DH Parks, P Hugenholtz, N Segata, NC Kyrpides and RD Finn. (2020) [A unified catalog of 204,938 reference genomes from the human gut microbiome.](https://www.nature.com/articles/s41587-020-0603-3) <i>Nature Biotechnol</i>. doi: https://doi.org/10.1038/s41587-020-0603-3
+Gurbich TA, Almeida A, Beracochea M, Burdett T, Burgin J, Cochrane G, Raj S, Richardson L, Rogers AB, Sakharova E, Salazar GA and Finn RD. (2023) [MGnify Genomes: A Resource for Biome-specific Microbial Genome Catalogues.](https://www.sciencedirect.com/science/article/pii/S0022283623000724) <i>J Mol Biol</i>. doi: https://doi.org/10.1016/j.jmb.2023.168016
 
+Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/genome-viewer.html
 
-## Clone repo
+### Tools used in the pipeline
+| Tool/Database                                                                                    | Version           | Purpose                                                                                                                |
+|--------------------------------------------------------------------------------------------------|-------------------|------------------------------------------------------------------------------------------------------------------------|
+| CheckM2                                                                                          | 1.0.1             | Determining genome quality                                                                                             |
+| dRep                                                                                             | 3.2.2             | Genome clustering                                                                                                      |
+| Mash                                                                                             | 2.3               | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree                                |
+| GUNC                                                                                             | 1.0.3             | Quality control                                                                                                        |
+| GUNC DB                                                                                          | 2.0.4             | Database for GUNC                                                                                                      |
+| GTDB-Tk                                                                                          | 2.4.0             | Assigning taxonomy; generating alignments                                                                              |
+| GTDB                                                                                             | r220              | Database for GTDB-Tk                                                                                                   |
+| Prokka                                                                                           | 1.14.6            | Protein annotation                                                                                                     |
+| IQ-TREE 2                                                                                        | 2.2.0.3           | Generating a phylogenetic tree                                                                                         |
+| Kraken 2                                                                                         | 2.1.2             | Generating a kraken database                                                                                           |
+| Bracken                                                                                          | 2.6.2             | Generating a bracken database                                                                                          |
+| MMseqs2                                                                                          | 13.45111          | Generating a protein catalogue                                                                                         |
+| eggNOG-mapper                                                                                    | 2.1.11            | Protein annotation (eggNOG, KEGG, COG,  CAZy)                                                                          |
+| eggNOG DB                                                                                        | 5.0.2             | Database for eggNOG-mapper                                                                                             |
+| Diamond                                                                                          | 2.0.11            | Protein annotation (eggNOG)                                                                                            |
+| InterProScan                                                                                     | 5.62-94.0         | Protein annotation (InterPro, Pfam)                                                                                    |
+| kegg-pathways-completeness tool                                                                  | 1.0.5             | Computes KEGG pathway completeness                                                                                     |
+| CRISPRCasFinder                                                                                  | 4.3.2             | Annotation of CRISPR arrays                                                                                            |
+| AMRFinderPlus                                                                                    | 3.11.4            | Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation |
+| AMRFinderPlus DB                                                                                 | 3.11 2023-02-23.1 | Database for AMRFinderPlus                                                                                             |
+| antiSMASH                                                                                        | 7.1.0             | Biosynthetic gene cluster annotation                                                                                   |
+| GECCO                                                                                            | 0.9.8             | Biosynthetic gene cluster annotation                                                                                   |
+| SanntiS                                                                                          | 0.9.3.2           | Biosynthetic gene cluster annotation                                                                                   |
+| DefenseFinder                                                                                    | 1.2.0             | Annotation of anti-phage systems                                                                                       |
+| DefenseFinder models                                                                             | 1.2.3             | Database for DefenseFinder                                                                                             |
+| run_dbCAN                                                                                        | 4.1.2             | Polysaccharide utilization loci prediction                                                                             |
+| dbCAN DB                                                                                         | V12               | Database for run_dbCAN                                                                                                 |
+| Infernal                                                                                         | 1.1.4             | RNA predictions                                                                                                        |
+| tRNAscan-SE                                                                                      | 2.0.9             | tRNA predictions                                                                                                       |
+| Rfam                                                                                             | 14.9              | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
+| Panaroo                                                                                          | 1.3.2             | Pan-genome computation                                                                                                 |
+| Seqtk                                                                                            | 1.3               | Generating a gene catalogue                                                                                            |
+| VIRify                                                                                           | 2.0.1             | Viral sequence annotation                                                                                              |
+| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 2.0.2             | Mobilome annotation                                                                                                    |
+| samtools                                                                                         | 1.15              | FASTA indexing                                                                                                         |
+
+## Setup
+
+### Environment
+
+The pipeline is implemented in [Nextflow](https://www.nextflow.io/).
+
+Requirements:
+- [singulairty](https://sylabs.io/docs/) or [docker](https://www.docker.com/)
+
+#### Reference databases
+
+The pipeline needs the following reference databases and configuration files (roughtly ~150G):
+
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db_5.0.2.tgz
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_14.9/
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
+- https://data.ace.uq.edu.au/public/gtdb/data/releases/release214/214.0/auxillary_files/gtdbtk_r214_data.tar.gz
+- ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.11/2023-02-23.1
+- https://zenodo.org/records/4626519/files/uniref100.KO.v1.dmnd.gz
+
+### Containers
+
+This pipeline requires [singularity](https://sylabs.io/docs/) or [docker](https://www.docker.com/) as the container engine to run pipeline.
+
+The containers are hosted in [biocontainers](https://biocontainers.pro/) and [quay.io/microbiome-informatics](https://quay.io/organization/microbiome-informatics) repository.
+
+It's possible to build the containers from scratch using the following script:
+
 ```bash
-git clone https://github.com/EBI-Metagenomics/genomes-pipeline.git
-cd genomes-pipeline
+cd containers && bash build.sh
 ```
 
-## Installation with Docker
+## Running the pipeline
 
-1. Install all necessary tools (better use separate env):
-- [cwltool](https://github.com/common-workflow-language/cwltool) (tested v1.0.2) or [toil](https://toil.readthedocs.io/en/3.10.1/gettingStarted/install.html)
-- [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/guides/3.0/user-guide/installation.html)
-- [conda](https://docs.conda.io/en/latest/)
-2. Add python scripts to PATH
+## Data preparation
+
+1. You need to pre-download your data to directories and make sure that genomes are uncompressed. Scripts to fetch genomes from ENA ([fetch_ena.py](https://github.com/EBI-Metagenomics/genomes-pipeline/blob/master/bin/fetch_ena.py)) and NCBI ([fetch_ncbi.py](https://github.com/EBI-Metagenomics/genomes-pipeline/blob/master/bin/fetch_ncbi.py)) are provided and need to be executed separately from the pipeline. If you have downloaded genomes from both ENA and NCBI, put them into separate folders.
+
+2. When genomes are fetched from ENA using the `fetch_ena.py` script, a CSV file with contamination and completeness statistics is also created in the same directory where genomes are saved to. If you are downloading genomes using a different approach, a CSV file needs to be created manually (each line should be genome accession, % completeness, % contamination). The ENA fetching script also pre-filters genomes to satisfy the QS50 cut-off (QS = % completeness - 5 * % contamination).
+
+3. You will need the following information to run the pipeline:
+ - catalogue name (for example, zebrafish-faecal)
+ - catalogue version (for example, 1.0)
+ - catalogue biome (for example, root:Host-associated:Human:Digestive system:Large intestine:Fecal)
+ - min and max accession number to be assigned to the genomes (only MGnify specific). Max - Min = #total number of genomes (NCBI+ENA)
+
+### Execution
+
+The pipeline is built in [Nextflow](https://www.nextflow.io), and utilized containers to run the software (we don't support conda ATM).
+In order to run the pipeline it's required that the user creates a profile that suits their needs, there is an `ebi` profile in `nexflow.config` that can be used as template.
+
+After downloading the databases and adjusting the config file:
+
 ```bash
-export PATH=${PATH}:docker/python3_scripts:docker/genomes-catalog-update/scripts
+nextflow run EBI-Metagenomics/genomes-pipeline -c <custom.config> -profile <profile> \
+--genome-prefix=MGYG \
+--biome="root:Host-associated:Fish:Digestive system" \
+--ena_genomes=<path to genomes> \
+--ena_genomes_checkm=<path to genomes quality data> \
+--mgyg_start=0 \
+--mgyg_end=10 \
+--preassigned_accessions=<path to file with preassigned accessions if using>
+--catalogue_name=zebrafish-faecal \
+--catalogue_version="1.0" \
+--ftp_name="zebrafish-faecal" \
+--ftp_version="v1.0" \
+--outdir="<path-to-results>"
 ```
-All dockers were pushed on DockerHub. If you want to re-build dockers:
+
+### Development
+
+Install development tools (including pre-commit hooks to run Black code formatting).
+
 ```bash
-cd docker
-bash build.sh
+pip install -r requirements-dev.txt
+pre-commit install
 ```
 
+#### Code style
 
-## Installation without Docker
+Use Black, this tool is configured if you install the pre-commit tools as above.
 
-1. Install the necessary dependencies:
-- [cwltool](https://github.com/common-workflow-language/cwltool) (tested v1.0.2) or [toil](https://toil.readthedocs.io/en/3.10.1/gettingStarted/install.html)
-- [R](https://www.r-project.org/) (tested v3.5.2). Packages: reshape2, fastcluster, optparse, data.table and ape.
-- [Python](https://www.python.org/) v3.6+
-- [Perl](https://www.perl.org/get.html)
-- [CheckM](https://github.com/Ecogenomics/CheckM) (tested v1.0.11)
-- [CAT](https://github.com/dutilh/CAT) (tested v5.0)
-- [cmsearch](https://manpages.ubuntu.com/manpages/xenial/man1/cmsearch.1.html)
-- [dRep](https://drep.readthedocs.io/en/latest/) (tested v2.2.4)
-- [eggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper/wiki/eggNOG-mapper-v2) (tested v2.0)
-- [GTDB-Tk](https://github.com/Ecogenomics/GTDBTk) (tested v0.3.1 and v1.0.2)
-- [GUNC](https://github.com/grp-bork/gunc)
-- [InterProScan](https://github.com/ebi-pf-team/interproscan/wiki) (tested v5.35-74.0 and v5.38-76.0)
-- [MMseqs2](https://github.com/soedinglab/MMseqs2) (tested v8-fac81)
-- [Panaroo](https://github.com/gtonkinhill/panaroo)
-- [Prokka](https://github.com/tseemann/prokka) (tested 1.14.0)
-- [samtools](https://github.com/samtools/samtools/releases/download)
-- [tRNAscan-SE](http://lowelab.ucsc.edu/tRNAscan-SE/)
+To manually run them: black .
 
-2. Add custom scripts to your `$PATH` environment. 
+### Testing
+
+This repo has 2 set of tests, python unit tests for some of the most critical python scripts and [nf-test](https://github.com/askimed/nf-test) scripts for the nextflow code.
+
+To run the python tests
+
 ```bash
-export PATH=${PATH}:docker/genomes-catalog-update/scriptsexport 
-export PATH=${PATH}:docker/python3_scripts
-export PATH=${PATH}:docker/bash
-export PATH=${PATH}:docker/detect_rRNA
-export PATH=${PATH}:docker/GUNC
-export PATH=${PATH}:docker/mash2nwk
-export PATH=${PATH}:docker/mmseqs
+pip install -r requirements-test.txt
+pytest
 ```
 
-## Download databases 
+To run the nextflow ones the databases have to downloaded manually, we are working to improve this.
+
 ```bash
-bash download_db.sh
+nf-test test tests/*
 ```
-
-## Run
-
-Note: You can manually change parameters of MMseqs2 for protein clustering in your YML file (arguments mmseqs_limit_i, mmseq_limit_annotation, mmseqs_limit_c)</b>
-1. You need to pre-download your data to directory (GENOMES) and make sure that all genomes are not compressed
-2. Create YML file with our help-script:
-```bash
-export GENOMES=
-
-
-python3 installation/create_yml.py \
-        -d ${GENOMES} ...
-```
-## Pipeline structure
-
-![Pipeline overview](pipeline_overview.png)
-
-
-Output files/folders:
-```
-MGYG...NUM
-         --- genome
-              --- fa
-              --- fa.fai
-              --- faa (main rep)
-              --- gff (main rep)
-         --- pan-genome
-              --- core_genes.txt
-              --- <cluster>_mashtree.nwk
-              --- pan_genome_reference.fa
-              --- gene_presence_absence.Rtab
-   MGYG...NUM
-         --- genome
-              --- fa
-              --- fa.fai
-              --- gff
-              --- faa
-  mmseqs_cluster_rep.emapper.annotations 
-  mmseqs_cluster_rep.emapper.seed_orthologs
-  mmseqs_cluster_rep.IPS.tsv
-
-  intermediate_files/
-         --- clusters_split.txt
-         --- drep-filt-list.txt
-         --- extra_weight_table.txt
-         --- gunc_report_completed.txt
-         --- names.tsv
-         --- renamed_download.csv
-         --- Sdb.csv
-         --- mmseq.tsv
-  gtdb-tk_output/ ( commented yet)
-  rRNA_fastas/
-  rRNA_outs/
-  GFFs/
-  mmseqs_output/
-        mmseqs_0.5_outdir.tar.gz
-        mmseqs_0.95_outdir.tar.gz
-        mmseqs_0.9_outdir.tar.gz
-        mmseqs_1.0_outdir.tar.gz
-  panaroo_output/
-        MGYG.._panaroo.tar.gz
-        ...
-  per-genome-annotations/ (for post-processing)
-  drep_genomes/                   (for GTDB-Tk)
-```
-
-### Tool description
-- CheckM: Estimate genome completeness and contamination.
-- GTDB-Tk: Genome taxonomic assignment using the GTDB framework.
-- dRep: Genome de-replication.
-- Mash2Nwk: Generate Mash distance tree of conspecific genomes.
-- Prokka: Predict protein-coding sequences from genome assembly.
-- MMseqs2: Cluster protein-coding sequences.
-- InterProScan: Protein functional annotation using the InterPro database.
-- eggNOG-mapper: Protein functional annotation using the eggNOG database.
-

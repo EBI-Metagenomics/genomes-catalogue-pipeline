@@ -1,0 +1,15 @@
+.vscode/
+*.pyc
+.DS_Store
+
+.nextflow*
+work/
+data/
+
+results/
+testing/
+testing*
+
+ref-dbs/
+
+.nf-test/*

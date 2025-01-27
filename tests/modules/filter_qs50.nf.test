@@ -1,0 +1,27 @@
+nextflow_process {
+
+    name "Test Process FILTER_QS50"
+    script "modules/filter_qs50.nf"
+    process "FILTER_QS50"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                input_genomes = "$baseDir/tests/modules/fixtures/classify_clusters/dereplicated_genomes"
+                input_csv = "$baseDir/tests/modules/fixtures/filter_qs50/genomes.csv"
+            }
+            process {
+                """
+                input[0] = channel.fromPath("${params.input_genomes}", checkIfExists: true)
+                input[1] = channel.fromPath("${params.input_csv}", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+    }
+}

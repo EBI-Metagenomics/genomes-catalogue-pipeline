@@ -1,0 +1,21 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "0": [
+                    [
+                        "MGYG000000001",
+                        "MGYG000000001_sanntis.gff:md5,90cc3823fd29a2a6d574c1be984ba11d"
+                    ]
+                ],
+                "sanntis_gff": [
+                    [
+                        "MGYG000000001",
+                        "MGYG000000001_sanntis.gff:md5,90cc3823fd29a2a6d574c1be984ba11d"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2024-01-11T22:25:32.012275"
+    }
+}

@@ -1,7 +1,0 @@
-list_dirs:
-  - class: Directory
-    path: ../help_scripts
-  - null
-  - null
-  - class: Directory
-    path: ../../../input_example/small_set/singletons

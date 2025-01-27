@@ -1,0 +1,13 @@
+[tool.pytest.ini_options]
+pythonpath = [".", "bin", "helpers/database_import_scripts/uniprot", "tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.isort]
+profile = "black"
+
+[tool.back]
+line-length = 110
+experimental-string-processing = true

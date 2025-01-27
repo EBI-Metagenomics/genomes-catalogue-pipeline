@@ -1,0 +1,37 @@
+nextflow_workflow {
+
+    name "Test Workflow DREP_LARGE_SWF"
+    script "subworkflows/drep_large_catalogue_swf.nf"
+    workflow "DREP_LARGE_SWF"
+
+    // FIXME: this is not working
+    // Nextflow is not handling the paths correctly.
+    // Process `DREP_LARGE_SWF:DREP_CHUNKED` input file name collision --
+    // There are multiple input files for each of the following file names: home
+
+    test("Should run dRep per chunks") {
+
+        when {
+            params {
+                // define parameters here. Example:
+                xlarge = true
+                xlarge_chunk_size = 4
+                outdir = "tests/results"
+            }
+            workflow {
+                """
+                input[0] = channel.fromPath("$baseDir/tests/subworkflows/fixtures/genomes", checkIfExists: true)
+                input[1] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/checkm.csv")
+                input[2] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/extra_weight_table.txt")
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

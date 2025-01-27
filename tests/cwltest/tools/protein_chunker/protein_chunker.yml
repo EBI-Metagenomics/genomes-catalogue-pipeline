@@ -1,4 +1,0 @@
-seqs:
-  class: File
-  path: ../../../../input_example/small_set/results/mmseqs_0.9_cluster_rep.fa
-chunk_size: 1000

@@ -1,0 +1,30 @@
+nextflow_workflow {
+
+    name "Test Workflow DREP_SWF"
+    script "subworkflows/drep_swf.nf"
+    workflow "DREP_SWF"
+
+    test("Should run and generate the correct clusters") {
+
+        when {
+            workflow {
+                """
+                input[0] = file("$baseDir/tests/subworkflows/fixtures/genomes")
+                input[1] = file("$baseDir/tests/subworkflows/fixtures/drep_swf/checkm.csv")
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            assert snapshot(
+                workflow.out.many_genomes_fna_tuples,
+                workflow.out.single_genomes_fna_tuples,
+                workflow.out.drep_split_text,
+                workflow.out.mash_splits,
+                workflow.out.extra_weight_table
+            ).match()
+        }
+    }
+}
