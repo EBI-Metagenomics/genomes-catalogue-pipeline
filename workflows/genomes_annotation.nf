@@ -3,8 +3,14 @@
      Input validation
     ~~~~~~~~~~~~~~~~~~
 */
-ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
-ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
+ch_ena_genomes = []
+ch_ena_genomes_checkm = file("NO_FILE_ENA_CHECKM")
+
+if (params.ena_genomes) {
+    ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
+    ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
+}
+
 ch_ncbi_genomes = []
 
 if (params.ncbi_genomes) {
@@ -60,6 +66,7 @@ include { ANNOTATE } from '../subworkflows/annotate'
 include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
 include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
 include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
+include { UPDATE_CLUSTERS } from '../subworkflows/update_clusters_swf.nf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
@@ -118,7 +125,7 @@ ch_antismash_db = file(params.antismash_db)
 */
 
 workflow GAP {
-
+    // if this is an update, do pre-update checks
     if ( params.update_catalogue_path ){
         PREPARE_UPDATE(
             ch_previous_catalogue_location,
@@ -128,45 +135,55 @@ workflow GAP {
             ch_checkm2_db
         )
     }
-
-    PREPARE_DATA(
-        ch_ena_genomes,
-        ch_ena_genomes_checkm,
-        ch_ncbi_genomes,
-        ch_mgyg_index_start,
-        ch_mgyg_index_end,
-        ch_preassigned_accessions,
-        ch_genome_prefix,
-        ch_genomes_information,
-        ch_study_genomes_information,
-        ch_checkm2_db
-    )
     
+    // if we are adding data (either new catalogue or adding genomes during an update), prepare incoming data
+    if ( params.ena_genomes || params.ncbi_genomes ){
+        PREPARE_DATA(
+            ch_ena_genomes,
+            ch_ena_genomes_checkm,
+            ch_ncbi_genomes,
+            ch_mgyg_index_start,
+            ch_mgyg_index_end,
+            ch_preassigned_accessions,
+            ch_genome_prefix,
+            ch_genomes_information,
+            ch_study_genomes_information,
+            ch_checkm2_db
+        )
+        new_data_checkm = PREPARE_DATA.out.genomes_checkm
+    } else {
+        // if we are not adding new genomes, make a dummy checkM file
+        new_data_checkm = file("NO_FILE_GENOMES_CHECKM")
+    }
+    
+    dereplicated_genomes = channel.empty()
     if ( params.update_catalogue_path ){
+        // if updating a catalogue, don't run dRep, generate clusters with Python
         UPDATE_CLUSTERS(
             ch_previous_catalogue_location,
             ch_remove_genomes,
-            PREPARE_UPDATE.out.previous_version_quality
+            PREPARE_UPDATE.out.previous_version_quality,
+            new_data_checkm
         )
-    }
-
-    // needs a more elegant solution here
-    dereplicated_genomes = channel.empty()
-
-    if ( !params.xlarge ) {
-        DREP_SWF(
-            PREPARE_DATA.out.genomes,
-            PREPARE_DATA.out.genomes_checkm,
-            PREPARE_DATA.out.extra_weight_table
-        )
-        dereplicated_genomes = DREP_SWF
+        dereplicated_genomes = UPDATE_CLUSTERS
     } else {
-        DREP_LARGE_SWF(
-            PREPARE_DATA.out.genomes,
-            PREPARE_DATA.out.genomes_checkm,
-            PREPARE_DATA.out.extra_weight_table
-        )
-        dereplicated_genomes = DREP_LARGE_SWF
+        // if generating a new catalogue, cluster with dRep 
+    
+        if ( !params.xlarge ) {
+            DREP_SWF(
+                PREPARE_DATA.out.genomes,
+                PREPARE_DATA.out.genomes_checkm,
+                PREPARE_DATA.out.extra_weight_table
+            )
+            dereplicated_genomes = DREP_SWF
+        } else {
+            DREP_LARGE_SWF(
+                PREPARE_DATA.out.genomes,
+                PREPARE_DATA.out.genomes_checkm,
+                PREPARE_DATA.out.extra_weight_table
+            )
+            dereplicated_genomes = DREP_LARGE_SWF
+        }
     }
 
     MASH_TO_NWK(

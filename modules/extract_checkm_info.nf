@@ -14,7 +14,7 @@ process EXTRACT_CHECKM_INFO {
     
     script:
     """
-    extract_checkm_from_metadata_table.py -i ${previous_metadata_table} -o checkm_quality_previous_version.csv
+    extract_info_from_metadata_table.py -i ${previous_metadata_table} -o checkm_quality_previous_version.csv
     
     """
     
