@@ -31,6 +31,7 @@ def main(input_folder):
             issues.append("Folder {} is not found.".format(os.path.join(input_folder, folder)))
     ftp_checklist = ["genomes-all_metadata.tsv", "all_genomes", "species_catalogue"]
     additional_data_checklist = ["panaroo_output", "mgyg_genomes"]
+    intermediate_files_checklist = ["extra_weight_table.txt"]
     for element in ftp_checklist:
         ftp_path = os.path.join(input_folder, "ftp")
         if not verify_folder(ftp_path, element):
@@ -39,7 +40,10 @@ def main(input_folder):
         additional_data_path = os.path.join(input_folder, "additional_data")
         if not verify_folder(additional_data_path, element):
             issues.append("{} is not found.".format(os.path.join(additional_data_path, element)))
-            
+    for element in intermediate_files_checklist:
+        intermediate_files_path = os.path.join(input_folder, "additional_data", "intermediate_files")  
+        if not verify_folder(intermediate_files_path, element):
+            issues.append("{} is not found.".format(os.path.join(intermediate_files_path, element)))
     if len(issues) > 0:
         with open("PREVIOUS_CATALOGUE_STRUCTURE_ERRORS.txt", "w") as f:
             f.write("\n".join(issues))
