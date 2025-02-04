@@ -20,28 +20,31 @@ import csv
 import sys
 
 
-def main(metadata_table, outfile, n50):
-    with open(metadata_table, "r") as file_in, open(outfile, "w") as file_out:
-        csv_writer = csv.writer(file_out)
+def main(metadata_table, prefix):
+    outfile_quality = f'{prefix}_checkm_quality.csv'
+    outfile_stats = f'{prefix}_assembly_stats.tsv'
+    with (open(metadata_table, "r") as file_in, open(outfile_quality, "w") as checkm_out,
+          open(outfile_stats, "w") as stats_out):
+        csv_writer_checkm = csv.writer(checkm_out)
+        csv_writer_stats = csv.writer(stats_out, delimiter='\t')
         header = file_in.readline()
         fields = header.strip().split("\t")
         genome_idx = get_field_index("Genome", fields, metadata_table)
         comp_idx = get_field_index("Completeness", fields, metadata_table)
         cont_idx = get_field_index("Contamination", fields, metadata_table)
         n50_idx = get_field_index("N50", fields, metadata_table)
-        
-        if n50:
-            csv_writer.writerow(["genome", "n50"])
-        else:
-            csv_writer.writerow(["genome", "completeness", "contamination"])
-        
+        length_idx = get_field_index("Length", fields, metadata_table)
+        gc_idx = get_field_index("GC_content", fields, metadata_table)
+
+        # write headers
+        csv_writer_stats.writerow(["Genome", "Length", "N50", "GC_content"])
+        csv_writer_checkm.writerow(["genome", "completeness", "contamination"])
+
         for line in file_in:
             parts = line.strip().split("\t")
-            if n50:
-                csv_writer.writerow([f"{parts[genome_idx]}.fa", parts[n50_idx]])
-            else:
-                csv_writer.writerow([f"{parts[genome_idx]}.fa", parts[comp_idx], parts[cont_idx]])
-            
+            csv_writer_stats.writerow([parts[genome_idx], parts[length_idx], parts[n50_idx], parts[gc_idx]])
+            csv_writer_checkm.writerow([f"{parts[genome_idx]}.fa", parts[comp_idx], parts[cont_idx]])
+
 
 def get_field_index(field_name, fields, metadata_table):
     if field_name in fields:
@@ -49,7 +52,7 @@ def get_field_index(field_name, fields, metadata_table):
     else:
         sys.exit(f"Cannot find {field_name} field in {metadata_table}")
 
-        
+
 def parse_args():
     parser = argparse.ArgumentParser(description='The script is part of the catalogue update pipeline. It takes the '
                                                  'metadata table from the previous catalogue version and regenerates '
@@ -57,15 +60,11 @@ def parse_args():
                                                  'the script instead extracts the N50 information.')
     parser.add_argument('-i', dest='metadata_table', required=True, help='Location of the metadata table from the '
                                                                          'previous catalogue version.')
-    parser.add_argument('-o', dest='outfile', required=True, help='Name of the file that the CSV output will be '
-                                                                  'written to.')
-    parser.add_argument('--n50', required=False, action='store_true', help='Use this flag to extract N50 instead of '
-                                                                           'checkM info')
+    parser.add_argument('-o', dest='prefix', required=True, help='Prefix for the output files.')
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.metadata_table, args.outfile, args.n50)
-    
+    main(args.metadata_table, args.prefix)
