@@ -151,9 +151,14 @@ workflow GAP {
             ch_checkm2_db
         )
         new_data_checkm = PREPARE_DATA.out.genomes_checkm
+        new_genome_stats = PREPARE_DATA.out.new_genomes_stats
+        extra_weight_table_new_genomes = PREPARE_DATA.out.extra_weight_table
+        
     } else {
-        // if we are not adding new genomes, make a dummy checkM file
-        new_data_checkm = file("NO_FILE_GENOMES_CHECKM")
+        // if we are not adding new genomes, make dummy files
+        new_data_checkm = file("NO_FILE_NEW_GENOMES_CHECKM")
+        new_genome_stats = file("NO_FILE_NEW_GENOMES_STATS")
+        extra_weight_table_new_genomes = file("NO_FILE_NEW_GENOMES_EXTRA_WEIGHT")
     }
     
     dereplicated_genomes = channel.empty()
@@ -163,7 +168,10 @@ workflow GAP {
             ch_previous_catalogue_location,
             ch_remove_genomes,
             PREPARE_UPDATE.out.previous_version_quality,
-            new_data_checkm
+            PREPARE_UPDATE.out.previous_version_assembly_stats,
+            new_data_checkm,
+            new_genome_stats,
+            extra_weight_table_new_genomes
         )
         dereplicated_genomes = UPDATE_CLUSTERS
     } else {
@@ -173,14 +181,14 @@ workflow GAP {
             DREP_SWF(
                 PREPARE_DATA.out.genomes,
                 PREPARE_DATA.out.genomes_checkm,
-                PREPARE_DATA.out.extra_weight_table
+                extra_weight_table_new_genomes
             )
             dereplicated_genomes = DREP_SWF
         } else {
             DREP_LARGE_SWF(
                 PREPARE_DATA.out.genomes,
                 PREPARE_DATA.out.genomes_checkm,
-                PREPARE_DATA.out.extra_weight_table
+                extra_weight_table_new_genomes
             )
             dereplicated_genomes = DREP_LARGE_SWF
         }
@@ -347,7 +355,7 @@ workflow GAP {
     METADATA_AND_PHYLOTREE(
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
-        PREPARE_DATA.out.extra_weight_table,
+        extra_weight_table_new_genomes,
         PREPARE_DATA.out.genomes_checkm,
         DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
         PREPARE_DATA.out.genomes_name_mapping,
