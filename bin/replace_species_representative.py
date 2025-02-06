@@ -25,7 +25,8 @@ import shutil
 logging.basicConfig(level=logging.INFO)
 
 
-def main(new_strain_dir, current_representatives_dir, mash_result, checkm_result, isolates_file, outfile, replace):
+def main(new_strain_dir, current_representatives_dir, mash_result, assembly_stats_file, isolates_file, outfile, 
+         remove_list_file, replace):
     for directory in [new_strain_dir, current_representatives_dir]:
         assert(os.path.exists(directory)), 'Directory {} does not exist'.format(directory)
     current_list = os.listdir(current_representatives_dir)
@@ -34,7 +35,7 @@ def main(new_strain_dir, current_representatives_dir, mash_result, checkm_result
     clusters_outfile = outfile.replace(outfile_extension, 'clusters.{}'.format(outfile_extension))
     clusters = get_mash_clusters(mash_result, current_list, new_strain_list)
     isolates = load_isolates(isolates_file)
-    qs_values = load_qs(checkm_result)
+    qs_values = load_qs(assembly_stats_file)
     replace_results = replacement_decision(clusters, qs_values, isolates)
     save_clusters_to_file(clusters, replace_results, clusters_outfile)
     with open(outfile, 'w') as outfile_out:
@@ -197,12 +198,15 @@ def parse_args():
                         help='Path to the mash results file')
     parser.add_argument('-o', '--outfile', required=True,
                         help='Path to the output file')
-    parser.add_argument('--checkm-result', required=True,
-                        help='Path to the checkm results file for all species that will be analyzed')
+    parser.add_argument('--assembly-stats', required=True,
+                        help='Path to the file containing completeness, contamination and N50 values for all '
+                             'genomes (old and new)')
     parser.add_argument('--isolates', required=True,
                         help='Path to the extra weight file used for drep; the file format is tab delimited,'
                              'first column = genome file name; second column = 0 if not isolate, 1000 if'
                              'isolate')
+    parser.add_argument('--remove-list', required=True,
+                        help='Path to the tab-delimited file containing a list of genomes to remove in column 1')
     parser.add_argument('--replace', action='store_true',
                         help='If the flag is on, the species representatives in the folder will be replaced with'
                              'new representative genomes where necessary. Otherwise, only a table with results'
@@ -212,5 +216,5 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.new_strain_directory, args.current_representatives, args.mash_result, args.checkm_result,
-         args.isolates, args.outfile, args.replace)
+    main(args.new_strain_directory, args.current_representatives, args.mash_result, args.assembly_stats,
+         args.isolates, args.outfile, args.remove_list, args.replace)
