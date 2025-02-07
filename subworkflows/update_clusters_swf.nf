@@ -18,6 +18,8 @@ workflow UPDATE_CLUSTERS {
         // parse mash - keep mind that script might need to be modified because before we ran mash with 0.05 cut-off
         // cluster new species
         // run GUNC on singletons
+        
+        // gather genome stats and remake clusters
         RUN_CLUSTER_UPDATE (
             previous_catalogue_location,
             remove_genomes,
@@ -27,8 +29,15 @@ workflow UPDATE_CLUSTERS {
             new_genome_stats,
             extra_weight_table_new_genomes
         )
-        // remake clusters
-
+        // gather all genomes into one folder, run classify_clusters.nf on it (using the clusters_split file)
     emit:
+        // tuples (many_genomes and single_genomes) from classify_clusters.nf
+        // text_split, Cdb, Sdb from RUN_CLUSTER_UPDATE (replace_species_representative.py)
+        // Mdb.csv and mash needs to be recomputed separately
         assembly_stats_all_genomes = RUN_CLUSTER_UPDATE.out.assembly_stats_all_genomes
+        mash_splits = file("EMPTY_FILE")
+        single_genomes_fna_tuples = channel.empty()
+        many_genomes_fna_tuples = channel.empty()
+        drep_split_text = file("DREP")
+        
 }
