@@ -5,7 +5,7 @@ process CALCULATE_ASSEMBLY_STATS {
     label 'process_light'
     
     input:
-    path genomes_fnas, stageAs: "new_genomes_dir/*"
+    path genomes_fnas, stageAs: "new_genomes_dir"
     
     output:
     path "new_genome_stats.tsv", emit: stats_file
