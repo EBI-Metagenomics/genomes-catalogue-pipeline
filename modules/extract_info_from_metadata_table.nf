@@ -15,7 +15,7 @@ process EXTRACT_METADATA_FROM_TABLE {
     
     script:
     """
-    extract_info_from_metadata_table.py -i ${previous_metadata_table} -p previous_version
+    extract_info_from_metadata_table.py -i ${previous_metadata_table} -o previous_version
     
     """
     
