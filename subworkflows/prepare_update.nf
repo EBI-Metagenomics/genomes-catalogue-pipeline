@@ -37,7 +37,7 @@ workflow PREPARE_UPDATE {
                     error """
                     Some genomes from the previous catalogue version could not be found in ENA. 
                     Review the report, add genomes that are correctly missing from ENA to the removal list, and restart the pipeline. 
-                    Report: \${params.outdir}/additional_data/update_execution_reports/GENOME_CHECK_FAILED_ACCESSIONS
+                    Report: ${params.outdir}/additional_data/update_execution_reports/GENOME_CHECK_FAILED_ACCESSIONS
                     """.stripIndent().trim()
                 }
             }
