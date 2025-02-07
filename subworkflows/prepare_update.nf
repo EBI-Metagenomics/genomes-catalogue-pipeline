@@ -6,6 +6,7 @@ include { CHECK_CATALOGUE_STRUCTURE } from '../modules/check_catalogue_structure
 include { CHECK_GENOME_VALIDITY } from '../modules/check_genome_validity'
 include { CHECKM2 as CHECKM2_CATALOGUE } from '../modules/checkm2'
 include { EXTRACT_METADATA_FROM_TABLE } from '../modules/extract_info_from_metadata_table'
+include { CONVERT_REMOVE_LIST_TO_MGYG } from '../modules/convert_remove_list'
  
 workflow PREPARE_UPDATE {
     take:
@@ -47,6 +48,11 @@ workflow PREPARE_UPDATE {
             "${previous_catalogue_location}/ftp/genomes-all_metadata.tsv"
         )
         
+        CONVERT_REMOVE_LIST_TO_MGYG(
+            previous_catalogue_location,
+            remove_genomes
+        )
+        
         if ( rerun_checkm2 ) {
             CHECKM2_CATALOGUE(
                 "${previous_catalogue_location}/additional_data/mgyg_genomes/",
@@ -60,4 +66,5 @@ workflow PREPARE_UPDATE {
     emit:
         previous_version_quality = previous_version_quality
         previous_version_assembly_stats = EXTRACT_METADATA_FROM_TABLE.out.assembly_stats_tsv
+        remove_list_mgyg = CONVERT_REMOVE_LIST_TO_MGYG.out.remove_list_mgyg
 }
