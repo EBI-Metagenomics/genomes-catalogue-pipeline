@@ -72,7 +72,7 @@ def extract_and_merge_stats(stats_file_list, checkm_file_list, outfile_stats):
                     data['Contamination'],
                     data['N50']
                     ])
-            except ValueError:
+            except KeyError:
                 sys.exit("Unable to get gather assembly stats data for genome {}. Available data: {}".format(genome,
                                                                                                              data))
   
