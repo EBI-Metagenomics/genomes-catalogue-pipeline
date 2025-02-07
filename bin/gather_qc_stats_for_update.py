@@ -115,7 +115,7 @@ if __name__ == '__main__':
         args.stats_file_prev_version,
         args.checkm_previous_version, 
         args.checkm_new_genomes, 
-        args.extra_weight_new,
+        args.extra_weight_new_genomes,
         args.previous_version_path,
         args.outfile_stats,
         args.outfile_extra_weight,
