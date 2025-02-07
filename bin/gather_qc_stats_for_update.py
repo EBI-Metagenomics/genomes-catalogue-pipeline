@@ -54,6 +54,11 @@ def extract_and_merge_stats(stats_file_list, checkm_file_list, outfile_stats):
             reader = csv.DictReader(file_in, delimiter=',')
             for row in reader:
                 genome = row["genome"]
+                # remove extension
+                for ext in [".fa", ".fna", ".fasta"]:
+                    if genome.lower().endswith(ext):
+                        genome = genome[:-len(ext)]
+                        break
                 genome_data[genome]["Completeness"] = row["completeness"]
                 genome_data[genome]["Contamination"] = row["contamination"]
     with open(outfile_stats, "w", newline="") as file_out:
