@@ -136,7 +136,7 @@ def load_remove_list(remove_list_file, metadata_table_file):
             col1 = line.strip().split("\t")[0]
             if col1.startswith("MGYG"):
                 if not translation_dict:
-                    translation_dict = load_translation(metadata_table_file)
+                    translation_dict = load_translation(metadata_table_file, "mgyg-to-insdc")
                 try:
                     acc = translation_dict[col1]
                 except:
@@ -151,7 +151,7 @@ def load_remove_list(remove_list_file, metadata_table_file):
     return remove_list
 
 
-def load_translation(metadata_table_file):
+def load_translation(metadata_table_file, direction):
     translation_dict = dict()
     with open(metadata_table_file, "r") as f:
         header = f.readline().strip()
@@ -165,7 +165,10 @@ def load_translation(metadata_table_file):
             parts = line.strip().split("\t")
             mgyg = parts[mgyg_index]
             insdc_acc = parts[insdc_index]
-            translation_dict[mgyg] = insdc_acc
+            if direction == "mgyg-to-insdc":
+                translation_dict[mgyg] = insdc_acc
+            else:
+                translation_dict[insdc_acc] = mgyg
     return translation_dict
 
 
