@@ -153,6 +153,7 @@ workflow GAP {
         new_data_checkm = PREPARE_DATA.out.genomes_checkm
         new_genome_stats = PREPARE_DATA.out.new_genomes_stats
         extra_weight_table_new_genomes = PREPARE_DATA.out.extra_weight_table
+        remove_list_mgyg = PREPARE_UPDATE.out.remove_list_mgyg
         
     } else {
         // if we are not adding new genomes, make dummy files
@@ -166,7 +167,7 @@ workflow GAP {
         // if updating a catalogue, don't run dRep, generate clusters with Python
         UPDATE_CLUSTERS(
             ch_previous_catalogue_location,
-            ch_remove_genomes,
+            remove_list_mgyg,
             PREPARE_UPDATE.out.previous_version_quality,
             PREPARE_UPDATE.out.previous_version_assembly_stats,
             new_data_checkm,
