@@ -31,7 +31,7 @@ def main(input_folder):
             issues.append("Folder {} is not found.".format(os.path.join(input_folder, folder)))
     ftp_checklist = ["genomes-all_metadata.tsv", "all_genomes", "species_catalogue"]
     additional_data_checklist = ["panaroo_output", "mgyg_genomes"]
-    intermediate_files_checklist = ["extra_weight_table.txt"]
+    intermediate_files_checklist = ["extra_weight_table.txt", "drep_data_tables.tar.gz"]
     for element in ftp_checklist:
         ftp_path = os.path.join(input_folder, "ftp")
         if not verify_folder(ftp_path, element):
