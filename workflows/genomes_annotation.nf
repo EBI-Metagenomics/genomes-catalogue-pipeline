@@ -134,6 +134,7 @@ workflow GAP {
             params.rerun_checkm2,
             ch_checkm2_db
         )
+        remove_list_mgyg = PREPARE_UPDATE.out.remove_list_mgyg
     }
     
     // if we are adding data (either new catalogue or adding genomes during an update), prepare incoming data
@@ -153,7 +154,6 @@ workflow GAP {
         new_data_checkm = PREPARE_DATA.out.genomes_checkm
         new_genome_stats = PREPARE_DATA.out.new_genomes_stats
         extra_weight_table_new_genomes = PREPARE_DATA.out.extra_weight_table
-        remove_list_mgyg = PREPARE_UPDATE.out.remove_list_mgyg
         
     } else {
         // if we are not adding new genomes, make dummy files
