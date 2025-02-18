@@ -33,7 +33,7 @@ def main(input_folder, remove_list, outfile):
             else:
                 insdc_acc, description = line.strip().split("\t")
                 if len(translation_dict) == 0:
-                    translation_dict = load_translation(metadata_table_file, "insdc-to-mgyg")
+                    translation_dict = load_translation(metadata_table_file, to_insdc=False)
                 try:
                     file_out.write(f"{translation_dict[insdc_acc]}\t{description}\n")
                 except KeyError:
