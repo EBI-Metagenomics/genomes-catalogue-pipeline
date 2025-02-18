@@ -434,7 +434,7 @@ workflow GAP {
     reps_eggnog = ANNOTATE.out.eggnog_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
-    reps_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
+    all_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
         it[1].name.contains(it[0])
     }
 
@@ -455,7 +455,7 @@ workflow GAP {
         cluster_reps_gff.join(
             reps_eggnog
         ).join(
-            reps_ncrna
+            all_ncrna
         ).join(
             DETECT_RNA.out.trna_gff
         ).join(
