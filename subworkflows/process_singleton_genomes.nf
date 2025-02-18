@@ -44,9 +44,9 @@ workflow PROCESS_SINGLETON_GENOMES {
         gunc_db
     main:
     
-        singleton_cluster_tuple_with_domain = singleton_cluster_tuple \
-        .join(accessions_with_domains_tuples) \
-        .filter({ !it[2].contains('Undefined') })
+        singleton_cluster_tuple_with_domain = singleton_cluster_tuple
+        .join(accessions_with_domains_tuples, remainder: true)
+        .filter { it[1] != null && !it[2].contains('Undefined') }
         
         GUNC(
             singleton_cluster_tuple_with_domain,
