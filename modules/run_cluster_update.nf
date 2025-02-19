@@ -16,6 +16,8 @@ process RUN_CLUSTER_UPDATE {
         
     script:
     """
+    tar -xf ${previous_catalogue_location}/additional_data/intermediate_files/drep_data_tables.tar.gz
+    
     gather_qc_stats_for_update.py \
     --stats-file-new ${new_genome_stats} \
     --stats-file-prev-version ${previous_version_assembly_stats} \
@@ -25,5 +27,6 @@ process RUN_CLUSTER_UPDATE {
     --previous-version-path ${previous_catalogue_location} \
     --outfile-stats assembly_stats_all_genomes.tsv \
     --outfile-extra-weight extra_weight_table_all_genomes.tsv
+    
     """
 }

@@ -22,28 +22,82 @@ import logging
 import os
 import shutil
 
+from parse_domain import load_clusters
+
 logging.basicConfig(level=logging.INFO)
 
 
-def main(new_strain_dir, current_representatives_dir, mash_result, assembly_stats_file, isolates_file, outfile, 
-         remove_list_file, replace):
-    for directory in [new_strain_dir, current_representatives_dir]:
-        assert(os.path.exists(directory)), 'Directory {} does not exist'.format(directory)
-    current_list = os.listdir(current_representatives_dir)
-    new_strain_list = os.listdir(new_strain_dir)
-    outfile_extension = outfile.split('.')[-1]
-    clusters_outfile = outfile.replace(outfile_extension, 'clusters.{}'.format(outfile_extension))
-    clusters = get_mash_clusters(mash_result, current_list, new_strain_list)
+def main(cluster_split_file, new_strain_file, mash_result, previous_drep_dir, output_prefix, assembly_stats_file, 
+         isolates_file, remove_list_file):
+    new_strain_list = load_first_column_to_list(new_strain_file)
     isolates = load_isolates(isolates_file)
+    remove_list = load_first_column_to_list(remove_list_file)
     qs_values = load_qs(assembly_stats_file)
-    replace_results = replacement_decision(clusters, qs_values, isolates)
-    save_clusters_to_file(clusters, replace_results, clusters_outfile)
-    with open(outfile, 'w') as outfile_out:
-        for key, value in replace_results.items():
-            outfile_out.write('\t'.join([key, value]) + '\n')
-    if replace:
-        make_replacements(replace_results, current_representatives_dir, new_strain_dir)
+    
+    # if new strain list is empty and remove list is empty, we don't need to do anything, just output old files for 
+    # everything - this is not an update, just a reannotation
+    if len(new_strain_list) == 0 and len(remove_list) == 0:
+        output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix)
+    else:
+        if len(remove_list) > 0:
+            remove_genomes_from_clusters(previous_drep_dir, cluster_split_file, remove_list)
+    
+    # when reassigning rep to a cluster that had the existing rep completely removed, don't stick with the 10% increase rule
+    # assign the best genome there is
+    # add existing strains to this
+    # previous code to change to handle clusters
+    #current_list = os.listdir(current_representatives_dir)
+    #clusters_outfile = outfile.replace(outfile_extension, 'clusters.{}'.format(outfile_extension))
+    #clusters = get_mash_clusters(mash_result, current_list, new_strain_list)
+    
+    #replace_results = replacement_decision(clusters, qs_values, isolates)
+    #save_clusters_to_file(clusters, replace_results, clusters_outfile)
+    #with open(outfile, 'w') as outfile_out:
+    #    for key, value in replace_results.items():
+    #        outfile_out.write('\t'.join([key, value]) + '\n')    
 
+
+def remove_genomes_from_clusters(previous_drep_dir, cluster_split_file, remove_list):
+    clusters = load_clusters(cluster_split_file)
+    # singletons are saved as key=rep, value=""; for non-singletons value=list of members
+    
+    singletons_removed, cluster_rep_removed, cluster_member_removed = identify_genome_cluster_position(clusters, 
+                                                                                                       remove_list)
+    
+
+def identify_genome_cluster_position(clusters, remove_list):
+    singletons_removed = list()
+    cluster_rep_removed = list()
+    cluster_member_removed = dict()
+
+    # generate a reverse dictionary where keys are non-reps and values are their corresponding reps
+    reverse_lookup_nonreps = dict()
+    for species_rep, members in clusters.items():
+        if isinstance(members, list):
+            for acc in members:
+                reverse_lookup_nonreps[acc] = species_rep
+    print(reverse_lookup_nonreps)
+    return singletons_removed, cluster_rep_removed, cluster_member_removed
+    
+    
+def output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix):
+    drep_files = os.listdir(previous_drep_dir)
+    for file in drep_files:
+        new_filename = f"{output_prefix}_{file}"
+        shutil.copy(file, new_filename)
+    shutil.copy(cluster_split_file, f"{output_prefix}_{cluster_split_file}")
+    logging.info("No changes made to the clusters. Original file contents are written to output.")
+    
+    
+def load_first_column_to_list(file_path):
+    first_column_values = []
+    with open(file_path, 'r') as file_in:
+        for line in file_in:
+            columns = line.strip().split('\t')
+            if columns:  # line is not empty
+                first_column_values.append(columns[0])
+    return first_column_values
+    
 
 def replacement_decision(clusters, qs_values, isolates):
     replace_results = dict()
@@ -92,25 +146,6 @@ def replacement_decision(clusters, qs_values, isolates):
     return replace_results
 
 
-def make_replacements(replace_results, current_representatives_dir, new_strain_dir):
-    for key, value in replace_results.items():
-        old = os.path.join(current_representatives_dir, key)
-        new = os.path.join(new_strain_dir, value)
-        logging.info('Replacing {} with {}'.format(old, new))
-        try:
-            shutil.copy(new, current_representatives_dir)
-        except IOError as e:
-            logging.error('Unable to copy file {}: {}'.format(new, e))
-
-        if os.path.isfile(old):
-            try:
-                os.remove(old)
-            except OSError as e:
-                logging.error('Unable to delete {}: {}'.format(old, e))
-        else:
-            logging.error('Cannot remove file {}. File does not exist'.format(old))
-
-
 def load_isolates(isolates_file):
     isolates = set()
     with open(isolates_file, 'r') as isolates_in:
@@ -121,20 +156,20 @@ def load_isolates(isolates_file):
     return isolates
 
 
-def load_qs(checkm_result):
+def load_qs(qs_file):
     checkm_values = dict()
-    with open(checkm_result, 'r') as checkm_in:
+    with open(qs_file, 'r') as checkm_in:
         for line in checkm_in:
-            if line.startswith('genome'):
+            if line.lower().startswith('genome'):
                 pass
             else:
-                genome, completeness, contamination = line.strip().split(',')[0:4:1]
-                checkm_values[genome] = calc_qs(completeness, contamination)
+                genome, completeness, contamination, n50 = line.strip().split("\t")[0:5:1]
+                checkm_values[genome] = calc_qs(completeness, contamination, n50)
     return checkm_values
 
 
-def calc_qs(completeness, contamination):
-    qs = float(completeness) - float(contamination) * 5
+def calc_qs(completeness, contamination, n50):
+    qs = float(completeness) - float(contamination) * 5 + 0.5 * float(n50)
     return qs
 
 
@@ -190,14 +225,16 @@ def save_clusters_to_file(clusters, replace_results, clusters_outfile):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Checks if the species representative should be replaced')
-    parser.add_argument('-d', '--new-strain-directory', required=True,
-                        help='Path to the directory containing new strains to be added to the catalog')
-    parser.add_argument('-c', '--current-representatives', required=True,
-                        help='Path to the directory containing the current species representatives')
-    parser.add_argument('-m', '--mash-result', required=True,
+    parser.add_argument('--cluster-split-file', required=True,
+                        help='Path to the cluster split file from the previous version of the catalogue')
+    parser.add_argument('--new-strain-list', required=False,
+                        help='Path to the file containing a list of new strains')
+    parser.add_argument('-m', '--mash-result', required=False,
                         help='Path to the mash results file')
-    parser.add_argument('-o', '--outfile', required=True,
-                        help='Path to the output file')
+    parser.add_argument('--previous-drep-dir', required=False,
+                        help='Path to the drep_data_tables folder for the previous catalogues')
+    parser.add_argument('-o', '--output-prefix', required=True,
+                        help='Prefix to use for the output files')
     parser.add_argument('--assembly-stats', required=True,
                         help='Path to the file containing completeness, contamination and N50 values for all '
                              'genomes (old and new)')
@@ -205,16 +242,13 @@ def parse_args():
                         help='Path to the extra weight file used for drep; the file format is tab delimited,'
                              'first column = genome file name; second column = 0 if not isolate, 1000 if'
                              'isolate')
-    parser.add_argument('--remove-list', required=True,
-                        help='Path to the tab-delimited file containing a list of genomes to remove in column 1')
-    parser.add_argument('--replace', action='store_true',
-                        help='If the flag is on, the species representatives in the folder will be replaced with'
-                             'new representative genomes where necessary. Otherwise, only a table with results'
-                             'will be printed')
+    parser.add_argument('--remove-list', required=False,
+                        help='Path to the tab-delimited file containing a list of genomes (MGYG) to remove in column 1')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.new_strain_directory, args.current_representatives, args.mash_result, args.assembly_stats,
-         args.isolates, args.outfile, args.remove_list, args.replace)
+    main(args.cluster_split_file, args.new_strain_list, args.mash_result, args.previous_drep_dir, args.output_prefix, 
+         args.assembly_stats, args.isolates, args.remove_list)
+    

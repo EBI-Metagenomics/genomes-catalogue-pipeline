@@ -32,7 +32,7 @@ workflow UPDATE_CLUSTERS {
         // gather all genomes into one folder, run classify_clusters.nf on it (using the clusters_split file)
     emit:
         // tuples (many_genomes and single_genomes) from classify_clusters.nf
-        // text_split, Cdb, Sdb from RUN_CLUSTER_UPDATE (replace_species_representative.py)
+        // text_split, Cdb, Sdb from RUN_CLUSTER_UPDATE (replace_species_representative.py + output of new species drep)
         // Mdb.csv and mash needs to be recomputed separately
         assembly_stats_all_genomes = RUN_CLUSTER_UPDATE.out.assembly_stats_all_genomes
         mash_splits = file("EMPTY_FILE")
