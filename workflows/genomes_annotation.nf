@@ -449,15 +449,25 @@ workflow GAP {
             cluster_reps_gff
         )
     )
-
+    
+    // Filter DETECT_RNA.out.trna_gff to only save tRNA GFFs for species reps to reps_trna_gff
+    reps_trna_gff = cluster_reps_gff.join(DETECT_RNA.out.trna_gff, remainder: true)
+    .filter { it -> it[1] != null }  // Remove tuples where there is no species rep genome GFF (= this is not a rep)
+    .map { it -> [it[0], it[2]] }  // 
+    
+    // Filter all_ncrna to only keep results for species reps
+    reps_ncrna = cluster_reps_gff.join(all_ncrna, remainder: true)
+    .filter { it -> it[1] != null }  // Remove tuples where there is no species rep genome GFF (= this is not a rep)
+    .map { it -> [it[0], it[2]] }  // 
+        
     // REPS //
     ANNOTATE_GFF(
         cluster_reps_gff.join(
             reps_eggnog
         ).join(
-            all_ncrna
+            reps_ncrna
         ).join(
-            DETECT_RNA.out.trna_gff
+            reps_trna_gff
         ).join(
             CRISPRCAS_FINDER.out.hq_gff, remainder: true
         ).join(
