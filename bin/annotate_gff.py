@@ -588,7 +588,7 @@ def get_ncrnas(ncrnas_file):
                     end = int(cols[9])
                 annot = [
                     "ID=" + locus,
-                    "inference=Rfam:14.9",
+                    "inference=Rfam:15.0",
                     "locus_tag=" + locus,
                     "product=" + product,
                     "rfam=" + model,
