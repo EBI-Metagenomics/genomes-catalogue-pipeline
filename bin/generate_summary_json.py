@@ -160,7 +160,7 @@ def get_ncrnas(gff):
                 if not line.startswith("#"):
                     line = line.rstrip()
                     cols = line.split("\t")
-                    if cols[2] == "ncRNA":
+                    if cols[2] in ["ncRNA", "rRNA"]:
                         nc_rnas += 1
     return {"nc_rnas": nc_rnas}
 
