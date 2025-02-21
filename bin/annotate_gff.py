@@ -633,6 +633,7 @@ def prepare_rna_gff_fields(cols):
     rna_feature_name = "ncRNA"
     if cols[1] in ["LSU_rRNA_bacteria", "SSU_rRNA_bacteria", "5S_rRNA"]:
         rna_feature_name = "rRNA"
+    # ncRNA classes are described here: https://www.insdc.org/submitting-standards/ncrna-vocabulary/
     ncrna_class = ""
     rna_types = {
         "antisense_RNA": [
