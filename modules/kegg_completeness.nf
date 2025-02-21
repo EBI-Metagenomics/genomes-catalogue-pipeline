@@ -29,11 +29,11 @@ process KEGG_COMPLETENESS {
     # Prepare input
     prep_pathway_completeness_input.py -e ${eggnog_annotation_tsvs} -o ${cluster}_kos.txt
     
-    give_pathways \\
+    give_completeness \\
     -l ${cluster}_kos.txt \\
     -o ${cluster}
     
-    mv ${cluster}.summary.kegg_pathways.tsv ${cluster}_kegg_pathways.tsv
+    mv ${cluster}/summary.kegg_pathways.tsv ${cluster}_kegg_pathways.tsv
     """
 
     stub:
