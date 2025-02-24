@@ -9,8 +9,7 @@ process ANTISMASH {
     path(antismash_db)
 
     output:
-    tuple val(cluster_name), path("${cluster_name}_regions.json"), emit: antismash_json
-    path("antismash_version.txt"), emit: antismash_version
+    tuple val(cluster_name), path("${cluster_name}_results/${cluster_name}.json"), emit: antismash_json
 
     script:
     """
@@ -22,14 +21,5 @@ process ANTISMASH {
     --genefinding-tool none \\
     --output-dir ${cluster_name}_results \\
     ${gbk}
-    
-    # To build the GFF3 file the scripts needs the regions.js file to be converted to json
-    # In order to do that this process uses nodejs (using a patched version of the antismash container)
-
-    echo ";var fs = require('fs'); fs.writeFileSync('./${cluster_name}_regions.json', JSON.stringify(recordData));" >> ${cluster_name}_results/regions.js
-
-    node ${cluster_name}_results/regions.js
-    
-    echo \$(antismash --version | sed 's/^antiSMASH //' ) > antismash_version.txt
     """
 }

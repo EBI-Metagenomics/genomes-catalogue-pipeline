@@ -20,15 +20,13 @@ process ANTISMASH_MAKE_GFF {
 
     input:
     tuple val(cluster), file(antismash_json)
-    file(antismash_version)
     
     output:
     tuple val(cluster), path("*_antismash.gff"), emit: antismash_gff
 
     script:
     """
-    version=\$(cat ${antismash_version})
-    antismash_to_gff.py -r ${antismash_json} -o ${cluster}_antismash.gff -a \${version}
+    antismash_gff_builder.py -i ${antismash_json} -o ${cluster}_antismash.gff --cds_tag locus_tag
     """
 
     stub:
