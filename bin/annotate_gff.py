@@ -311,6 +311,9 @@ def get_bgcs(bgc_file, prokka_gff, tool):
                                 ]["bgc_function"],
                             },
                         )
+                        if "bgc_product" in tool_result[contig][matching_interval]:
+                            bgc_annotations[cds_id]["antismash_product"] = tool_result[contig][matching_interval][
+                                "bgc_product"]
             elif line.startswith("##FASTA"):
                 break
     return bgc_annotations
