@@ -3,6 +3,7 @@
 */
 
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
+include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 
 workflow UPDATE_CLUSTERS {
     take:
@@ -29,15 +30,21 @@ workflow UPDATE_CLUSTERS {
             new_genome_stats,
             extra_weight_table_new_genomes
         )
+        
         // gather all genomes into one folder, run classify_clusters.nf on it (using the clusters_split file)
+        CLASSIFY_CLUSTERS (
+            all_genomes,
+            RUN_CLUSTER_UPDATE.out.updated_text_split
+        )
+        
     emit:
         // tuples (many_genomes and single_genomes) from classify_clusters.nf
         // text_split, Cdb, Sdb from RUN_CLUSTER_UPDATE (replace_species_representative.py + output of new species drep)
         // Mdb.csv and mash needs to be recomputed separately
         assembly_stats_all_genomes = RUN_CLUSTER_UPDATE.out.assembly_stats_all_genomes
         mash_splits = file("EMPTY_FILE")
-        single_genomes_fna_tuples = channel.empty()
-        many_genomes_fna_tuples = channel.empty()
-        drep_split_text = file("DREP")
+        single_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.one_genome_fnas
+        many_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.many_genomes_fnas
+        drep_split_text = RUN_CLUSTER_UPDATE.out.updated_text_split
         
 }

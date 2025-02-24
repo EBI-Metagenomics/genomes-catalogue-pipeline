@@ -38,9 +38,9 @@ def main(cluster_split_file, new_strain_file, mash_result, previous_drep_dir, ou
     # everything - this is not an update, just a reannotation
     if len(new_strain_list) == 0 and len(remove_list) == 0:
         output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix)
-    else:
-        if len(remove_list) > 0:
-            remove_genomes_from_clusters(previous_drep_dir, cluster_split_file, remove_list)
+    #else:
+    #    if len(remove_list) > 0:
+    #        remove_genomes_from_clusters(previous_drep_dir, cluster_split_file, remove_list)
     
     # when reassigning rep to a cluster that had the existing rep completely removed, don't stick with the 10% increase rule
     # assign the best genome there is

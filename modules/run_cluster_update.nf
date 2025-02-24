@@ -13,6 +13,10 @@ process RUN_CLUSTER_UPDATE {
     
     output:
     path "assembly_stats_all_genomes.tsv", emit: assembly_stats_all_genomes
+    path "update_clusters_split.txt", emit: updated_text_split
+    path "update_Cdb.csv", emit: updated_cdb_csv
+    path "update_Mdb.csv", emit: updated_mdb_csv
+    path "update_Sdb.csv", emit: updated_sdb_csv
         
     script:
     """
@@ -28,5 +32,18 @@ process RUN_CLUSTER_UPDATE {
     --outfile-stats assembly_stats_all_genomes.tsv \
     --outfile-extra-weight extra_weight_table_all_genomes.tsv
     
+    # temporary files
+    touch new_strain_list_no_file.txt
+    touch mash_no_file.txt
+    
+    replace_species_representative.py \
+    --cluster-split-file ${previous_catalogue_location}/additional_data/intermediate_files/clusters_split.txt \
+    --new-strain-list new_strain_list_no_file.txt \
+    --mash-result mash_no_file.txt \
+    --previous-drep-dir ${previous_catalogue_location}/additional_data/intermediate_files/drep_data_tables \
+    --output-prefix update \
+    --assembly-stats assembly_stats_all_genomes.tsv \
+    --isolates extra_weight_table_all_genomes.tsv \
+    --remove-list ${remove_genomes}
     """
 }
