@@ -783,10 +783,7 @@ def prepare_rna_gff_fields(cols):
     }
 
     if rna_feature_name == "ncRNA":
-        for rna_type, rfams in rna_types.items():
-            if cols[2] in rfams:
-                ncrna_class = rna_type
-                break
+        ncrna_class = next((rna_type for rna_type, rfams in rna_types.items() if cols[2] in rfams), None)
         if not ncrna_class:
             if "microRNA" in cols[-1]:
                 ncrna_class = "pre_miRNA"
