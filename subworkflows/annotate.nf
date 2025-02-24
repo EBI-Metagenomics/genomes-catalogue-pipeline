@@ -131,8 +131,7 @@ workflow ANNOTATE {
         )
         
         ANTISMASH_MAKE_GFF(
-            ANTISMASH.out.antismash_json,
-            ANTISMASH.out.antismash_version
+            ANTISMASH.out.antismash_json
         )     
         
         GECCO_RUN(
