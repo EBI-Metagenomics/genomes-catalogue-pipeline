@@ -10,8 +10,8 @@ process EXTRACT_METADATA_FROM_TABLE {
     path(previous_metadata_table)
     
     output:
-    path("previous_version_checkm_quality.csv"), emit: quality_csv    
-    path("previous_version_assembly_stats.tsv"), emit: assembly_stats_tsv   
+    path("previous_version_checkm_quality.csv"), emit: quality_csv // contains completeness and contamination    
+    path("previous_version_assembly_stats.tsv"), emit: assembly_stats_tsv // contains length, N50, GC content   
     
     script:
     """

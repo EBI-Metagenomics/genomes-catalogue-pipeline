@@ -12,6 +12,7 @@ process CALCULATE_ASSEMBLY_STATS {
     
     script:
     """
+    # Compute length, N50, GC content
     precompute_assembly_stats.py -i new_genomes_dir -o new_genome_stats.tsv
     """
     stub:
