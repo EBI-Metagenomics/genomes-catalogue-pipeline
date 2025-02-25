@@ -34,8 +34,8 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | SanntiS                                                                                          | 0.9.3.2           | Biosynthetic gene cluster annotation                                                                                   |
 | DefenseFinder                                                                                    | 1.2.0             | Annotation of anti-phage systems                                                                                       |
 | DefenseFinder models                                                                             | 1.2.3             | Database for DefenseFinder                                                                                             |
-| run_dbCAN                                                                                        | 4.1.2             | Polysaccharide utilization loci prediction                                                                             |
-| dbCAN DB                                                                                         | V12               | Database for run_dbCAN                                                                                                 |
+| run_dbCAN                                                                                        | 4.1.4             | Polysaccharide utilization loci prediction                                                                             |
+| dbCAN DB                                                                                         | V13               | Database for run_dbCAN                                                                                                 |
 | Infernal                                                                                         | 1.1.4             | RNA predictions                                                                                                        |
 | tRNAscan-SE                                                                                      | 2.0.9             | tRNA predictions                                                                                                       |
 | Rfam                                                                                             | 15.0              | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
@@ -64,7 +64,7 @@ The pipeline needs the following reference databases and configuration files (ro
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
 - https://data.ace.uq.edu.au/public/gtdb/data/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz
-- ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.11/2023-02-23.1
+- ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.12/2024-01-31.1/
 - https://zenodo.org/records/4626519/files/uniref100.KO.v1.dmnd.gz
 
 ### Containers
