@@ -38,7 +38,10 @@ if (params.preassigned_accessions) {
 // Update pipeline
 if (params.update_catalogue_path) {
     ch_previous_catalogue_location = file(params.update_catalogue_path)
-} 
+} else {
+    ch_previous_catalogue_location = file("NO_PREVIOUS_CATALOGUE_VERSION")
+}
+
 if (params.remove_genomes) {
     ch_remove_genomes = file(params.remove_genomes, checkIfExists: true)
 }
@@ -150,14 +153,20 @@ workflow GAP {
             ch_checkm2_db
         )
         new_data_checkm = PREPARE_DATA.out.genomes_checkm
-        new_genome_stats = PREPARE_DATA.out.new_genomes_stats
+        new_genome_stats = PREPARE_DATA.out.new_genome_stats
         extra_weight_table_new_genomes = PREPARE_DATA.out.extra_weight_table
+        new_genomes = PREPARE_DATA.out.new_genomes
+        qs50_failed = PREPARE_DATA.out.qs50_failed
+        genomes_name_mapping = PREPARE_DATA.out.genomes_name_mapping
         
     } else {
         // if we are not adding new genomes, make dummy files
         new_data_checkm = file("NO_FILE_NEW_GENOMES_CHECKM")
         new_genome_stats = file("NO_FILE_NEW_GENOMES_STATS")
         extra_weight_table_new_genomes = file("NO_FILE_NEW_GENOMES_EXTRA_WEIGHT")
+        new_genomes = file("NO_FILE_NEW_GENOMES")
+        qs50_failed = file("NO_FILE_QS50_FAILED")
+        genomes_name_mapping = file("NO_FILE_GENOMES_NAME_MAPPING")
     }
     
     // generate species level genome clusters
@@ -179,15 +188,15 @@ workflow GAP {
     
         if ( !params.xlarge ) {
             DREP_SWF(
-                PREPARE_DATA.out.genomes,
-                PREPARE_DATA.out.genomes_checkm,
+                new_genomes,
+                new_data_checkm,
                 extra_weight_table_new_genomes
             )
             dereplicated_genomes = DREP_SWF
         } else {
             DREP_LARGE_SWF(
-                PREPARE_DATA.out.genomes,
-                PREPARE_DATA.out.genomes_checkm,
+                new_genomes,
+                new_data_checkm,
                 extra_weight_table_new_genomes
             )
             dereplicated_genomes = DREP_LARGE_SWF
@@ -233,13 +242,13 @@ workflow GAP {
 
     PROCESS_SINGLETON_GENOMES(
         dereplicated_genomes.out.single_genomes_fna_tuples,
-        PREPARE_DATA.out.genomes_checkm.first(),
+        new_data_checkm.first(),
         accessions_with_domains_ch,
         ch_gunc_db
     )
     
     GENERATE_COMBINED_QC_REPORT(
-        PREPARE_DATA.out.qs50_failed,
+        qs50_failed,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
         PARSE_DOMAIN.out.detected_domains
     )
@@ -301,7 +310,7 @@ workflow GAP {
     MMSEQ_SWF(
         PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),
         PROCESS_SINGLETON_GENOMES.out.prokka_faa.map({ it[1] }).collectFile(name: "singleton_prokka.faa"),
-        PREPARE_DATA.out.genomes_name_mapping.first(),
+        genomes_name_mapping.first(),
         ch_mmseq_coverage_threshold
     )
 
@@ -364,15 +373,17 @@ workflow GAP {
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
         extra_weight_table_new_genomes,
-        PREPARE_DATA.out.genomes_checkm,
+        new_data_checkm,
         DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
-        PREPARE_DATA.out.genomes_name_mapping,
+        genomes_name_mapping,
         dereplicated_genomes.out.drep_split_text,
         ch_ftp_name,
         ch_ftp_version,
         ch_geo_metadata,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
-        gtdbtk_tables_ch
+        gtdbtk_tables_ch,
+        //ch_previous_catalogue_location,
+        //new_genome_stats
     )
 
     /*

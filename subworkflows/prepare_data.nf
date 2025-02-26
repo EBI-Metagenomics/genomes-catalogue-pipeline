@@ -82,5 +82,5 @@ workflow PREPARE_DATA {
         genomes_name_mapping = RENAME_FASTA.out.rename_mapping
         extra_weight_table = GENERATE_EXTRA_WEIGHT.out.extra_weight_table
         qs50_failed = FILTER_QS50.out.failed_genomes
-        new_genomes_stats = CALCULATE_ASSEMBLY_STATS.out.stats_file
+        new_genome_stats = CALCULATE_ASSEMBLY_STATS.out.stats_file
 }
