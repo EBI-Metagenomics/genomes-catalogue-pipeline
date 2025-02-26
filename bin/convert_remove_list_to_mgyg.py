@@ -17,27 +17,37 @@
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import logging
 import os
 import sys
 
 from check_sample_and_mag_validity import load_translation
 
+logging.basicConfig(level=logging.INFO)
+
 
 def main(input_folder, remove_list, outfile):
-    metadata_table_file = os.path.join(input_folder, "ftp", "genomes-all_metadata.tsv")
-    translation_dict = dict()
-    with open(remove_list, "r") as file_in, open(outfile, "w") as file_out:
-        for line in file_in:
-            if line.startswith("MGYG"):
-                file_out.write(line)
-            else:
-                insdc_acc, description = line.strip().split("\t")
-                if len(translation_dict) == 0:
-                    translation_dict = load_translation(metadata_table_file, to_insdc=False)
-                try:
-                    file_out.write(f"{translation_dict[insdc_acc]}\t{description}\n")
-                except KeyError:
-                    sys.exit(f"Unable to find the MGYG accession for accession {insdc_acc} in the remove list file.")
+    # If no genomes need to be removed, a dummy filename will be passed. In this case make an empty output.
+    if not os.path.exists(remove_list) or os.stat(remove_list).st_size == 0:
+        open(outfile, "w").close()
+        logging.info("The remove list file does not exist or is empty. Skipping conversion of genomes to remove to "
+                     "MGYG")
+    else:
+        metadata_table_file = os.path.join(input_folder, "ftp", "genomes-all_metadata.tsv")
+        translation_dict = dict()
+        with open(remove_list, "r") as file_in, open(outfile, "w") as file_out:
+            for line in file_in:
+                if line.startswith("MGYG"):
+                    file_out.write(line)
+                else:
+                    insdc_acc, description = line.strip().split("\t")
+                    if len(translation_dict) == 0:
+                        translation_dict = load_translation(metadata_table_file, to_insdc=False)
+                    try:
+                        file_out.write(f"{translation_dict[insdc_acc]}\t{description}\n")
+                    except KeyError:
+                        sys.exit(f"Unable to find the MGYG accession for accession {insdc_acc} "
+                                 f"in the remove list file.")
     
 
 def parse_args():
