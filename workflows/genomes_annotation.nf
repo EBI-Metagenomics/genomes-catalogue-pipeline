@@ -183,6 +183,7 @@ workflow GAP {
             extra_weight_table_new_genomes
         )
         dereplicated_genomes = UPDATE_CLUSTERS
+        all_assembly_stats = UPDATE_CLUSTERS.out.assembly_stats_all_genomes
     } else {
         // if generating a new catalogue, cluster with dRep 
     
@@ -201,6 +202,7 @@ workflow GAP {
             )
             dereplicated_genomes = DREP_LARGE_SWF
         }
+        all_assembly_stats = new_genome_stats
     }
 
     // make pan-genome trees
@@ -383,7 +385,7 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
         gtdbtk_tables_ch,
         //ch_previous_catalogue_location,
-        //new_genome_stats
+        //all_assembly_stats
     )
 
     /*
