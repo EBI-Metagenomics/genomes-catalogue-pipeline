@@ -62,7 +62,8 @@ include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { GENERATE_COMBINED_QC_REPORT } from '../modules/generate_combined_qc_report'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
-include { ANNOTATE } from '../subworkflows/annotate'
+include { ANNOTATE_PROKARYOTES } from '../subworkflows/annotate_prokaryotes'
+include { ANNOTATE_ALL_DOMAINS } from '../subworkflows/annotate_all_domains'
 include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
 include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
 include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
@@ -70,7 +71,6 @@ include { UPDATE_CLUSTERS } from '../subworkflows/update_clusters_swf.nf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
-include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 include { INDEX_FNA } from '../modules/index_fna'
 include { ANNOTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
@@ -80,8 +80,6 @@ include { FASTTREE as FASTTREE_BAC } from '../modules/fasttree'
 include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
-include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
-include { AMRFINDER_PLUS } from '../modules/amrfinder_plus'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,6 +160,7 @@ workflow GAP {
         extra_weight_table_new_genomes = file("NO_FILE_NEW_GENOMES_EXTRA_WEIGHT")
     }
     
+    // generate species level genome clusters
     dereplicated_genomes = channel.empty()
     if ( params.update_catalogue_path ){
         // if updating a catalogue, don't run dRep, generate clusters with Python
@@ -195,6 +194,7 @@ workflow GAP {
         }
     }
 
+    // make pan-genome trees
     MASH_TO_NWK(
         dereplicated_genomes.out.mash_splits | flatten
     )
@@ -329,11 +329,10 @@ workflow GAP {
         .mix(PROCESS_SINGLETON_GENOMES.out.prokka_fna.map({ it[0] })) \
         .collectFile(name: "species_reps_names_list.txt", newLine: true)
 
-    ANNOTATE(
+    ANNOTATE_ALL_DOMAINS(
         MMSEQ_SWF.out.mmseq_90_cluster_tsv,
         MMSEQ_SWF.out.mmseq_90_tarball,
         MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
-        all_prokka_fna,
         cluster_reps_gbks,
         cluster_reps_faas,
         cluster_reps_gffs,
@@ -342,9 +341,17 @@ workflow GAP {
         ch_eggnog_db,
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
-        ch_defense_finder_db,
         ch_dbcan_db,
         ch_antismash_db
+    )
+    
+    ANNOTATE_PROKARYOTES(
+        cluster_reps_gbks,
+        cluster_reps_faas,
+        cluster_reps_gffs,
+        cluster_reps_fnas,
+        ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs,
+        ch_defense_finder_db
     )
     
     DETECT_RNA(
@@ -398,23 +405,15 @@ workflow GAP {
         channel.value("ar53")
     )
 
-    cluster_reps_faa = PROCESS_SINGLETON_GENOMES.out.prokka_faa.mix(
-        PROCESS_MANY_GENOMES.out.rep_prokka_faa
-    )
-
-    faa_and_annotations = cluster_reps_faa.join(
-        ANNOTATE.out.ips_annotation_tsvs
+    faa_and_annotations = cluster_reps_faas.join(
+        ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs
     ).join(
-        ANNOTATE.out.eggnog_annotation_tsvs
+        ANNOTATE_ALL_DOMAINS.out.eggnog_annotation_tsvs
     )
 
     FUNCTIONAL_ANNOTATION_SUMMARY(
         faa_and_annotations,
         ch_kegg_classes
-    )
-    
-    KEGG_COMPLETENESS(
-        ANNOTATE.out.eggnog_annotation_tsvs
     )
 
     INDEX_FNA(
@@ -428,27 +427,15 @@ workflow GAP {
     // Select the only the reps //
     // Those where the cluster-name and the file name match
     // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv
-    reps_ips = ANNOTATE.out.ips_annotation_tsvs.filter {
+    reps_ips = ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
-    reps_eggnog = ANNOTATE.out.eggnog_annotation_tsvs.filter {
+    reps_eggnog = ANNOTATE_ALL_DOMAINS.out.eggnog_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
     all_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
         it[1].name.contains(it[0])
     }
-
-    CRISPRCAS_FINDER(
-        cluster_reps_fnas
-    )
-
-    AMRFINDER_PLUS(
-        cluster_reps_fnas.join(
-            cluster_reps_faa
-        ).join(
-            cluster_reps_gff
-        )
-    )
     
     // Filter DETECT_RNA.out.trna_gff to only save tRNA GFFs for species reps to reps_trna_gff
     reps_trna_gff = cluster_reps_gff.join(DETECT_RNA.out.trna_gff, remainder: true)
@@ -469,21 +456,21 @@ workflow GAP {
         ).join(
             reps_trna_gff
         ).join(
-            CRISPRCAS_FINDER.out.hq_gff, remainder: true
+            ANNOTATE_PROKARYOTES.out.crisprcasfinder_hq_gff, remainder: true
         ).join(
-            AMRFINDER_PLUS.out.amrfinder_tsv, remainder: true
+            ANNOTATE_PROKARYOTES.out.amrfinder_tsv, remainder: true
         ).join(
-            ANNOTATE.out.antismash_gffs, remainder: true
+            ANNOTATE_ALL_DOMAINS.out.antismash_gffs, remainder: true
         ).join(
-            ANNOTATE.out.gecco_gffs, remainder: true
+            ANNOTATE_PROKARYOTES.out.gecco_gffs, remainder: true
         ).join(
-            ANNOTATE.out.dbcan_gffs, remainder: true
+            ANNOTATE_ALL_DOMAINS.out.dbcan_gffs, remainder: true
         ).join(
-            ANNOTATE.out.defense_finder_gffs, remainder: true
+            ANNOTATE_PROKARYOTES.out.defense_finder_gffs, remainder: true
         ).join(
             reps_ips
         ).join(
-            ANNOTATE.out.sanntis_annotation_gffs, remainder: true
+            ANNOTATE_PROKARYOTES.out.sanntis_annotation_gffs, remainder: true
         )
     )
 
@@ -501,7 +488,7 @@ workflow GAP {
     files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
         FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
     ).join(
-        cluster_reps_faa
+        cluster_reps_faas
     ).join(
         PROCESS_MANY_GENOMES.out.panaroo_pangenome_fna, remainder: true
     ).join(
