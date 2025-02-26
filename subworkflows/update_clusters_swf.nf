@@ -33,7 +33,8 @@ workflow UPDATE_CLUSTERS {
         
         // gather all genomes into one folder, run classify_clusters.nf on it (using the clusters_split file)
         CLASSIFY_CLUSTERS (
-            all_genomes,
+            // temporary solution, replace with all genomes folder
+            "${previous_catalogue_location}/additional_data/mgyg_genomes/",
             RUN_CLUSTER_UPDATE.out.updated_text_split
         )
         
