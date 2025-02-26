@@ -42,25 +42,32 @@ def extract_and_merge_stats(stats_file_list, checkm_file_list, outfile_stats):
     genome_data = dict()
     # Load N50
     for file in stats_file_list:
-        with open(file, "r") as file_in:
-            reader = csv.DictReader(file_in, delimiter='\t')
-            for row in reader:
-                genome = row["Genome"]
-                genome_data.setdefault(genome, dict())
-                genome_data[genome]["N50"] = row["N50"]
+        if os.path.isfile(file) and os.stat(file).st_size > 0:
+            with open(file, "r") as file_in:
+                reader = csv.DictReader(file_in, delimiter='\t')
+                for row in reader:
+                    genome = row["Genome"]
+                    genome_data.setdefault(genome, dict())
+                    genome_data[genome]["N50"] = row["N50"]
+        else:
+            logging.info(f"Skipping file {file} when generating a combined stats file - it is empty or does not exist.")
     # Load completeness and contamination
     for file in checkm_file_list:
         with open(file, "r") as file_in:
-            reader = csv.DictReader(file_in, delimiter=',')
-            for row in reader:
-                genome = row["genome"]
-                # remove extension
-                for ext in [".fa", ".fna", ".fasta"]:
-                    if genome.lower().endswith(ext):
-                        genome = genome[:-len(ext)]
-                        break
-                genome_data[genome]["Completeness"] = row["completeness"]
-                genome_data[genome]["Contamination"] = row["contamination"]
+            if os.path.isfile(file) and os.stat(file).st_size > 0:
+                reader = csv.DictReader(file_in, delimiter=',')
+                for row in reader:
+                    genome = row["genome"]
+                    # remove extension
+                    for ext in [".fa", ".fna", ".fasta"]:
+                        if genome.lower().endswith(ext):
+                            genome = genome[:-len(ext)]
+                            break
+                    genome_data[genome]["Completeness"] = row["completeness"]
+                    genome_data[genome]["Contamination"] = row["contamination"]
+            else:
+                logging.info(
+                    f"Skipping file {file} when generating a combined checkM file - it is empty or does not exist.")
     with open(outfile_stats, "w", newline="") as file_out:
         csv_writer = csv.writer(file_out, delimiter='\t')
         csv_writer.writerow(["Genome", "Completeness", "Contamination", "N50"])
