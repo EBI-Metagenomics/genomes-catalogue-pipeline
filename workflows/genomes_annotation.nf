@@ -244,7 +244,7 @@ workflow GAP {
 
     PROCESS_SINGLETON_GENOMES(
         dereplicated_genomes.out.single_genomes_fna_tuples,
-        new_data_checkm.first(),
+        new_data_checkm,
         accessions_with_domains_ch,
         ch_gunc_db
     )
