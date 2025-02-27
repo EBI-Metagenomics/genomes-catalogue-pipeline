@@ -155,7 +155,7 @@ workflow GAP {
         new_data_checkm = PREPARE_DATA.out.genomes_checkm
         new_genome_stats = PREPARE_DATA.out.new_genome_stats
         extra_weight_table_new_genomes = PREPARE_DATA.out.extra_weight_table
-        new_genomes = PREPARE_DATA.out.new_genomes
+        new_genomes = PREPARE_DATA.out.genomes
         qs50_failed = PREPARE_DATA.out.qs50_failed
         genomes_name_mapping = PREPARE_DATA.out.genomes_name_mapping
         
