@@ -1,0 +1,24 @@
+# Docker container for Red (REpeatDetector)
+FROM ubuntu:20.04
+
+LABEL software="Red"
+LABEL software.version="2.0"
+LABEL website="ttps://github.com/BioinformaticsToolsmith/Red"
+LABEL maintainer="Microbiome Informatics Team www.ebi.ac.uk/metagenomics"
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt install -y make gcc wget g++-8 && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ARG red_version=2.0
+WORKDIR /opt
+
+RUN wget https://github.com/BioinformaticsToolsmith/Red/archive/refs/tags/v${red_version}.tar.gz && \
+    tar -xzvf v${red_version}.tar.gz && \
+    rm -rf v${red_version}.tar.gz && \
+    mv Red-${red_version} Red && \
+    cd Red && cd src_2.0 && \
+    make bin && make
+
+ENTRYPOINT ["/opt/Red/bin/Red"]
