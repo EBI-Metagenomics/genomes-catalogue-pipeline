@@ -38,14 +38,19 @@ workflow UPDATE_CLUSTERS {
             RUN_CLUSTER_UPDATE.out.updated_text_split
         )
         
+        groupGenomes = { fna_file ->
+            def cluster = fna_file.parent.toString().tokenize("/")[-1]
+            return tuple(cluster, fna_file)
+        }
+        
     emit:
         // tuples (many_genomes and single_genomes) from classify_clusters.nf
         // text_split, Cdb, Sdb from RUN_CLUSTER_UPDATE (replace_species_representative.py + output of new species drep)
         // Mdb.csv and mash needs to be recomputed separately
         assembly_stats_all_genomes = RUN_CLUSTER_UPDATE.out.assembly_stats_all_genomes
         mash_splits = file("EMPTY_FILE")
-        single_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.one_genome_fnas
-        many_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.many_genomes_fnas
+        single_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.one_genome_fnas | flatten | map(groupGenomes)
+        many_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.many_genomes_fnas | flatten | map(groupGenomes)
         drep_split_text = RUN_CLUSTER_UPDATE.out.updated_text_split
         
 }
