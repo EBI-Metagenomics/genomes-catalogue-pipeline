@@ -50,7 +50,7 @@ workflow PROCESS_SINGLETON_GENOMES {
         
         GUNC(
             singleton_cluster_tuple_with_domain,
-            genomes_checkm,
+            genomes_checkm.first(),
             gunc_db
         )
 
