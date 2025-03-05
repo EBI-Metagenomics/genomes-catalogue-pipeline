@@ -4,6 +4,8 @@
 
 process IPS {
 
+    maxForks = 25
+    
     container 'quay.io/microbiome-informatics/genomes-pipeline.ips:5.62-94.0'
     containerOptions '--bind data:/opt/interproscan-5.62-94.0/data'
 
