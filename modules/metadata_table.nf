@@ -34,7 +34,7 @@ process METADATA_TABLE {
     if (gunc_failed_txt != "EMPTY") {
         args = args + "--gunc-failed ${gunc_failed_txt}"
     }
-    if (previous_catalogue_location != "NO_PREVIOUS_CATALOGUE_VERSION"){
+    if (previous_catalogue_location.toString() != "NO_PREVIOUS_CATALOGUE_VERSION"){
         args = args + " " + "--previous-metadata-table ${previous_catalogue_location}/ftp/genomes-all_metadata.tsv"
     }
     
