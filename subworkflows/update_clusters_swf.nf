@@ -48,6 +48,7 @@ workflow UPDATE_CLUSTERS {
         // text_split, Cdb, Sdb from RUN_CLUSTER_UPDATE (replace_species_representative.py + output of new species drep)
         // Mdb.csv and mash needs to be recomputed separately
         assembly_stats_all_genomes = RUN_CLUSTER_UPDATE.out.assembly_stats_all_genomes
+        extra_weight_table_all_genomes = RUN_CLUSTER_UPDATE.out.extra_weight_table_all_genomes
         mash_splits = file("EMPTY_FILE")
         single_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.one_genome_fnas | flatten | map(groupGenomes)
         many_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.many_genomes_fnas | flatten | map(groupGenomes)

@@ -35,14 +35,16 @@ def main(metadata_table, prefix):
         n50_idx = get_field_index("N50", fields, metadata_table)
         length_idx = get_field_index("Length", fields, metadata_table)
         gc_idx = get_field_index("GC_content", fields, metadata_table)
+        num_contigs_idx = get_field_index("N_contigs", fields, metadata_table)
 
         # write headers
-        csv_writer_stats.writerow(["Genome", "Length", "N50", "GC_content"])
+        csv_writer_stats.writerow(["Genome", "Length", "N50", "GC_content", "N_contigs"])
         csv_writer_checkm.writerow(["genome", "completeness", "contamination"])
 
         for line in file_in:
             parts = line.strip().split("\t")
-            csv_writer_stats.writerow([parts[genome_idx], parts[length_idx], parts[n50_idx], parts[gc_idx]])
+            csv_writer_stats.writerow([parts[genome_idx], parts[length_idx], parts[n50_idx], parts[gc_idx], 
+                                       parts[num_contigs_idx]])
             csv_writer_checkm.writerow([f"{parts[genome_idx]}.fa", parts[comp_idx], parts[cont_idx]])
 
 
@@ -56,8 +58,7 @@ def get_field_index(field_name, fields, metadata_table):
 def parse_args():
     parser = argparse.ArgumentParser(description='The script is part of the catalogue update pipeline. It takes the '
                                                  'metadata table from the previous catalogue version and regenerates '
-                                                 'a CheckM output file from it (default). If an N50 flag is used, '
-                                                 'the script instead extracts the N50 information.')
+                                                 'a CheckM output file and an assembly statistics file.')
     parser.add_argument('-i', dest='metadata_table', required=True, help='Location of the metadata table from the '
                                                                          'previous catalogue version.')
     parser.add_argument('-o', dest='prefix', required=True, help='Prefix for the output files.')

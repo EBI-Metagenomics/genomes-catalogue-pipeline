@@ -40,7 +40,7 @@ def main(stats_file_new, stats_file_prev_version, checkm_previous_version, check
 
 def extract_and_merge_stats(stats_file_list, checkm_file_list, outfile_stats):
     genome_data = dict()
-    # Load N50
+    # Load N50, length and GC content
     for file in stats_file_list:
         if os.path.isfile(file) and os.stat(file).st_size > 0:
             with open(file, "r") as file_in:
@@ -49,6 +49,8 @@ def extract_and_merge_stats(stats_file_list, checkm_file_list, outfile_stats):
                     genome = row["Genome"]
                     genome_data.setdefault(genome, dict())
                     genome_data[genome]["N50"] = row["N50"]
+                    genome_data[genome]["Length"] = row["Length"]
+                    genome_data[genome]["GC_content"] = row["GC_content"]
         else:
             logging.info(f"Skipping file {file} when generating a combined stats file - it is empty or does not exist.")
     # Load completeness and contamination
@@ -70,7 +72,7 @@ def extract_and_merge_stats(stats_file_list, checkm_file_list, outfile_stats):
                 f"Skipping file {file} when generating a combined checkM file - it is empty or does not exist.")
     with open(outfile_stats, "w", newline="") as file_out:
         csv_writer = csv.writer(file_out, delimiter='\t')
-        csv_writer.writerow(["Genome", "Completeness", "Contamination", "N50"])
+        csv_writer.writerow(["Genome", "Completeness", "Contamination", "N50", "Length", "GC_content"])
         for genome, data in genome_data.items():
             try:
                 csv_writer.writerow([

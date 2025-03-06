@@ -13,6 +13,7 @@ process RUN_CLUSTER_UPDATE {
     
     output:
     path "assembly_stats_all_genomes.tsv", emit: assembly_stats_all_genomes
+    path "extra_weight_table_all_genomes.tsv", emit: extra_weight_table_all_genomes
     path "update_clusters_split.txt", emit: updated_text_split
     path "update_Cdb.csv", emit: updated_cdb_csv
     path "update_Mdb.csv", emit: updated_mdb_csv
