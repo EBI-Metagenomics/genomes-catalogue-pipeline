@@ -183,12 +183,7 @@ workflow GAP {
             extra_weight_table_new_genomes,
             genomes_name_mapping
         )
-        dereplicated_genomes = [
-            UPDATE_CLUSTERS.out.many_genomes_fna_tuples,
-            UPDATE_CLUSTERS.out.single_genomes_fna_tuples,
-            UPDATE_CLUSTERS.out.drep_split_text,
-            UPDATE_CLUSTERS.out.mash_splits
-            ]
+        dereplicated_genomes = UPDATE_CLUSTERS
         all_assembly_stats = UPDATE_CLUSTERS.out.assembly_stats_all_genomes
         extra_weight_table_all_genomes = PREPARE_UPDATE.out.extra_weight_table_all_genomes
         genomes_name_mapping = UPDATE_CLUSTERS.out.updated_genomes_name_mapping
