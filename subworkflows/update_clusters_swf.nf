@@ -15,6 +15,7 @@ workflow UPDATE_CLUSTERS {
         new_data_checkm
         new_genome_stats
         extra_weight_table_new_genomes
+        genomes_name_mapping
     main:
         // to do for genome addition:
         // run mash
@@ -30,7 +31,8 @@ workflow UPDATE_CLUSTERS {
             previous_version_assembly_stats,
             new_data_checkm,
             new_genome_stats,
-            extra_weight_table_new_genomes
+            extra_weight_table_new_genomes,
+            genomes_name_mapping
         )
         
         // gather all genomes into one folder, run classify_clusters.nf on it (using the clusters_split file)
@@ -62,5 +64,6 @@ workflow UPDATE_CLUSTERS {
         single_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.one_genome_fnas | flatten | map(groupGenomes)
         many_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.many_genomes_fnas | flatten | map(groupGenomes)
         drep_split_text = RUN_CLUSTER_UPDATE.out.updated_text_split
+        updated_genomes_name_mapping = RUN_CLUSTER_UPDATE.out.updated_genomes_name_mapping
         
 }

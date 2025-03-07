@@ -10,6 +10,7 @@ process RUN_CLUSTER_UPDATE {
     path new_data_checkm
     path new_genome_stats
     path extra_weight_table_new_genomes
+    path new_genomes_name_mapping
     
     output:
     path "assembly_stats_all_genomes.tsv", emit: assembly_stats_all_genomes
@@ -18,6 +19,7 @@ process RUN_CLUSTER_UPDATE {
     path "update_Cdb.csv", emit: updated_cdb_csv
     path "update_Mdb.csv", emit: updated_mdb_csv
     path "update_Sdb.csv", emit: updated_sdb_csv
+    path "update_renamed_genomes_name_mapping.tsv", emit: updated_genomes_name_mapping
         
     script:
     """
@@ -46,5 +48,10 @@ process RUN_CLUSTER_UPDATE {
     --assembly-stats assembly_stats_all_genomes.tsv \
     --isolates extra_weight_table_all_genomes.tsv \
     --remove-list ${remove_genomes}
+    
+    # combine name mapping files
+    cat ${new_genomes_name_mapping} \
+    ${previous_catalogue_location}/additional_data/intermediate_files/renamed_genomes_name_mapping.tsv \
+    > update_renamed_genomes_name_mapping.tsv
     """
 }
