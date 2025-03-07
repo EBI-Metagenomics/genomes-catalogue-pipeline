@@ -185,7 +185,7 @@ workflow GAP {
         )
         dereplicated_genomes = UPDATE_CLUSTERS
         all_assembly_stats = UPDATE_CLUSTERS.out.assembly_stats_all_genomes
-        extra_weight_table_all_genomes = PREPARE_UPDATE.out.extra_weight_table_all_genomes
+        extra_weight_table_all_genomes = UPDATE_CLUSTERS.out.extra_weight_table_all_genomes
         genomes_name_mapping = UPDATE_CLUSTERS.out.updated_genomes_name_mapping
     } else {
         // if generating a new catalogue, cluster with dRep 
