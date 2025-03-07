@@ -29,6 +29,9 @@ logging.basicConfig(level=logging.INFO)
 
 def main(cluster_split_file, new_strain_file, mash_result, previous_drep_dir, output_prefix, assembly_stats_file, 
          isolates_file, remove_list_file):
+    # The script is currently only intended for genome reannotation. 
+    # Commented out sections are WIP for genome removal/addition
+    
     new_strain_list = load_first_column_to_list(new_strain_file)
     isolates = load_isolates(isolates_file)
     remove_list = load_first_column_to_list(remove_list_file)
