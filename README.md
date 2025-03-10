@@ -24,21 +24,21 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | eggNOG-mapper                                                                                    | 2.1.11            | Protein annotation (eggNOG, KEGG, COG,  CAZy)                                                                          |
 | eggNOG DB                                                                                        | 5.0.2             | Database for eggNOG-mapper                                                                                             |
 | Diamond                                                                                          | 2.0.11            | Protein annotation (eggNOG)                                                                                            |
-| InterProScan                                                                                     | 5.62-94.0         | Protein annotation (InterPro, Pfam)                                                                                    |
-| kegg-pathways-completeness tool                                                                  | 1.0.5             | Computes KEGG pathway completeness                                                                                     |
+| InterProScan                                                                                     | 5.73-104.0        | Protein annotation (InterPro, Pfam)                                                                                    |
+| kegg-pathways-completeness tool                                                                  | 1.3.0             | Computes KEGG pathway completeness                                                                                     |
 | CRISPRCasFinder                                                                                  | 4.3.2             | Annotation of CRISPR arrays                                                                                            |
-| AMRFinderPlus                                                                                    | 3.11.4            | Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation |
-| AMRFinderPlus DB                                                                                 | 3.11 2023-02-23.1 | Database for AMRFinderPlus                                                                                             |
+| AMRFinderPlus                                                                                    | 3.12.8            | Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation |
+| AMRFinderPlus DB                                                                                 | 3.12 2024-01-31.1 | Database for AMRFinderPlus                                                                                             |
 | antiSMASH                                                                                        | 7.1.0             | Biosynthetic gene cluster annotation                                                                                   |
 | GECCO                                                                                            | 0.9.8             | Biosynthetic gene cluster annotation                                                                                   |
 | SanntiS                                                                                          | 0.9.3.2           | Biosynthetic gene cluster annotation                                                                                   |
 | DefenseFinder                                                                                    | 1.2.0             | Annotation of anti-phage systems                                                                                       |
 | DefenseFinder models                                                                             | 1.2.3             | Database for DefenseFinder                                                                                             |
-| run_dbCAN                                                                                        | 4.1.2             | Polysaccharide utilization loci prediction                                                                             |
-| dbCAN DB                                                                                         | V12               | Database for run_dbCAN                                                                                                 |
+| run_dbCAN                                                                                        | 4.1.4             | Polysaccharide utilization loci prediction                                                                             |
+| dbCAN DB                                                                                         | V13               | Database for run_dbCAN                                                                                                 |
 | Infernal                                                                                         | 1.1.4             | RNA predictions                                                                                                        |
 | tRNAscan-SE                                                                                      | 2.0.9             | tRNA predictions                                                                                                       |
-| Rfam                                                                                             | 14.9              | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
+| Rfam                                                                                             | 15.0              | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
 | Panaroo                                                                                          | 1.3.2             | Pan-genome computation                                                                                                 |
 | Seqtk                                                                                            | 1.3               | Generating a gene catalogue                                                                                            |
 | VIRify                                                                                           | 2.0.1             | Viral sequence annotation                                                                                              |
@@ -60,11 +60,11 @@ The pipeline needs the following reference databases and configuration files (ro
 
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db_5.0.2.tgz
-- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_14.9/
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_15.0/
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
-- https://data.ace.uq.edu.au/public/gtdb/data/releases/release214/214.0/auxillary_files/gtdbtk_r214_data.tar.gz
-- ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.11/2023-02-23.1
+- https://data.ace.uq.edu.au/public/gtdb/data/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz
+- ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.12/2024-01-31.1/
 - https://zenodo.org/records/4626519/files/uniref100.KO.v1.dmnd.gz
 
 ### Containers

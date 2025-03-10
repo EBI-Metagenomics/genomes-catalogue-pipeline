@@ -15,8 +15,8 @@ process KEGG_COMPLETENESS {
     )
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/kegg-pathways-completeness:1.0.5--pyhdfd78af_0':
-        'biocontainers/kegg-pathways-completeness:1.0.5--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/kegg-pathways-completeness:1.3.0--pyhdfd78af_0':
+        'biocontainers/kegg-pathways-completeness:1.3.0--pyhdfd78af_0' }"
 
     input:
     tuple val(cluster), file(eggnog_annotation_tsvs)
@@ -29,11 +29,11 @@ process KEGG_COMPLETENESS {
     # Prepare input
     prep_pathway_completeness_input.py -e ${eggnog_annotation_tsvs} -o ${cluster}_kos.txt
     
-    give_pathways \\
+    give_completeness \\
     -l ${cluster}_kos.txt \\
     -o ${cluster}
     
-    mv ${cluster}.summary.kegg_pathways.tsv ${cluster}_kegg_pathways.tsv
+    mv ${cluster}/summary.kegg_pathways.tsv ${cluster}_kegg_pathways.tsv
     """
 
     stub:
