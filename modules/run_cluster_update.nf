@@ -20,6 +20,7 @@ process RUN_CLUSTER_UPDATE {
     path "update_Mdb.csv", emit: updated_mdb_csv
     path "update_Sdb.csv", emit: updated_sdb_csv
     path "update_renamed_genomes_name_mapping.tsv", emit: updated_genomes_name_mapping
+    path "checkm_all_genomes.csv", emit: checkm_all_genomes
         
     script:
     """
@@ -33,7 +34,8 @@ process RUN_CLUSTER_UPDATE {
     --extra-weight-new-genomes ${extra_weight_table_new_genomes} \
     --previous-version-path ${previous_catalogue_location} \
     --outfile-stats assembly_stats_all_genomes.tsv \
-    --outfile-extra-weight extra_weight_table_all_genomes.tsv
+    --outfile-extra-weight extra_weight_table_all_genomes.tsv \
+    --outfile-checkm checkm_all_genomes.csv
     
     # temporary files
     touch new_strain_list_no_file.txt
@@ -47,6 +49,7 @@ process RUN_CLUSTER_UPDATE {
     --output-prefix update \
     --assembly-stats assembly_stats_all_genomes.tsv \
     --isolates extra_weight_table_all_genomes.tsv \
+    --checkm checkm_all_genomes.csv \
     --remove-list ${remove_genomes}
     
     # combine name mapping files

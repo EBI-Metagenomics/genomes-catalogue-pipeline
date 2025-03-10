@@ -28,14 +28,15 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(cluster_split_file, new_strain_file, mash_result, previous_drep_dir, output_prefix, assembly_stats_file, 
-         isolates_file, remove_list_file):
+         isolates_file, checkm_file, remove_list_file):
     # The script is currently only intended for genome reannotation. 
     # Commented out sections are WIP for genome removal/addition
     
     new_strain_list = load_first_column_to_list(new_strain_file)
     isolates = load_isolates(isolates_file)
     remove_list = load_first_column_to_list(remove_list_file)
-    qs_values = load_qs(assembly_stats_file)
+    qs_values = load_qs(assembly_stats_file)  # rewrite to load checkm from a separate file
+    
     
     # if new strain list is empty and remove list is empty, we don't need to do anything, just output old files for 
     # everything - this is not an update, just a reannotation
@@ -246,6 +247,8 @@ def parse_args():
                         help='Path to the extra weight file used for drep; the file format is tab delimited,'
                              'first column = genome file name; second column = 0 if not isolate, 1000 if'
                              'isolate')
+    parser.add_argument('--checkm', required=True,
+                        help='Path to the CheckM2 CSV file for all genomes (old and new)')
     parser.add_argument('--remove-list', required=False,
                         help='Path to the tab-delimited file containing a list of genomes (MGYG) to remove in column 1')
     return parser.parse_args()
@@ -254,5 +257,5 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     main(args.cluster_split_file, args.new_strain_list, args.mash_result, args.previous_drep_dir, args.output_prefix, 
-         args.assembly_stats, args.isolates, args.remove_list)
+         args.assembly_stats, args.isolates, args.checkm, args.remove_list)
     
