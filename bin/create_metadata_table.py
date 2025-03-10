@@ -46,6 +46,8 @@ def main(
     ftp_version,
     gunc_failed,
     disable_ncbi_lookup,
+    previous_metadata_table,
+    precomputed_genome_stats,
 ):
     # table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50',	'GC_content',
     #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
@@ -53,22 +55,36 @@ def main(
     #           'Continent', 'FTP_download']
     genome_list, genomes_ext = load_genome_list(genomes_dir, gunc_failed)
     logging.info("Loaded genome list")
+    if previous_metadata_table:
+        logging.info("Loading data from the previous catalogue version's metadata table")
+        previous_version_data = load_previous_metadata_table(previous_metadata_table, genome_list)
+    else:
+        previous_version_data = pd.DataFrame()
     df = pd.DataFrame(genome_list, columns=["Genome"])
     df = add_genome_type(df, extra_weight_table)
-    df = add_stats(df, genomes_dir, genomes_ext)
+    df = add_precomputed_stats(df, precomputed_genome_stats)
     df = add_checkm(df, checkm_results)
     logging.info("Loaded stats. Adding RNA...")
     df = add_rna(df, genome_list, rna_results)
-    logging.info("Added rna")
+    logging.info("Added RNA")
     df, original_accessions = add_original_accession(df, naming_file)
     df, reps = add_species_rep(df, clusters_file)
     df = add_taxonomy(df, taxonomy_file, genome_list, reps)
     logging.info("Added species reps and taxonomy")
-    df = add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup)
+    df = add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup, previous_version_data)
     logging.info("Added locations")
     df = add_ftp(df, genome_list, ftp_name, ftp_version, reps)
     df.set_index("Genome", inplace=True)
     df.to_csv(outfile, sep="\t")
+
+
+def load_previous_metadata_table(previous_metadata_table, genome_list):
+    columns_to_save = ["Genome", "Sample_accession", "Study_accession", "Country", "Continent"]
+    previous_version_data = pd.read_csv(previous_metadata_table, sep='\t', usecols=columns_to_save)
+
+    # filter the dataframe to only keep genomes that we are using
+    previous_version_data = previous_version_data[previous_version_data["Genome"].isin(genome_list)]
+    return previous_version_data
 
 
 def add_ftp(df, genome_list, catalog_ftp_name, catalog_version, species_reps):
@@ -85,20 +101,24 @@ def add_ftp(df, genome_list, catalog_ftp_name, catalog_version, species_reps):
     return df
 
 
-def add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup):
+def add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup, previous_version_data):
     countries_continents = load_geography(geofile)
-    metadata = dict()
-    for col_name in ["Sample_accession", "Study_accession", "Country", "Continent"]:
-        metadata.setdefault(col_name, dict())
+    metadata = {col_name: {} for col_name in ["Sample_accession", "Study_accession", "Country", "Continent"]}
+    prev_data_dict = previous_version_data.set_index("Genome").to_dict(orient="index") if len(
+        previous_version_data) > 0 else {}
+
     for new_acc, original_acc in original_accessions.items():
-        sample, project, loc = get_metadata(original_acc, disable_ncbi_lookup)
-        metadata["Sample_accession"][new_acc] = sample
-        metadata["Study_accession"][new_acc] = project
-        metadata["Country"][new_acc] = loc
-        if loc in countries_continents:
-            metadata["Continent"][new_acc] = countries_continents[loc]
+        if new_acc in prev_data_dict:  # Check if genome exists in previous_version_data
+            metadata["Sample_accession"][new_acc] = prev_data_dict[new_acc]["Sample_accession"]
+            metadata["Study_accession"][new_acc] = prev_data_dict[new_acc]["Study_accession"]
+            metadata["Country"][new_acc] = prev_data_dict[new_acc]["Country"]
+            metadata["Continent"][new_acc] = prev_data_dict[new_acc]["Continent"]
         else:
-            metadata["Continent"][new_acc] = "not provided"
+            sample, project, loc = get_metadata(original_acc, disable_ncbi_lookup)
+            metadata["Sample_accession"][new_acc] = sample
+            metadata["Study_accession"][new_acc] = project
+            metadata["Country"][new_acc] = loc
+            metadata["Continent"][new_acc] = countries_continents.get(loc, "not provided")
     for col_name in ["Sample_accession", "Study_accession", "Country", "Continent"]:
         df[col_name] = df["Genome"].map(metadata[col_name])
     return df
@@ -151,7 +171,8 @@ def get_metadata(acc, disable_ncbi_lookup):
             except:
                 if not disable_ncbi_lookup:
                     logging.info(
-                        "Unable to get location from ENA for sample {} which is unexpected. Trying NCBI.".format(biosample))
+                        "Unable to get location from ENA for sample {} which is unexpected. Trying NCBI.".format(
+                            biosample))
                     warnings_out.write("Had to get location from NCBI for sample {}".format(biosample))
                     location = get_sample_location_from_ncbi(biosample)
                     logging.error(
@@ -344,6 +365,15 @@ def calc_assembly_stats(genomes_dir, acc, ext):
     )
 
 
+def add_precomputed_stats(df, precomputed_genome_stats):
+    columns_to_save = ["Genome", "Length", "N_contigs", "N50", "GC_content"]
+    stats = pd.read_csv(precomputed_genome_stats, sep='\t', usecols=columns_to_save)
+    df = df.merge(stats, on="Genome", how="left")  # Left join to keep only existing genomes in df
+    # reorder columns
+    df = df[[col for col in df.columns if col not in columns_to_save] + columns_to_save]
+    return df
+
+
 def add_genome_type(df, extra_weight_table):
     result = dict()
     with open(extra_weight_table, "r") as file_in:
@@ -467,6 +497,14 @@ def parse_args():
         action='store_true',
         help="Use this flag not to use NCBI as the fallback source of sample location. Default: False",
     )
+    parser.add_argument(
+        "--previous-metadata-table",
+        help="Path to the metadata table for the previous catalogue version. Only is used for updates.",
+    )
+    parser.add_argument(
+        "--precomputed_genome_stats",
+        help="If genome length, N50 and GC content have been pre-computed, provide path to the TSV file.",
+    )
     return parser.parse_args()
 
 
@@ -486,4 +524,6 @@ if __name__ == "__main__":
         args.ftp_version,
         args.gunc_failed,
         args.disable_ncbi_lookup,
+        args.previous_metadata_table,
+        args.precomputed_genome_stats,
     )

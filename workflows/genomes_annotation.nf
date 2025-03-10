@@ -180,10 +180,14 @@ workflow GAP {
             PREPARE_UPDATE.out.previous_version_assembly_stats,
             new_data_checkm,
             new_genome_stats,
-            extra_weight_table_new_genomes
+            extra_weight_table_new_genomes,
+            genomes_name_mapping
         )
         dereplicated_genomes = UPDATE_CLUSTERS
         all_assembly_stats = UPDATE_CLUSTERS.out.assembly_stats_all_genomes
+        extra_weight_table_all_genomes = UPDATE_CLUSTERS.out.extra_weight_table_all_genomes
+        genomes_name_mapping = UPDATE_CLUSTERS.out.updated_genomes_name_mapping
+        checkm_all_genomes = UPDATE_CLUSTERS.out.checkm_all_genomes
     } else {
         // if generating a new catalogue, cluster with dRep 
     
@@ -203,6 +207,8 @@ workflow GAP {
             dereplicated_genomes = DREP_LARGE_SWF
         }
         all_assembly_stats = new_genome_stats
+        checkm_all_genomes = new_data_checkm
+        extra_weight_table_all_genomes = extra_weight_table_new_genomes
     }
 
     // make pan-genome trees
@@ -244,7 +250,7 @@ workflow GAP {
 
     PROCESS_SINGLETON_GENOMES(
         dereplicated_genomes.out.single_genomes_fna_tuples,
-        new_data_checkm,
+        checkm_all_genomes,
         accessions_with_domains_ch,
         ch_gunc_db
     )
@@ -374,8 +380,8 @@ workflow GAP {
     METADATA_AND_PHYLOTREE(
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
-        extra_weight_table_new_genomes,
-        new_data_checkm,
+        extra_weight_table_all_genomes,
+        checkm_all_genomes,
         DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
         genomes_name_mapping,
         dereplicated_genomes.out.drep_split_text,
@@ -384,8 +390,8 @@ workflow GAP {
         ch_geo_metadata,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
         gtdbtk_tables_ch,
-        //ch_previous_catalogue_location,
-        //all_assembly_stats
+        ch_previous_catalogue_location,
+        all_assembly_stats
     )
 
     /*

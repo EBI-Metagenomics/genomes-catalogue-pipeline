@@ -27,20 +27,22 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(stats_file_new, stats_file_prev_version, checkm_previous_version, checkm_new_genomes, extra_weight_new, 
-         previous_catalogue_version, outfile_stats, outfile_extra_weight):
+         previous_catalogue_version, outfile_stats, outfile_extra_weight, outfile_checkm):
     extra_weight_previous_version = os.path.join(previous_catalogue_version, "additional_data", "intermediate_files",
                                                  "extra_weight_table.txt")
     # combine extra weight information for old and new genomes into a new file
-    combine_and_print(extra_weight_previous_version, extra_weight_new, outfile_extra_weight)
+    combine_and_print(extra_weight_previous_version, extra_weight_new, outfile_extra_weight, header=False)
+    
+    # combine completeness and contamination into a new file
+    combine_and_print(checkm_previous_version, checkm_new_genomes, outfile_checkm, header=True)
     
     # combine assembly quality for old and new genomes into a new file
-    extract_and_merge_stats((stats_file_prev_version, stats_file_new), (checkm_previous_version, checkm_new_genomes), 
-                            outfile_stats)
+    extract_and_merge_stats((stats_file_prev_version, stats_file_new), outfile_stats)
     
 
-def extract_and_merge_stats(stats_file_list, checkm_file_list, outfile_stats):
+def extract_and_merge_stats(stats_file_list, outfile_stats):
     genome_data = dict()
-    # Load N50
+    # Load N50, length, GC content, and number of contigs
     for file in stats_file_list:
         if os.path.isfile(file) and os.stat(file).st_size > 0:
             with open(file, "r") as file_in:
@@ -49,47 +51,39 @@ def extract_and_merge_stats(stats_file_list, checkm_file_list, outfile_stats):
                     genome = row["Genome"]
                     genome_data.setdefault(genome, dict())
                     genome_data[genome]["N50"] = row["N50"]
+                    genome_data[genome]["Length"] = row["Length"]
+                    genome_data[genome]["GC_content"] = row["GC_content"]
+                    genome_data[genome]["N_contigs"] = row["N_contigs"]
         else:
             logging.info(f"Skipping file {file} when generating a combined stats file - it is empty or does not exist.")
-    # Load completeness and contamination
-    for file in checkm_file_list:
-        if os.path.isfile(file) and os.stat(file).st_size > 0:
-            with open(file, "r") as file_in:
-                reader = csv.DictReader(file_in, delimiter=',')
-                for row in reader:
-                    genome = row["genome"]
-                    # remove extension
-                    for ext in [".fa", ".fna", ".fasta"]:
-                        if genome.lower().endswith(ext):
-                            genome = genome[:-len(ext)]
-                            break
-                    genome_data[genome]["Completeness"] = row["completeness"]
-                    genome_data[genome]["Contamination"] = row["contamination"]
-        else:
-            logging.info(
-                f"Skipping file {file} when generating a combined checkM file - it is empty or does not exist.")
     with open(outfile_stats, "w", newline="") as file_out:
         csv_writer = csv.writer(file_out, delimiter='\t')
-        csv_writer.writerow(["Genome", "Completeness", "Contamination", "N50"])
+        csv_writer.writerow(["Genome", "N50", "Length", "GC_content", "N_contigs"])
         for genome, data in genome_data.items():
             try:
                 csv_writer.writerow([
                     genome,
-                    data['Completeness'],
-                    data['Contamination'],
-                    data['N50']
+                    data['N50'],
+                    data['Length'],
+                    data['GC_content'],
+                    data['N_contigs']
                     ])
             except KeyError:
                 sys.exit("Unable to get gather assembly stats data for genome {}. Available data: {}".format(genome,
                                                                                                              data))
   
-                
-def combine_and_print(file1, file2, outfile):
+
+def combine_and_print(file1, file2, outfile, header):
     with open(outfile, 'w') as file_out:
+        first_file = True  # To track whether we're processing the first valid file
         for file in (file1, file2):
             if os.path.isfile(file) and os.stat(file).st_size > 0:
                 with open(file, 'r') as f:
-                    file_out.write(f.read())
+                    lines = f.readlines()
+                    if header and not first_file:
+                        lines = lines[1:]  # Remove header from subsequent files, we already printed it once
+                    file_out.writelines(lines)
+                    first_file = False  # Mark that we've processed a valid file
             else:
                 logging.info(
                     f"Skipping file {file} when generating a combined extra weight file - "
@@ -122,6 +116,8 @@ def parse_args():
                              'accession, completeness, contamination, N50')
     parser.add_argument('--outfile-extra-weight', required=True,
                         help='Path to the file where the the combined extra weight table will be printed to')
+    parser.add_argument('--outfile-checkm', required=True,
+                        help='Path to the file where the the combined checkM2 stats will be printed to')
     return parser.parse_args()
 
 
@@ -136,4 +132,5 @@ if __name__ == '__main__':
         args.previous_version_path,
         args.outfile_stats,
         args.outfile_extra_weight,
+        args.outfile_checkm,
     )

@@ -15,7 +15,7 @@ process AMRFINDER_PLUS {
         failOnError: true
     )
 
-    container 'quay.io/biocontainers/ncbi-amrfinderplus:3.11.4--h6e70893_0'
+    container 'quay.io/biocontainers/ncbi-amrfinderplus:3.12.8--h283d18e_0'
 
     input:
     tuple val(cluster), path(fna), path(faa), path(gff)

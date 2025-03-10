@@ -27,12 +27,12 @@ def main(input_folder, outfile):
     genome_list = [filename for filename in os.listdir(input_folder)]
     with open(outfile, "w") as file_out:
         csv_writer = csv.writer(file_out, delimiter='\t')
-        csv_writer.writerow(["Genome", "Length", "N50", "GC_content"])
+        csv_writer.writerow(["Genome", "Length", "N50", "GC_content", "N_contigs"])
         for filename in genome_list:
             genome_accession = filename.rsplit(".", 1)[0]
             contig_stats = run_assembly_stats(os.path.join(input_folder, filename))
             csv_writer.writerow([genome_accession, contig_stats["Length"], contig_stats["N50"], 
-                                 contig_stats["GC_content"]])
+                                 contig_stats["GC_content"], contig_stats["N_contigs"]])
         
     
 def parse_args():
