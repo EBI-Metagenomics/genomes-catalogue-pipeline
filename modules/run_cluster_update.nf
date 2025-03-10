@@ -50,8 +50,13 @@ process RUN_CLUSTER_UPDATE {
     --remove-list ${remove_genomes}
     
     # combine name mapping files
-    cat ${new_genomes_name_mapping} \
-    ${previous_catalogue_location}/additional_data/intermediate_files/renamed_genomes_name_mapping.tsv \
-    > update_renamed_genomes_name_mapping.tsv
+    if [ -s ${new_genomes_name_mapping} ]; then
+        cat ${new_genomes_name_mapping} \
+        ${previous_catalogue_location}/additional_data/intermediate_files/renamed_genomes_name_mapping.tsv \
+        > update_renamed_genomes_name_mapping.tsv
+    else
+        cp ${previous_catalogue_location}/additional_data/intermediate_files/renamed_genomes_name_mapping.tsv \
+        update_renamed_genomes_name_mapping.tsv
+    fi
     """
 }
