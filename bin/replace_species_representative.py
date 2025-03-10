@@ -35,7 +35,7 @@ def main(cluster_split_file, new_strain_file, mash_result, previous_drep_dir, ou
     new_strain_list = load_first_column_to_list(new_strain_file)
     isolates = load_isolates(isolates_file)
     remove_list = load_first_column_to_list(remove_list_file)
-    qs_values = load_qs(assembly_stats_file)  # rewrite to load checkm from a separate file
+    # qs_values = load_qs(assembly_stats_file)  # rewrite to load checkm from a separate file
     
     
     # if new strain list is empty and remove list is empty, we don't need to do anything, just output old files for 
