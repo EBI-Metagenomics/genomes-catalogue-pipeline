@@ -14,7 +14,7 @@ process DBCAN {
         failOnError: true
     )
 
-    container 'quay.io/biocontainers/dbcan:4.1.2--pyhdfd78af_0'
+    container 'quay.io/biocontainers/dbcan:4.1.4--pyhdfd78af_0'
 
     input:
     tuple val(cluster_name), path(faa), path(gff)
