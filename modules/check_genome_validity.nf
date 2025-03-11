@@ -26,7 +26,7 @@ process CHECK_GENOME_VALIDITY {
     rm -f GENOME_CHECK_FAILED_ACCESSIONS GENOME_CHECK_ALL_GENOMES_OK GENOME_CHECK_ERROR_FLAG
     
     # Run checks
-    check_sample_and_mag_validity.py -i ${previous_catalogue_location} -r ${remove_list_file}
+    check_sample_and_mag_validity.py -i ${previous_catalogue_location} -r ${remove_list_file} -t ${task.cpus}
     
     # Check if any genomes failed checks
     if [ -f GENOME_CHECK_FAILED_ACCESSIONS ]; then
