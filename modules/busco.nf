@@ -1,6 +1,5 @@
 process BUSCO {
 
-    label 'process_medium'
     tag "${fasta.baseName}"
 
     container 'quay.io/biocontainers/busco:5.8.0--pyhdfd78af_0'
