@@ -1,5 +1,27 @@
 process RUN_CLUSTER_UPDATE {
-
+    
+    publishDir(
+        path: "${params.outdir}",
+        pattern: "update_renamed_genomes_name_mapping.tsv",
+        saveAs: { "additional_data/intermediate_files/renamed_genomes_name_mapping.tsv" },
+        mode: "copy",
+        failOnError: true
+    )
+    publishDir(
+        path: "${params.outdir}",
+        pattern: "extra_weight_table_all_genomes.tsv",
+        saveAs: { "additional_data/intermediate_files/extra_weight_table.txt" },
+        mode: "copy",
+        failOnError: true
+    )
+    publishDir(
+        path: "${params.outdir}",
+        pattern: "checkm_all_genomes.csv",
+        saveAs: { "additional_data/intermediate_files/renamed_genome_stats.txt" },
+        mode: "copy",
+        failOnError: true
+    )
+    
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
     
     input:
