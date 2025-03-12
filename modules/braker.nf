@@ -14,11 +14,11 @@ process BRAKER {
     val species
 
     output:
-    tuple val(meta), path("${prefix}/*.gtf"), emit: gtf
-    tuple val(meta), path("${prefix}/*.gff3"), emit: gff3
-    tuple val(meta), path("${prefix}/*.aa"), emit: proteins
-    tuple val(meta), path("${prefix}/*.codingseq"), emit: ffn
-    tuple val(meta), path("${prefix}/*.map"), emit: headers_map
+    tuple val(meta), path("${prefix}_braker/*.gtf"), emit: gtf
+    tuple val(meta), path("${prefix}_braker/*.gff3"), emit: gff3
+    tuple val(meta), path("${prefix}_braker/*.aa"), emit: proteins
+    tuple val(meta), path("${prefix}_braker/*.codingseq"), emit: ffn
+    tuple val(meta), path("${prefix}_braker/*.map"), emit: headers_map
     path "versions.yml" , emit: versions
 
     when:
