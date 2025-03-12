@@ -34,7 +34,7 @@ workflow UPDATE_CLUSTERS {
         // gather genome stats and remake clusters
         RUN_CLUSTER_UPDATE (
             previous_catalogue_location,
-            remove_genomes,
+            QS50_FILTER_PREVIOUS_VERSION.out.remove_list_mgyg_updated,
             previous_version_quality_file,
             previous_version_assembly_stats,
             new_data_checkm,
