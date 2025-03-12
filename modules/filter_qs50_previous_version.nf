@@ -19,6 +19,7 @@ process QS50_FILTER_PREVIOUS_VERSION {
     output:
     path "qs50_failed_previous_catalogue_version.txt", emit: previous_version_qs50_failed
     path "qs50_passed_previous_catalogue_version.csv", emit: previous_version_qs50_qs50_passed
+    path "qs50_failed_previous_catalogue_version.csv", emit: qs50_failed_details
     path "remove_list_updated.tsv", emit: remove_list_mgyg_updated
     
     script:
