@@ -2,6 +2,7 @@
  * Update clusters (runs during catalogue update/reannotation only)
 */
 
+include { QS50_FILTER_PREVIOUS_VERSION } from '../modules/filter_qs50_previous_version'
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { SPLIT_DREP } from '../modules/split_drep'
@@ -22,6 +23,13 @@ workflow UPDATE_CLUSTERS {
         // parse mash - keep mind that script might need to be modified because before we ran mash with 0.05 cut-off
         // cluster new species
         // run GUNC on singletons
+        
+        // check if any genomes from the previous version fail QS50
+        QS50_FILTER_PREVIOUS_VERSION (
+            previous_version_quality_file,
+            remove_genomes,
+            "${previous_catalogue_location}/additional_data/mgyg_genomes/"
+        )
         
         // gather genome stats and remake clusters
         RUN_CLUSTER_UPDATE (
