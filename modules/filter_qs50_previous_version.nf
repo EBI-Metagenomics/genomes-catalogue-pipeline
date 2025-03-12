@@ -2,7 +2,7 @@ process QS50_FILTER_PREVIOUS_VERSION {
 
     publishDir(
         "${params.outdir}/additional_data/update_execution_reports/",
-        pattern: "*previous*",
+        pattern: "*previous*.csv",
         mode: "copy",
         failOnError: true
     )
@@ -27,7 +27,8 @@ process QS50_FILTER_PREVIOUS_VERSION {
     -i ${mgyg_genomes_folder} \
     -c ${previous_version_quality_file} \
     -o qs50_failed_previous_catalogue_version.txt \
-    --output-csv qs50_passed_previous_catalogue_version.csv 
+    --output-csv qs50_passed_previous_catalogue_version.csv \
+    --details-csv qs50_failed_previous_catalogue_version.csv
     
     # combine existing remove pile and genomes that failed QS50 
     add_genomes_to_remove_list.py \
