@@ -37,12 +37,21 @@ process RUN_CLUSTER_UPDATE {
     --outfile-extra-weight extra_weight_table_all_genomes.tsv \
     --outfile-checkm checkm_all_genomes.csv
     
+    # last catalogue's version's cluster split file may contain genomes that were filtered by GUNC as that 
+    # catalogue was being generated; filter the split file using last version's metadata data to only keep
+    # genomes that made it into the catalogue
+    
+    filter_cluster_split_file.py \
+    -i ${previous_catalogue_location}/additional_data/intermediate_files/clusters_split.txt \
+    -m ${previous_catalogue_location}/ftp/genomes-all_metadata.tsv \
+    -o filtered_clusters_split.txt
+    
     # temporary files
     touch new_strain_list_no_file.txt
     touch mash_no_file.txt
     
     replace_species_representative.py \
-    --cluster-split-file ${previous_catalogue_location}/additional_data/intermediate_files/clusters_split.txt \
+    --cluster-split-file filtered_clusters_split.txt \
     --new-strain-list new_strain_list_no_file.txt \
     --mash-result mash_no_file.txt \
     --previous-drep-dir ${previous_catalogue_location}/additional_data/intermediate_files/drep_data_tables \
