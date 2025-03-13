@@ -24,14 +24,15 @@ import sys
 logging.basicConfig(level=logging.INFO)
 
 
-def main(input_folder, metadata_table, ouput_folder):
+def main(input_folder, metadata_table, output_folder):
+    os.makedirs(output_folder, exist_ok=True)
     genome_list = load_existing_genomes(metadata_table)
     for file in ["Cdb.csv", "Sdb.csv"]:
         file_path = os.path.join(input_folder, file)
         if not os.path.exists(file_path):
             sys.exit(f"File {file_path} does not exist.")
         else:
-            outfile_path = os.path.join(ouput_folder, file)
+            outfile_path = os.path.join(output_folder, file)
             with open(file_path, "r") as file_in, open(outfile_path, "w") as file_out:
                 for line in file_in:
                     if not line.startswith("MGYG"):
@@ -45,11 +46,11 @@ def main(input_folder, metadata_table, ouput_folder):
                         else:
                             logging.info(f"Removing {accession_without_ext} from the {file} of the previous catalogue "
                                          f"version. Reason: it is not present in the metadata table.")
-    mdb_path = os.path.join(ouput_folder, "Mdb.csv")
+    mdb_path = os.path.join(output_folder, "Mdb.csv")
     if not os.path.exists(mdb_path):
         sys.exit(f"File {mdb_path} does not exist.")
     else:
-        outfile_path = os.path.join(ouput_folder, "Mdb.csv")
+        outfile_path = os.path.join(output_folder, "Mdb.csv")
         with open(mdb_path, "r") as file_in, open(outfile_path, "w") as file_out:
             for line in file_in:
                 if not line.startswith("MGYG"):
