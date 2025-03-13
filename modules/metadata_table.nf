@@ -23,6 +23,8 @@ process METADATA_TABLE {
     val ftp_version
     path geo_metadata
     file gunc_failed_txt
+    path previous_catalogue_location
+    path all_assembly_stats
 
     output:
     path "genomes-all_metadata.tsv", emit: metadata_tsv
@@ -32,6 +34,10 @@ process METADATA_TABLE {
     if (gunc_failed_txt != "EMPTY") {
         args = args + "--gunc-failed ${gunc_failed_txt}"
     }
+    if (previous_catalogue_location.toString() != "NO_PREVIOUS_CATALOGUE_VERSION"){
+        args = args + " " + "--previous-metadata-table ${previous_catalogue_location}/ftp/genomes-all_metadata.tsv"
+    }
+    
     """
     create_metadata_table.py \
     --genomes-dir genomes_dir \
@@ -44,6 +50,7 @@ process METADATA_TABLE {
     --ftp-name ${ftp_name} \
     --ftp-version ${ftp_version} \
     --geo ${geo_metadata} ${args} \
+    --precomputed_genome_stats ${all_assembly_stats} \
     --outfile genomes-all_metadata.tsv
     """
 

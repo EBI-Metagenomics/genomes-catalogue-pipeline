@@ -3,8 +3,14 @@
      Input validation
     ~~~~~~~~~~~~~~~~~~
 */
-ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
-ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
+ch_ena_genomes = []
+ch_ena_genomes_checkm = file("NO_FILE_ENA_CHECKM")
+
+if (params.ena_genomes) {
+    ch_ena_genomes = channel.fromPath(params.ena_genomes, checkIfExists: true)
+    ch_ena_genomes_checkm = file(params.ena_genomes_checkm, checkIfExists: true)
+}
+
 ch_ncbi_genomes = []
 
 if (params.ncbi_genomes) {
@@ -17,15 +23,27 @@ ch_mgyg_index_end = channel.value(params.mgyg_end)
 ch_genomes_information = file("NO_FILE_GENOME_CAT")
 ch_study_genomes_information = file("NO_FILE_STUDY_CAT")
 ch_preassigned_accessions = file("NO_FILE_PREASSIGNED_ACCS")
+ch_remove_genomes = file("NO_FILE_REMOVE_GENOMES")
 
 if (params.genomes_information) {
-    ch_genomes_information = file(params.genomes_information)
+    ch_genomes_information = file(params.genomes_information, checkIfExists: true)
 }
 if (params.study_genomes_information) {
-    ch_study_genomes_information = file(params.study_genomes_information)
+    ch_study_genomes_information = file(params.study_genomes_information, checkIfExists: true)
 }
 if (params.preassigned_accessions) {
-    ch_preassigned_accessions = file(params.preassigned_accessions)
+    ch_preassigned_accessions = file(params.preassigned_accessions, checkIfExists: true)
+}
+
+// Update pipeline
+if (params.update_catalogue_path) {
+    ch_previous_catalogue_location = file(params.update_catalogue_path)
+} else {
+    ch_previous_catalogue_location = file("NO_PREVIOUS_CATALOGUE_VERSION")
+}
+
+if (params.remove_genomes) {
+    ch_remove_genomes = file(params.remove_genomes, checkIfExists: true)
 }
 
 // TODO: Add help message with parameters
@@ -36,6 +54,7 @@ if (params.preassigned_accessions) {
     ~~~~~~~~~~~~~~~~
 */
 
+include { PREPARE_UPDATE } from '../subworkflows/prepare_update'
 include { PREPARE_DATA } from '../subworkflows/prepare_data'
 include { DREP_SWF } from '../subworkflows/drep_swf'
 include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
@@ -46,14 +65,15 @@ include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
 include { GENERATE_COMBINED_QC_REPORT } from '../modules/generate_combined_qc_report'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
-include { ANNOTATE } from '../subworkflows/annotate'
+include { ANNOTATE_PROKARYOTES } from '../subworkflows/annotate_prokaryotes'
+include { ANNOTATE_ALL_DOMAINS } from '../subworkflows/annotate_all_domains'
 include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
 include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
 include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
+include { UPDATE_CLUSTERS } from '../subworkflows/update_clusters_swf.nf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
-include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 include { INDEX_FNA } from '../modules/index_fna'
 include { ANNOTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
@@ -63,8 +83,6 @@ include { FASTTREE as FASTTREE_BAC } from '../modules/fasttree'
 include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
-include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
-include { AMRFINDER_PLUS } from '../modules/amrfinder_plus'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,39 +126,92 @@ ch_antismash_db = file(params.antismash_db)
 */
 
 workflow GAP {
-
-    PREPARE_DATA(
-        ch_ena_genomes,
-        ch_ena_genomes_checkm,
-        ch_ncbi_genomes,
-        ch_mgyg_index_start,
-        ch_mgyg_index_end,
-        ch_preassigned_accessions,
-        ch_genome_prefix,
-        ch_genomes_information,
-        ch_study_genomes_information,
-        ch_checkm2_db
-    )
-
-    // needs a more elegant solution here
-    dereplicated_genomes = channel.empty()
-
-    if ( !params.xlarge ) {
-        DREP_SWF(
-            PREPARE_DATA.out.genomes,
-            PREPARE_DATA.out.genomes_checkm,
-            PREPARE_DATA.out.extra_weight_table
+    // if this is an update, do pre-update checks
+    if ( params.update_catalogue_path ){
+        PREPARE_UPDATE(
+            ch_previous_catalogue_location,
+            ch_remove_genomes,
+            params.skip_genome_validity_check,
+            params.rerun_checkm2,
+            ch_checkm2_db
         )
-        dereplicated_genomes = DREP_SWF
+        remove_list_mgyg = PREPARE_UPDATE.out.remove_list_mgyg
+    }
+    
+    // if we are adding data (either new catalogue or adding genomes during an update), prepare incoming data
+    if ( params.ena_genomes || params.ncbi_genomes ){
+        PREPARE_DATA(
+            ch_ena_genomes,
+            ch_ena_genomes_checkm,
+            ch_ncbi_genomes,
+            ch_mgyg_index_start,
+            ch_mgyg_index_end,
+            ch_preassigned_accessions,
+            ch_genome_prefix,
+            ch_genomes_information,
+            ch_study_genomes_information,
+            ch_checkm2_db
+        )
+        new_data_checkm = PREPARE_DATA.out.genomes_checkm
+        new_genome_stats = PREPARE_DATA.out.new_genome_stats
+        extra_weight_table_new_genomes = PREPARE_DATA.out.extra_weight_table
+        new_genomes = PREPARE_DATA.out.genomes
+        qs50_failed = PREPARE_DATA.out.qs50_failed
+        genomes_name_mapping = PREPARE_DATA.out.genomes_name_mapping
+        
     } else {
-        DREP_LARGE_SWF(
-            PREPARE_DATA.out.genomes,
-            PREPARE_DATA.out.genomes_checkm,
-            PREPARE_DATA.out.extra_weight_table
+        // if we are not adding new genomes, make dummy files
+        new_data_checkm = file("NO_FILE_NEW_GENOMES_CHECKM")
+        new_genome_stats = file("NO_FILE_NEW_GENOMES_STATS")
+        extra_weight_table_new_genomes = file("NO_FILE_NEW_GENOMES_EXTRA_WEIGHT")
+        new_genomes = file("NO_FILE_NEW_GENOMES")
+        qs50_failed = file("NO_FILE_QS50_FAILED")
+        genomes_name_mapping = file("NO_FILE_GENOMES_NAME_MAPPING")
+    }
+    
+    // generate species level genome clusters
+    dereplicated_genomes = channel.empty()
+    if ( params.update_catalogue_path ){
+        // if updating a catalogue, don't run dRep, generate clusters with Python
+        UPDATE_CLUSTERS(
+            ch_previous_catalogue_location,
+            remove_list_mgyg,
+            PREPARE_UPDATE.out.previous_version_quality,
+            PREPARE_UPDATE.out.previous_version_assembly_stats,
+            new_data_checkm,
+            new_genome_stats,
+            extra_weight_table_new_genomes,
+            genomes_name_mapping
         )
-        dereplicated_genomes = DREP_LARGE_SWF
+        dereplicated_genomes = UPDATE_CLUSTERS
+        all_assembly_stats = UPDATE_CLUSTERS.out.assembly_stats_all_genomes
+        extra_weight_table_all_genomes = UPDATE_CLUSTERS.out.extra_weight_table_all_genomes
+        genomes_name_mapping = UPDATE_CLUSTERS.out.updated_genomes_name_mapping
+        checkm_all_genomes = UPDATE_CLUSTERS.out.checkm_all_genomes
+    } else {
+        // if generating a new catalogue, cluster with dRep 
+    
+        if ( !params.xlarge ) {
+            DREP_SWF(
+                new_genomes,
+                new_data_checkm,
+                extra_weight_table_new_genomes
+            )
+            dereplicated_genomes = DREP_SWF
+        } else {
+            DREP_LARGE_SWF(
+                new_genomes,
+                new_data_checkm,
+                extra_weight_table_new_genomes
+            )
+            dereplicated_genomes = DREP_LARGE_SWF
+        }
+        all_assembly_stats = new_genome_stats
+        checkm_all_genomes = new_data_checkm
+        extra_weight_table_all_genomes = extra_weight_table_new_genomes
     }
 
+    // make pan-genome trees
     MASH_TO_NWK(
         dereplicated_genomes.out.mash_splits | flatten
     )
@@ -179,13 +250,13 @@ workflow GAP {
 
     PROCESS_SINGLETON_GENOMES(
         dereplicated_genomes.out.single_genomes_fna_tuples,
-        PREPARE_DATA.out.genomes_checkm.first(),
+        checkm_all_genomes,
         accessions_with_domains_ch,
         ch_gunc_db
     )
     
     GENERATE_COMBINED_QC_REPORT(
-        PREPARE_DATA.out.qs50_failed,
+        qs50_failed,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
         PARSE_DOMAIN.out.detected_domains
     )
@@ -247,7 +318,7 @@ workflow GAP {
     MMSEQ_SWF(
         PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),
         PROCESS_SINGLETON_GENOMES.out.prokka_faa.map({ it[1] }).collectFile(name: "singleton_prokka.faa"),
-        PREPARE_DATA.out.genomes_name_mapping.first(),
+        genomes_name_mapping.first(),
         ch_mmseq_coverage_threshold
     )
 
@@ -275,11 +346,10 @@ workflow GAP {
         .mix(PROCESS_SINGLETON_GENOMES.out.prokka_fna.map({ it[0] })) \
         .collectFile(name: "species_reps_names_list.txt", newLine: true)
 
-    ANNOTATE(
+    ANNOTATE_ALL_DOMAINS(
         MMSEQ_SWF.out.mmseq_90_cluster_tsv,
         MMSEQ_SWF.out.mmseq_90_tarball,
         MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
-        all_prokka_fna,
         cluster_reps_gbks,
         cluster_reps_faas,
         cluster_reps_gffs,
@@ -288,9 +358,17 @@ workflow GAP {
         ch_eggnog_db,
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
-        ch_defense_finder_db,
         ch_dbcan_db,
         ch_antismash_db
+    )
+    
+    ANNOTATE_PROKARYOTES(
+        cluster_reps_gbks,
+        cluster_reps_faas,
+        cluster_reps_gffs,
+        cluster_reps_fnas,
+        ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs,
+        ch_defense_finder_db
     )
     
     DETECT_RNA(
@@ -302,16 +380,18 @@ workflow GAP {
     METADATA_AND_PHYLOTREE(
         cluster_reps_fnas.map({ it[1]}).collect(),
         all_prokka_fna.map({ it[1] }).collect(),
-        PREPARE_DATA.out.extra_weight_table,
-        PREPARE_DATA.out.genomes_checkm,
+        extra_weight_table_all_genomes,
+        checkm_all_genomes,
         DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
-        PREPARE_DATA.out.genomes_name_mapping,
+        genomes_name_mapping,
         dereplicated_genomes.out.drep_split_text,
         ch_ftp_name,
         ch_ftp_version,
         ch_geo_metadata,
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
-        gtdbtk_tables_ch
+        gtdbtk_tables_ch,
+        ch_previous_catalogue_location,
+        all_assembly_stats
     )
 
     /*
@@ -344,23 +424,15 @@ workflow GAP {
         channel.value("ar53")
     )
 
-    cluster_reps_faa = PROCESS_SINGLETON_GENOMES.out.prokka_faa.mix(
-        PROCESS_MANY_GENOMES.out.rep_prokka_faa
-    )
-
-    faa_and_annotations = cluster_reps_faa.join(
-        ANNOTATE.out.ips_annotation_tsvs
+    faa_and_annotations = cluster_reps_faas.join(
+        ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs
     ).join(
-        ANNOTATE.out.eggnog_annotation_tsvs
+        ANNOTATE_ALL_DOMAINS.out.eggnog_annotation_tsvs
     )
 
     FUNCTIONAL_ANNOTATION_SUMMARY(
         faa_and_annotations,
         ch_kegg_classes
-    )
-    
-    KEGG_COMPLETENESS(
-        ANNOTATE.out.eggnog_annotation_tsvs
     )
 
     INDEX_FNA(
@@ -374,28 +446,26 @@ workflow GAP {
     // Select the only the reps //
     // Those where the cluster-name and the file name match
     // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv
-    reps_ips = ANNOTATE.out.ips_annotation_tsvs.filter {
+    reps_ips = ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
-    reps_eggnog = ANNOTATE.out.eggnog_annotation_tsvs.filter {
+    reps_eggnog = ANNOTATE_ALL_DOMAINS.out.eggnog_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
-    reps_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
+    all_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
         it[1].name.contains(it[0])
     }
-
-    CRISPRCAS_FINDER(
-        cluster_reps_fnas
-    )
-
-    AMRFINDER_PLUS(
-        cluster_reps_fnas.join(
-            cluster_reps_faa
-        ).join(
-            cluster_reps_gff
-        )
-    )
-
+    
+    // Filter DETECT_RNA.out.trna_gff to only save tRNA GFFs for species reps to reps_trna_gff
+    reps_trna_gff = cluster_reps_gff.join(DETECT_RNA.out.trna_gff, remainder: true)
+    .filter { it -> it[1] != null }  // Remove tuples where there is no species rep genome GFF (= this is not a rep)
+    .map { it -> [it[0], it[2]] }  // 
+    
+    // Filter all_ncrna to only keep results for species reps
+    reps_ncrna = cluster_reps_gff.join(all_ncrna, remainder: true)
+    .filter { it -> it[1] != null }  // Remove tuples where there is no species rep genome GFF (= this is not a rep)
+    .map { it -> [it[0], it[2]] }  // 
+        
     // REPS //
     ANNOTATE_GFF(
         cluster_reps_gff.join(
@@ -403,23 +473,23 @@ workflow GAP {
         ).join(
             reps_ncrna
         ).join(
-            DETECT_RNA.out.trna_gff
+            reps_trna_gff
         ).join(
-            CRISPRCAS_FINDER.out.hq_gff, remainder: true
+            ANNOTATE_PROKARYOTES.out.crisprcasfinder_hq_gff, remainder: true
         ).join(
-            AMRFINDER_PLUS.out.amrfinder_tsv, remainder: true
+            ANNOTATE_PROKARYOTES.out.amrfinder_tsv, remainder: true
         ).join(
-            ANNOTATE.out.antismash_gffs, remainder: true
+            ANNOTATE_ALL_DOMAINS.out.antismash_gffs, remainder: true
         ).join(
-            ANNOTATE.out.gecco_gffs, remainder: true
+            ANNOTATE_PROKARYOTES.out.gecco_gffs, remainder: true
         ).join(
-            ANNOTATE.out.dbcan_gffs, remainder: true
+            ANNOTATE_ALL_DOMAINS.out.dbcan_gffs, remainder: true
         ).join(
-            ANNOTATE.out.defense_finder_gffs, remainder: true
+            ANNOTATE_PROKARYOTES.out.defense_finder_gffs, remainder: true
         ).join(
             reps_ips
         ).join(
-            ANNOTATE.out.sanntis_annotation_gffs, remainder: true
+            ANNOTATE_PROKARYOTES.out.sanntis_annotation_gffs, remainder: true
         )
     )
 
@@ -437,7 +507,7 @@ workflow GAP {
     files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
         FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
     ).join(
-        cluster_reps_faa
+        cluster_reps_faas
     ).join(
         PROCESS_MANY_GENOMES.out.panaroo_pangenome_fna, remainder: true
     ).join(

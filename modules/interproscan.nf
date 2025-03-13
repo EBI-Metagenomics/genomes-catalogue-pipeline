@@ -4,6 +4,7 @@
 
 process IPS {
 
+    maxForks = 40
     container 'quay.io/microbiome-informatics/interproscan:5.73-104.0'
     containerOptions '--bind data:/opt/interproscan/data'
 
