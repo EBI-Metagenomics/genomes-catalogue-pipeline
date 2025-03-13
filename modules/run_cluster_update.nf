@@ -59,14 +59,24 @@ process RUN_CLUSTER_UPDATE {
     --outfile-extra-weight extra_weight_table_all_genomes.tsv \
     --outfile-checkm checkm_all_genomes.csv
     
-    # last catalogue's version's cluster split file may contain genomes that were filtered by GUNC as that 
+    # Last catalogue's version's cluster split file may contain genomes that were filtered by GUNC as that 
     # catalogue was being generated; filter the split file using last version's metadata data to only keep
     # genomes that made it into the catalogue
+    
+    # The pipeline will generate the clusters_split file again in the SPLIT_DREP step but we need the updated 
+    # version to recompute clusters in filter_drep_tables.py. Current implementation is not ideal, should be reworked
+    # in subsequent releases.
     
     filter_cluster_split_file.py \
     -i ${previous_catalogue_location}/additional_data/intermediate_files/clusters_split.txt \
     -m ${previous_catalogue_location}/ftp/genomes-all_metadata.tsv \
     -o filtered_clusters_split.txt
+    
+    # Do the same for drep tables. They will be used to generate a new clusters_split file in SPLIT_DREP
+    filter_drep_tables.py \
+    -i ${previous_catalogue_location}/additional_data/intermediate_files/drep_data_tables \
+    -o filtered_drep_tables \
+    -m ${previous_catalogue_location}/ftp/genomes-all_metadata.tsv
     
     # temporary files
     touch new_strain_list_no_file.txt
@@ -76,7 +86,7 @@ process RUN_CLUSTER_UPDATE {
     --cluster-split-file filtered_clusters_split.txt \
     --new-strain-list new_strain_list_no_file.txt \
     --mash-result mash_no_file.txt \
-    --previous-drep-dir ${previous_catalogue_location}/additional_data/intermediate_files/drep_data_tables \
+    --previous-drep-dir filtered_drep_tables \
     --output-prefix update \
     --assembly-stats assembly_stats_all_genomes.tsv \
     --isolates extra_weight_table_all_genomes.tsv \
