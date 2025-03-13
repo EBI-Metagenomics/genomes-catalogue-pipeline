@@ -46,7 +46,7 @@ def main(input_folder, metadata_table, output_folder):
                         else:
                             logging.info(f"Removing {accession_without_ext} from the {file} of the previous catalogue "
                                          f"version. Reason: it is not present in the metadata table.")
-    mdb_path = os.path.join(output_folder, "Mdb.csv")
+    mdb_path = os.path.join(input_folder, "Mdb.csv")
     if not os.path.exists(mdb_path):
         sys.exit(f"File {mdb_path} does not exist.")
     else:
