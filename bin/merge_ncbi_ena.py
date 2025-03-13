@@ -89,7 +89,7 @@ def parse_args():
 
     if args.kingdom == "prok" and any(euk_args):
         parser.error("For 'prok' kingdom, only --ena-csv or --ncbi-csv can be used.")
-    elif args.kingdom == "euk" and any(prok_csvs):
+    elif args.kingdom == "euk" and any(prok_args):
         parser.error("For 'euk' kingdom, only --ena-eukcc-csv, --ena-busco-csv, --ncbi-eukcc-csv, or --ncbi-busco-csv can be used.")
 
     return args
@@ -108,6 +108,7 @@ def process_csv(csv, out_csv):
         for line in input_csv:
             if not line.startswith("completeness"):
                 out_csv.write(f"{line.rstrip()}\n")
+
     return out_csv
 
 
