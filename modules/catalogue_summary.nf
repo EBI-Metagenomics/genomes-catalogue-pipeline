@@ -1,4 +1,4 @@
-process CATALOGUE SUMMARY {
+process CATALOGUE_SUMMARY {
 
     publishDir "${params.outdir}/", mode: 'copy', failOnError: true
 
