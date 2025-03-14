@@ -5,6 +5,7 @@
 include { REPEAT_MODELER } from '../modules/repeatmodeler.nf'
 include { REPEAT_MASKER } from '../modules/repeatmasker.nf'
 include { BRAKER } from '../modules/braker.nf' 
+include { BRAKER_POSTPROCESSING } from '../modules/braker_postprocessing.nf'
 
 
 workflow EUK_GENE_CALLING {
@@ -30,11 +31,18 @@ workflow EUK_GENE_CALLING {
             [],
             []
         )
+        
+        BRAKER_POSTPROCESSING(
+            genome,
+            BRAKER.out.gff3,
+            BRAKER.out.proteins,
+            BRAKER.out.ffn
+        )
 
     emit:
-        gff = BRAKER.out.gff3
-        proteins = BRAKER.out.proteins
-        ffn = BRAKER.out.ffn
+        gff = BRAKER_POSTPROCESSING.out.renamed_gff3
+        proteins = BRAKER_POSTPROCESSING.out.renamed_proteins
+        ffn = BRAKER_POSTPROCESSING.out.renamed_ffn
         headers_map = BRAKER.out.headers_map
 
 }
