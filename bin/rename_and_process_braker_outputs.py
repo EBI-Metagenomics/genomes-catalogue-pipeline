@@ -50,16 +50,14 @@ def remake_gff(gff_header, genome_fasta_contents, gene_map, gff, gff_outfile):
 
                     def replace_id(match):
                         gene_id = match.group(1)
-                        transcript_id = match.group(2) 
-                        return f"ID={gene_map.get(gene_id, gene_id)}{transcript_id}"
+                        return f"ID={gene_map.get(gene_id, gene_id)}"
 
                     def replace_parent(match):
                         gene_id = match.group(1)
-                        transcript_id = match.group(2)
-                        return f"Parent={gene_map.get(gene_id, gene_id)}{transcript_id}"
+                        return f"Parent={gene_map.get(gene_id, gene_id)}"
 
-                    col9 = re.sub(r"ID=(g\d+)(\.t\d+)?", replace_id, col9)
-                    col9 = re.sub(r"Parent=(g\d+)(\.t\d+)?", replace_parent, col9)
+                    col9 = re.sub(r"ID=(g\d+)", replace_id, col9)
+                    col9 = re.sub(r"Parent=(g\d+)", replace_parent, col9)
                     
                     if feature == "CDS":
                         col9 += "product=hypothetical protein"  # braker's lines already end with a semicolon
