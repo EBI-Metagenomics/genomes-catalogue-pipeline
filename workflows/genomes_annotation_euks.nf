@@ -127,7 +127,7 @@ ch_antismash_db = file(params.antismash_db)
     ~~~~~~~~~~~~~~~~~~
 */
 
-workflow GAP {
+workflow GAP_EUKS {
     
     // prepare incoming data
     if ( params.ena_genomes || params.ncbi_genomes) {
@@ -154,52 +154,18 @@ workflow GAP {
         genomes_name_mapping = file("NO_FILE_GENOMES_NAME_MAPPING")
     }
     
-    // // generate species level genome clusters
-    // dereplicated_genomes = channel.empty()
-    // if ( params.update_catalogue_path ){
-    //     // if updating a catalogue, don't run dRep, generate clusters with Python
-    //     UPDATE_CLUSTERS(
-    //         ch_previous_catalogue_location,
-    //         remove_list_mgyg,
-    //         PREPARE_UPDATE.out.previous_version_quality,
-    //         PREPARE_UPDATE.out.previous_version_assembly_stats,
-    //         new_data_checkm,
-    //         new_genome_stats,
-    //         extra_weight_table_new_genomes,
-    //         genomes_name_mapping
-    //     )
-    //     dereplicated_genomes = UPDATE_CLUSTERS
-    //     all_assembly_stats = UPDATE_CLUSTERS.out.assembly_stats_all_genomes
-    //     extra_weight_table_all_genomes = UPDATE_CLUSTERS.out.extra_weight_table_all_genomes
-    //     genomes_name_mapping = UPDATE_CLUSTERS.out.updated_genomes_name_mapping
-    //     checkm_all_genomes = UPDATE_CLUSTERS.out.checkm_all_genomes
-    // } else {
-    //     // if generating a new catalogue, cluster with dRep 
     
-    //     if ( !params.xlarge ) {
     //         DREP_SWF(
     //             new_genomes,
     //             new_data_checkm,
     //             extra_weight_table_new_genomes
     //         )
     //         dereplicated_genomes = DREP_SWF
-    //     } else {
-    //         DREP_LARGE_SWF(
-    //             new_genomes,
-    //             new_data_checkm,
-    //             extra_weight_table_new_genomes
-    //         )
-    //         dereplicated_genomes = DREP_LARGE_SWF
-    //     }
     //     all_assembly_stats = new_genome_stats
     //     checkm_all_genomes = new_data_checkm
     //     extra_weight_table_all_genomes = extra_weight_table_new_genomes
     // }
 
-    // // make pan-genome trees
-    // MASH_TO_NWK(
-    //     dereplicated_genomes.out.mash_splits | flatten
-    // )
     
     //PLACEHOLDER FOR GENE_CALLING
     // ch_proteins = file(params.proteome, checkIfExists: true)

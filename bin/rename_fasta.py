@@ -46,6 +46,7 @@ def main(
     outdir=None,
     max_number=None,
     csv=None,
+    busco=None,
     map_file=None,
 ):
     names = dict()  # matches old and new names
@@ -98,7 +99,7 @@ def main(
         rename_clusters(names, cluster_file)
     if csv:
         logging.info("Renaming csv...")
-        rename_csv(names, csv)
+        rename_csv(names, csv, busco)
 
 
 def write_fasta(old_path, new_path, accession):
@@ -161,20 +162,20 @@ def rename_clusters(names, cluster_file):
     file_out.close()
 
 
-def rename_csv(names, csv_file, tsv_file=None):
+def rename_csv(names, csv_file, busco):
     clusters_renamed = "renamed_" + os.path.basename(csv_file)
     with open(csv_file, "r") as file_in, open(clusters_renamed, "w") as file_out:
         for line in file_in:
             items = line.strip().split(",")
             genome = names[items[0]] if items[0] in names else items[0]
             file_out.write(",".join([genome] + items[1:3]) + "\n")
-    busco_renamed = "renamed_" + os.path.basename(tsv_file)
-    if tsv_file:
-        with open(tsv_file, "r") as busco_in, open(busco_renamed) as busco_out:
+    if busco:
+        busco_renamed = "renamed_" + os.path.basename(busco) + ".summary"
+        with open(busco, "r") as busco_in, open(busco_renamed, "w") as busco_out:
             for line in busco_in:
                 items = line.strip().split("\t")
                 genome = names[items[0]] if items[0] in names else items[0]
-                file_out.write("\t".join([genome] + items[1:2]) + "\n")
+                busco_out.write("\t".join([genome] + items[1:2]) + "\n")
 
 
 def parse_args():
@@ -260,8 +261,8 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--tsv",
-        dest="tsv",
+        "--busco",
+        dest="busco",
         required=False,
         default=None,
         help="TSV file with busco scores. If provided, the genomes inside the file "
@@ -299,6 +300,6 @@ if __name__ == "__main__":
         outdir=args.outputdir,
         max_number=args.max,
         csv=args.csv,
-        tsv=args.tsv
+        busco=args.busco,
         map_file=args.map_file,
     )
