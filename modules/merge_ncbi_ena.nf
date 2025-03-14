@@ -46,7 +46,7 @@ process MERGE_NCBI_ENA_EUKS {
 
     output:
     path "merged_genomes", emit: genomes
-    path "merged_genomes_busco.csv", emit: merged_busco_csv
+    path "merged_genomes_busco.tsv", emit: merged_busco_csv
     path "merged_genomes_eukcc.csv", emit: merged_eukcc_csv
 
     script:
@@ -57,7 +57,8 @@ process MERGE_NCBI_ENA_EUKS {
     --ncbi-eukcc-csv ${ncbi_genomes_eukcc} \
     --ena-busco-csv ${ena_genomes_busco} \
     --ena-eukcc-csv ${ena_genomes_eukcc} \
-    --outname merged_genomes
+    --outname merged_genomes \
+    --kingdom "euk"
     """
 
     stub:

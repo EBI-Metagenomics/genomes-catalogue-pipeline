@@ -29,8 +29,8 @@ def parse_args():
             "to common folder. It also unites csv files"
         )
     )
-    parse_args.add_argument(
-        "--kindgom", 
+    parser.add_argument(
+        "--kingdom", 
         required=False, 
         help="euk or prok genomes", 
         default="prok"
@@ -51,32 +51,32 @@ def parse_args():
         help="name of output folder", 
         default="genomes"
     )
-    parse_args.add_argument.add(
+    parser.add_argument(
         "--ena-csv",
         required=False,
         help="ena csv file with completeness and contamination",
     )
-    parse_args.add_argument.add_argument(
+    parser.add_argument(
         "--ncbi-csv",
         required=False,
         help="ncbi csv file with completeness and contamination",
     )
-    parse_args.add_argument.add(
+    parser.add_argument(
         "--ena-eukcc-csv",
         required=False,
         help="ena csv file with eukcc completeness and contamination"
     )
-    parse_args.add_argument.add(
+    parser.add_argument(
         "--ena-busco-csv",
         required=False,
         help="ena csv file with busco completeness and contamination"
     )
-    parse_args.add_argument.add(
+    parser.add_argument(
         "--ncbi-eukcc-csv",
         required=False,
         help="ncbi csv file with eukcc completeness and contamination"
     )
-    parse_args.add_argument.add(
+    parser.add_argument(
         "--ncbi-busco-csv",
         required=False,
         help="ncbi csv file with busco completeness and contamination"
@@ -103,10 +103,10 @@ def copy_genomes(data, outname):
             )
 
 
-def process_csv(csv, out_csv):
+def process_csv(csv, out_csv, type="def"):
     with open(csv, "r") as input_csv:
         for line in input_csv:
-            if not line.startswith("completeness"):
+            if not "completeness" in line:
                 out_csv.write(f"{line.rstrip()}\n")
 
     return out_csv
@@ -130,16 +130,16 @@ def main(args):
             if args.ncbi_csv:
                 output = process_csv(args.ncbi_csv, output)
     elif args.kingdom == "euk":
-        busco_out_csv = args.outname + "_busco.csv"
+        busco_out_csv = args.outname + "_busco.tsv"
         with open(busco_out_csv, "w") as busco_output:
-            output.write("genome,completeness,contamination\n")
+            busco_output.write("genome\tbusco_score\n")
             if args.ena_busco_csv:
                 busco_output = process_csv(args.ena_busco_csv, busco_output)
             if args.ncbi_busco_csv:
                 busco_output = process_csv(args.ncbi_busco_csv, busco_output)            
         eukcc_out_csv = args.outname + "_eukcc.csv"
         with open(eukcc_out_csv, "w") as eukcc_output:
-            output.write("genome,completeness,contamination\n")
+            eukcc_output.write("genome,completeness,contamination\n")
             if args.ena_eukcc_csv:
                 eukcc_output = process_csv(args.ena_eukcc_csv, eukcc_output)
             if args.ncbi_eukcc_csv:

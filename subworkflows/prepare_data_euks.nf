@@ -48,34 +48,33 @@ workflow PREPARE_DATA_EUKS {
 
         if ( ncbi_assemblies && ena_assemblies ) {
             BUSCO_ENA( ena_genomes_ch, busco_db )
-            ena_busco = BUSCO_ENA.out.busco_summary.collect()
-
-            ena_busco_concatenated = ena_busco.collectFile(
+            ena_busco = BUSCO_ENA.out.busco_summary.collectFile(
                 keepHeader: false,
                 name: "ena_busco.csv"
             )
 
             BUSCO_NCBI( ncbi_genomes_ch, busco_db )
-            ncbi_busco = BUSCO_NCBI.out.busco_summary.collect()
-
-            ncbi_busco_concatenated = ncbi_busco.collectFile(
+            ncbi_busco = BUSCO_NCBI.out.busco_summary.collectFile(
                 keepHeader: false,
                 name: "ncbi_busco.csv"
             )
 
             EUKCC( ncbi_genomes_ch, eukcc_db )
-            ncbi_eukcc = EUKCC.out.eukcc_result.collect()
-            ncbi_eukcc_concatenated = ncbi_eukcc.collectFile(
+            ncbi_eukcc = EUKCC.out.eukcc_result.collectFile(
                 keepHeader: true,
                 name: "ncbi_eukcc.csv"
             )
 
+            ncbi_genomes_ch.view()
+            ena_genomes_ch.view()
+
+
             MERGE_NCBI_ENA_EUKS(
                 ncbi_assemblies,
                 ena_assemblies,
-                ncbi_busco_concatenated,
-                ena_busco_concatenated,
-                ncbi_eukcc_concatenated,
+                ncbi_busco,
+                ena_busco,
+                ncbi_eukcc,
                 ena_genomes_eukcc
             )
 
@@ -86,73 +85,65 @@ workflow PREPARE_DATA_EUKS {
 
         } else if ( ncbi_assemblies ) {
             BUSCO_NCBI( ncbi_genomes_ch, busco_db )
-            ncbi_busco = BUSCO_NCBI.out.busco_summary.collect()
-
-            ncbi_busco_concatenated = ncbi_busco.collectFile(
+            ncbi_busco = BUSCO_NCBI.out.busco_summary.collectFile(
                 keepHeader: false,
                 name: "ncbi_busco.csv"
             )
 
+
             EUKCC( ncbi_genomes_ch, eukcc_db )
-            ncbi_eukcc = EUKCC.out.eukcc_result.collect()
-            ncbi_eukcc_concatenated = ncbi_eukcc.collectFile(
+            ncbi_eukcc = EUKCC.out.eukcc_result.collectFile(
                 keepHeader: true,
                 name: "ncbi_eukcc.csv"
             )
 
             genomes_ch = ncbi_assemblies
-            genomes_eukcc_ch = ncbi_eukcc_concatenated
-            genomes_busco_ch = ncbi_busco_concatenated
+            genomes_eukcc_ch = ncbi_eukcc
+            genomes_busco_ch = ncbi_busco
 
         } else if ( ena_assemblies ) {
             BUSCO_ENA( ena_genomes_ch, busco_db )
-            ena_busco = BUSCO_ENA.out.busco_summary.collect()
-
-            ena_busco.view()
-
-            ena_busco_concatenated = ena_busco.collectFile(
+            ena_busco = BUSCO_ENA.out.busco_summary.collectFile(
                 keepHeader: false,
                 name: "ena_busco.csv"
             )
-
-            ena_busco_concatenated.view()
           
             genomes_ch = ena_assemblies
             genomes_eukcc_ch = ena_genomes_eukcc
-            genomes_busco_ch = ena_busco_concatenated
+            genomes_busco_ch = ena_busco
         }
 
-        // FILTER_QS50(
-        //     genomes_ch,
-        //     genomes_eukcc_ch
-        // )
+        FILTER_QS50(
+            genomes_ch,
+            genomes_eukcc_ch
+        )
 
-        // RENAME_FASTA(
-        //     FILTER_QS50.out.filtered_genomes,
-        //     genomes_name_start,
-        //     genomes_name_end,
-        //     preassigned_accessions,
-        //     FILTER_QS50.out.filtered_csv,
-        //     genomes_prefix
-        // )
+        RENAME_FASTA(
+            FILTER_QS50.out.filtered_genomes,
+            genomes_name_start,
+            genomes_name_end,
+            preassigned_accessions,
+            FILTER_QS50.out.filtered_csv,
+            genomes_prefix
+        )
 
-        // GENERATE_EXTRA_WEIGHT(
-        //     FILTER_QS50.out.filtered_genomes,
-        //     RENAME_FASTA.out.rename_mapping,
-        //     per_genome_category,
-        //     per_study_genomes_category
-        // )
+        GENERATE_EXTRA_WEIGHT(
+            FILTER_QS50.out.filtered_genomes,
+            RENAME_FASTA.out.rename_mapping,
+            per_genome_category,
+            per_study_genomes_category
+        )
         
-        // CALCULATE_ASSEMBLY_STATS(
-        //     RENAME_FASTA.out.renamed_genomes
-        // )
+        CALCULATE_ASSEMBLY_STATS(
+            RENAME_FASTA.out.renamed_genomes
+        )
 
-    // emit:
-    //     genomes = RENAME_FASTA.out.renamed_genomes
-    //     genomes_checkm = RENAME_FASTA.out.renamed_checkm // this is eukcc not checkm but will leave naming for now
-    //     genomes_name_mapping = RENAME_FASTA.out.rename_mapping
-    //     extra_weight_table = GENERATE_EXTRA_WEIGHT.out.extra_weight_table
-    //     qs50_failed = FILTER_QS50.out.failed_genomes
-    //     new_genome_stats = CALCULATE_ASSEMBLY_STATS.out.stats_file
-    //     genomes_busco = genomes_busco_ch // additional busco file for eukaryotes
+    emit:
+        genomes = RENAME_FASTA.out.renamed_genomes
+        genomes_checkm = RENAME_FASTA.out.renamed_checkm // this is eukcc not checkm but will leave naming for now
+        genomes_name_mapping = RENAME_FASTA.out.rename_mapping
+        extra_weight_table = GENERATE_EXTRA_WEIGHT.out.extra_weight_table
+        qs50_failed = FILTER_QS50.out.failed_genomes
+        new_genome_stats = CALCULATE_ASSEMBLY_STATS.out.stats_file
+        genomes_busco = genomes_busco_ch // additional busco file for eukaryotes
 }

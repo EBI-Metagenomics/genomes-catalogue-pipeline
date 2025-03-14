@@ -26,8 +26,8 @@ process BUSCO {
     result_file=\$(ls out/short_summary.specific*.out.txt | head -n 1)
 
     if [ -f "\${result_file}" ]; then
-        result=\$(grep 'C:' "\${result_file}" | head -n 1)
-        echo "${fasta.baseName},\${result}" > "short_summary.specific_${fasta.baseName}.txt"
+        result=\$(grep 'C:' "\${result_file}" | head -n 1 | sed 's?\t??g')
+        echo "${fasta.baseName}\t\${result}" > "short_summary.specific_${fasta.baseName}.txt"
     else
         echo "No result file found starting short_summary.specific..."
         exit 1

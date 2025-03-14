@@ -161,13 +161,20 @@ def rename_clusters(names, cluster_file):
     file_out.close()
 
 
-def rename_csv(names, csv_file):
+def rename_csv(names, csv_file, tsv_file=None):
     clusters_renamed = "renamed_" + os.path.basename(csv_file)
     with open(csv_file, "r") as file_in, open(clusters_renamed, "w") as file_out:
         for line in file_in:
             items = line.strip().split(",")
             genome = names[items[0]] if items[0] in names else items[0]
             file_out.write(",".join([genome] + items[1:3]) + "\n")
+    busco_renamed = "renamed_" + os.path.basename(tsv_file)
+    if tsv_file:
+        with open(tsv_file, "r") as busco_in, open(busco_renamed) as busco_out:
+            for line in busco_in:
+                items = line.strip().split("\t")
+                genome = names[items[0]] if items[0] in names else items[0]
+                file_out.write("\t".join([genome] + items[1:2]) + "\n")
 
 
 def parse_args():
@@ -253,6 +260,15 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--tsv",
+        dest="tsv",
+        required=False,
+        default=None,
+        help="TSV file with busco scores. If provided, the genomes inside the file "
+             "will be renamed using their new filenames and saved into a new file.",
+    )
+
+    parser.add_argument(
         "--map-file",
         dest="map_file",
         required=False,
@@ -283,5 +299,6 @@ if __name__ == "__main__":
         outdir=args.outputdir,
         max_number=args.max,
         csv=args.csv,
+        tsv=args.tsv
         map_file=args.map_file,
     )
