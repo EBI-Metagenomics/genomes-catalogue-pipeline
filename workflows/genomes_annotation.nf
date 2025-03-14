@@ -83,6 +83,7 @@ include { FASTTREE as FASTTREE_BAC } from '../modules/fasttree'
 include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
+include { CATALOGUE_SUMMARY } from '../modules/catalogue_summary'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -433,6 +434,11 @@ workflow GAP {
     FUNCTIONAL_ANNOTATION_SUMMARY(
         faa_and_annotations,
         ch_kegg_classes
+    )
+    
+    CATALOGUE_SUMMARY(
+        METADATA_AND_PHYLOTREE.out.metadata_tsv,
+        MMSEQ_SWF.out.mmseq_90_cluster_tsv
     )
 
     INDEX_FNA(
