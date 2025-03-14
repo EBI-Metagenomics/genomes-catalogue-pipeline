@@ -89,7 +89,7 @@ def rename_fasta(input_file, output_prefix, mgyg_accession, name_dictionary=None
     output_fasta = f"{output_prefix}_{input_file}"
     with open(output_fasta, "w") as output_handle:
         for record in SeqIO.parse(input_file, "fasta"):
-            # sequenced are named as g1.t1, g1.t2, g2.t1 etc., where g is followed by the gene number and t is
+            # sequences are named as g1.t1, g1.t2, g2.t1 etc., where g is followed by the gene number and t is
             # followed by the transcript number
             gene_name, transcript_name = record.id.split(".")
             if create_dictionary:
