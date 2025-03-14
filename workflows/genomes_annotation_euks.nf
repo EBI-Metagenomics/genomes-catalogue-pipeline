@@ -55,8 +55,7 @@ if (params.remove_genomes) {
 */
 
 include { PREPARE_DATA_EUKS } from '../subworkflows/prepare_data_euks' 
-// include { DREP_SWF } from '../subworkflows/drep_swf'
-// include { DREP_LARGE_SWF } from '../subworkflows/drep_large_catalogue_swf'
+include { DREP_SWF } from '../subworkflows/drep_swf'
 // include { GTDBTK_QC } from '../modules/gtdbtk_qc'
 // include { GTDBTK_TAX } from '../modules/gtdbtk_tax'
 // include { PARSE_DOMAIN } from '../modules/parse_domain'
@@ -144,6 +143,13 @@ workflow GAP_EUKS {
             ch_eukcc_db,
             ch_busco_db
         )
+        new_data_checkm = PREPARE_DATA_EUKS.out.genomes_checkm // this is eukcc
+        new_genome_stats = PREPARE_DATA_EUKS.out.new_genome_stats
+        extra_weight_table_new_genomes = PREPARE_DATA_EUKS.out.extra_weight_table
+        new_genomes = PREPARE_DATA_EUKS.out.genomes
+        qs50_failed = PREPARE_DATA_EUKS.out.qs50_failed
+        genomes_name_mapping = PREPARE_DATA_EUKS.out.genomes_name_mapping
+        busco_summary = PREPARE_DATA_EUKS.out.genomes_busco
     } else {
         // if we are not adding new genomes, make dummy files
         new_data_checkm = file("NO_FILE_NEW_GENOMES_CHECKM")
@@ -152,25 +158,23 @@ workflow GAP_EUKS {
         new_genomes = file("NO_FILE_NEW_GENOMES")
         qs50_failed = file("NO_FILE_QS50_FAILED")
         genomes_name_mapping = file("NO_FILE_GENOMES_NAME_MAPPING")
+        busco_summary = channel.empty()
     }
     
-    
-    //         DREP_SWF(
-    //             new_genomes,
-    //             new_data_checkm,
-    //             extra_weight_table_new_genomes
-    //         )
-    //         dereplicated_genomes = DREP_SWF
-    //     all_assembly_stats = new_genome_stats
-    //     checkm_all_genomes = new_data_checkm
-    //     extra_weight_table_all_genomes = extra_weight_table_new_genomes
-    // }
+    // generate species level genome clusters
+    dereplicated_genomes = channel.empty()
+    DREP_SWF(
+        new_genomes,
+        new_data_checkm,
+        extra_weight_table_new_genomes,
+        params.euk_drep_args
+    )
+    dereplicated_genomes = DREP_SWF
+    all_assembly_stats = new_genome_stats
+    checkm_all_genomes = new_data_checkm // this is eukcc
+    extra_weight_table_all_genomes = extra_weight_table_new_genomes
 
     
-    //PLACEHOLDER FOR GENE_CALLING
-    // ch_proteins = file(params.proteome, checkIfExists: true)
-    // ch_genome = Channel.from([ [ [id: params.genome_prefix], file(params.genome) ] ])
-
     // EUK_GENE_CALLING(ch_genome, ch_proteins)
     // if this is an update, do pre-update checks
 
@@ -200,6 +204,11 @@ workflow GAP_EUKS {
     //         [genomeName, domain]
     //     }
     // }
+
+    //PLACEHOLDER FOR GENE_CALLING
+    // ch_proteins = file(params.proteome, checkIfExists: true)
+    // ch_genome = Channel.from([ [ [id: params.genome_prefix], file(params.genome) ] ])
+
             
     // PROCESS_MANY_GENOMES(
     //     dereplicated_genomes.out.many_genomes_fna_tuples,

@@ -24,6 +24,7 @@ process DREP {
     path genomes_directory
     path checkm_csv
     path extra_weights_table
+    val drep_params
 
     output:
     path "drep_output/data_tables/Cdb.csv", emit: cdb_csv
@@ -35,12 +36,7 @@ process DREP {
     """
     dRep dereplicate -g ${genomes_directory}/*.fa \
     -p ${task.cpus} \
-    -pa 0.9 \
-    -sa 0.95 \
-    -nc 0.30 \
-    -cm larger \
-    -comp 50 \
-    -con 5 \
+    ${drep_params} \
     -extraW ${extra_weights_table} \
     --genomeInfo ${checkm_csv} \
     drep_output

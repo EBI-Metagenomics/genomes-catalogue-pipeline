@@ -195,7 +195,8 @@ workflow GAP {
             DREP_SWF(
                 new_genomes,
                 new_data_checkm,
-                extra_weight_table_new_genomes
+                extra_weight_table_new_genomes,
+                params.prok_drep_args
             )
             dereplicated_genomes = DREP_SWF
         } else {
