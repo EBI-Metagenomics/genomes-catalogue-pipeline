@@ -15,7 +15,7 @@ process CATALOGUE_SUMMARY {
 
     script:
     """
-    wc -l ${mmseqs_tsv} > protein_count.txt
+    wc -l ${mmseqs_tsv} | cut -d ' ' -f1 > protein_count.txt
     
     generate_catalogue_summary_json.py \
     -p protein_count.txt \
