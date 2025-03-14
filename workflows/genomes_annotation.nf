@@ -65,6 +65,7 @@ include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
 include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
 include { AMRFINDER_PLUS } from '../modules/amrfinder_plus'
+include { CATALOGUE_SUMMARY } from '../modules/catalogue_summary'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -361,6 +362,11 @@ workflow GAP {
     
     KEGG_COMPLETENESS(
         ANNOTATE.out.eggnog_annotation_tsvs
+    )
+    
+    CATALOGUE_SUMMARY(
+        METADATA_AND_PHYLOTREE.out.metadata_tsv,
+        MMSEQ_SWF.out.mmseq_90_cluster_tsv
     )
 
     INDEX_FNA(
