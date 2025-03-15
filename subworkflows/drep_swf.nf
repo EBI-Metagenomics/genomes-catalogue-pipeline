@@ -11,13 +11,14 @@ workflow DREP_SWF {
         genomes_directory
         checkm_csv
         extra_weight_table
+        drep_args
+
     main:
-
-
         DREP(
             genomes_directory,
             checkm_csv,
-            extra_weight_table
+            extra_weight_table,
+            drep_args
         )
 
         SPLIT_DREP(

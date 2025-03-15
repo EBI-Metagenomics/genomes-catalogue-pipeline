@@ -25,6 +25,7 @@ workflow PREPARE_DATA {
     main:
         genomes_ch = channel.empty()
         genomes_checkm_ch = channel.empty()
+        genomes_busco_ch = file("NO_BUSCO_FILE")
 
         if ( ncbi_assemblies && ena_assemblies ) {
             CHECKM2_NCBI(
@@ -62,7 +63,8 @@ workflow PREPARE_DATA {
             genomes_name_end,
             preassigned_accessions,
             FILTER_QS50.out.filtered_csv,
-            genomes_prefix
+            genomes_prefix,
+            genomes_busco_ch
         )
 
         GENERATE_EXTRA_WEIGHT(

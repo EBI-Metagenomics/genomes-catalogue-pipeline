@@ -28,6 +28,7 @@ workflow PREPARE_DATA_EUKS {
     main:
         genomes_ch = channel.empty()
         genomes_checkm_ch = channel.empty()
+        genomes_busco_ch = file("NO_BUSCO_FILE")
 
         // get channel per genome fasta in path
         if ( ena_assemblies ) {
@@ -64,10 +65,6 @@ workflow PREPARE_DATA_EUKS {
                 keepHeader: true,
                 name: "ncbi_eukcc.csv"
             )
-
-            ncbi_genomes_ch.view()
-            ena_genomes_ch.view()
-
 
             MERGE_NCBI_ENA_EUKS(
                 ncbi_assemblies,
@@ -124,7 +121,8 @@ workflow PREPARE_DATA_EUKS {
             genomes_name_end,
             preassigned_accessions,
             FILTER_QS50.out.filtered_csv,
-            genomes_prefix
+            genomes_prefix,
+            genomes_busco_ch
         )
 
         GENERATE_EXTRA_WEIGHT(
@@ -145,5 +143,5 @@ workflow PREPARE_DATA_EUKS {
         extra_weight_table = GENERATE_EXTRA_WEIGHT.out.extra_weight_table
         qs50_failed = FILTER_QS50.out.failed_genomes
         new_genome_stats = CALCULATE_ASSEMBLY_STATS.out.stats_file
-        genomes_busco = genomes_busco_ch // additional busco file for eukaryotes
+        genomes_busco = RENAME_FASTA.out.busco_renamed // additional busco file for eukaryotes
 }
