@@ -1,5 +1,5 @@
 process REPEAT_MASKER {
-    tag "$meta.id"
+    tag "${genome.baseName}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://dfam/tetools:latest' :
@@ -7,16 +7,16 @@ process REPEAT_MASKER {
 
 
     input:
-    tuple val(meta), path(genome)
-    tuple val(meta), path(library)
+    tuple val(cluster), path(genome), path(proteins)
+    path(library)
 
     output:
-    tuple val(meta), path("*_sm.fa"), emit: masked_genome 
+    path("${genome.baseName}_sm.fa"), emit: masked_genome 
 
     script:
     """
     RepeatMasker -lib ${library} -xsmall ${genome} -pa ${task.cpus}
 
-    mv *.masked "${meta.id}_sm.fa"
+    mv *.masked "${genome.baseName}_sm.fa"
     """
 }

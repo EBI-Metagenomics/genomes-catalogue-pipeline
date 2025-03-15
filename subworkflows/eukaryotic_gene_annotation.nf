@@ -10,30 +10,25 @@ include { BRAKER_POSTPROCESSING } from '../modules/braker_postprocessing.nf'
 
 workflow EUK_GENE_CALLING {
     take:
-        genome
-        proteins
-
+        tuple_genome_proteins
     main:
 
         REPEAT_MODELER(
-            genome
+            tuple_genome_proteins
         )
 
         REPEAT_MASKER(
-            genome, 
+            tuple_genome_proteins, 
             REPEAT_MODELER.out.repeat_families
         )
 
         BRAKER(
             REPEAT_MASKER.out.masked_genome,
-            proteins,
-            [],
-            [],
-            []
+            tuple_genome_proteins,
         )
         
         BRAKER_POSTPROCESSING(
-            genome,
+            REPEAT_MASKER.out.masked_genome,
             BRAKER.out.gff3,
             BRAKER.out.proteins,
             BRAKER.out.ffn
@@ -44,5 +39,6 @@ workflow EUK_GENE_CALLING {
         proteins = BRAKER_POSTPROCESSING.out.renamed_proteins
         ffn = BRAKER_POSTPROCESSING.out.renamed_ffn
         headers_map = BRAKER.out.headers_map
+        softmasked_genome = REPEAT_MASKER.out.masked_genome
 
 }

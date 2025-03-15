@@ -1,5 +1,5 @@
 process REPEAT_MODELER {
-    tag "$meta.id"
+    tag "${genome.baseName}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://dfam/tetools:latest' :
@@ -7,17 +7,17 @@ process REPEAT_MODELER {
 
 
     input:
-    tuple val(meta), path(genome)
+    tuple val(cluster), path(genome), path(proteins)
 
     output:
-    tuple val(meta), path("*families.fa"), emit: repeat_families
-    tuple val(meta), path("*families.stk"), emit: repeat_aligment
-    tuple val(meta), path("*rmod.log"), emit: logile
+    path("*families.fa"), emit: repeat_families
+    path("*families.stk"), emit: repeat_aligment
+    path("*rmod.log"), emit: logile
 
     script:
     """
-    BuildDatabase -name ${meta.id} ${genome}
+    BuildDatabase -name ${genome.baseName} ${genome}
 
-    RepeatModeler -database ${meta.id} -threads ${task.cpus} -LTRStruct
+    RepeatModeler -database ${genome.baseName} -threads ${task.cpus} -LTRStruct
     """
 }

@@ -58,9 +58,9 @@ include { PREPARE_DATA_EUKS } from '../subworkflows/prepare_data_euks'
 include { DREP_SWF } from '../subworkflows/drep_swf'
 include { BAT } from '../modules/bat'
 include { REFORMAT_BAT } from '../modules/reformat_bat_taxonomy'
-// include { PARSE_DOMAIN } from '../modules/parse_domain'
-// include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
-// include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
+include { PARSE_DOMAIN } from '../modules/parse_domain'
+include { PROCESS_MANY_GENOMES_EUKS } from '../subworkflows/process_many_genomes_euks'
+include { PROCESS_SINGLETON_GENOMES_EUKS } from '../subworkflows/process_singleton_genomes_euks'
 // include { GENERATE_COMBINED_QC_REPORT } from '../modules/generate_combined_qc_report'
 // include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
 // include { ANNOTATE_PROKARYOTES } from '../subworkflows/annotate_prokaryotes'
@@ -122,6 +122,8 @@ ch_antismash_db = file(params.antismash_db)
 
 ch_cat_db_folder = file(params.cat_db_folder)
 ch_cat_taxonomy_db = file(params.cat_taxonomy_db)
+
+ch_protein_evidence = file(params.protein_evidence)
 
 /*
     ~~~~~~~~~~~~~~~~~~
@@ -197,39 +199,63 @@ workflow GAP_EUKS {
 
     REFORMAT_BAT(taxonomy_ch)
     reformatted_tax = REFORMAT_BAT.out.taxonomy
-    reformatted_tax.view()
-
         
-    // PARSE_DOMAIN(
-    //     gtdbtk_tables_qc_ch,
-    //     dereplicated_genomes.out.drep_split_text
+    PARSE_DOMAIN(
+        reformatted_tax,
+        dereplicated_genomes.out.drep_split_text
+    )
+    
+    accessions_with_domains_ch = PARSE_DOMAIN.out.detected_domains.flatMap { file ->
+        file.readLines().collect { line ->
+            def (genomeName, domain) = line.split(',')
+            [genomeName, domain]
+        }
+    }
+
+    PROCESS_MANY_GENOMES_EUKS(
+        dereplicated_genomes.out.many_genomes_fna_tuples,
+        genomes_name_mapping,
+        ch_protein_evidence
+    )
+
+    PROCESS_SINGLETON_GENOMES_EUKS(
+        dereplicated_genomes.out.single_genomes_fna_tuples,
+        genomes_name_mapping,
+        ch_protein_evidence
+    )
+    
+    // MMSEQ_SWF(
+    //     PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),
+    //     PROCESS_SINGLETON_GENOMES.out.prokka_faa.map({ it[1] }).collectFile(name: "singleton_prokka.faa"),
+    //     genomes_name_mapping.first(),
+    //     ch_mmseq_coverage_threshold
+    // )
+
+    // cluster_reps_faas = PROCESS_MANY_GENOMES.out.rep_prokka_faa.mix(
+    //     PROCESS_SINGLETON_GENOMES.out.prokka_faa
+    // )
+
+    // cluster_reps_fnas = PROCESS_MANY_GENOMES.out.rep_prokka_fna.mix(
+    //     PROCESS_SINGLETON_GENOMES.out.prokka_fna
+    // )
+
+    // cluster_reps_gbks = PROCESS_MANY_GENOMES.out.rep_prokka_gbk.mix(
+    //     PROCESS_SINGLETON_GENOMES.out.prokka_gbk
     // )
     
-    // accessions_with_domains_ch = PARSE_DOMAIN.out.detected_domains.flatMap { file ->
-    //     file.readLines().collect { line ->
-    //         def (genomeName, domain) = line.split(',')
-    //         [genomeName, domain]
-    //     }
-    // }
-
-    //PLACEHOLDER FOR GENE_CALLING
-    // ch_proteins = file(params.proteome, checkIfExists: true)
-    // ch_genome = Channel.from([ [ [id: params.genome_prefix], file(params.genome) ] ])
-    // EUK_GENE_CALLING(ch_genome, ch_proteins)
-
-            
-    // PROCESS_MANY_GENOMES(
-    //     dereplicated_genomes.out.many_genomes_fna_tuples,
-    //     accessions_with_domains_ch
+    // cluster_reps_gffs = PROCESS_MANY_GENOMES.out.rep_prokka_gff.mix(
+    //     PROCESS_SINGLETON_GENOMES.out.prokka_gff
     // )
 
-    // PROCESS_SINGLETON_GENOMES(
-    //     dereplicated_genomes.out.single_genomes_fna_tuples,
-    //     checkm_all_genomes,
-    //     accessions_with_domains_ch,
-    //     ch_gunc_db
+    // all_prokka_fna = PROCESS_SINGLETON_GENOMES.out.prokka_fna.mix(
+    //     PROCESS_MANY_GENOMES.out.prokka_fnas
     // )
-    
+
+    // species_reps_names_list = PROCESS_MANY_GENOMES.out.rep_prokka_fna.map({ it[0] }) \
+    //     .mix(PROCESS_SINGLETON_GENOMES.out.prokka_fna.map({ it[0] })) \
+    //     .collectFile(name: "species_reps_names_list.txt", newLine: true)
+
+
     // GENERATE_COMBINED_QC_REPORT(
     //     qs50_failed,
     //     PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
@@ -288,38 +314,6 @@ workflow GAP_EUKS {
     // gtdbtk_tables_ch = channel.empty() \
     //     .mix(GTDBTK_TAX.out.gtdbtk_summary_bac120, GTDBTK_TAX.out.gtdbtk_summary_arc53) \
     //     .collectFile(name: 'gtdbtk.summary.tsv')
-
-    
-    // MMSEQ_SWF(
-    //     PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_faa.map({ it[1] }).collectFile(name: "singleton_prokka.faa"),
-    //     genomes_name_mapping.first(),
-    //     ch_mmseq_coverage_threshold
-    // )
-
-    // cluster_reps_faas = PROCESS_MANY_GENOMES.out.rep_prokka_faa.mix(
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_faa
-    // )
-
-    // cluster_reps_fnas = PROCESS_MANY_GENOMES.out.rep_prokka_fna.mix(
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_fna
-    // )
-
-    // cluster_reps_gbks = PROCESS_MANY_GENOMES.out.rep_prokka_gbk.mix(
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_gbk
-    // )
-    
-    // cluster_reps_gffs = PROCESS_MANY_GENOMES.out.rep_prokka_gff.mix(
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_gff
-    // )
-
-    // all_prokka_fna = PROCESS_SINGLETON_GENOMES.out.prokka_fna.mix(
-    //     PROCESS_MANY_GENOMES.out.prokka_fnas
-    // )
-
-    // species_reps_names_list = PROCESS_MANY_GENOMES.out.rep_prokka_fna.map({ it[0] }) \
-    //     .mix(PROCESS_SINGLETON_GENOMES.out.prokka_fna.map({ it[0] })) \
-    //     .collectFile(name: "species_reps_names_list.txt", newLine: true)
 
     // ANNOTATE_ALL_DOMAINS(
     //     MMSEQ_SWF.out.mmseq_90_cluster_tsv,

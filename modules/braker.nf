@@ -1,5 +1,5 @@
 process BRAKER {
-    tag "$meta.id"
+    tag "${genome.baseName}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://teambraker/braker3:latest' :
@@ -7,40 +7,28 @@ process BRAKER {
 
 
     input:
-    tuple val(meta), path(genome)
-    path faa
-    path bam
-    path gff
-    val species
+    path(masked_genome) // genome fasta with softmasked repeat
+    tuple val(cluster), path(genome), path(proteins) // tuple with original genome fasta (for naming) and protein evidence
 
     output:
-    tuple val(meta), path("${prefix}_braker/*.gtf"), emit: gtf
-    tuple val(meta), path("${prefix}_braker/*.gff3"), emit: gff3
-    tuple val(meta), path("${prefix}_braker/*.aa"), emit: proteins
-    tuple val(meta), path("${prefix}_braker/*.codingseq"), emit: ffn
-    tuple val(meta), path("${prefix}_braker/*.map"), emit: headers_map
+    path("${genome.baseName}_braker/*.gtf"), emit: gtf
+    path("${genome.baseName}_braker/*.gff3"), emit: gff3
+    path("${genome.baseName}_braker/*.aa"), emit: proteins
+    path("${genome.baseName}_braker/*.codingseq"), emit: ffn
+    path("${genome.baseName}_braker/*.map"), emit: headers_map
     path "versions.yml" , emit: versions
 
-    when:
-    task.ext.when == null || task.ext.when
-
     script:
-    def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
-    def species = species ? "--species ${species}" : ''
-    def accepted_hits = bam ? "--bam ${bam}" : ''
-    def proteins = faa ? "--prot_seq ${faa}" : ''
-    def hints = gff ? "--hints ${gff}" : ''
+    def args = ""
+    if (proteins.name != "NO_PROTEINS.faa") {
+        args += "--prot_seq ${proteins} "
+    }
     """
     braker.pl \\
         $args \\
-        --genome ${genome} \\
-        $species \\
-        $accepted_hits \\
-        $proteins \\
-        $hints \\
+        --genome ${masked_genome} \\
         --threads $task.cpus \\
-        --workingdir "${prefix}_braker" \\
+        --workingdir "${genome.baseName}_braker" \\
         --min_contig=1500 \\
         --gff3
 
