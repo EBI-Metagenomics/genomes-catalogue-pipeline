@@ -23,8 +23,9 @@ from Bio import SeqIO
 
 
 def main(gff, ffn, faa, genome_fasta, mgyg_accession, output_prefix):
-    # Rename proteins and CDS in the FASTA files
-    gene_map = rename_fasta(faa, output_prefix, mgyg_accession, create_dictionary=True)
+    # Rename proteins in the protein FASTA file and remove any asterisks from the sequence
+    gene_map = rename_fasta(faa, output_prefix, mgyg_accession, create_dictionary=True, remove_asterisks=True)
+    # Rename CDS in the coding sequence FASTA file
     rename_fasta(ffn, output_prefix, mgyg_accession, gene_map)
     
     # Create a GFF header from the genome assembly file and store the assembly in a variable
@@ -84,7 +85,8 @@ def process_genome_fasta(fasta_file):
     return "\n".join(header), "".join(fasta_content)
         
 
-def rename_fasta(input_file, output_prefix, mgyg_accession, name_dictionary=None, create_dictionary=False):
+def rename_fasta(input_file, output_prefix, mgyg_accession, name_dictionary=None, create_dictionary=False, 
+                 remove_asterisks=False):
     gene_map = {} if create_dictionary else None
     output_fasta = f"{output_prefix}_{input_file}"
     with open(output_fasta, "w") as output_handle:
@@ -102,7 +104,8 @@ def rename_fasta(input_file, output_prefix, mgyg_accession, name_dictionary=None
             new_header = f"{new_gene_name}.{transcript_name}"
             record.id = new_header
             record.description = ""  # Remove additional descriptions
-            
+            if remove_asterisks:
+                record.seq = record.seq.ungap("*")
             SeqIO.write(record, output_handle, "fasta")
             
     return gene_map if create_dictionary else None
