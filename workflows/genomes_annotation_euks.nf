@@ -56,8 +56,8 @@ if (params.remove_genomes) {
 
 include { PREPARE_DATA_EUKS } from '../subworkflows/prepare_data_euks' 
 include { DREP_SWF } from '../subworkflows/drep_swf'
-// include { GTDBTK_QC } from '../modules/gtdbtk_qc'
-// include { GTDBTK_TAX } from '../modules/gtdbtk_tax'
+include { BAT } from '../modules/bat'
+include { REFORMAT_BAT } from '../modules/reformat_bat_taxonomy'
 // include { PARSE_DOMAIN } from '../modules/parse_domain'
 // include { PROCESS_MANY_GENOMES } from '../subworkflows/process_many_genomes'
 // include { PROCESS_SINGLETON_GENOMES } from '../subworkflows/process_singleton_genomes'
@@ -120,6 +120,9 @@ ch_dbcan_db = file(params.dbcan_db)
 
 ch_antismash_db = file(params.antismash_db)
 
+ch_cat_db_folder = file(params.cat_db_folder)
+ch_cat_taxonomy_db = file(params.cat_taxonomy_db)
+
 /*
     ~~~~~~~~~~~~~~~~~~
        Run workflow
@@ -174,24 +177,28 @@ workflow GAP_EUKS {
     checkm_all_genomes = new_data_checkm // this is eukcc
     extra_weight_table_all_genomes = extra_weight_table_new_genomes
 
+    // get fasta paths for rep genomes
+    gdtb_input_ch = dereplicated_genomes.out.single_genomes_fna_tuples
+        .map({ it[1] })
+        .mix( dereplicated_genomes.out.many_genomes_fna_tuples.filter { it[1].name.contains(it[0]) }
+        .map({ it[1] })
+        )
+
+    BAT( 
+        gdtb_input_ch,
+        ch_cat_db_folder,
+        ch_cat_taxonomy_db
+    )
     
-    // EUK_GENE_CALLING(ch_genome, ch_proteins)
-    // if this is an update, do pre-update checks
+    taxonomy_ch = BAT.out.bat_names.collectFile(
+        keepHeader: true,
+        name: "bat_taxonomy.txt"
+    )
 
-    // GTDBTK_QC(
-    //   dereplicated_genomes.out.single_genomes_fna_tuples.map({ it[1] })
-    //       .mix(
-    //           dereplicated_genomes.out.many_genomes_fna_tuples.filter { it[1].name.contains(it[0]) }
-    //               .map({ it[1] })
-    //       )
-    //     .collect(),
-    //     channel.value("fa"), // genome file extension
-    //     ch_gtdb_db
-    // )
+    REFORMAT_BAT(taxonomy_ch)
+    reformatted_tax = REFORMAT_BAT.out.taxonomy
+    reformatted_tax.view()
 
-    // gtdbtk_tables_qc_ch = channel.empty() \
-    //     .mix(GTDBTK_QC.out.gtdbtk_summary_bac120, GTDBTK_QC.out.gtdbtk_summary_arc53) \
-    //     .collectFile(name: 'gtdbtk.summary.tsv')
         
     // PARSE_DOMAIN(
     //     gtdbtk_tables_qc_ch,
@@ -208,6 +215,7 @@ workflow GAP_EUKS {
     //PLACEHOLDER FOR GENE_CALLING
     // ch_proteins = file(params.proteome, checkIfExists: true)
     // ch_genome = Channel.from([ [ [id: params.genome_prefix], file(params.genome) ] ])
+    // EUK_GENE_CALLING(ch_genome, ch_proteins)
 
             
     // PROCESS_MANY_GENOMES(
