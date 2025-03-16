@@ -53,6 +53,7 @@ workflow ANNOTATE_ALL_DOMAINS {
         prokka_faa
         prokka_gff
         species_reps_names_list
+        accessions_with_domains_ch
         interproscan_db
         eggnog_db
         eggnog_diamond_db
@@ -113,7 +114,11 @@ workflow ANNOTATE_ALL_DOMAINS {
         )
         
         DBCAN(
-            prokka_faa.join(prokka_gff),
+            prokka_faa.join(
+                prokka_gff
+                ).join(
+                    accessions_with_domains_ch, remainder: true
+                ).filter { it -> it[1] != null },
             dbcan_db
         ) 
         

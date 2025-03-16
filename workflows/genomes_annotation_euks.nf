@@ -323,6 +323,7 @@ workflow GAP_EUKS {
     //     cluster_reps_faas,
     //     cluster_reps_gffs,
     //     species_reps_names_list,
+    //     accessions_with_domains_ch,
     //     ch_interproscan_db,
     //     ch_eggnog_db,
     //     ch_eggnog_diamond_db,
