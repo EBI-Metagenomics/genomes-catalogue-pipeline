@@ -61,8 +61,9 @@ include { REFORMAT_BAT } from '../modules/reformat_bat_taxonomy'
 include { PARSE_DOMAIN } from '../modules/parse_domain'
 include { PROCESS_MANY_GENOMES_EUKS } from '../subworkflows/process_many_genomes_euks'
 include { PROCESS_SINGLETON_GENOMES_EUKS } from '../subworkflows/process_singleton_genomes_euks'
-// include { GENERATE_COMBINED_QC_REPORT } from '../modules/generate_combined_qc_report'
-// include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
+include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
+include { BUSCO } from '../modules/busco'
+include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
 // include { ANNOTATE_PROKARYOTES } from '../subworkflows/annotate_prokaryotes'
 // include { ANNOTATE_ALL_DOMAINS } from '../subworkflows/annotate_all_domains'
 // include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
@@ -224,96 +225,59 @@ workflow GAP_EUKS {
         ch_protein_evidence
     )
     
-    // MMSEQ_SWF(
-    //     PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_faa.map({ it[1] }).collectFile(name: "singleton_prokka.faa"),
-    //     genomes_name_mapping.first(),
-    //     ch_mmseq_coverage_threshold
-    // )
+    MMSEQ_SWF(
+        PROCESS_MANY_GENOMES_EUKS.out.braker_faas.map({ it[1] }).collectFile(name: "pangenome_braker.faa"),
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa.map({ it[1] }).collectFile(name: "singleton_braker.faa"),
+        genomes_name_mapping.first(),
+        ch_mmseq_coverage_threshold
+    )
 
-    // cluster_reps_faas = PROCESS_MANY_GENOMES.out.rep_prokka_faa.mix(
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_faa
-    // )
+    cluster_reps_faas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_faa.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa
+    )
 
-    // cluster_reps_fnas = PROCESS_MANY_GENOMES.out.rep_prokka_fna.mix(
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_fna
-    // )
-
-    // cluster_reps_gbks = PROCESS_MANY_GENOMES.out.rep_prokka_gbk.mix(
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_gbk
-    // )
+    cluster_reps_fnas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_fna.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna
+    )
     
-    // cluster_reps_gffs = PROCESS_MANY_GENOMES.out.rep_prokka_gff.mix(
-    //     PROCESS_SINGLETON_GENOMES.out.prokka_gff
-    // )
+    cluster_reps_gffs = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_gff.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_gff
+    )
 
-    // all_prokka_fna = PROCESS_SINGLETON_GENOMES.out.prokka_fna.mix(
-    //     PROCESS_MANY_GENOMES.out.prokka_fnas
-    // )
+    all_braker_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.mix(
+        PROCESS_MANY_GENOMES_EUKS.out.braker_fnas
+    )
 
-    // species_reps_names_list = PROCESS_MANY_GENOMES.out.rep_prokka_fna.map({ it[0] }) \
-    //     .mix(PROCESS_SINGLETON_GENOMES.out.prokka_fna.map({ it[0] })) \
-    //     .collectFile(name: "species_reps_names_list.txt", newLine: true)
+    species_reps_names_list = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_fna.map({ it[0] }) \
+        .mix(PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.map({ it[0] })) \
+        .collectFile(name: "species_reps_names_list.txt", newLine: true)
 
 
-    // GENERATE_COMBINED_QC_REPORT(
-    //     qs50_failed,
-    //     PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt,
-    //     PARSE_DOMAIN.out.detected_domains
-    // )
-
-    // // Separate accessions into those we don't know domain for (Undefined) and those that we do
-    // accessions_with_domains_ch
-    // .branch {
-    //     defined: it[1] != "Undefined"
-    //     return it[0]
-    //     undefined: it[1] == "Undefined"
-    //     return it[0]
-    // }
-    // .set { domain_splits }
+    // Separate accessions into those we don't know domain for (Undefined) and those that we do
+    accessions_with_domains_ch
+    .branch {
+        defined: it[1] != "Undefined"
+        return it[0]
+        undefined: it[1] == "Undefined"
+        return it[0]
+    }
+    .set { domain_splits }
     
-    // // Add "to_remove" to accessions that have an undefined domain
-    // undefined_genomes = domain_splits.undefined.map(it -> [it, "to_remove"])
-    
-    // // Do the same with genomes that were removed by GUNC (these are loaded from file first)
-    // gunc_removed_genomes = PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.map { file_path ->
-    //     def contents = file(file_path).splitText().collect { line ->
-    //     line.trim()
-    //     }
-    //     return contents
-    // }.flatten().map(it -> [it, "to_remove"])
-    
-    // // Make a single set of tuples to remove, then remove these from fna tuples for singleton genomes
-    // combined_list_to_remove = gunc_removed_genomes.concat(undefined_genomes)
-    // filtered_single_genome_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples \
-    //     .join(combined_list_to_remove, remainder: true) \
-    //     .filter { genome_name, fa_path, remove_flag -> remove_flag == null} \
-    //     .map { genome_name, fa_path, remove_flag -> [genome_name, fa_path] }
-    
-    // GTDBTK_TAX(
-    //     filtered_single_genome_fna_tuples 
-    //     .map({ it[1] }) 
-    //     .mix( 
-    //         dereplicated_genomes.out.many_genomes_fna_tuples 
-    //             .filter { 
-    //                 it[1].name.contains(it[0])
-    //             }
-    //             .map({ it[1] })
-    //     ) 
-    //     .collect(),
-    //     channel.value("fa"), // genome file extension
-    //     ch_gtdb_db,
-    //     combined_list_to_remove.count(),
-    //     GTDBTK_QC.out.gtdbtk_summary_bac120.ifEmpty(file("EMPTY")),
-    //     GTDBTK_QC.out.gtdbtk_summary_arc53.ifEmpty(file("EMPTY")),
-    //     GTDBTK_QC.out.gtdbtk_user_msa_bac120.ifEmpty(file("EMPTY")),
-    //     GTDBTK_QC.out.gtdbtk_user_msa_ar53.ifEmpty(file("EMPTY")),
-    //     GTDBTK_QC.out.gtdbtk_output_tarball
-    // )
+    // Add "to_remove" to accessions that have an undefined domain
+    undefined_genomes = domain_splits.undefined.map(it -> [it, "to_remove"])
+        
+    // Make a single set of tuples to remove, then remove these from fna tuples for singleton genomes
+    filtered_single_genome_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples \
+        .join(undefined_genomes, remainder: true) \
+        .filter { genome_name, fa_path, remove_flag -> remove_flag == null} \
+        .map { genome_name, fa_path, remove_flag -> [genome_name, fa_path] }
 
-    // gtdbtk_tables_ch = channel.empty() \
-    //     .mix(GTDBTK_TAX.out.gtdbtk_summary_bac120, GTDBTK_TAX.out.gtdbtk_summary_arc53) \
-    //     .collectFile(name: 'gtdbtk.summary.tsv')
+
+    // tree generation
+    BUSCO(cluster_reps_fnas, ch_busco_db)
+    busco_folders = BUSCO.out.busco_folder.collect()
+    BUSCO_PHYLOGENOMICS(busco_folders)
+
 
     // ANNOTATE_ALL_DOMAINS(
     //     MMSEQ_SWF.out.mmseq_90_cluster_tsv,
@@ -323,7 +287,6 @@ workflow GAP_EUKS {
     //     cluster_reps_faas,
     //     cluster_reps_gffs,
     //     species_reps_names_list,
-    //     accessions_with_domains_ch,
     //     ch_interproscan_db,
     //     ch_eggnog_db,
     //     ch_eggnog_diamond_db,
@@ -364,35 +327,8 @@ workflow GAP_EUKS {
     //     all_assembly_stats
     // )
 
-    // /*
-    // IQTree needs at least 3 sequences, but it's too slow for more than 2000 sequences so we use FastTree in that case
-    // */
-    // def treeCreationCriteria = branchCriteria {
-    //     iqtree: file(it).countFasta() > 2 && file(it).countFasta() < 2000
-    //     fasttree: file(it).countFasta() >= 2000
-    // }
-
-    // GTDBTK_TAX.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
-
-    // IQTREE_BAC(
-    //     gtdbtk_user_msa_bac120.iqtree,
-    //     channel.value("bac120")
-    // )
-    // FASTTREE_BAC(
-    //     gtdbtk_user_msa_bac120.fasttree,
-    //     channel.value("bac120")
-    // )
-
     // GTDBTK_TAX.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
 
-    // IQTREE_AR(
-    //     gtdbtk_user_msa_ar53.iqtree,
-    //     channel.value("ar53")
-    // )
-    // FASTTREE_AR(
-    //     gtdbtk_user_msa_ar53.fasttree,
-    //     channel.value("ar53")
-    // )
 
     // faa_and_annotations = cluster_reps_faas.join(
     //     ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs
@@ -405,9 +341,9 @@ workflow GAP_EUKS {
     //     ch_kegg_classes
     // )
 
-    // INDEX_FNA(
-    //     all_prokka_fna
-    // )
+    INDEX_FNA(
+        all_braker_fna
+    )
 
     // cluster_reps_gff = PROCESS_SINGLETON_GENOMES.out.prokka_gff.mix(
     //     PROCESS_MANY_GENOMES.out.rep_prokka_gff

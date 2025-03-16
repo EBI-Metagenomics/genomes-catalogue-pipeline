@@ -10,6 +10,7 @@ process BUSCO {
 
     output:
     path "short_summary.specific_${fasta.baseName}.txt", emit: busco_summary
+    path "${fasta.baseName}", emit: busco_folder
 
     script:
     """
@@ -17,13 +18,13 @@ process BUSCO {
     busco  --offline \
             -i ${fasta} \
             -m 'genome' \
-            -o out \
+            -o ${fasta.baseName} \
             --auto-lineage-euk \
             --download_path ${busco_db} \
             -c ${task.cpus}
 
     #   parse and output genomes id and busco scores as csv
-    result_file=\$(ls out/short_summary.specific*.out.txt | head -n 1)
+    result_file=\$(ls ${fasta.baseName}/short_summary.specific*.out.txt | head -n 1)
 
     if [ -f "\${result_file}" ]; then
         result=\$(grep 'C:' "\${result_file}" | head -n 1 | sed 's?\t??g')

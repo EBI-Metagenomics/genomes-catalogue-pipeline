@@ -23,8 +23,8 @@ workflow PROCESS_SINGLETON_GENOMES_EUKS {
         EUK_GENE_CALLING(GROUP_GENOME_PROTEINS.out.tuple_with_proteins)
 
     emit:
-        prokka_gff = EUK_GENE_CALLING.out.gff
-        prokka_faa = EUK_GENE_CALLING.out.proteins
-        prokka_fna = EUK_GENE_CALLING.out.softmasked_genome
-        prokka_ffn = EUK_GENE_CALLING.out.ffn
+        braker_gff = EUK_GENE_CALLING.out.gff
+        braker_faa = EUK_GENE_CALLING.out.proteins
+        braker_fna = EUK_GENE_CALLING.out.softmasked_genome
+        braker_ffn = EUK_GENE_CALLING.out.ffn
 }
