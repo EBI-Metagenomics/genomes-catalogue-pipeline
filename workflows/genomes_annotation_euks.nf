@@ -82,6 +82,7 @@ include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
 // include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 // include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 // include { MASH_SKETCH } from '../modules/mash_sketch'
+// include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 include {EUK_GENE_CALLING } from '../subworkflows/eukaryotic_gene_annotation'
 
 /*
@@ -286,7 +287,6 @@ workflow GAP_EUKS {
     //     cluster_reps_gbks,
     //     cluster_reps_faas,
     //     cluster_reps_gffs,
-    //     species_reps_names_list,
     //     accessions_with_domains_ch,
     //     ch_interproscan_db,
     //     ch_eggnog_db,
@@ -305,6 +305,10 @@ workflow GAP_EUKS {
     //)
     // ips_annotation_tsvs = ANNOTATE_EUKARYOTES.out.ips_annotation_tsvs
     // eggnog_annotation_tsvs = ANNOTATE_EUKARYOTES.out.eggnog_annotation_tsvs
+    
+    // KEGG_COMPLETENESS(
+    //    eggnog_annotation_tsvs
+    //    )
     
     // DETECT_RNA(
     //     all_prokka_fna,

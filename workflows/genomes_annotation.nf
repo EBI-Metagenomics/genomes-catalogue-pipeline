@@ -83,6 +83,7 @@ include { FASTTREE as FASTTREE_BAC } from '../modules/fasttree'
 include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
+include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -354,7 +355,6 @@ workflow GAP {
         cluster_reps_gbks,
         cluster_reps_faas,
         cluster_reps_gffs,
-        species_reps_names_list,
         accessions_with_domains_ch,
         ch_interproscan_db,
         ch_eggnog_db,
@@ -369,9 +369,18 @@ workflow GAP {
         cluster_reps_faas,
         cluster_reps_gffs,
         cluster_reps_fnas,
-        ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs,
+        ANNOTATE_ALL_DOMAINS.out.interproscan_annotations_mmseqs90,
+        ANNOTATE_ALL_DOMAINS.out.eggnog_annotations_mmseqs90,
+        species_reps_names_list,
+        MMSEQ_SWF.out.mmseq_90_cluster_tsv,
         ch_defense_finder_db
     )
+    ips_annotation_tsvs = ANNOTATE_PROKARYOTES.out.ips_annotation_tsvs
+    eggnog_annotation_tsvs = ANNOTATE_PROKARYOTES.out.eggnog_annotation_tsvs
+    
+    KEGG_COMPLETENESS(
+        eggnog_annotation_tsvs
+        )
     
     DETECT_RNA(
         all_prokka_fna,
@@ -427,9 +436,9 @@ workflow GAP {
     )
 
     faa_and_annotations = cluster_reps_faas.join(
-        ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs
+        ips_annotation_tsvs
     ).join(
-        ANNOTATE_ALL_DOMAINS.out.eggnog_annotation_tsvs
+        eggnog_annotation_tsvs
     )
 
     FUNCTIONAL_ANNOTATION_SUMMARY(
@@ -448,10 +457,10 @@ workflow GAP {
     // Select the only the reps //
     // Those where the cluster-name and the file name match
     // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv
-    reps_ips = ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs.filter {
+    reps_ips = ips_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
-    reps_eggnog = ANNOTATE_ALL_DOMAINS.out.eggnog_annotation_tsvs.filter {
+    reps_eggnog = eggnog_annotation_tsvs.filter {
         it[1].name.contains(it[0])
     }
     all_ncrna = DETECT_RNA.out.ncrna_tblout.filter {

@@ -5,11 +5,9 @@
 include { IPS } from '../modules/interproscan'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ORTHOLOGS } from '../modules/eggnog'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
-include { PER_GENOME_ANNOTATION_GENERATOR } from '../modules/per_genome_annotations'
 include { DBCAN } from '../modules/dbcan'
 include { ANTISMASH } from '../modules/antismash'
 include { ANTISMASH_MAKE_GFF } from '../modules/antismash_make_gff'
-include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 
 
 process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
@@ -52,7 +50,6 @@ workflow ANNOTATE_ALL_DOMAINS {
         prokka_gbk
         prokka_faa
         prokka_gff
-        species_reps_names_list
         accessions_with_domains_ch
         interproscan_db
         eggnog_db
@@ -107,12 +104,6 @@ workflow ANNOTATE_ALL_DOMAINS {
             mmseq_90_tarball
         )
 
-        PER_GENOME_ANNOTATION_GENERATOR(
-            interproscan_annotations,
-            eggnog_mapper_annotations,
-            species_reps_names_list,
-            mmseq_90_tsv
-        )
         
         DBCAN(
             prokka_faa.join(
@@ -132,25 +123,11 @@ workflow ANNOTATE_ALL_DOMAINS {
             ANTISMASH.out.antismash_json
         )     
 
-        // Group by cluster //
-        per_genome_ips_annotations = PER_GENOME_ANNOTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
-            def key = file.name.toString().tokenize('_').get(0)
-            return tuple(key, file)
-        }
-
-        per_genome_eggnog_annotations = PER_GENOME_ANNOTATION_GENERATOR.out.eggnog_annotation_tsvs | flatten | map { file ->
-            def key = file.name.toString().tokenize('_').get(0)
-            return tuple(key, file)
-        }
-        
-        KEGG_COMPLETENESS(
-            per_genome_eggnog_annotations
-        )
-
 
     emit:
-        ips_annotation_tsvs = per_genome_ips_annotations
-        eggnog_annotation_tsvs = per_genome_eggnog_annotations
         dbcan_gffs = DBCAN.out.dbcan_gff
         antismash_gffs = ANTISMASH_MAKE_GFF.out.antismash_gff
+        interproscan_annotations_mmseqs90 = interproscan_annotations
+        eggnog_annotations_mmseqs90 = eggnog_mapper_annotations
+        
 }
