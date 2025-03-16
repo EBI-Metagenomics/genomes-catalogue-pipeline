@@ -88,6 +88,8 @@ def print_gff(input_folder, outfile, dbcan_version, substrates, genome_gff_lines
                         fields = gff_line.strip().split("\t")
                         # Replace the tool
                         fields[1] = f"dbCAN:{dbcan_version}"
+                        # Replace the feature
+                        fields[2] = "CAZyme"
                         # Replace the confidence value
                         fields[5] = "."
                         # Keep only the ID in the 9th column
