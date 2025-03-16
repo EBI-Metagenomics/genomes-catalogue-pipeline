@@ -379,7 +379,7 @@ workflow GAP_EUKS {
     // .map { it -> [it[0], it[2]] }  // 
         
     // // REPS //
-    // ANNOTATE_GFF(
+    // ANNOTATE_EUK_GFF(
     //     cluster_reps_gff.join(
     //         reps_eggnog
     //     ).join(
@@ -387,21 +387,11 @@ workflow GAP_EUKS {
     //     ).join(
     //         reps_trna_gff
     //     ).join(
-    //         ANNOTATE_PROKARYOTES.out.crisprcasfinder_hq_gff, remainder: true
-    //     ).join(
-    //         ANNOTATE_PROKARYOTES.out.amrfinder_tsv, remainder: true
-    //     ).join(
     //         ANNOTATE_ALL_DOMAINS.out.antismash_gffs, remainder: true
-    //     ).join(
-    //         ANNOTATE_PROKARYOTES.out.gecco_gffs, remainder: true
     //     ).join(
     //         ANNOTATE_ALL_DOMAINS.out.dbcan_gffs, remainder: true
     //     ).join(
-    //         ANNOTATE_PROKARYOTES.out.defense_finder_gffs, remainder: true
-    //     ).join(
     //         reps_ips
-    //     ).join(
-    //         ANNOTATE_PROKARYOTES.out.sanntis_annotation_gffs, remainder: true
     //     )
     // )
 
