@@ -64,7 +64,7 @@ include { PROCESS_SINGLETON_GENOMES_EUKS } from '../subworkflows/process_singlet
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
 include { BUSCO } from '../modules/busco'
 include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
-// include { ANNOTATE_PROKARYOTES } from '../subworkflows/annotate_prokaryotes'
+// include { ANNOTATE_EUKARYOTES } from '../subworkflows/annotate_eukaryotes'
 // include { ANNOTATE_ALL_DOMAINS } from '../subworkflows/annotate_all_domains'
 // include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
 // include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
@@ -296,14 +296,15 @@ workflow GAP_EUKS {
     //     ch_antismash_db
     // )
     
-    // ANNOTATE_PROKARYOTES(
-    //     cluster_reps_gbks,
+    // ANNOTATE_EUKARYOTES(
     //     cluster_reps_faas,
-    //     cluster_reps_gffs,
-    //     cluster_reps_fnas,
-    //     ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs,
-    //     ch_defense_finder_db
-    // )
+    //     ch_interproscan_db,
+    //     ch_eggnog_db,
+    //     ch_eggnog_diamond_db,
+    //     ch_eggnog_data_dir
+    //)
+    // ips_annotation_tsvs = ANNOTATE_EUKARYOTES.out.ips_annotation_tsvs
+    // eggnog_annotation_tsvs = ANNOTATE_EUKARYOTES.out.eggnog_annotation_tsvs
     
     // DETECT_RNA(
     //     all_prokka_fna,
@@ -332,9 +333,9 @@ workflow GAP_EUKS {
 
 
     // faa_and_annotations = cluster_reps_faas.join(
-    //     ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs
+    //     ips_annotation_tsvs
     // ).join(
-    //     ANNOTATE_ALL_DOMAINS.out.eggnog_annotation_tsvs
+    //     eggnog_annotation_tsvs
     // )
 
     // FUNCTIONAL_ANNOTATION_SUMMARY(
@@ -353,10 +354,10 @@ workflow GAP_EUKS {
     // // Select the only the reps //
     // // Those where the cluster-name and the file name match
     // // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv
-    // reps_ips = ANNOTATE_ALL_DOMAINS.out.ips_annotation_tsvs.filter {
+    // reps_ips = ips_annotation_tsvs.filter {
     //     it[1].name.contains(it[0])
     // }
-    // reps_eggnog = ANNOTATE_ALL_DOMAINS.out.eggnog_annotation_tsvs.filter {
+    // reps_eggnog = eggnog_annotation_tsvs.filter {
     //     it[1].name.contains(it[0])
     // }
     // all_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
