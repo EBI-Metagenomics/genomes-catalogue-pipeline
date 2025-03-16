@@ -11,11 +11,11 @@ process IPS {
     label 'ips'
 
     input:
-    file faa_fasta
+    tuple val(id), path(faa_fasta)
     path interproscan_db
 
     output:
-    path '*.IPS.tsv', emit: ips_annotations
+    tuple val(id), path('*.IPS.tsv'), emit: ips_annotations
 
     script:
     """

@@ -66,7 +66,7 @@ workflow ANNOTATE_ALL_DOMAINS {
         mmseq_90_chunks = mmseq_90_cluster_rep_faa.flatten().splitFasta(
             by: 10000,
             file: true
-        )
+        ).map(chunk_path -> [chunk_path.baseName, chunk_path])
 
         IPS(
             mmseq_90_chunks,
@@ -75,7 +75,7 @@ workflow ANNOTATE_ALL_DOMAINS {
 
         EGGNOG_MAPPER_ORTHOLOGS(
             mmseq_90_chunks,
-            file("NO_FILE"),
+            tuple("empty", "NO_FILE"),
             channel.value('mapper'),
             eggnog_db,
             eggnog_diamond_db,
@@ -83,7 +83,7 @@ workflow ANNOTATE_ALL_DOMAINS {
         )
 
         EGGNOG_MAPPER_ANNOTATIONS(
-            file("NO_FILE"),
+            tuple("empty", "NO_FILE"),
             EGGNOG_MAPPER_ORTHOLOGS.out.orthologs,
             channel.value('annotations'),
             eggnog_db,
@@ -91,10 +91,11 @@ workflow ANNOTATE_ALL_DOMAINS {
             eggnog_data_dir
         )
 
-        interproscan_annotations = IPS.out.ips_annotations.collectFile(
+        interproscan_annotations = IPS.out.ips_annotations.map{ it[1] }.collectFile(
             name: "ips_annotations.tsv",
         )
-        eggnog_mapper_annotations = EGGNOG_MAPPER_ANNOTATIONS.out.annotations.collectFile(
+        
+        eggnog_mapper_annotations = EGGNOG_MAPPER_ANNOTATIONS.out.annotations.map{ it[1] }.collectFile(
             keepHeader: true,
             skip: 1,
             name: "eggnog_annotations.tsv"
