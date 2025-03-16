@@ -1,21 +1,24 @@
 process BRAKER_POSTPROCESSING {
 
-    tag "${fasta.baseName}"
+    tag "${genome.baseName}"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+    'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/61/6151add1e8ca2e3eaaa65584e3ff9c551eecbfad282dc61f26b5bcbf626b4c06/data' :
+    'community.wave.seqera.io/library/pip_biopython:326a6be8fb21b301' }"
     
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
     
     label 'process_light'
     
     input:
     path genome
-    path gff3
-    path proteins
-    path ffn
+    tuple val(cluster_name), path(gff3)
+    tuple val(cluster_name), path(proteins)
+    tuple val(cluster_name), path(ffn)
     
     output:
-    path("renamed_*.gff3"), emit: renamed_gff3  
-    path("renamed_*.aa"), emit: renamed_proteins 
-    path("renamed_*.codingseq"), emit: renamed_ffn 
+    tuple val(cluster_name), path("renamed_*.gff3"), emit: renamed_gff3  
+    tuple val(cluster_name), path("renamed_*.aa"), emit: renamed_proteins 
+    tuple val(cluster_name), path("renamed_*.codingseq"), emit: renamed_ffn 
     
     script:
     """
@@ -25,6 +28,5 @@ process BRAKER_POSTPROCESSING {
     --faa ${proteins} \
     --genome-fasta ${genome} \
     -p renamed \
-    --mgyg-accession ${fasta.baseName}
     """    
 }

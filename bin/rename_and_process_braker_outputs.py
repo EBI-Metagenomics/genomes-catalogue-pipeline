@@ -18,11 +18,13 @@
 
 import argparse
 import re
+import os
 
 from Bio import SeqIO
 
 
-def main(gff, ffn, faa, genome_fasta, mgyg_accession, output_prefix):
+def main(gff, ffn, faa, genome_fasta, output_prefix):
+    mgyg_accession = str(os.path.basename(genome_fasta)).split('_')[0]
     # Rename proteins in the protein FASTA file and remove any asterisks from the sequence
     gene_map = rename_fasta(faa, output_prefix, mgyg_accession, create_dictionary=True, remove_asterisks=True)
     # Rename CDS in the coding sequence FASTA file
@@ -106,7 +108,7 @@ def rename_fasta(input_file, output_prefix, mgyg_accession, name_dictionary=None
             record.id = new_header
             record.description = ""  # Remove additional descriptions
             if remove_asterisks:
-                record.seq = record.seq.ungap("*")
+                record.seq = record.seq.replace("*", "")
             SeqIO.write(record, output_handle, "fasta")
             
     return gene_map if create_dictionary else None
@@ -149,13 +151,6 @@ def parse_args():
         ),
     )
     parser.add_argument(
-        "--mgyg-accession",
-        required=True,
-        help=(
-            "The MGYG accession assigned to the genome."
-        ),
-    )
-    parser.add_argument(
         "-p",
         "--output-prefix",
         required=False,
@@ -174,6 +169,5 @@ if __name__ == "__main__":
         args.ffn,
         args.faa,
         args.genome_fasta,
-        args.mgyg_accession,
         args.output_prefix
     )

@@ -8,14 +8,14 @@ process BRAKER {
 
     input:
     path(masked_genome) // genome fasta with softmasked repeat
-    tuple val(cluster), path(genome), path(proteins) // tuple with original genome fasta (for naming) and protein evidence
+    tuple val(cluster_name), path(genome), path(proteins) // tuple with original genome fasta (for naming) and protein evidence
 
     output:
-    path("${genome.baseName}_braker/*.gtf"), emit: gtf
-    path("${genome.baseName}_braker/*.gff3"), emit: gff3
-    path("${genome.baseName}_braker/*.aa"), emit: proteins
-    path("${genome.baseName}_braker/*.codingseq"), emit: ffn
-    path("${genome.baseName}_braker/*.map"), emit: headers_map
+    tuple val(cluster_name), path("${genome.baseName}_braker/*.gtf"), emit: gtf
+    tuple val(cluster_name), path("${genome.baseName}_braker/*.gff3"), emit: gff3
+    tuple val(cluster_name), path("${genome.baseName}_braker/*.aa"), emit: proteins
+    tuple val(cluster_name), path("${genome.baseName}_braker/*.codingseq"), emit: ffn
+    tuple val(cluster_name), path("${genome.baseName}_braker/*.map"), emit: headers_map
     path "versions.yml" , emit: versions
 
     script:
