@@ -68,6 +68,7 @@ def remake_gff(gff_header, genome_fasta_contents, gene_map, gff, gff_outfile):
                     
                 else:
                     gff_out.write(line)
+        gff_out.write("##FASTA\n")
         gff_out.write(genome_fasta_contents + "\n")
 
 
