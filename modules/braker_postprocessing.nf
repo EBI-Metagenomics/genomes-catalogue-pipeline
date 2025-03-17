@@ -54,9 +54,9 @@ process BRAKER_POSTPROCESSING {
     tuple val(cluster_name), path(ffn)
     
     output:
-    tuple val(cluster_name), path("renamed_*.gff"), emit: renamed_gff3  
-    tuple val(cluster_name), path("renamed_*.faa"), emit: renamed_proteins 
-    tuple val(cluster_name), path("renamed_*.ffn"), emit: renamed_ffn 
+    tuple val(cluster_name), path("*.gff"), emit: renamed_gff3  
+    tuple val(cluster_name), path("*.faa"), emit: renamed_proteins 
+    tuple val(cluster_name), path("*.ffn"), emit: renamed_ffn 
     
     script:
     """
@@ -67,9 +67,9 @@ process BRAKER_POSTPROCESSING {
     --genome-fasta ${genome} \
     -p renamed
 
-    ID=\$(basename \${genome} | cut -d'_' -f1)
-    mv renamed_\${ID}.gff3 \${ID}.gff
-    mv renamed_\${ID}.aa \${ID}.faa
-    mv renamed_\${ID}.codingseq \${ID}.ffn
+    ID=\$(basename ${genome} | cut -d'_' -f1)
+    mv renamed*.gff3 \${ID}.gff
+    mv renamed*.aa \${ID}.faa
+    mv renamed*.codingseq \${ID}.ffn
     """    
 }
