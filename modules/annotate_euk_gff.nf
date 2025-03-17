@@ -59,8 +59,16 @@ process ANNOTATE_EUKS_GFF {
     -e ${eggnog_annotations_tsv} \
     -r ${ncrna_tsv} \
     -t ${trna_gff} \
-    -o ${cluster}_annotated.gff \
+    -o ${cluster}_annotated_temp.gff \
     ${antismash_flag} ${dbcan_flag}
+    
+    add_hypothetical_protein_descriptions.py \\
+    --eggnog-output ${eggnog_annotations_tsv} \\
+    --ipr-entries ${interpro_entry_list}/entry.list \\
+    --ipr-hierarchy ${interpro_entry_list}/ParentChildTreeFile.txt \\
+    --ipr-output ${ips_annotations_tsv} \\
+    -i ${cluster}_annotated_temp.gff \\
+    -o ${cluster}_annotated.gff
     """
 
     stub:
