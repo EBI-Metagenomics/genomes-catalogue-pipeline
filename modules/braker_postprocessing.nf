@@ -67,7 +67,7 @@ process BRAKER_POSTPROCESSING {
     --genome-fasta ${genome} \
     -p renamed
 
-    ID=$(basename \${genome} | cut -d'_' -f1)
+    ID=\$(basename \${genome} | cut -d'_' -f1)
     mv renamed_\${ID}.gff3 \${ID}.gff
     mv renamed_\${ID}.aa \${ID}.faa
     mv renamed_\${ID}.codingseq \${ID}.ffn
