@@ -223,6 +223,13 @@ workflow GAP_EUKS {
         ch_protein_evidence
     )
 
+    gunc_failed = Channel.value(file("EMPTY_GUNC_FILE"))
+    GENERATE_COMBINED_QC_REPORT(
+        qs50_failed,
+        gunc_failed,
+        PARSE_DOMAIN.out.detected_domains
+    )
+
     MMSEQ_SWF(
         PROCESS_MANY_GENOMES_EUKS.out.braker_faas.map({ it[1] }).collectFile(name: "pangenome_braker.faa"),
         PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa.map({ it[1] }).collectFile(name: "singleton_braker.faa"),
