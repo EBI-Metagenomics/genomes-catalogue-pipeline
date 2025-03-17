@@ -421,6 +421,11 @@ workflow GAP_EUKS {
     //     METADATA_AND_PHYLOTREE.out.metadata_tsv.first(),
     //     ch_biome
     // )
+    
+    // CATALOGUE_SUMMARY(
+    //    METADATA_AND_PHYLOTREE.out.metadata_tsv,
+    //    MMSEQ_SWF.out.mmseq_90_cluster_tsv
+    //)
 
     // KRAKEN_SWF(
     //     GTDBTK_TAX.out.gtdbtk_summary_bac120,
