@@ -7,7 +7,7 @@ process BRAKER_POSTPROCESSING {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                String genome_name = renamed_gff3.baseName;
+                String genome_name = genome.baseName.tokenize('_')[0];
                 String cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2);
                 def is_rep = genome_name == cluster_name;
 
