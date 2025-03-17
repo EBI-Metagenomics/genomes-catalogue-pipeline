@@ -22,7 +22,7 @@ workflow ANNOTATE_EUKARYOTES {
 
         EGGNOG_MAPPER_ORTHOLOGS(
             cluster_reps_faas,
-            file("NO_FILE"),
+            tuple("empty", "NO_FILE"),
             channel.value('mapper'),
             eggnog_db,
             eggnog_diamond_db,
@@ -30,7 +30,7 @@ workflow ANNOTATE_EUKARYOTES {
         )
 
         EGGNOG_MAPPER_ANNOTATIONS(
-            file("NO_FILE"),
+            tuple("empty", "NO_FILE"),
             EGGNOG_MAPPER_ORTHOLOGS.out.orthologs,
             channel.value('annotations'),
             eggnog_db,
