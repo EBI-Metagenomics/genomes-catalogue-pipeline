@@ -80,6 +80,7 @@ include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
 include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
+include { CATALOGUE_SUMMARY } from '../modules/catalogue_summary'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -242,6 +243,10 @@ workflow GAP_EUKS {
         PROCESS_SINGLETON_GENOMES_EUKS.out.braker_gff
     )
 
+    cluster_reps_ffn = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_ffn.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_ffn
+    )
+
     all_braker_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.mix(
         PROCESS_MANY_GENOMES_EUKS.out.braker_fnas
     )
@@ -373,7 +378,7 @@ workflow GAP_EUKS {
         
     // REPS //
     antismash_results = Channel.value(file("NO_FILE_ANTISMASH_RESULTS"))
-    ANNOTATE_EUK_GFF(
+    ANNOTATE_EUKS_GFF(
         cluster_reps_gffs.join(
             reps_eggnog
         ).join(
@@ -400,8 +405,8 @@ workflow GAP_EUKS {
         file(core_genes)       // only for many_genomes clusters otherwise empty
     )
     */
-    ch_pangenomes_fna = tuple()
-    ch_core_genes = tuple()
+    ch_pangenomes_fna = Channel.empty()
+    ch_core_genes = Channel.empty()
     files_for_json_summary = ANNOTATE_EUKS_GFF.out.annotated_gff.join(
         FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
     ).join(
@@ -424,7 +429,7 @@ workflow GAP_EUKS {
     )
 
     GENE_CATALOGUE(
-        cluster_rep_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
+        cluster_reps_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 

@@ -1,4 +1,4 @@
-process ANNOTATE_GFF {
+process ANNOTATE_EUKS_GFF {
 
     tag "${cluster}"
 

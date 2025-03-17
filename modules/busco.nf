@@ -3,6 +3,7 @@ process BUSCO {
     tag "${fasta.baseName}"
 
     container 'quay.io/biocontainers/busco:5.8.0--pyhdfd78af_0'
+    beforeScript "rm -rf *.fa* || true"
 
     input:
     path fasta
@@ -14,7 +15,10 @@ process BUSCO {
 
     script:
     """
-    
+    if [ -d "${fasta.baseName}" ]; then
+        rm -rf "${fasta.baseName}"
+    fi
+
     busco  --offline \
             -i ${fasta} \
             -m 'genome' \
