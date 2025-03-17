@@ -25,7 +25,7 @@ process BUSCO_PHYLOGENOMICS {
     mkdir -p species_rep_busco
     for folder in ${busco_folders_list}; do
         echo "copying \$folder busco results"
-        cp -r "\$folder" species_rep_busco/
+        cp -r "\$folder" species_rep_busco
     done
 
     BUSCO_phylogenomics.py \\

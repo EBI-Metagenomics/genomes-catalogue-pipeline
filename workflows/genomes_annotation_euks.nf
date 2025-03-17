@@ -56,14 +56,10 @@ if (params.remove_genomes) {
 
 include { PREPARE_DATA_EUKS } from '../subworkflows/prepare_data_euks' 
 include { DREP_SWF } from '../subworkflows/drep_swf'
-include { BAT } from '../modules/bat'
-include { REFORMAT_BAT } from '../modules/reformat_bat_taxonomy'
-include { PARSE_DOMAIN } from '../modules/parse_domain'
 include { PROCESS_MANY_GENOMES_EUKS } from '../subworkflows/process_many_genomes_euks'
 include { PROCESS_SINGLETON_GENOMES_EUKS } from '../subworkflows/process_singleton_genomes_euks'
+include { EUK_GENE_CALLING } from '../subworkflows/eukaryotic_gene_annotation'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
-include { BUSCO } from '../modules/busco'
-include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
 // include { ANNOTATE_EUKARYOTES } from '../subworkflows/annotate_eukaryotes'
 // include { ANNOTATE_ALL_DOMAINS } from '../subworkflows/annotate_all_domains'
 // include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
@@ -71,9 +67,14 @@ include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
 // include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
 // include { UPDATE_CLUSTERS } from '../subworkflows/update_clusters_swf.nf'
 
+include { BAT } from '../modules/bat'
+include { REFORMAT_BAT } from '../modules/reformat_bat_taxonomy'
+include { PARSE_DOMAIN } from '../modules/parse_domain'
+include { BUSCO } from '../modules/busco'
+include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
+include { INDEX_FNA } from '../modules/index_fna'
 // include { MASH_TO_NWK } from '../modules/mash2nwk'
 // include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
-// include { INDEX_FNA } from '../modules/index_fna'
 // include { ANNOTATE_GFF } from '../modules/annotate_gff'
 // include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
 // include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
@@ -83,7 +84,6 @@ include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
 // include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 // include { MASH_SKETCH } from '../modules/mash_sketch'
 // include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
-include {EUK_GENE_CALLING } from '../subworkflows/eukaryotic_gene_annotation'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -225,7 +225,7 @@ workflow GAP_EUKS {
         genomes_name_mapping,
         ch_protein_evidence
     )
-    
+
     MMSEQ_SWF(
         PROCESS_MANY_GENOMES_EUKS.out.braker_faas.map({ it[1] }).collectFile(name: "pangenome_braker.faa"),
         PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa.map({ it[1] }).collectFile(name: "singleton_braker.faa"),
@@ -234,15 +234,15 @@ workflow GAP_EUKS {
     )
 
     cluster_reps_faas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_faa.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa.unique()
     )
 
     cluster_reps_fnas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_fna.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.unique()
     )
     
     cluster_reps_gffs = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_gff.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_gff
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_gff.unique()
     )
 
     all_braker_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.mix(
@@ -275,7 +275,7 @@ workflow GAP_EUKS {
 
 
     // tree generation
-    BUSCO(cluster_reps_fnas, ch_busco_db)
+    BUSCO(cluster_reps_fnas.map { it[1] }, ch_busco_db)
     busco_folders = BUSCO.out.busco_folder.collect()
     BUSCO_PHYLOGENOMICS(busco_folders)
 

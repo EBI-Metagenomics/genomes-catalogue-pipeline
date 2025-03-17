@@ -24,7 +24,7 @@ process BUSCO {
             -c ${task.cpus}
 
     #   parse and output genomes id and busco scores as csv
-    result_file=\$(ls ${fasta.baseName}/short_summary.specific*.out.txt | head -n 1)
+    result_file=\$(ls ${fasta.baseName}/short_summary.specific*.${fasta.baseName}.txt | head -n 1)
 
     if [ -f "\${result_file}" ]; then
         result=\$(grep 'C:' "\${result_file}" | head -n 1 | sed 's?\t??g')
