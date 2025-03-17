@@ -3,6 +3,9 @@ process BUSCO {
     tag "${fasta.baseName}"
 
     container 'quay.io/biocontainers/busco:5.8.0--pyhdfd78af_0'
+    
+    errorStrategy = { task.attempt <= 3 ? 'retry' : 'finish' }
+    
     beforeScript "rm -rf *.fa* || true"
 
     input:
