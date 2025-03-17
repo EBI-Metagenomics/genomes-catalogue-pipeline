@@ -114,19 +114,19 @@ workflow ANNOTATE_ALL_DOMAINS {
             dbcan_db
         ) 
         
-        ANTISMASH(
-            prokka_gbk,
-            antismash_db
-        )
+        // ANTISMASH(
+        //     prokka_gbk,
+        //     antismash_db
+        // )
         
-        ANTISMASH_MAKE_GFF(
-            ANTISMASH.out.antismash_json
-        )     
+        // ANTISMASH_MAKE_GFF(
+        //     ANTISMASH.out.antismash_json
+        // )     
 
 
     emit:
         dbcan_gffs = DBCAN.out.dbcan_gff
-        antismash_gffs = ANTISMASH_MAKE_GFF.out.antismash_gff
+        // antismash_gffs = ANTISMASH_MAKE_GFF.out.antismash_gff
         interproscan_annotations_mmseqs90 = interproscan_annotations
         eggnog_annotations_mmseqs90 = eggnog_mapper_annotations
         

@@ -60,12 +60,12 @@ include { PROCESS_MANY_GENOMES_EUKS } from '../subworkflows/process_many_genomes
 include { PROCESS_SINGLETON_GENOMES_EUKS } from '../subworkflows/process_singleton_genomes_euks'
 include { EUK_GENE_CALLING } from '../subworkflows/eukaryotic_gene_annotation'
 include { MMSEQ_SWF } from '../subworkflows/mmseq_swf'
-// include { ANNOTATE_EUKARYOTES } from '../subworkflows/annotate_eukaryotes'
-// include { ANNOTATE_ALL_DOMAINS } from '../subworkflows/annotate_all_domains'
-// include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
-// include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
-// include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
-// include { UPDATE_CLUSTERS } from '../subworkflows/update_clusters_swf.nf'
+include { ANNOTATE_EUKARYOTES } from '../subworkflows/annotate_eukaryotes'
+include { ANNOTATE_ALL_DOMAINS } from '../subworkflows/annotate_all_domains'
+include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
+include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
+include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
+include { UPDATE_CLUSTERS } from '../subworkflows/update_clusters_swf.nf'
 
 include { BAT } from '../modules/bat'
 include { REFORMAT_BAT } from '../modules/reformat_bat_taxonomy'
@@ -73,17 +73,13 @@ include { PARSE_DOMAIN } from '../modules/parse_domain'
 include { BUSCO } from '../modules/busco'
 include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
 include { INDEX_FNA } from '../modules/index_fna'
-// include { MASH_TO_NWK } from '../modules/mash2nwk'
-// include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
-// include { ANNOTATE_GFF } from '../modules/annotate_gff'
-// include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
-// include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
-// include { IQTREE as IQTREE_AR } from '../modules/iqtree'
-// include { FASTTREE as FASTTREE_BAC } from '../modules/fasttree'
-// include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
-// include { GENE_CATALOGUE } from '../modules/gene_catalogue'
-// include { MASH_SKETCH } from '../modules/mash_sketch'
-// include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
+include { MASH_TO_NWK } from '../modules/mash2nwk'
+include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
+include { ANNOTATE_EUKS_GFF } from '../modules/annotate_euk_gff'
+include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
+include { GENE_CATALOGUE } from '../modules/gene_catalogue'
+include { MASH_SKETCH } from '../modules/mash_sketch'
+include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -234,15 +230,16 @@ workflow GAP_EUKS {
     )
 
     cluster_reps_faas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_faa.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa.unique()
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa
     )
 
     cluster_reps_fnas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_fna.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.unique()
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna
     )
+    cluster_reps_fnas.view()
     
     cluster_reps_gffs = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_gff.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_gff.unique()
+        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_gff
     )
 
     all_braker_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.mix(
@@ -276,173 +273,162 @@ workflow GAP_EUKS {
 
     // tree generation
     BUSCO(cluster_reps_fnas.map { it[1] }, ch_busco_db)
+    BUSCO.out.busco_folder.view()
+
     busco_folders = BUSCO.out.busco_folder.collect()
+    busco_folders.view()
     BUSCO_PHYLOGENOMICS(busco_folders)
 
-
-    // ANNOTATE_ALL_DOMAINS(
-    //     MMSEQ_SWF.out.mmseq_90_cluster_tsv,
-    //     MMSEQ_SWF.out.mmseq_90_tarball,
-    //     MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
-    //     cluster_reps_gbks,
-    //     cluster_reps_faas,
-    //     cluster_reps_gffs,
-    //     accessions_with_domains_ch,
-    //     ch_interproscan_db,
-    //     ch_eggnog_db,
-    //     ch_eggnog_diamond_db,
-    //     ch_eggnog_data_dir,
-    //     ch_dbcan_db,
-    //     ch_antismash_db
-    // )
+    cluster_reps_gbks = file("EMPTY_GBK_CHANNEL")
+    ANNOTATE_ALL_DOMAINS(
+        MMSEQ_SWF.out.mmseq_90_cluster_tsv,
+        MMSEQ_SWF.out.mmseq_90_tarball,
+        MMSEQ_SWF.out.mmseq_90_cluster_rep_faa,
+        cluster_reps_gbks,
+        cluster_reps_faas,
+        cluster_reps_gffs,
+        accessions_with_domains_ch,
+        ch_interproscan_db,
+        ch_eggnog_db,
+        ch_eggnog_diamond_db,
+        ch_eggnog_data_dir,
+        ch_dbcan_db,
+        ch_antismash_db
+    )
     
-    // ANNOTATE_EUKARYOTES(
-    //     cluster_reps_faas,
-    //     ch_interproscan_db,
-    //     ch_eggnog_db,
-    //     ch_eggnog_diamond_db,
-    //     ch_eggnog_data_dir
-    //)
-    // ips_annotation_tsvs = ANNOTATE_EUKARYOTES.out.ips_annotation_tsvs
-    // eggnog_annotation_tsvs = ANNOTATE_EUKARYOTES.out.eggnog_annotation_tsvs
+    ANNOTATE_EUKARYOTES(
+        cluster_reps_faas,
+        ch_interproscan_db,
+        ch_eggnog_db,
+        ch_eggnog_diamond_db,
+        ch_eggnog_data_dir
+    )
+    ips_annotation_tsvs = ANNOTATE_EUKARYOTES.out.ips_annotation_tsvs
+    eggnog_annotation_tsvs = ANNOTATE_EUKARYOTES.out.eggnog_annotation_tsvs
     
-    // KEGG_COMPLETENESS(
-    //    eggnog_annotation_tsvs
-    //    )
+    KEGG_COMPLETENESS(
+       eggnog_annotation_tsvs
+       )
     
-    // DETECT_RNA(
-    //     all_prokka_fna,
-    //     accessions_with_domains_ch,
-    //     ch_rfam_ncrna_models
-    // )
+    DETECT_RNA(
+        all_braker_fna,
+        accessions_with_domains_ch,
+        ch_rfam_ncrna_models
+    )
     
-    // METADATA_AND_PHYLOTREE(
-    //     cluster_reps_fnas.map({ it[1]}).collect(),
-    //     all_prokka_fna.map({ it[1] }).collect(),
-    //     extra_weight_table_all_genomes,
-    //     checkm_all_genomes,
-    //     DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
-    //     genomes_name_mapping,
-    //     dereplicated_genomes.out.drep_split_text,
-    //     ch_ftp_name,
-    //     ch_ftp_version,
-    //     ch_geo_metadata,
-    //     PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
-    //     gtdbtk_tables_ch,
-    //     ch_previous_catalogue_location,
-    //     all_assembly_stats
-    // )
+    METADATA_AND_PHYLOTREE(
+        cluster_reps_fnas.map({ it[1]}).collect(),
+        all_braker_fna.map({ it[1] }).collect(),
+        extra_weight_table_all_genomes,
+        checkm_all_genomes,
+        DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
+        genomes_name_mapping,
+        dereplicated_genomes.out.drep_split_text,
+        ch_ftp_name,
+        ch_ftp_version,
+        ch_geo_metadata,
+        file("EMPTY"),
+        reformatted_tax,
+        ch_previous_catalogue_location,
+        all_assembly_stats
+    )
 
-    // GTDBTK_TAX.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
+    faa_and_annotations = cluster_reps_faas.join(
+        ips_annotation_tsvs
+    ).join(
+        eggnog_annotation_tsvs
+    )
 
-
-    // faa_and_annotations = cluster_reps_faas.join(
-    //     ips_annotation_tsvs
-    // ).join(
-    //     eggnog_annotation_tsvs
-    // )
-
-    // FUNCTIONAL_ANNOTATION_SUMMARY(
-    //     faa_and_annotations,
-    //     ch_kegg_classes
-    // )
+    FUNCTIONAL_ANNOTATION_SUMMARY(
+        faa_and_annotations,
+        ch_kegg_classes
+    )
 
     INDEX_FNA(
         all_braker_fna
     )
 
-    // cluster_reps_gff = PROCESS_SINGLETON_GENOMES.out.prokka_gff.mix(
-    //     PROCESS_MANY_GENOMES.out.rep_prokka_gff
-    // )
-
-    // // Select the only the reps //
-    // // Those where the cluster-name and the file name match
-    // // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv
-    // reps_ips = ips_annotation_tsvs.filter {
-    //     it[1].name.contains(it[0])
-    // }
-    // reps_eggnog = eggnog_annotation_tsvs.filter {
-    //     it[1].name.contains(it[0])
-    // }
-    // all_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
-    //     it[1].name.contains(it[0])
-    // }
+    // Select the only the reps //
+    // Those where the cluster-name and the file name match
+    // i.e., such as cluster_name: MGY1 and file MGY1_eggnog.tsv
+    reps_ips = ips_annotation_tsvs.filter {
+        it[1].name.contains(it[0])
+    }
+    reps_eggnog = eggnog_annotation_tsvs.filter {
+        it[1].name.contains(it[0])
+    }
+    all_ncrna = DETECT_RNA.out.ncrna_tblout.filter {
+        it[1].name.contains(it[0])
+    }
     
-    // // Filter DETECT_RNA.out.trna_gff to only save tRNA GFFs for species reps to reps_trna_gff
-    // reps_trna_gff = cluster_reps_gff.join(DETECT_RNA.out.trna_gff, remainder: true)
-    // .filter { it -> it[1] != null }  // Remove tuples where there is no species rep genome GFF (= this is not a rep)
-    // .map { it -> [it[0], it[2]] }  // 
+    // Filter DETECT_RNA.out.trna_gff to only save tRNA GFFs for species reps to reps_trna_gff
+    reps_trna_gff = cluster_reps_gffs.join(DETECT_RNA.out.trna_gff, remainder: true)
+    .filter { it -> it[1] != null }  // Remove tuples where there is no species rep genome GFF (= this is not a rep)
+    .map { it -> [it[0], it[2]] }  // 
     
-    // // Filter all_ncrna to only keep results for species reps
-    // reps_ncrna = cluster_reps_gff.join(all_ncrna, remainder: true)
-    // .filter { it -> it[1] != null }  // Remove tuples where there is no species rep genome GFF (= this is not a rep)
-    // .map { it -> [it[0], it[2]] }  // 
+    // Filter all_ncrna to only keep results for species reps
+    reps_ncrna = cluster_reps_gffs.join(all_ncrna, remainder: true)
+    .filter { it -> it[1] != null }  // Remove tuples where there is no species rep genome GFF (= this is not a rep)
+    .map { it -> [it[0], it[2]] }  // 
         
-    // // REPS //
-    // ANNOTATE_EUK_GFF(
-    //     cluster_reps_gff.join(
-    //         reps_eggnog
-    //     ).join(
-    //         reps_ncrna
-    //     ).join(
-    //         reps_trna_gff
-    //     ).join(
-    //         ANNOTATE_ALL_DOMAINS.out.antismash_gffs, remainder: true
-    //     ).join(
-    //         ANNOTATE_ALL_DOMAINS.out.dbcan_gffs, remainder: true
-    //     ).join(
-    //         reps_ips
-    //     )
-    // )
+    // REPS //
+    antismash_results = Channel.value(file("NO_FILE_ANTISMASH_RESULTS"))
+    ANNOTATE_EUK_GFF(
+        cluster_reps_gffs.join(
+            reps_eggnog
+        ).join(
+            reps_ncrna
+        ).join(
+            reps_trna_gff
+        ).join(
+            antismash_results
+        ).join(
+            ANNOTATE_ALL_DOMAINS.out.dbcan_gffs, remainder: true
+        ).join(
+            reps_ips
+        )
+    )
 
-    // /* This operation will generate a list of tuples for the json generation
-    // * Example of one element on the list;
-    // * tuple (
-    //     val(cluster),
-    //     file(annotated_gff),
-    //     file(coverage_summary),
-    //     file(cluster_faa),
-    //     file(pangenome_fasta), // only for many_genomes clusters otherwise empty
-    //     file(core_genes)       // only for many_genomes clusters otherwise empty
-    // )
-    // */
-    // files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
-    //     FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
-    // ).join(
-    //     cluster_reps_faas
-    // ).join(
-    //     PROCESS_MANY_GENOMES.out.panaroo_pangenome_fna, remainder: true
-    // ).join(
-    //     PROCESS_MANY_GENOMES.out.core_genes, remainder: true
-    // )
+    /* This operation will generate a list of tuples for the json generation
+    * Example of one element on the list;
+    * tuple (
+        val(cluster),
+        file(annotated_gff),
+        file(coverage_summary),
+        file(cluster_faa),
+        file(pangenome_fasta), // only for many_genomes clusters otherwise empty
+        file(core_genes)       // only for many_genomes clusters otherwise empty
+    )
+    */
+    ch_pangenomes_fna = tuple()
+    ch_core_genes = tuple()
+    files_for_json_summary = ANNOTATE_EUKS_GFF.out.annotated_gff.join(
+        FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
+    ).join(
+        cluster_reps_faas
+    ).join(
+        ch_pangenomes_fna, remainder: true
+    ).join(
+        ch_core_genes, remainder: true
+    )
 
-    // GENOME_SUMMARY_JSON(
-    //     files_for_json_summary,
-    //     METADATA_AND_PHYLOTREE.out.metadata_tsv.first(),
-    //     ch_biome
-    // )
+    GENOME_SUMMARY_JSON(
+        files_for_json_summary,
+        METADATA_AND_PHYLOTREE.out.metadata_tsv.first(),
+        ch_biome
+    )
     
-    // CATALOGUE_SUMMARY(
-    //    METADATA_AND_PHYLOTREE.out.metadata_tsv,
-    //    MMSEQ_SWF.out.mmseq_90_cluster_tsv
-    //)
+    CATALOGUE_SUMMARY(
+       METADATA_AND_PHYLOTREE.out.metadata_tsv,
+       MMSEQ_SWF.out.mmseq_90_cluster_tsv
+    )
 
-    // KRAKEN_SWF(
-    //     GTDBTK_TAX.out.gtdbtk_summary_bac120,
-    //     GTDBTK_TAX.out.gtdbtk_summary_arc53,
-    //     cluster_reps_fnas.map({ it[1] })
-    // )
+    GENE_CATALOGUE(
+        cluster_rep_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
+        MMSEQ_SWF.out.mmseq_100_cluster_tsv
+    )
 
-    // cluster_rep_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
-    //     PROCESS_MANY_GENOMES.out.rep_prokka_ffn
-    // )
-
-    // GENE_CATALOGUE(
-    //     cluster_rep_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
-    //     MMSEQ_SWF.out.mmseq_100_cluster_tsv
-    // )
-
-    // MASH_SKETCH(
-    //     all_prokka_fna.map({ it[1] }).collect()
-    // )
+    MASH_SKETCH(
+        all_braker_fna.map({ it[1] }).collect()
+    )
 }
