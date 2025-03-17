@@ -4,7 +4,7 @@ process BUSCO {
 
     container 'quay.io/biocontainers/busco:5.8.0--pyhdfd78af_0'
     
-    errorStrategy = { task.attempt <= 3 ? 'retry' : 'finish' }
+    errorStrategy = { task.attempt <= 5 ? 'retry' : 'finish' }
     
     beforeScript "rm -rf *.fa* || true"
 
