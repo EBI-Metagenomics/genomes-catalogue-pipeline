@@ -49,7 +49,15 @@ process CLASSIFY_CLUSTERS {
     [ -d many_genomes ] && find many_genomes -type d -empty -print -delete
     [ -d one_genome ] && find one_genome -type d -empty -print -delete
 
-    [ -d many_genomes ] && mv many_genomes pg
-    [ -d one_genome ] && mv one_genome sg
+    if [ -d many_genomes ]; then 
+        mv many_genomes pg
+    else
+        mkdir pg
+    fi
+    if [ -d one_genome ]; then
+        mv one_genome sg
+    else
+        mkdir sg
+    fi
     """
 }
