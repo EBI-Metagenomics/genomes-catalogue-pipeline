@@ -38,8 +38,8 @@ process CLASSIFY_CLUSTERS {
     file text_file
 
     output:
-    path "pg/**/*.fa", emit: many_genomes_fnas
-    path "sg/**/*.fa", emit: one_genome_fnas
+    path "pg/**/*.fa", optional: true, emit: many_genomes_fnas
+    path "sg/**/*.fa", optional: true, emit: one_genome_fnas
 
     script:
     """
@@ -49,7 +49,7 @@ process CLASSIFY_CLUSTERS {
     find many_genomes -type d -empty -print -delete
     find one_genome -type d -empty -print -delete
 
-    mv many_genomes pg
-    mv one_genome sg
+    [ -d many_genomes ] && mv many_genomes pg
+    [ -d one_genome ] && mv one_genome sg
     """
 }
