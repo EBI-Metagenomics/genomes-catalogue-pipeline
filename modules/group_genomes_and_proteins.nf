@@ -16,7 +16,7 @@ process GROUP_GENOME_PROTEINS {
     """
     original_name=\$(grep ${fasta.baseName} ${mapping_file} | head -n1 | cut -f1)
 
-    protein_file=\$(grep "\${original_name}" ${protein_csv} | head -n1 | cut -d, -f2)
+    protein_file=\$(grep "\${original_name}" ${protein_csv} | head -n1 | cut -d ',' -f2)
 
     if [ -z "\${protein_file}" ]; then
         echo "NO PROTEINS" > NO_PROTEINS.faa
