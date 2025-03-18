@@ -51,13 +51,14 @@ workflow EUK_GENE_CALLING {
         )
 
         ch_braker = Channel.empty()
-        tuple_genome_proteins_nocluster
+        cluster_name_ch
+            .join( tuple_genome_proteins_nocluster )
             .join( BRAKER.out.gff3 )
             .join( BRAKER.out.proteins )
             .join( BRAKER.out.ffn )
-            .join( ch_repeat_modeler.masked_genome ).multiMap { genome_name, genome, prot_evidence, gff, faa, ffn, masked_genome ->
-                genome: [genome_name, masked_genome]
-                gff: [genome_name, gff3]
+            .join( ch_repeat_modeler.masked_genome ).multiMap { genome_name, cluster, genome, prot_evidence, gff, faa, ffn, masked_genome ->
+                genome: [cluster, genome_name, masked_genome]
+                gff: [genome_name, gff]
                 faa: [genome_name, faa]
                 ffn: [genome_name, ffn]
         }.set {

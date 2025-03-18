@@ -48,7 +48,7 @@ process BRAKER_POSTPROCESSING {
     label 'process_light'
     
     input:
-    tuple val(genome_name), path(masked_genome)
+    tuple val(cluster_name), val(genome_name), path(masked_genome)
     tuple val(genome_name), path(gff3)
     tuple val(genome_name), path(proteins)
     tuple val(genome_name), path(ffn)
