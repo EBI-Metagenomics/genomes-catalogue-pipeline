@@ -48,6 +48,7 @@ def main(
     disable_ncbi_lookup,
     previous_metadata_table,
     precomputed_genome_stats,
+    busco_output,
 ):
     # table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50',	'GC_content',
     #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
@@ -64,6 +65,8 @@ def main(
     df = add_genome_type(df, extra_weight_table)
     df = add_precomputed_stats(df, precomputed_genome_stats)
     df = add_checkm(df, checkm_results)
+    if busco_output:
+        df = add_busco(df, busco_output)
     logging.info("Loaded stats. Adding RNA...")
     df = add_rna(df, genome_list, rna_results)
     logging.info("Added RNA")
@@ -76,6 +79,32 @@ def main(
     df = add_ftp(df, genome_list, ftp_name, ftp_version, reps)
     df.set_index("Genome", inplace=True)
     df.to_csv(outfile, sep="\t")
+
+
+def add_busco(df, busco_output):
+    if not os.path.isfile(busco_output):
+        return df
+    busco_mapping = {
+        "C": "Complete",
+        "S": "Single-copy",
+        "D": "Duplicated",
+        "F": "Fragmented",
+        "M": "Missing",
+        "n": "Total BUSCOs",
+        "E": "Erroneous"
+    }
+    pattern = r'([CSDMFEn]):([\d\.%]+)'
+    busco_results = dict()
+    with open(busco_output, "r") as f:
+        header = next(f)
+        for line in f:
+            file_name, busco_line = line.strip().split("\t")
+            file_name = file_name.replace(".fa", "")
+            converted_busco = re.sub(pattern, lambda m: f"{busco_mapping[m.group(1)]}:{m.group(2) }", busco_line)
+            file_name = file_name.replace(".fa", "")
+            busco_results[file_name] = converted_busco
+    df["BUSCO_quality"] = df["Genome"].map(busco_results)
+    return df
 
 
 def load_previous_metadata_table(previous_metadata_table, genome_list):
@@ -505,6 +534,11 @@ def parse_args():
         "--precomputed_genome_stats",
         help="If genome length, N50 and GC content have been pre-computed, provide path to the TSV file.",
     )
+    parser.add_argument(
+        "--busco-output",
+        required=False,
+        help="For eukaryotes, provide the Busco quality file.",
+    )
     return parser.parse_args()
 
 
@@ -526,4 +560,5 @@ if __name__ == "__main__":
         args.disable_ncbi_lookup,
         args.previous_metadata_table,
         args.precomputed_genome_stats,
+        args.busco_output,
     )
