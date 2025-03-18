@@ -7,7 +7,7 @@ process BRAKER_POSTPROCESSING {
         saveAs: {
             filename -> {
                 def output_file = file(filename);
-                String genome_name = genome.baseName.tokenize('_')[0];
+                String genome_name = genome_name;
                 String cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2);
                 def is_rep = genome_name == cluster_name;
 
@@ -48,15 +48,15 @@ process BRAKER_POSTPROCESSING {
     label 'process_light'
     
     input:
-    path genome
-    tuple val(cluster_name), path(gff3)
-    tuple val(cluster_name), path(proteins)
-    tuple val(cluster_name), path(ffn)
+    tuple val(genome_name), path(masked_genome)
+    tuple val(genome_name), path(gff3)
+    tuple val(genome_name), path(proteins)
+    tuple val(genome_name), path(ffn)
     
     output:
-    tuple val(cluster_name), path("*.gff"), emit: renamed_gff3  
-    tuple val(cluster_name), path("*.faa"), emit: renamed_proteins 
-    tuple val(cluster_name), path("*.ffn"), emit: renamed_ffn 
+    tuple val(genome_name), path("*.gff"), emit: renamed_gff3  
+    tuple val(genome_name), path("*.faa"), emit: renamed_proteins 
+    tuple val(genome_name), path("*.ffn"), emit: renamed_ffn 
     
     script:
     """
@@ -64,12 +64,11 @@ process BRAKER_POSTPROCESSING {
     --gff ${gff3} \
     --ffn ${ffn} \
     --faa ${proteins} \
-    --genome-fasta ${genome} \
+    --genome-fasta ${masked_genome} \
     -p renamed
 
-    ID=\$(basename ${genome} | cut -d'_' -f1)
-    mv renamed*.gff3 \${ID}.gff
-    mv renamed*.aa \${ID}.faa
-    mv renamed*.codingseq \${ID}.ffn
+    mv renamed*.gff3 ${genome_name}.gff
+    mv renamed*.aa ${genome_name}.faa
+    mv renamed*.codingseq ${genome_name}.ffn
     """    
 }

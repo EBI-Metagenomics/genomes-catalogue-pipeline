@@ -7,28 +7,28 @@ process BRAKER {
 
 
     input:
-    path(masked_genome) // genome fasta with softmasked repeat
-    tuple val(cluster_name), path(genome), path(proteins) // tuple with original genome fasta (for naming) and protein evidence
+    tuple val(genome_name), path(masked_genome) // genome fasta with softmasked repeat
+    tuple val(genome_name), path(protein_evidence) // tuple with original genome fasta (for naming) and protein evidence
 
     output:
-    tuple val(cluster_name), path("${genome.baseName}_braker/*.gtf"), emit: gtf
-    tuple val(cluster_name), path("${genome.baseName}_braker/*.gff3"), emit: gff3
-    tuple val(cluster_name), path("${genome.baseName}_braker/*.aa"), emit: proteins
-    tuple val(cluster_name), path("${genome.baseName}_braker/*.codingseq"), emit: ffn
-    tuple val(cluster_name), path("${genome.baseName}_braker/*.map"), emit: headers_map
+    tuple val(genome_name), path("${genome_name}_braker/*.gtf"), emit: gtf
+    tuple val(genome_name), path("${genome_name}_braker/*.gff3"), emit: gff3
+    tuple val(genome_name), path("${genome_name}_braker/*.aa"), emit: proteins
+    tuple val(genome_name), path("${genome_name}_braker/*.codingseq"), emit: ffn
+    tuple val(genome_name), path("${genome_name}_braker/*.map"), emit: headers_map
     path "versions.yml" , emit: versions
 
     script:
     def args = ""
-    if (proteins.name != "NO_PROTEINS.faa") {
-        args += "--prot_seq ${proteins} "
+    if (prot_evidence.name != "NO_PROTEINS.faa") {
+        args += "--prot_seq ${protein_evidence} "
     }
     """
     braker.pl \\
         $args \\
         --genome ${masked_genome} \\
         --threads $task.cpus \\
-        --workingdir "${genome.baseName}_braker" \\
+        --workingdir "${genome_name}_braker" \\
         --min_contig=1500 \\
         --gff3
 

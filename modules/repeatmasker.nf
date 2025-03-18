@@ -7,11 +7,11 @@ process REPEAT_MASKER {
 
 
     input:
-    tuple val(cluster), path(genome), path(proteins)
-    path(library)
+    tuple val(genome_name), path(genome), path(proteins)
+    tuple val(genome_name), path(library)
 
     output:
-    path("${genome.baseName}_sm.fa"), emit: masked_genome 
+    tuple val(genome_name), path("${genome.baseName}_sm.fa"), emit: masked_genome 
 
     script:
     """
