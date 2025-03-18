@@ -60,6 +60,7 @@ process DETECT_NCRNA {
     input:
     tuple val(cluster_name), path(fasta)
     path rfam_ncrna_models
+    val(kingdom)
 
     output:
     tuple val(fasta.baseName), path('*.ncrna.deoverlap.tbl'), emit: ncrna_tblout
@@ -83,11 +84,19 @@ process DETECT_NCRNA {
     # De-overlap #
     grep -v " = " overlapped_${fasta.baseName} > ${fasta.baseName}.ncrna.deoverlap.tbl
 
-    echo "Parsing final results..."
-    parse_rRNA-bacteria.py \
-    -s cmscan \
-    -i ${fasta.baseName}.ncrna.deoverlap.tbl \
-    -o ${fasta.baseName}_rRNAs.out
+    if [ "${kingdom}" = "eukaryotes" ]; then
+        echo "Parsing final eukaryotic results"
+        parse_rRNA-eukaryotes.py \
+        -s cmscan \
+        -i ${fasta.baseName}.ncrna.deoverlap.tbl \
+        -o ${fasta.baseName}_rRNAs.out
+    else;
+        echo "Parsing final bacterial results..."
+        parse_rRNA-bacteria.py \
+        -s cmscan \
+        -i ${fasta.baseName}.ncrna.deoverlap.tbl \
+        -o ${fasta.baseName}_rRNAs.out
+    fi
 
     rRNA2seq.py -d \
     ${fasta.baseName}.ncrna.deoverlap.tbl \

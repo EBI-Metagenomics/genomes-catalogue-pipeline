@@ -326,7 +326,8 @@ workflow GAP_EUKS {
     DETECT_RNA(
         all_braker_fna,
         accessions_with_domains_ch,
-        ch_rfam_ncrna_models
+        ch_rfam_ncrna_models,
+        params.kingdom
     )
     
     METADATA_AND_PHYLOTREE(

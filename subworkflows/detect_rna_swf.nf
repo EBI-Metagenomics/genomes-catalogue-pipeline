@@ -10,6 +10,7 @@ workflow DETECT_RNA {
         fnas
         accessions_with_domains
         rfam_ncrna_models
+        kingdom
     main:
         DETECT_TRNA(
             fnas.map(it -> [it[1].baseName, it[1]]).join(
@@ -18,7 +19,8 @@ workflow DETECT_RNA {
         )
        DETECT_NCRNA(
             fnas,
-            rfam_ncrna_models
+            rfam_ncrna_models,
+            kingdom
        )
     emit:
         ncrna_tblout = DETECT_NCRNA.out.ncrna_tblout
