@@ -33,6 +33,8 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     all_genomes = load_genomes(genomes_path)
     cluster_splits = load_cluster_splits(os.path.join(intermediate_files_path, "clusters_split.txt"))
     metadata_table_contents = load_metadata_table(os.path.join(input_directory, "genomes-all_metadata.tsv"))
+    gunc_failed_list = load_gunc(os.path.join(intermediate_files_path, "gunc", "gunc_failed.txt"))
+
 
     
     # load mgyg to original accession translation
@@ -49,6 +51,9 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     # check cluster composition and isolates/MAGs
     # check general file presence
     report, issues = check_file_presence(input_directory, cluster_splits, report, issues)
+    # Move the bit below elsewhere
+    if gunc_failed_list is None:
+        issues.append("FILE MISSING/CHECK NOT PERFORMED: gunc_failed.txt not found. Cannot verify genome counts.")
     
     # check geography
     report, issues = check_geography(metadata_table_contents, report, issues)
@@ -124,7 +129,7 @@ def check_genome_counts(metadata_table, cluster_splits, all_genomes, intermediat
         issues.append("FILE MISSING/CHECK NOT PERFORMED: gunc_failed.txt not found. Cannot verify genome counts.")
         return report, issues
 
-    expected_count = len(all_genomes) - len(gunc_failed_list)
+    expected_count = len(all_genomes)
     if expected_count == len(metadata_table):
         report.append("Genome count is correct")
     else:
