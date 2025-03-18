@@ -1,5 +1,5 @@
 process BRAKER {
-    tag "${genome.baseName}"
+    tag "${genome_name}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://teambraker/braker3:latest' :
@@ -20,7 +20,7 @@ process BRAKER {
 
     script:
     def args = ""
-    if (prot_evidence.name != "NO_PROTEINS.faa") {
+    if (protein_evidence.name != "NO_PROTEINS.faa") {
         args += "--prot_seq ${protein_evidence} "
     }
     """
