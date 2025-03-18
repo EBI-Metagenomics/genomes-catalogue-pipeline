@@ -163,7 +163,7 @@ workflow GAP_EUKS {
         new_genomes = file("NO_FILE_NEW_GENOMES")
         qs50_failed = file("NO_FILE_QS50_FAILED")
         genomes_name_mapping = file("NO_FILE_GENOMES_NAME_MAPPING")
-        busco_summary = channel.empty()
+        busco_summary = file("NO_FILE_BUSCO")
     }
     
     // generate species level genome clusters
@@ -343,7 +343,8 @@ workflow GAP_EUKS {
         file("EMPTY"),
         reformatted_tax,
         ch_previous_catalogue_location,
-        all_assembly_stats
+        all_assembly_stats,
+        busco_summary
     )
 
     faa_and_annotations = cluster_reps_faas.join(

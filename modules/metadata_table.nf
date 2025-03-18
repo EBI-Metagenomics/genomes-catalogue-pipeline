@@ -25,6 +25,7 @@ process METADATA_TABLE {
     file gunc_failed_txt
     path previous_catalogue_location
     path all_assembly_stats
+    file busco_summary
 
     output:
     path "genomes-all_metadata.tsv", emit: metadata_tsv
@@ -36,6 +37,9 @@ process METADATA_TABLE {
     }
     if (previous_catalogue_location.toString() != "NO_PREVIOUS_CATALOGUE_VERSION"){
         args = args + " " + "--previous-metadata-table ${previous_catalogue_location}/ftp/genomes-all_metadata.tsv"
+    }
+    if (busco_summary != "NO_FILE_BUSCO"){
+        args = args + " " + "--busco-output ${busco_summary}"
     }
     
     """

@@ -22,6 +22,7 @@ workflow METADATA_AND_PHYLOTREE {
         gtdbtk_tables_ch
         ch_previous_catalogue_location
         all_assembly_stats
+        busco_summary
     main:
         METADATA_TABLE(
             all_genomes_fnas,
@@ -36,7 +37,8 @@ workflow METADATA_AND_PHYLOTREE {
             geo_metadata,
             gunc_failed_txt,
             ch_previous_catalogue_location,
-            all_assembly_stats
+            all_assembly_stats,
+            busco_summary
         )
 
         PHYLO_TREE(gtdbtk_tables_ch)
