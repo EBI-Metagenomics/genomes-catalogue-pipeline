@@ -46,8 +46,8 @@ process CLASSIFY_CLUSTERS {
     classify_folders.py -g ${genomes_folder} --text-file ${text_file}
 
     # Clean any empty directories #
-    find many_genomes -type d -empty -print -delete
-    find one_genome -type d -empty -print -delete
+    [ -d many_genome ] && find many_genomes -type d -empty -print -delete
+    [ -d one_genome ] && find one_genome -type d -empty -print -delete
 
     [ -d many_genomes ] && mv many_genomes pg
     [ -d one_genome ] && mv one_genome sg
