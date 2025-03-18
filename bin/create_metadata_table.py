@@ -425,7 +425,7 @@ def add_genome_type(df, extra_weight_table):
 def load_genome_list(genomes_dir, gunc_file):
     genome_list = [filename.rsplit(".", 1)[0] for filename in os.listdir(genomes_dir)]
     genomes_ext = os.listdir(genomes_dir)[0].rsplit(".", 1)[1]
-    if gunc_file:
+    if gunc_file and gunc_file != "EMPTY":
         with open(gunc_file, "r") as gunc_in:
             for line in gunc_in:
                 acc = line.strip().split(".")[0]
