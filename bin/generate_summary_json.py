@@ -26,37 +26,43 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file):
     )  # cov contains 2 values: IPS coverage and eggNOG coverage
     num_proteins = get_cdscount(fasta)
     with open(metadata_file, "r") as f:
-        linen = 0
         geo_range = set()
+        header = next(f)
+        field_indices = get_field_indices(header)
         for line in f:
-            linen += 1
             cols = line.rstrip().split("\t")
-            species_rep_accession = cols[13]  # mgnify accession of species rep
+            species_rep_accession = cols[field_indices["Species_rep"]]  # mgnify accession of species rep
             if (
                 species_rep_accession == species_name
             ):  # we are running the script on 1 species at a time
-                geo_range.add(cols[18])  # continent
-                if species_rep_accession == cols[0]:  # means this is the representative
-                    genome_accession = cols[
-                        12
-                    ]  # old accession (original one with which it was fetched)
-                    sample_accession = cols[15]
-                    study_accession = cols[16]
-                    geo_origin = cols[18]  # continent
-                    complet = float(cols[6])
-                    cont = float(cols[7])
-                    gtype = cols[1]
-                    genome_length = int(cols[2])
-                    n_contigs = int(cols[3])
-                    n50 = int(cols[4])
-                    gc_content = float(cols[5])
-                    tax_lineage = cols[14]
-                    if tax_lineage.startswith("d__;p__;"):
-                        tax_lineage = "d__unclassified"
-                    rna_5s = float(cols[8])
-                    rna_16s = float(cols[9])
-                    rna_23s = float(cols[10])
-                    trnas = int(cols[11])
+                geo_range.add(cols[field_indices["Continent"]])  # continent
+                
+                if species_rep_accession == cols[field_indices["Genome"]]:  # means this is the representative
+                    tax_lineage = cols[field_indices["Lineage"]]
+                    tax_lineage = "d__unclassified" if tax_lineage.startswith("d__;p__;") else tax_lineage
+                    species_info = {
+                        "accession": species_name,
+                        "length": int(cols[field_indices["Length"]]),
+                        "num_contigs": int(cols[field_indices["N_contigs"]]),
+                        "n_50": int(cols[field_indices["N50"]]),
+                        "gc_content": float(cols[field_indices["GC_content"]]),
+                        "num_proteins": num_proteins,
+                        "taxon_lineage": tax_lineage,
+                        "gold_biome": biome,
+                        "genome_accession": cols[field_indices["Genome_accession"]],  # this is the INSDC accession
+                        "sample_accession": cols[field_indices["Sample_accession"]],
+                        "study_accession": cols[field_indices["Study_accession"]],
+                        "type": cols[field_indices["Genome_type"]],
+                        "geographic_origin": cols[field_indices["Continent"]],
+                        "completeness": float(cols[field_indices["Completeness"]]),
+                        "contamination": float(cols[field_indices["Contamination"]]),
+                        "eggnog_coverage": cov[-1],
+                        "ipr_coverage": cov[0],
+                        "rna_5s": float(cols[field_indices["rRNA_5S"]]),
+                        "rna_16s": float(cols[field_indices["rRNA_16S"]]),
+                        "rna_23s": float(cols[field_indices["rRNA_23S"]]),
+                        "trnas": int(cols[field_indices["tRNAs"]]),
+                    }
 
     geo_range = list(geo_range)
 
@@ -68,31 +74,19 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file):
     return (
         geo_range,
         species_name,
-        {
-            "accession": species_name,
-            "length": genome_length,
-            "num_contigs": n_contigs,
-            "n_50": n50,
-            "gc_content": gc_content,
-            "num_proteins": num_proteins,
-            "taxon_lineage": tax_lineage,
-            "gold_biome": biome,
-            "genome_accession": genome_accession,
-            "sample_accession": sample_accession,
-            "study_accession": study_accession,
-            "type": gtype,
-            "geographic_origin": geo_origin,
-            "completeness": complet,
-            "contamination": cont,
-            "eggnog_coverage": cov[-1],
-            "ipr_coverage": cov[0],
-            "rna_5s": rna_5s,
-            "rna_16s": rna_16s,
-            "rna_23s": rna_23s,
-            "trnas": trnas,
-        },
+        species_info,
     )
 
+
+def get_field_indices(header):
+    fields = header.strip().split("\t")
+    field_indices = dict()
+    for field in ["Genome", "Genome_type", "Length", "N_contigs", "N50", "GC_content", "Lineage", "Genome_accession", 
+                  "Sample_accession", "Study_accession", "Continent", "Completeness", "Contamination", "Species_rep",
+                  "rRNA_5S", "rRNA_16S", "rRNA_23S", "tRNAs"]:
+        field_indices[field] = fields.index(field)
+    return field_indices
+    
 
 def get_cdscount(fasta):
     cds = 0
@@ -187,7 +181,6 @@ def main(
     biome,
     species_accession,
     metadata_file,
-    cluster_structure,
 ):
     # Get metadata for the genome we are running the script on (it will be a species rep because
     # we only make JSON files for reps
@@ -283,14 +276,6 @@ def parse_args():
     parser.add_argument(
         "--metadata-file", help="Path to the metadata table", required=True
     )
-    parser.add_argument(
-        "--cluster-structure",
-        help=(
-            "If the flag is used, it is expected that the cluster has the genome and pan-genome folders, "
-            "otherwise all files are expected to be in the same folder"
-        ),
-        action="store_true",
-    )
     return parser.parse_args()
 
 
@@ -306,5 +291,4 @@ if __name__ == "__main__":
         args.biome,
         args.species_name,
         args.metadata_file,
-        args.cluster_structure,
     )
