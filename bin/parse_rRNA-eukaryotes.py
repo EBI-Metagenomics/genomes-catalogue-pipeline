@@ -20,8 +20,8 @@ import os
 import argparse
 
 
-rRNAs_exp = {"5S_rRNA": 120, "SSU_rRNA_eukarya": 1831, "LSU_rRNA_eukarya": 3401, "5_8S_rRNA":154, "LSU_trypano_mito":561}
-rRNAs_obs = {"5S_rRNA": [], "SSU_rRNA_eukarya": [], "LSU_rRNA_eukarya": [], "5_8S_rRNA": [], "LSU_trypano_mito": []}
+rRNAs_exp = {"5S_rRNA": 120, "SSU_rRNA_eukarya": 1831, "LSU_rRNA_eukarya": 3401, "5_8S_rRNA":154}
+rRNAs_obs = {"5S_rRNA": [], "SSU_rRNA_eukarya": [], "LSU_rRNA_eukarya": [], "5_8S_rRNA": []}
 rRNAs_merged = {}
 
 
