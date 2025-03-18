@@ -90,7 +90,7 @@ process DETECT_NCRNA {
         -s cmscan \
         -i ${fasta.baseName}.ncrna.deoverlap.tbl \
         -o ${fasta.baseName}_rRNAs.out
-    else;
+    else
         echo "Parsing final bacterial results..."
         parse_rRNA-bacteria.py \
         -s cmscan \
