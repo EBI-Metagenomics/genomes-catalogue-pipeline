@@ -285,12 +285,12 @@ workflow GAP_EUKS {
 
 
     // tree generation
-    BUSCO(cluster_reps_fnas.map { it[1] }, ch_busco_db)
-    BUSCO.out.busco_folder.view()
+    //BUSCO(cluster_reps_fnas.map { it[1] }, ch_busco_db)
+    //BUSCO.out.busco_folder.view()
 
-    busco_folders = BUSCO.out.busco_folder.collect()
-    busco_folders.view()
-    BUSCO_PHYLOGENOMICS(busco_folders)
+    //busco_folders = BUSCO.out.busco_folder.collect()
+    //busco_folders.view()
+    //BUSCO_PHYLOGENOMICS(busco_folders)
 
     cluster_reps_gbks = file("EMPTY_GBK_CHANNEL")
     ANNOTATE_ALL_DOMAINS(
