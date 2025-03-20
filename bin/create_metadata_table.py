@@ -23,6 +23,7 @@ import pandas as pd
 import re
 import sys
 
+from itertools import chain
 from retry import retry
 
 from assembly_stats import run_assembly_stats
@@ -49,6 +50,7 @@ def main(
     previous_metadata_table,
     precomputed_genome_stats,
     busco_output,
+    euk=False,
 ):
     # table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50',	'GC_content',
     #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
@@ -68,7 +70,7 @@ def main(
     if busco_output:
         df = add_busco(df, busco_output)
     logging.info("Loaded stats. Adding RNA...")
-    df = add_rna(df, genome_list, rna_results)
+    df = add_rna(df, genome_list, rna_results, euk=euk)
     logging.info("Added RNA")
     df, original_accessions = add_original_accession(df, naming_file)
     df, reps = add_species_rep(df, clusters_file)
@@ -317,9 +319,13 @@ def add_original_accession(df, naming_file):
     return df, conversion_table
 
 
-def add_rna(df, genome_list, rna_folder):
+def add_rna(df, genome_list, rna_folder, euk=False):
+    if euk:
+        rna_types = ["5S_rRNA", "SSU_rRNA_eukarya", "LSU_rRNA_eukarya", "5_8S_rRNA"]
+    else:
+        rna_types = ["rRNA_5S", "rRNA_16S", "rRNA_23S"]
     rna_results = dict()
-    for key in ["rRNA_5S", "rRNA_16S", "rRNA_23S", "tRNAs"]:
+    for key in chain(rna_types, ["tRNAs"]):
         rna_results.setdefault(key, dict())
     for genome in genome_list:
         rrna_file = os.path.join(rna_folder, "{}_rRNAs.out".format(genome))
@@ -329,29 +335,30 @@ def add_rna(df, genome_list, rna_folder):
         )
         rna_results["tRNAs"][genome] = load_trna(trna_file)
         (
-            rna_results["rRNA_5S"][genome],
-            rna_results["rRNA_16S"][genome],
-            rna_results["rRNA_23S"][genome],
-        ) = load_rrna(rrna_file)
-    for key in ["rRNA_5S", "rRNA_16S", "rRNA_23S", "tRNAs"]:
+            rna_results
+        ) = load_rrna(rrna_file, rna_results, euk=euk)
+    for key in chain(rna_types, ["tRNAs"]):
         df[key] = df["Genome"].map(rna_results[key])
     return df
 
 
-def load_rrna(rrna_file):
+def load_rrna(rrna_file, rna_results, euk=False):
+    conversion = {"SSU_rRNA_eukarya": "rRNA_18S",
+                  "LSU_rRNA_eukarya": "rRNA_28S",
+                  "5S_rRNA": "rRNA_5S",
+                  "5_8S_rRNA": "rRNA_5.8S",
+                  "SSU_rRNA": "rRNA_16S",
+                  "LSU_rRNA": "rRNA_23S"}
+
     with open(rrna_file, "r") as file_in:
         for line in file_in:
-            fields = line.strip().split("\t")
-            if fields[1].startswith("SSU_rRNA"):
-                rRNA_16S = fields[2]
-            elif fields[1].startswith("5S_rRNA"):
-                rRNA_5S = fields[2]
-            elif fields[1].startswith("LSU_rRNA"):
-                rRNA_23S = fields[2]
-            else:
-                logging.error("Unexpected file format: {}".format(rrna_file))
-                sys.exit()
-    return rRNA_5S, rRNA_16S, rRNA_23S
+            genome, rna_type, coverage = line.strip().split("\t")
+            # In the conversion dictionary, prokaryotic SSU and LSU keys are truncated but all the other keys are 
+            # shown in full. The line below checks for this to assign correct conversion.
+            key = rna_type if euk or not rna_type.startswith(("SSU_rRNA", "LSU_rRNA")) else rna_type.rsplit("_", 1)[0]
+            converted_rna_type = conversion[key]
+            rna_results[converted_rna_type][genome] = coverage
+    return rna_results
 
 
 def load_trna(trna_file):
@@ -539,6 +546,11 @@ def parse_args():
         required=False,
         help="For eukaryotes, provide the Busco quality file.",
     )
+    parser.add_argument(
+        "--euk",
+        action='store_true',
+        help="Use this flag if the metadata table is being generated for a eukaryotic catalogue.",
+    )
     return parser.parse_args()
 
 
@@ -561,4 +573,5 @@ if __name__ == "__main__":
         args.previous_metadata_table,
         args.precomputed_genome_stats,
         args.busco_output,
+        args.euk,
     )
