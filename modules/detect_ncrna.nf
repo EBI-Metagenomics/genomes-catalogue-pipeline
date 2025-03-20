@@ -46,7 +46,7 @@ process DETECT_NCRNA {
                     return null;
                 }
                 def output_file = file(filename);
-                def genome_id = fasta.baseName;
+                def genome_id = fasta.baseName.replace("_sm", "");
                 if ( output_file.name.contains("_rRNAs") ) {
                     return "additional_data/rRNA_outs/${genome_id}/${output_file.name}";
                 }
