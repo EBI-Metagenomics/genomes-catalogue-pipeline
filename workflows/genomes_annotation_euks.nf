@@ -386,7 +386,7 @@ workflow GAP_EUKS {
     .map { it -> [it[0], it[2]] }  // 
         
     // REPS //
-    antismash_results = Channel.value(file("NO_FILE_ANTISMASH_RESULTS"))
+    antismash_results = cluster_reps_gffs.map { tuple(it[0], "NO_FILE") },
     ANNOTATE_EUKS_GFF(
         cluster_reps_gffs.join(
             reps_eggnog
