@@ -13,7 +13,7 @@ workflow DETECT_RNA {
         kingdom
     main:
         DETECT_TRNA(
-            fnas.map(it -> [it[1].baseName, it[1]]).join(
+            fnas.map(it -> [it[1].baseName.replace("_sm", ""), it[1]]).join(
                 accessions_with_domains, remainder: true
             ).filter{  it -> it[1] != null } // remove genomes that were filtered out during QC and don't have an fna
         )
