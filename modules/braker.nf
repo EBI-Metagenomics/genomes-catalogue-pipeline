@@ -27,6 +27,7 @@ process BRAKER {
     braker.pl \\
         $args \\
         --genome ${masked_genome} \\
+        --species ${genome_name} \\
         --threads $task.cpus \\
         --workingdir "${genome_name}_braker" \\
         --min_contig=1500 \\
