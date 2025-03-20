@@ -245,7 +245,6 @@ workflow GAP_EUKS {
     cluster_reps_fnas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_fna.mix(
         PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna
     )
-    cluster_reps_fnas.view()
     
     cluster_reps_gffs = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_gff.mix(
         PROCESS_SINGLETON_GENOMES_EUKS.out.braker_gff
