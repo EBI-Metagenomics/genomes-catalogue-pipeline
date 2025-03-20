@@ -321,7 +321,7 @@ def add_original_accession(df, naming_file):
 
 def add_rna(df, genome_list, rna_folder, euk=False):
     if euk:
-        rna_types = ["5S_rRNA", "SSU_rRNA_eukarya", "LSU_rRNA_eukarya", "5_8S_rRNA"]
+        rna_types = ["rRNA_5S", "rRNA_18S", "rRNA_28S", "rRNA_5.8S"]
     else:
         rna_types = ["rRNA_5S", "rRNA_16S", "rRNA_23S"]
     rna_results = dict()
@@ -430,7 +430,7 @@ def add_genome_type(df, extra_weight_table):
 
 
 def load_genome_list(genomes_dir, gunc_file):
-    genome_list = [filename.rsplit(".", 1)[0] for filename in os.listdir(genomes_dir)]
+    genome_list = [filename.rsplit(".", 1)[0].replace("_sm", "") for filename in os.listdir(genomes_dir)]
     genomes_ext = os.listdir(genomes_dir)[0].rsplit(".", 1)[1]
     if gunc_file and gunc_file != "EMPTY":
         with open(gunc_file, "r") as gunc_in:
