@@ -8,17 +8,17 @@ process EGGNOG_MAPPER {
 
     input:
     // on mode "annotations" will be ignored, submit an empty path (channel.path("NO_FILE"))
-    tuple val(id_fasta), file(fasta)
+    tuple val(id), file(fasta)
     // on mode "mapper" will be ignored, submit an empty path (channel.path("NO_FILE"))
-    tuple val(id_annot), file(annotation_hit_table)
+    tuple val(id), file(annotation_hit_table)
     val mode // mapper or annotations
     path eggnog_db
     path eggnog_diamond_db
     path eggnog_data_dir
 
     output:
-    tuple val(id_annot), path ("*annotations*"), emit: annotations, optional: true
-    tuple val(id_fasta), path ("*orthologs*"), emit: orthologs, optional: true
+    tuple val(id), path ("*annotations*"), emit: annotations, optional: true
+    tuple val(id), path ("*orthologs*"), emit: orthologs, optional: true
 
     script:
     if ( mode == "mapper" )
