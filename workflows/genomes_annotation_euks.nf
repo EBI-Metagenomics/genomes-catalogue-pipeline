@@ -387,7 +387,7 @@ workflow GAP_EUKS {
     .map { it -> [it[0], it[2]] }  // 
         
     // REPS //
-    antismash_results = cluster_reps_gffs.map { tuple(it[0], file("NO_FILE") }
+    antismash_results = cluster_reps_gffs.map { tuple(it[0], file("NO_FILE")) }
     ANNOTATE_EUKS_GFF(
         cluster_reps_gffs.join(
             reps_eggnog
