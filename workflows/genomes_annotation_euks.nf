@@ -92,6 +92,7 @@ include { CATALOGUE_SUMMARY } from '../modules/catalogue_summary'
 ch_gtdb_db = file(params.gtdb_db)
 ch_gunc_db = file(params.gunc_db)
 ch_interproscan_db = file(params.interproscan_db)
+ch_interpro_entry_list = file(params.interpro_entry_list)
 
 ch_eggnog_db = file(params.eggnog_db)
 ch_eggnog_diamond_db = file(params.eggnong_diamond_db)
@@ -386,7 +387,7 @@ workflow GAP_EUKS {
     .map { it -> [it[0], it[2]] }  // 
         
     // REPS //
-    antismash_results = cluster_reps_gffs.map { tuple(it[0], "NO_FILE") }
+    antismash_results = cluster_reps_gffs.map { tuple(it[0], file("NO_FILE") }
     ANNOTATE_EUKS_GFF(
         cluster_reps_gffs.join(
             reps_eggnog
@@ -400,7 +401,8 @@ workflow GAP_EUKS {
             ANNOTATE_ALL_DOMAINS.out.dbcan_gffs, remainder: true
         ).join(
             reps_ips
-        )
+        ),
+        ch_interpro_entry_list
     )
 
     /* This operation will generate a list of tuples for the json generation

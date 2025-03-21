@@ -38,13 +38,14 @@ process ANNOTATE_EUKS_GFF {
         file(antismash_gff),
         file(dbcan_gff),
         file(ips_annotations_tsv)
+    path(interpro_entry_list)
     
     output:
     tuple val(cluster), path("*_annotated.gff"), emit: annotated_gff
 
     script:
-
-    if ( antismash_gff ) {
+    antismash_flag = ""
+    if ( antismash_gff.toString() != "NO_FILE" ) {
         antismash_flag = "--antismash ${antismash_gff}"
     }
     if ( dbcan_gff ) {
