@@ -32,6 +32,9 @@ process GENOME_SUMMARY_JSON {
     if (core_genes) {
         args = args + "--core-genes ${core_genes} "
     }
+    if (params.kingdom = "eukaryotes"){
+        args = args + " " + "--euk"
+    }
     """
     generate_summary_json.py \
     --annot-cov ${coverage_summary} \

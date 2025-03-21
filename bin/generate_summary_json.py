@@ -17,10 +17,12 @@
 
 import argparse
 import json
+import re
 import os
+import sys
 
 
-def get_metadata(species_name, coverage, fasta, biome, metadata_file):
+def get_metadata(species_name, coverage, fasta, biome, metadata_file, euk_flag=False):
     cov = get_annotcov(
         coverage
     )  # cov contains 2 values: IPS coverage and eggNOG coverage
@@ -58,11 +60,26 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file):
                         "contamination": float(cols[field_indices["Contamination"]]),
                         "eggnog_coverage": cov[-1],
                         "ipr_coverage": cov[0],
-                        "rna_5s": float(cols[field_indices["rRNA_5S"]]),
-                        "rna_16s": float(cols[field_indices["rRNA_16S"]]),
-                        "rna_23s": float(cols[field_indices["rRNA_23S"]]),
                         "trnas": int(cols[field_indices["tRNAs"]]),
                     }
+                    if euk_flag:
+                        species_info.update({
+                            "rna_5s": float(cols[field_indices["rRNA_5S"]]),
+                            "rna_5.8s": float(cols[field_indices["rRNA_5.8S"]]),
+                            "rna_18s": float(cols[field_indices["rRNA_18S"]]),
+                            "rna_28s": float(cols[field_indices["rRNA_28S"]]),
+                        })
+                        busco_text = cols[field_indices["BUSCO_quality"]]
+                        match = re.search(r"Complete:(\d+\.\d+)%", busco_text)
+                        species_info.update({
+                            "busco_completeness": float(match.group(1))
+                        })
+                    else:
+                        species_info.update({
+                            "rna_5s": float(cols[field_indices["rRNA_5S"]]),
+                            "rna_16s": float(cols[field_indices["rRNA_16S"]]),
+                            "rna_23s": float(cols[field_indices["rRNA_23S"]]),
+                        })
 
     geo_range = list(geo_range)
 
@@ -83,8 +100,15 @@ def get_field_indices(header):
     field_indices = dict()
     for field in ["Genome", "Genome_type", "Length", "N_contigs", "N50", "GC_content", "Lineage", "Genome_accession", 
                   "Sample_accession", "Study_accession", "Continent", "Completeness", "Contamination", "Species_rep",
-                  "rRNA_5S", "rRNA_16S", "rRNA_23S", "tRNAs"]:
-        field_indices[field] = fields.index(field)
+                  "rRNA_5S", "rRNA_16S", "rRNA_23S", "rRNA_5.8S", "rRNA_18S", "rRNA_28S", "BUSCO_quality", "tRNAs"]:
+        try:
+            field_indices[field] = fields.index(field)
+        except ValueError:
+            if field in ["rRNA_16S", "rRNA_23S", "rRNA_5.8S", "rRNA_18S", "rRNA_28S", "BUSCO_quality"]:
+                continue
+            else:
+                print(f"Error: Required field '{field}' is missing. Exiting.")
+                sys.exit(1)
     return field_indices
     
 
@@ -181,11 +205,12 @@ def main(
     biome,
     species_accession,
     metadata_file,
+    euk_flag,
 ):
     # Get metadata for the genome we are running the script on (it will be a species rep because
     # we only make JSON files for reps
     meta_res = get_metadata(
-        species_accession, annot_cov, species_faa, biome, metadata_file
+        species_accession, annot_cov, species_faa, biome, metadata_file, euk_flag=euk_flag
     )
     meta_dict = meta_res[-1]
     species_code = meta_res[1]
@@ -276,6 +301,9 @@ def parse_args():
     parser.add_argument(
         "--metadata-file", help="Path to the metadata table", required=True
     )
+    parser.add_argument(
+        "--euk", help="Add this flag if the catalogue is eukaryotic", action='store_true'
+    )
     return parser.parse_args()
 
 
@@ -291,4 +319,5 @@ if __name__ == "__main__":
         args.biome,
         args.species_name,
         args.metadata_file,
+        args.euk,
     )
