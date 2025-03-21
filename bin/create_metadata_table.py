@@ -98,7 +98,6 @@ def add_busco(df, busco_output):
     pattern = r'([CSDMFEn]):([\d\.%]+)'
     busco_results = dict()
     with open(busco_output, "r") as f:
-        header = next(f)
         for line in f:
             file_name, busco_line = line.strip().split("\t")
             file_name = file_name.replace(".fa", "")
