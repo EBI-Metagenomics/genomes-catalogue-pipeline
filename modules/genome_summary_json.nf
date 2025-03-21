@@ -32,7 +32,7 @@ process GENOME_SUMMARY_JSON {
     if (core_genes) {
         args = args + "--core-genes ${core_genes} "
     }
-    if (params.kingdom = "eukaryotes"){
+    if (params.kingdom == "eukaryotes"){
         args = args + " " + "--euk"
     }
     """

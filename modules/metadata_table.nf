@@ -41,7 +41,7 @@ process METADATA_TABLE {
     if (busco_summary != "NO_FILE_BUSCO"){
         args = args + " " + "--busco-output ${busco_summary}"
     }
-    if (params.kingdom = "eukaryotes"){
+    if (params.kingdom == "eukaryotes"){
         args = args + " " + "--euk"
     }
     
