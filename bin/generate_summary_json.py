@@ -92,7 +92,7 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file, euk_flag=F
         geo_range,
         species_name,
         species_info,
-    )
+    ), field_indices
 
 
 def get_field_indices(header):
@@ -144,21 +144,24 @@ def get_annotcov(annot):
     return ipr_cov, eggnog_cov
 
 
-def count_total_genomes(species_code, metadata_file):
+def count_total_genomes(species_code, metadata_file, species_rep_idx):
     count = 0
     with open(metadata_file, "r") as file_in:
         for line in file_in:
             fields = line.strip().split("\t")
-            if fields[13] == species_code:
+            if fields[species_rep_idx] == species_code:
                 count += 1
     return count
 
 
-def get_pangenome(core, pangenome_fasta, species_code, metadata_file):
+def get_pangenome(core, pangenome_fasta, species_code, metadata_file, species_rep_idx, euk_flag=False):
+    num_genomes_total = count_total_genomes(species_code, metadata_file, species_rep_idx)
+    if euk_flag:
+        return {"num_genomes_total": num_genomes_total}
+    
     pangenome_size = get_cdscount(pangenome_fasta)
     core_count = get_genecount(core)
-    access_count = pangenome_size - core_count
-    num_genomes_total = count_total_genomes(species_code, metadata_file)
+    access_count = pangenome_size - core_count   
     return {
         "num_genomes_total": num_genomes_total,
         "num_genomes_non_redundant": num_genomes_total,
@@ -209,7 +212,7 @@ def main(
 ):
     # Get metadata for the genome we are running the script on (it will be a species rep because
     # we only make JSON files for reps
-    meta_res = get_metadata(
+    meta_res, field_indices = get_metadata(
         species_accession, annot_cov, species_faa, biome, metadata_file, euk_flag=euk_flag
     )
     meta_dict = meta_res[-1]
@@ -255,11 +258,19 @@ def main(
         != 0  # this is required because nextflow submits an empty file
     ):
         pangenome = get_pangenome(
-            core_genes, pangenome_fna, species_code, metadata_file
+            core_genes, pangenome_fna, species_code, metadata_file, field_indices["Species_rep"], euk_flag
         )
         pangenome["geographic_range"] = meta_res[0]
         output["pangenome"] = pangenome
-
+        
+    if euk_flag:
+        # we don't have pangenomes for euks but they can have multi-genome clusters
+        pangenome = get_pangenome(
+            None, None, species_code, metadata_file, field_indices["Species_rep"], euk_flag
+        )
+        pangenome["geographic_range"] = meta_res[0]
+        output["pangenome"] = pangenome
+        
     write_obj_2_json(output, out_file)
 
 
