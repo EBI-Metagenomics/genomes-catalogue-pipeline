@@ -44,6 +44,11 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | VIRify                                                                                           | 2.0.1             | Viral sequence annotation                                                                                              |
 | [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 2.0.2             | Mobilome annotation                                                                                                    |
 | samtools                                                                                         | 1.15              | FASTA indexing                                                                                                         |
+| EukCC                                                                                            | 2.1.3             | Completeness and contamination of eukaryotic genomes                                                                   |
+| BUSCO                                                                                            | 5.8.0             | Eukaryotic genome quality                                                                                              |
+| RepeatModeler                                                                                    | 2.0.6             | Identification of repeat elements in eukaryotic genomes                                                                |
+| RepeatMasker                                                                                     | 4.1.7             | Repeat masking in eukaryotic genomes                                                                                   |
+| Braker                                                                                           | 3.0.8             | Gene calling in eukaryotic genomes                                                                                     |
 
 ## Setup
 
