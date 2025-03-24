@@ -640,7 +640,8 @@ def get_ncrnas(ncrnas_file):
 
 def prepare_rna_gff_fields(cols):
     rna_feature_name = "ncRNA"
-    if cols[1] in ["LSU_rRNA_bacteria", "SSU_rRNA_bacteria", "5S_rRNA"]:
+    if cols[1] in ["LSU_rRNA_bacteria", "SSU_rRNA_bacteria", "5S_rRNA", "SSU_rRNA_eukarya", "LSU_rRNA_eukarya",
+                   "5_8S_rRNA"]:
         rna_feature_name = "rRNA"
     # ncRNA classes are described here: https://www.insdc.org/submitting-standards/ncrna-vocabulary/
     ncrna_class = ""
