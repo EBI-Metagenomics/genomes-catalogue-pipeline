@@ -35,8 +35,6 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     metadata_table_contents = load_metadata_table(os.path.join(input_directory, "genomes-all_metadata.tsv"))
     gunc_failed_list = load_gunc(os.path.join(intermediate_files_path, "gunc", "gunc_failed.txt"))
 
-
-    
     # load mgyg to original accession translation
     mgyg_to_insdc, insdc_to_mgyg = load_name_conversion(os.path.join(input_directory, "additional_data", 
                                                                      "intermediate_files", 
@@ -126,16 +124,15 @@ def check_genome_counts(metadata_table, cluster_splits, all_genomes, intermediat
     gunc_failed_list = load_gunc(os.path.join(intermediate_files_path, "gunc", "gunc_failed.txt"))
 
     if gunc_failed_list is None:
-        issues.append("FILE MISSING/CHECK NOT PERFORMED: gunc_failed.txt not found. Cannot verify genome counts.")
-        return report, issues
+        issues.append("FILE MISSING: gunc_failed.txt not found.")
 
     expected_count = len(all_genomes)
     if expected_count == len(metadata_table):
         report.append("Genome count is correct")
     else:
         issues.append(f"GENOME COUNT ERROR: the number of genomes in the metadata table is "
-                      f"{len(metadata_table)}, expected {expected_count} (number of genomes in "
-                      f"mgyg_genomes minus number of genomes filtered out by GUNC")
+                      f"{len(metadata_table)}, expected {expected_count} based on the number of genomes in the "
+                      f"'all_genomes' folder.")
 
     return report, issues
 
@@ -163,10 +160,11 @@ def check_geography(metadata_table_contents, report, issues):
                     unknown_count = unknown_count + 1
                 else:
                     # if a country is known, continent should be known
-                    issues.append(f"METADATA GEOGRAPHY: (check that known country and unknown continent is expected): "
-                                  f"{genome} {country} {continent}")
+                    if "ocean" not in country.lower():  # if sample is oceanic, it might not have a continent
+                        issues.append(f"METADATA GEOGRAPHY: (check that known country and unknown continent is "
+                                      f"expected): {genome} {country} {continent}")
             else:
-                issues.append(f"METADATA GEOGRAPHY: (uknown continent): {genome} {country} {continent}")
+                issues.append(f"METADATA GEOGRAPHY: (unknown continent): {genome} {country} {continent}")
     unknown_percentage = round(100 * unknown_count / len(metadata_table_contents), 2)
     if unknown_percentage > 90:
         message = "This is high. Verify that this number is expected."
