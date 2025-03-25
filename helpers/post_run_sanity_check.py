@@ -33,7 +33,8 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     all_genomes = load_genomes(genomes_path)
     cluster_splits = load_cluster_splits(os.path.join(intermediate_files_path, "clusters_split.txt"))
     metadata_table_contents = load_metadata_table(os.path.join(input_directory, "genomes-all_metadata.tsv"))
-    gunc_failed_list = load_gunc(os.path.join(intermediate_files_path, "gunc", "gunc_failed.txt"))
+    if domain == "prok":
+        gunc_failed_list = load_gunc(os.path.join(intermediate_files_path, "gunc", "gunc_failed.txt"))
 
     # load mgyg to original accession translation
     mgyg_to_insdc, insdc_to_mgyg = load_name_conversion(os.path.join(input_directory, "additional_data", 
@@ -46,11 +47,14 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     logging.info("Checking genome count")
     report, issues = check_genome_counts(metadata_table_contents, cluster_splits, all_genomes, intermediate_files_path, 
                                          report, issues)
+    # check that GUNC genomes did not make it into the metadata table
+    if domain == "prok":
+        issues = check_gunc(gunc_failed_list, metadata_table_contents, issues)
     # check cluster composition and isolates/MAGs
     # check general file presence
     report, issues = check_file_presence(input_directory, cluster_splits, report, issues)
     # Move the bit below elsewhere
-    if gunc_failed_list is None:
+    if domain is "prok" and gunc_failed_list is None:
         issues.append("FILE MISSING/CHECK NOT PERFORMED: gunc_failed.txt not found. Cannot verify genome counts.")
     
     # check geography
@@ -62,6 +66,14 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     for message in issues:
         print(message)
 
+
+def check_gunc(gunc_failed_list, metadata_table_contents, issues):
+    for genome in gunc_failed_list:
+        if genome in metadata_table_contents:
+            issues.append(f"METADATA TABLE ERROR: Genome {genome} that was removed by GUNC is included in the "
+                          f"metadata table.")
+    return issues
+    
 
 def check_file_presence(input_directory, cluster_splits, report, issues):
     # check the additional data folder
