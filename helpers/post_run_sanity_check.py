@@ -47,15 +47,16 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     logging.info("Checking genome count")
     report, issues = check_genome_counts(metadata_table_contents, cluster_splits, all_genomes, intermediate_files_path, 
                                          report, issues)
-    # check that GUNC genomes did not make it into the metadata table
-    if domain == "prok":
-        issues = check_gunc(gunc_failed_list, metadata_table_contents, issues)
-    # check cluster composition and isolates/MAGs
     # check general file presence
     report, issues = check_file_presence(input_directory, cluster_splits, report, issues)
     # Move the bit below elsewhere
-    if domain is "prok" and gunc_failed_list is None:
-        issues.append("FILE MISSING/CHECK NOT PERFORMED: gunc_failed.txt not found. Cannot verify genome counts.")
+    if domain is "prok":
+        if gunc_failed_list is None:
+            issues.append("FILE MISSING/CHECK NOT PERFORMED: gunc_failed.txt not found. Cannot verify genome counts.")
+        else:
+            # check that GUNC genomes did not make it into the metadata table
+            issues = check_gunc(gunc_failed_list, metadata_table_contents, issues)
+            
     
     # check geography
     report, issues = check_geography(metadata_table_contents, report, issues)
