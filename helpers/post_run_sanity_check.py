@@ -160,6 +160,9 @@ def check_gunc(gunc_failed_list, metadata_table_contents, issues):
 
 def check_file_presence(input_directory, additional_data_path, genomes_path, cluster_splits, qc_removed, 
                         report, issues):
+    # Check the main folder
+    for file in ["all_genomes.msh", "phylo_tree.json"]:
+        issues = check_file_existence(os.path.join(input_directory, file), issues, empty_ok=False)
     # Check the additional data folder
     if check_folder_existence(additional_data_path):
         issues = check_file_existence(os.path.join(additional_data_path, "combined_QC_failed_report.txt"), 
