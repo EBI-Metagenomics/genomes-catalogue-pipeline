@@ -24,31 +24,38 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(input_directory, domain, outfile, extra_weight_table_user_provided):
-    # define file paths
+    # Define folder paths
     additional_data_path = os.path.join(input_directory, "additional_data")
     genomes_path = os.path.join(additional_data_path, "mgyg_genomes")
     intermediate_files_path = os.path.join(additional_data_path, "intermediate_files")
     
     # Load data
-    all_genomes = load_genomes(genomes_path)
+    all_genomes = load_genomes(genomes_path)  # list of all genomes, without extensions
     cluster_splits = load_cluster_splits(os.path.join(intermediate_files_path, "clusters_split.txt"))
-    metadata_table_contents = load_metadata_table(os.path.join(input_directory, "genomes-all_metadata.tsv"))
+    metadata_table_contents, metadata_table_clusters = load_metadata_table(os.path.join(input_directory, 
+                                                                                        "genomes-all_metadata.tsv"))
+    qc_removed = load_qc_removed_genomes(additional_data_path)
+    
     if domain == "prok":
         gunc_failed_list = load_gunc(os.path.join(intermediate_files_path, "gunc", "gunc_failed.txt"))
+    else:
+        gunc_failed_list = list()
 
-    # load mgyg to original accession translation
-    mgyg_to_insdc, insdc_to_mgyg = load_name_conversion(os.path.join(input_directory, "additional_data", 
-                                                                     "intermediate_files", 
+    # Load mgyg to original accession translation and reverse
+    mgyg_to_insdc, insdc_to_mgyg = load_name_conversion(os.path.join(intermediate_files_path, 
                                                                      "renamed_genomes_name_mapping.tsv"))
     
     # Run checks
     report, issues = [], []
-    # check genome counts
+    # Check genome counts
     logging.info("Checking genome count")
     report, issues = check_genome_counts(metadata_table_contents, cluster_splits, all_genomes, intermediate_files_path, 
                                          report, issues)
-    # check general file presence
-    report, issues = check_file_presence(input_directory, cluster_splits, report, issues)
+    
+    # Check general file presence
+    report, issues = check_file_presence(input_directory, additional_data_path, genomes_path, cluster_splits, 
+                                         qc_removed, report, issues)
+    
     # Move the bit below elsewhere
     if domain is "prok":
         if gunc_failed_list is None:
@@ -56,7 +63,10 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
         else:
             # check that GUNC genomes did not make it into the metadata table
             issues = check_gunc(gunc_failed_list, metadata_table_contents, issues)
-            
+    
+    # check cluster composition and isolates/MAGs
+    report, issues = check_clusters(cluster_splits, metadata_table_contents, metadata_table_clusters, gunc_failed_list,
+                                    extra_weight_table_user_provided, insdc_to_mgyg, qc_removed, report, issues)
     
     # check geography
     report, issues = check_geography(metadata_table_contents, report, issues)
@@ -68,6 +78,78 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
         print(message)
 
 
+def load_qc_removed_genomes(additional_data_path):
+    qc_file = os.path.join(additional_data_path, "combined_QC_failed_report.txt")
+    with open(qc_file, "r") as f:
+        # Skip header and process lines - take accession from the first column without file extension
+        qc_removed = [
+            line.split("\t")[0].rsplit(".", 1)[0]
+            for i, line in enumerate(f) if i != 0
+        ]
+    return qc_removed
+
+
+def check_clusters(cluster_splits, metadata_table_contents, metadata_table_clusters, gunc_failed_list, 
+                   extra_weight_table_user_provided_file, insdc_to_mgyg, qc_removed, report, issues):
+    # Compare clusters between the cluster_splits file and the metadata table
+    issues = compare_dictionaries(cluster_splits, metadata_table_clusters, qc_removed, issues)
+    
+    # Check that isolates are correctly prioritised
+    if extra_weight_table_user_provided_file:
+        extra_weight_user = load_user_extra_weight(extra_weight_table_user_provided_file, insdc_to_mgyg)
+        issues = compare_user_extra_weight_to_table(extra_weight_user, metadata_table_contents, issues)
+    else:
+        extra_weight_user = None
+    return report, issues
+
+
+def compare_user_extra_weight_to_table(extra_weight_user, metadata_table_contents, issues):
+    print(extra_weight_user)
+    print(metadata_table_contents)
+    return issues
+
+
+def load_user_extra_weight(extra_weight_table_user_provided_file, insdc_to_mgyg):
+    extra_weight_user = dict()
+    category_weights = {"mag": 0, "isolate": 1000}
+    with open(extra_weight_table_user_provided_file, "r") as f:
+        for line in f:
+            fields = line.strip().split("\t")
+            genome_insdc = fields[0].rsplit(".", 1)[0]
+            genome_mgyg = insdc_to_mgyg.get(genome_insdc)
+            if genome_mgyg:
+                weight = category_weights.get(fields[1].lower())
+                if weight is not None:
+                    extra_weight_user[genome_mgyg] = weight
+            else:
+                logging.error(f"Unable to look up extra weight for genome {genome_insdc} in user provided table. "
+                              f"MGYG accession of the genome is {genome_mgyg}, weight is {fields[1]}.")
+    return extra_weight_user
+    
+
+def compare_dictionaries(cluster_splits, metadata_table_clusters, qc_removed, issues):
+    keys_splits = set(cluster_splits.keys())
+    keys_metadata = set(metadata_table_clusters.keys())
+    
+    only_in_splits = keys_splits - keys_metadata - set(qc_removed)
+    only_in_metadata = keys_metadata - keys_splits
+    
+    if only_in_splits:
+        issues.append(f"METADATA TABLE ERROR: The following cluster reps exist in the cluster split file but not in "
+                      f"the metadata table: {','.join(only_in_splits)}")
+    if only_in_metadata:
+        issues.append(f"METADATA TABLE ERROR: The following cluster reps exist in the cluster split file but not in "
+                      f"the metadata table: {','.join(only_in_splits)}")
+    
+    common_keys = keys_splits & keys_metadata
+    for key in common_keys:
+        if set(cluster_splits[key]) != set(metadata_table_clusters[key]):
+            issues.append(f"CLUSTER COMPOSITION ERROR: cluster {key} has genomes {','.join(cluster_splits[key])} in the"
+                          f" dRep output but genomes in the metadata table are {','.join(metadata_table_clusters[key])}"
+                          f". Likely error during metadata table generation.")
+    return issues
+
+
 def check_gunc(gunc_failed_list, metadata_table_contents, issues):
     for genome in gunc_failed_list:
         if genome in metadata_table_contents:
@@ -76,31 +158,32 @@ def check_gunc(gunc_failed_list, metadata_table_contents, issues):
     return issues
     
 
-def check_file_presence(input_directory, cluster_splits, report, issues):
-    # check the additional data folder
-    additional_data_path = os.path.join(input_directory, "additional_data")
+def check_file_presence(input_directory, additional_data_path, genomes_path, cluster_splits, qc_removed, 
+                        report, issues):
+    # Check the additional data folder
     if check_folder_existence(additional_data_path):
         issues = check_file_existence(os.path.join(additional_data_path, "combined_QC_failed_report.txt"), 
-                                        issues, empty_ok=True)
+                                      issues, empty_ok=True)
         issues = check_file_existence(os.path.join(additional_data_path, "gtdbtk_results.tar.gz"), 
-                                        issues, empty_ok=False)
+                                      issues, empty_ok=False)
         
-        # check that genomes are never empty
-        logging.info("Checking that genome files not empty")
-        if check_folder_existence(os.path.join(additional_data_path, "mgyg_genomes")):
-            for file in os.listdir(os.path.join(additional_data_path, "mgyg_genomes")):
-                issues = check_file_existence(os.path.join(additional_data_path, "mgyg_genomes", file),
+        # Check that genomes are never empty
+        logging.info("Checking that genome files are not empty")
+        if check_folder_existence(genomes_path):
+            for file in os.listdir(genomes_path):
+                issues = check_file_existence(os.path.join(genomes_path, file),
                                               issues, empty_ok=False)
         else:
-            issues.append(f"FOLDER MISSING: could not find ${additional_data_path}/mgyg_genomes")
+            issues.append(f"FOLDER MISSING: could not find ${genomes_path}")
         
-        # Check ncRNA results files
+        # Check ncRNA results files - we have these for species reps only
         logging.info("Checking ncRNA results files")
         ncrna_folder_path = os.path.join(additional_data_path, "ncrna_deoverlapped_species_reps")
         if check_folder_existence(ncrna_folder_path):
             for accession in cluster_splits:
-                issues = check_file_existence(os.path.join(ncrna_folder_path, f"{accession}.ncrna.deoverlap.tbl"), 
-                                              issues, empty_ok=True)
+                if accession not in qc_removed:
+                    issues = check_file_existence(os.path.join(ncrna_folder_path, f"{accession}.ncrna.deoverlap.tbl"), 
+                                                  issues, empty_ok=True)
         else:
             issues.append(f"FOLDER MISSING: could not find ${ncrna_folder_path}")
         
@@ -109,7 +192,7 @@ def check_file_presence(input_directory, cluster_splits, report, issues):
         panaroo_folder_path = os.path.join(additional_data_path, "panaroo_output")
         if check_folder_existence(panaroo_folder_path):
             for rep in cluster_splits:
-                if len(cluster_splits[rep]) > 0:
+                if len(cluster_splits[rep]) > 0 and rep not in qc_removed:
                     issues = check_file_existence(os.path.join(panaroo_folder_path, f"{rep}_panaroo.tar.gz"), 
                                                   issues, empty_ok=False)
         else:
@@ -134,10 +217,6 @@ def check_folder_existence(folder_path):
 
 def check_genome_counts(metadata_table, cluster_splits, all_genomes, intermediate_files_path, report, issues):
     """Ensure the number of genomes matches expected counts."""
-    gunc_failed_list = load_gunc(os.path.join(intermediate_files_path, "gunc", "gunc_failed.txt"))
-
-    if gunc_failed_list is None:
-        issues.append("FILE MISSING: gunc_failed.txt not found.")
 
     expected_count = len(all_genomes)
     if expected_count == len(metadata_table):
@@ -191,7 +270,8 @@ def check_geography(metadata_table_contents, report, issues):
 def load_metadata_table(metadata_table):
     fields_to_extract = ["Genome_type", "Completeness", "Contamination", "Species_rep", "Lineage", "Country",
                          "Continent", "Sample_accession", "Study_accession", "FTP_download"]
-    metadata_table_contents = dict()
+    metadata_table_contents = dict()  # full contents
+    metadata_table_clusters = dict()  # matches between species rep and cluster members
     with open(metadata_table, "r") as file_in:
         header = file_in.readline().strip()
         indices = {field: get_field_index(field, header.strip().split("\t")) for field in fields_to_extract}
@@ -201,7 +281,11 @@ def load_metadata_table(metadata_table):
             metadata_table_contents.setdefault(genome, dict())
             for field in fields_to_extract:
                 metadata_table_contents[genome][field] = fields[indices[field]]
-    return metadata_table_contents
+            species_rep = fields[indices["Species_rep"]]
+            metadata_table_clusters.setdefault(species_rep, list())
+            if species_rep != genome:
+                metadata_table_clusters[species_rep].append(genome)
+    return metadata_table_contents, metadata_table_clusters
             
 
 def get_field_index(field_name, fields):
@@ -242,7 +326,8 @@ def load_genomes(folder):
     
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="The script makes sure that the outputs of the catalogue generation pipeline are as expected."
+        description="The script makes sure that the outputs of the catalogue generation pipeline are as expected. The "
+                    "checks are performed on the pipeline output folder, before any reorganisation."
     )
     parser.add_argument(
         "-i", "--input-directory",
