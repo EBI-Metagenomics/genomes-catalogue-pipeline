@@ -37,7 +37,8 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     qc_removed = load_qc_removed_genomes(additional_data_path)
     
     if domain == "prok":
-        gunc_failed_list = load_gunc(os.path.join(intermediate_files_path, "gunc", "gunc_failed.txt"))
+        gunc_folder = os.path.join(intermediate_files_path, "gunc")
+        gunc_failed_list = load_gunc(os.path.join(gunc_folder, "gunc_failed.txt"))
     else:
         gunc_failed_list = list()
 
@@ -49,12 +50,15 @@ def main(input_directory, domain, outfile, extra_weight_table_user_provided):
     report, issues = [], []
     # Check genome counts
     logging.info("Checking genome count")
-    report, issues = check_genome_counts(metadata_table_contents, cluster_splits, all_genomes, intermediate_files_path, 
-                                         report, issues)
+    report, issues = check_genome_counts(metadata_table_contents, all_genomes, report, issues)
     
     # Check general file presence
-    report, issues = check_file_presence(input_directory, additional_data_path, genomes_path, cluster_splits, 
-                                         qc_removed, report, issues)
+    report, issues = check_file_presence(input_directory, additional_data_path, intermediate_files_path, genomes_path, 
+                                         cluster_splits, qc_removed, report, issues)
+
+    # Check that the GUNC failed file correctly captures individual GUNC results
+    if domain == "prok":
+        report, issues = check_gunc_folder(gunc_folder, report, issues, gunc_failed_list)
     
     # Move the bit below elsewhere
     if domain is "prok":
@@ -158,10 +162,10 @@ def check_gunc(gunc_failed_list, metadata_table_contents, issues):
     return issues
     
 
-def check_file_presence(input_directory, additional_data_path, genomes_path, cluster_splits, qc_removed, 
-                        report, issues):
+def check_file_presence(input_directory, additional_data_path, intermediate_files_path, genomes_path, cluster_splits, 
+                        qc_removed, report, issues):
     # Check the main folder
-    for file in ["all_genomes.msh", "phylo_tree.json"]:
+    for file in ["all_genomes.msh", "phylo_tree.json", "catalogue_summary.json"]:
         issues = check_file_existence(os.path.join(input_directory, file), issues, empty_ok=False)
     # Check the additional data folder
     if check_folder_existence(additional_data_path):
@@ -201,7 +205,15 @@ def check_file_presence(input_directory, additional_data_path, genomes_path, clu
         else:
             issues.append(f"FOLDER MISSING: could not find ${panaroo_folder_path}")
     else:
-        issues.append(f"FOLDER MISSING: could not folder ${additional_data_path}")
+        issues.append(f"FOLDER MISSING: could not find folder ${additional_data_path}")
+    
+    # Check the intermediate folder
+    if check_folder_existence(intermediate_files_path):
+        # Some of the checks, such as cluster split, extra weight table, genome name mapping, is done elsewhere
+        for file in ["domains.csv", "drep_data_tables.tar.gz", "filtered_genomes.csv"]:
+            issues = check_file_existence(os.path.join(intermediate_files_path, file), issues, empty_ok=False)
+    else:
+        issues.append(f"FOLDER MISSING: could not find folder ${intermediate_files_path}")
     return report, issues
 
 
@@ -218,7 +230,7 @@ def check_folder_existence(folder_path):
     return os.path.exists(folder_path)
 
 
-def check_genome_counts(metadata_table, cluster_splits, all_genomes, intermediate_files_path, report, issues):
+def check_genome_counts(metadata_table, all_genomes, report, issues):
     """Ensure the number of genomes matches expected counts."""
 
     expected_count = len(all_genomes)
@@ -321,8 +333,37 @@ def load_name_conversion(name_mapping_file):
             insdc_to_mgyg[key.rsplit('.fa', 1)[0]] = value.rsplit('.fa', 1)[0]
             mgyg_to_insdc[value.rsplit('.fa', 1)[0]] = key.rsplit('.fa', 1)[0]
     return mgyg_to_insdc, insdc_to_mgyg
-   
-    
+
+
+def check_gunc_folder(folder_path, report, issues, gunc_failed_list):
+    complete_accessions = set()
+    empty_accessions = set()
+
+    for filename in os.listdir(folder_path):
+        if filename.endswith('_gunc_complete.txt'):
+            accession = filename.replace('_gunc_complete.txt', '')
+            complete_accessions.add(accession)
+        elif filename.endswith('_gunc_empty.txt'):
+            accession = filename.replace('_gunc_empty.txt', '')
+            empty_accessions.add(accession)
+
+    accession_set = set(gunc_failed_list)
+
+    # Check conditions
+    missing_from_list = empty_accessions - accession_set
+    wrongly_included = complete_accessions & accession_set
+
+    if missing_from_list:
+        issues.append(f"GUNC OUTPUT PROCESSING ISSUE: the following accessions failed GUNC but aren't included "
+                      f"in the gunc failed file: {','.join(missing_from_list)}")
+    if wrongly_included:
+        issues.append(f"GUNC OUTPUT PROCESSING ISSUE: the following accessions passed GUNC but are included "
+                      f"in the gunc failed file: {','.join(wrongly_included)}")
+    if not missing_from_list and not wrongly_included:
+        report.append("GUNC results passed checks")
+    return report, issues
+
+
 def load_genomes(folder):
     return ['.'.join(f.split('.')[:-1]) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
     
