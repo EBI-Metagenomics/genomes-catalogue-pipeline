@@ -1,6 +1,6 @@
 process GTDBTK_TAX {
 
-    container 'quay.io/biocontainers/gtdbtk:2.4.0--pyhdfd78af_1'
+    container 'quay.io/biocontainers/gtdbtk:2.4.1--pyhdfd78af_1'
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
 
     publishDir(
