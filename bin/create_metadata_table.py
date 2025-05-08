@@ -198,7 +198,7 @@ def get_metadata(acc, disable_ncbi_lookup):
 
 def ena_api_request(acc):
     biosample = project = ""
-    if acc.startswith("CA"):
+    if not acc.startswith(("GCA", "ERZ", "GUT")):
         acc = acc + "0" * 7
     r = run_request(acc, "https://www.ebi.ac.uk/ena/browser/api/embl")
     if r.ok:
