@@ -415,8 +415,9 @@ def get_defense_finder(df_file):
         return defense_finder_annotations
     with open(df_file, "r") as f:
         for line in f:
-            if "Anti-phage system" in line:
+            if "system" in line:
                 annot_fields = line.strip().split("\t")[8].split(";")
+                df_activity = line.strip().split("\t")[2].split(" ")[0].lower()
                 for a in annot_fields:
                     if a.startswith("ID="):
                         id = a.split("=")[1]
@@ -426,6 +427,7 @@ def get_defense_finder(df_file):
                         df_subtype = a.split("=")[1]
                 type_info.setdefault(id, {})["df_type"] = df_type
                 type_info.setdefault(id, {})["df_subtype"] = df_subtype
+                type_info.setdefault(id, {})["df_activity"] = df_activity
             elif "DefenseFinder" in line:
                 annot_fields = line.strip().split("\t")[8].split(";")
                 for a in annot_fields:
@@ -434,8 +436,8 @@ def get_defense_finder(df_file):
                     elif a.startswith("Parent="):
                         parent = a.split("=")[1]
                 defense_finder_annotations[id] = (
-                    "defense_finder_type={};defense_finder_subtype={}".format(
-                        type_info[parent]["df_type"], type_info[parent]["df_subtype"]
+                    "defense_finder_activity={};defense_finder_type={};defense_finder_subtype={}".format(
+                        type_info[parent]["df_activity"],type_info[parent]["df_type"], type_info[parent]["df_subtype"]
                     )
                 )
     return defense_finder_annotations

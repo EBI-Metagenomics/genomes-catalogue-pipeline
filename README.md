@@ -32,8 +32,9 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | antiSMASH                                                                                        | 7.1.0             | Biosynthetic gene cluster annotation                                                                                   |
 | GECCO                                                                                            | 0.9.8             | Biosynthetic gene cluster annotation                                                                                   |
 | SanntiS                                                                                          | 0.9.3.2           | Biosynthetic gene cluster annotation                                                                                   |
-| DefenseFinder                                                                                    | 1.2.0             | Annotation of anti-phage systems                                                                                       |
-| DefenseFinder models                                                                             | 1.2.3             | Database for DefenseFinder                                                                                             |
+| DefenseFinder                                                                                    | 2.0.0             | Annotation of anti-phage systems                                                                                       |
+| DefenseFinder models                                                                             | 2.0.2             | Database for DefenseFinder                                                                                             |
+| CasFinder                                                                                        | 3.1.0             | Database for DefenseFinder                                                                                             |
 | run_dbCAN                                                                                        | 4.1.4             | Polysaccharide utilization loci prediction                                                                             |
 | dbCAN DB                                                                                         | V13               | Database for run_dbCAN                                                                                                 |
 | Infernal                                                                                         | 1.1.4             | RNA predictions                                                                                                        |
@@ -63,7 +64,7 @@ The pipeline needs the following reference databases and configuration files (ro
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_15.0/
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
-- https://data.ace.uq.edu.au/public/gtdb/data/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz
+- https://data.ace.uq.edu.au/public/gtdb/data/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz
 - ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.12/2024-01-31.1/
 - https://zenodo.org/records/4626519/files/uniref100.KO.v1.dmnd.gz
 
