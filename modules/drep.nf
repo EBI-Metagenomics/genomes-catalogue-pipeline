@@ -19,6 +19,8 @@ process DREP {
     )
 
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
+    
+    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
 
     input:
     path genomes_directory
