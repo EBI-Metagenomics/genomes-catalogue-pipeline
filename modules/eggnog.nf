@@ -5,6 +5,7 @@
 process EGGNOG_MAPPER {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.eggnog-mapper:v2.1.11'
+    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
 
     input:
     // on mode "annotations" will be ignored, submit an empty path (channel.path("NO_FILE"))
