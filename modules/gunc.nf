@@ -18,6 +18,8 @@ process GUNC {
     )
 
     container 'quay.io/biocontainers/gunc:1.0.6--pyhdfd78af_0'
+    
+    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
 
     input:
     tuple val(cluster_name), path(fasta), val(domain)
