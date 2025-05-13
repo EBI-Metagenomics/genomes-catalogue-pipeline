@@ -30,6 +30,8 @@ process PANAROO {
     label 'process_medium'
 
     container 'quay.io/biocontainers/panaroo:1.3.2--pyhdfd78af_0'
+    
+    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
 
     input:
     tuple val(cluster_name), path(gff_files)

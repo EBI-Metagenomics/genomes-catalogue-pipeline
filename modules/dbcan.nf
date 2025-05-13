@@ -15,6 +15,8 @@ process DBCAN {
     )
 
     container 'quay.io/biocontainers/dbcan:4.1.4--pyhdfd78af_0'
+    
+    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
 
     input:
     tuple val(cluster_name), path(faa), path(gff)
