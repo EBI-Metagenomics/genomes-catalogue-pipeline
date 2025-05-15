@@ -3,6 +3,8 @@ process ANTISMASH {
     tag "${cluster_name}"
 
     container 'quay.io/microbiome-informatics/antismash:7.1.0.1_2'
+    
+    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
 
     input:
     tuple val(cluster_name), path(gbk)
