@@ -25,8 +25,8 @@ def main(rfam_file, output):
                     rfam_lengths[name] = model_length
                     name = ""
     with open(output, "w") as file_out:
-        for rfam_name, len in rfam_lengths.items():
-            file_out.write("{}\t{}\n".format(rfam_name, len))
+        for rfam_name, length in rfam_lengths.items():
+            file_out.write("{}\t{}\n".format(rfam_name, length))
 
 
 def parse_args():
@@ -35,7 +35,7 @@ def parse_args():
                                                  "script and only needs to be produced once unless the Rfam.cm"
                                                  "file is updated.")
     parser.add_argument('-r', '--rfam-file', required=True,
-                        help='Path to the Rfam.cm file containing concatinated Rfam models.')
+                        help='Path to the Rfam.cm file containing concatenated Rfam models.')
     parser.add_argument('-o', '--output', required=True,
                         help='Path to the output file where the lengths of models will be saved to.')
     return parser.parse_args()
