@@ -22,6 +22,8 @@ process MMSEQ {
     )
 
     container 'quay.io/biocontainers/mmseqs2:13.45111--h2d02072_0'
+    
+    errorStrategy = { task.attempt <= 3 ? 'retry' : 'finish' }
 
     input:
     file faa_file
