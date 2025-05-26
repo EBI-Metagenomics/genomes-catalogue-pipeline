@@ -56,8 +56,9 @@ def get_location(sample_id):
     for attribute in json_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"][
         "SAMPLE_ATTRIBUTE"
     ]:
-        if attribute.get("TAG") == "geographic location (country and/or sea)":
+        if attribute.get("TAG") in ["geographic location (country and/or sea)", "geo_loc_name"]:
             location = attribute.get("VALUE")
+            return location
     return location
 
 
