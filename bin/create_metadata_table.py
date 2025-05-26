@@ -151,7 +151,8 @@ def get_metadata(acc, disable_ncbi_lookup):
             except:
                 if not disable_ncbi_lookup:
                     logging.info(
-                        "Unable to get location from ENA for sample {} which is unexpected. Trying NCBI.".format(biosample))
+                        "Unable to get location from ENA for sample {} (genome {}) which is unexpected. "
+                        "Trying NCBI.".format(biosample, acc))
                     warnings_out.write("Had to get location from NCBI for sample {}".format(biosample))
                     location = get_sample_location_from_ncbi(biosample)
                     logging.error(
@@ -160,12 +161,12 @@ def get_metadata(acc, disable_ncbi_lookup):
                             location))
                 else:
                     logging.warning(
-                        "Unable to obtain location for sample {}, which is unexpected. Unable to look up the location "
-                        "in NCBI because the --disable-ncbi-lookup flag is used. Returning 'not provided'".format(
-                            biosample))
+                        "Unable to obtain location for sample {} (genome {}), which is unexpected. Unable to look up "
+                        "the location in NCBI because the --disable-ncbi-lookup flag is used. Returning 'not "
+                        "provided'".format(biosample, acc))
                     location = "not provided"
     if not location:
-        logging.warning("Unable to obtain location for sample {}".format(biosample))
+        logging.warning("Unable to obtain location for sample {} (genome {})".format(biosample, acc))
         location = "not provided"
     if not acc.startswith("GUT"):
         if acc.startswith("GCA"):
