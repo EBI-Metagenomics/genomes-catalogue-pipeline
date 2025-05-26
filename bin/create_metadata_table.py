@@ -115,7 +115,7 @@ def load_geography(geofile):
 
 
 def get_metadata(acc, disable_ncbi_lookup):
-    warnings_out = open("warnings.txt", "w")
+    warnings_out = open("warnings.txt", "a")
     location = None
     project = "N/A"
     biosample = "N/A"
