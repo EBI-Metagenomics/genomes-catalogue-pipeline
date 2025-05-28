@@ -92,12 +92,16 @@ def add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup
         metadata.setdefault(col_name, dict())
     for new_acc, original_acc in original_accessions.items():
         sample, project, loc = get_metadata(original_acc, disable_ncbi_lookup)
+        if ":" in loc:
+            loc = loc.split(":")[0]
         metadata["Sample_accession"][new_acc] = sample
         metadata["Study_accession"][new_acc] = project
         metadata["Country"][new_acc] = loc
         if loc in countries_continents:
             metadata["Continent"][new_acc] = countries_continents[loc]
         else:
+            logging.error(f"Location {loc} for genome {original_acc} not found in the countries file. Replacing with "
+                          f"'not provided'")
             metadata["Continent"][new_acc] = "not provided"
     for col_name in ["Sample_accession", "Study_accession", "Country", "Continent"]:
         df[col_name] = df["Genome"].map(metadata[col_name])
