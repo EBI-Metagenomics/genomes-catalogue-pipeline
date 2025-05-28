@@ -20,14 +20,9 @@ import argparse
 import logging
 import os
 import pandas as pd
-import re
 import sys
 
-from retry import retry
-
 from assembly_stats import run_assembly_stats
-from get_ENA_metadata import get_location, load_xml, get_gca_location
-from get_NCBI_metadata import *
 
 logging.basicConfig(level=logging.INFO)
 
@@ -40,7 +35,6 @@ def main(
     naming_file,
     clusters_file,
     taxonomy_file,
-    geofile,
     outfile,
     ftp_name,
     ftp_version,
@@ -64,7 +58,7 @@ def main(
     df, reps = add_species_rep(df, clusters_file)
     df = add_taxonomy(df, taxonomy_file, genome_list, reps)
     logging.info("Added species reps and taxonomy")
-    df = add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup)
+    df = add_sample_project_loc(df, original_accessions, disable_ncbi_lookup)
     logging.info("Added locations")
     df = add_ftp(df, genome_list, ftp_name, ftp_version, reps)
     df.set_index("Genome", inplace=True)
@@ -85,8 +79,7 @@ def add_ftp(df, genome_list, catalog_ftp_name, catalog_version, species_reps):
     return df
 
 
-def add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup):
-    countries_continents = load_geography(geofile)
+def add_sample_project_loc(df, original_accessions, disable_ncbi_lookup):
     metadata = dict()
     for col_name in ["Sample_accession", "Study_accession", "Country", "Continent"]:
         metadata.setdefault(col_name, dict())
@@ -95,131 +88,9 @@ def add_sample_project_loc(df, original_accessions, geofile, disable_ncbi_lookup
         metadata["Sample_accession"][new_acc] = sample
         metadata["Study_accession"][new_acc] = project
         metadata["Country"][new_acc] = loc
-        if loc in countries_continents:
-            metadata["Continent"][new_acc] = countries_continents[loc]
-        else:
-            metadata["Continent"][new_acc] = "not provided"
     for col_name in ["Sample_accession", "Study_accession", "Country", "Continent"]:
         df[col_name] = df["Genome"].map(metadata[col_name])
     return df
-
-
-def load_geography(geofile):
-    geography = dict()
-    with open(geofile, "r") as file_in:
-        for line in file_in:
-            if not line.startswith("Continent"):
-                fields = line.strip().split(",")
-                geography[fields[1]] = fields[0]
-    return geography
-
-
-def get_metadata(acc, disable_ncbi_lookup):
-    warnings_out = open("warnings.txt", "a")
-    location = None
-    project = "N/A"
-    biosample = "N/A"
-    if acc.startswith("ERZ"):
-        json_data_erz = load_xml(acc)
-        biosample = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["SAMPLE_REF"][
-            "IDENTIFIERS"
-        ]["EXTERNAL_ID"]["#text"]
-        project = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["STUDY_REF"]["IDENTIFIERS"][
-            "SECONDARY_ID"
-        ]
-    elif acc.startswith("GUT"):
-        pass
-    elif acc.startswith("GCA"):
-        try:
-            json_data_gca = load_xml(acc)
-            biosample = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["SAMPLE_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
-            project = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["STUDY_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
-        except:
-            logging.info("Missing metadata in ENA XML for sample {}. Using API instead.".format(acc))
-            try:
-                biosample, project = ena_api_request(acc)
-            except:
-                logging.exception("Could not obtain biosample and project information for {}".format(acc))
-    else:
-        biosample, project = ena_api_request(acc)
-    if not acc.startswith("GUT"):
-        if acc.startswith("GCA"):
-            location = get_gca_location(biosample)
-        else:
-            try:
-                location = get_location(biosample)
-            except:
-                if not disable_ncbi_lookup:
-                    logging.info(
-                        "Unable to get location from ENA for sample {} (genome {}) which is unexpected. "
-                        "Trying NCBI.".format(biosample, acc))
-                    warnings_out.write("Had to get location from NCBI for sample {}".format(biosample))
-                    location = get_sample_location_from_ncbi(biosample)
-                    logging.error(
-                        "MAJOR WARNING: had to get location for sample {} from NCBI. Location acquired: {}".format(
-                            biosample,
-                            location))
-                else:
-                    logging.warning(
-                        "Unable to obtain location for sample {} (genome {}), which is unexpected. Unable to look up "
-                        "the location in NCBI because the --disable-ncbi-lookup flag is used. Returning 'not "
-                        "provided'".format(biosample, acc))
-                    location = "not provided"
-    if not location:
-        logging.warning("Unable to obtain location for sample {} (genome {})".format(biosample, acc))
-        location = "not provided"
-    if not acc.startswith("GUT"):
-        if acc.startswith("GCA"):
-            converted_sample = biosample
-        else:
-            json_data_sample = load_xml(biosample)
-            try:
-                converted_sample = json_data_sample["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"][
-                    "PRIMARY_ID"
-                ]
-            except:
-                converted_sample = biosample
-        if project == "N/A":
-            converted_project = "N/A"
-        else:
-            json_data_project = load_xml(project)
-            try:
-                converted_project = json_data_project["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"][
-                    "SECONDARY_ID"
-                ]
-            except:
-                converted_project = project
-    else:
-        converted_sample = "FILL"
-        converted_project = "FILL"
-        location = "FILL"
-    warnings_out.close()
-    return converted_sample, converted_project, location
-
-
-def ena_api_request(acc):
-    biosample = project = ""
-    if not acc.startswith(("GCA", "ERZ", "GUT")):
-        acc = acc + "0" * 7
-    r = run_request(acc, "https://www.ebi.ac.uk/ena/browser/api/embl")
-    if r.ok:
-        match_pr = re.findall("PR +Project: *(PRJ[A-Z0-9]+)", r.text)
-        if match_pr:
-            project = match_pr[0]
-        match_samp = re.findall("DR +BioSample; ([A-Z0-9]+)", r.text)
-        if match_samp:
-            biosample = match_samp[0]
-    else:
-        logging.error("Cannot obtain metadata from ENA")
-        sys.exit()
-    return biosample, project
-
-
-@retry(tries=5, delay=10, backoff=1.5)
-def run_request(acc, url):
-    r = requests.get("{}/{}".format(url, acc))
-    r.raise_for_status()
-    return r
 
 
 def add_taxonomy(df, taxonomy_file, genome_list, reps):
@@ -438,14 +309,6 @@ def parse_args():
         help="Path to the file containing checkM results",
     )
     parser.add_argument(
-        "--geo",
-        required=True,
-        help=(
-            "Path to the countries and continents file (continent_countries.csv from"
-            "https://raw.githubusercontent.com/dbouquin/IS_608/master/NanosatDB_munging/Countries-Continents.csv)"
-        ),
-    )
-    parser.add_argument(
         "--taxonomy",
         required=True,
         help=(
@@ -481,7 +344,6 @@ if __name__ == "__main__":
         args.naming_table,
         args.clusters_table,
         args.taxonomy,
-        args.geo,
         args.outfile,
         args.ftp_name,
         args.ftp_version,
