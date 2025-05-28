@@ -72,12 +72,12 @@ def get_metadata(acc, disable_ncbi_lookup):
             biosample = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["SAMPLE_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
             project = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["STUDY_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
         except:
-            logging.info("Missing metadata in ENA XML for sample {}. Using API instead.".format(acc))
+            logging.info(f"Missing metadata in ENA XML for sample {acc}. Using API instead.")
             try:
                 biosample, project = ena_api_request(acc)
             except:
-                logging.exception("Could not obtain biosample and project information for {}".format(acc))
-                error_text += "Could not obtain biosample and project information for {} .".format(acc)
+                logging.exception(f"Could not obtain biosample and project information for {acc}")
+                error_text += f"Could not obtain biosample and project information for {acc} ."
     else:
         biosample, project = ena_api_request(acc)
     if not acc.startswith("GUT"):
@@ -89,22 +89,22 @@ def get_metadata(acc, disable_ncbi_lookup):
             except:
                 if not disable_ncbi_lookup:
                     logging.info(
-                        "Unable to get location from ENA for sample {} (genome {}) which is unexpected. "
-                        "Trying NCBI.".format(biosample, acc))
-                    error_text += "Had to get location from NCBI for sample {}".format(biosample)
+                        f"Unable to get location from ENA for sample {biosample} (genome {acc}) which is unexpected. "
+                        f"Trying NCBI.")
+                    error_text += f"Had to get location from NCBI for sample {biosample} (genome {acc})"
                     location = get_sample_location_from_ncbi(biosample)
                     logging.error(
-                        "MAJOR WARNING: had to get location for sample {} from NCBI. Location acquired: {}".format(
-                            biosample,
-                            location))
+                        f"MAJOR WARNING: had to get location for sample {biosample} from NCBI. Location acquired: "
+                        f"{location}"
+                    )
                 else:
                     logging.warning(
-                        "Unable to obtain location for sample {} (genome {}), which is unexpected. Unable to look up "
-                        "the location in NCBI because the --disable-ncbi-lookup flag is used. Returning 'not "
-                        "provided'".format(biosample, acc))
+                        f"Unable to obtain location for sample {biosample} (genome {acc}), which is unexpected. Unable "
+                        f"to look up the location in NCBI because the --disable-ncbi-lookup flag is used. Returning "
+                        f"'not provided'")
                     location = "not provided"
     if not location:
-        logging.warning("Unable to obtain location for sample {} (genome {})".format(biosample, acc))
+        logging.warning(f"Unable to obtain location for sample {biosample} (genome {acc})")
         location = "not provided"
     if not acc.startswith("GUT"):
         if acc.startswith("GCA"):
@@ -128,6 +128,7 @@ def get_metadata(acc, disable_ncbi_lookup):
             except:
                 converted_project = project
     else:
+        error_text += f"Could not find any information for genome {acc}, user has to fill manually. "
         converted_sample = "FILL"
         converted_project = "FILL"
         location = "FILL"
@@ -154,7 +155,7 @@ def ena_api_request(acc):
 
 @retry(tries=5, delay=10, backoff=1.5)
 def run_request(acc, url):
-    r = requests.get("{}/{}".format(url, acc))
+    r = requests.get(f"{url}/{acc}")
     r.raise_for_status()
     return r
 
