@@ -38,10 +38,11 @@ def main(input_file, geofile, disable_ncbi_lookup):
         for line in in_f:
             original_acc = line.strip()
             sample, project, country, error_text = get_metadata(original_acc, disable_ncbi_lookup)
+            if ":" in country:
+                country = country.split(":")[0]
             if country not in countries_continents:
-                error_text += (f"Found location {country} for genome {original_acc}. Location not present in the countries "
-                               f"file. Replacing with 'not provided'.")
-                country = "not provided"
+                error_text += (f"Found location {country} for genome {original_acc}. Location not present in the "
+                               f"countries file. Reporting continent as 'not provided'.")
                 continent = "not provided"
             else:
                 continent = countries_continents[country]
