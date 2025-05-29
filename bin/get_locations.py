@@ -157,9 +157,17 @@ def ena_api_request(acc):
 
 @retry(tries=5, delay=10, backoff=1.5)
 def run_request(acc, url):
-    r = requests.get(f"{url}/{acc}")
-    r.raise_for_status()
-    return r
+    try:
+        r = requests.get(f"{url}/{acc}")
+        r.raise_for_status()
+        return r
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 429:
+            logging.warning("Rate limit hit (429). Sleeping for 3 minutes before retrying...")
+            time.sleep(180)  # Wait for 3 minutes
+            raise
+        else:
+            raise
 
 
 def load_geography(geofile):
