@@ -155,7 +155,7 @@ def ena_api_request(acc):
     return biosample, project
 
 
-@retry(tries=5, delay=10, backoff=1.5)
+@retry(tries=3, delay=15, backoff=2)
 def run_request(acc, url):
     try:
         r = requests.get(f"{url}/{acc}")
