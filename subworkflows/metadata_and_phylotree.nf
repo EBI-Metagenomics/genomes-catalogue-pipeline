@@ -10,8 +10,8 @@ process PREPARE_LOCATION_INPUT {
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
     
     input:
-    gunc_failed_txt
-    name_mapping_tsv
+    file gunc_failed_txt
+    path name_mapping_tsv
     
     output:
     path "accession_list.txt", emit: locations_input_tsv
@@ -30,8 +30,8 @@ process FETCH_LOCATIONS {
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
     
     input:
-    accessions_file
-    geo_metadata
+    path accessions_file
+    path geo_metadata
     
     output:
     path '*.locations', emit: locations_tsv
