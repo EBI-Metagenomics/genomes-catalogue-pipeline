@@ -25,7 +25,7 @@ process PREPARE_LOCATION_INPUT {
     """
 }
 
-process FETCH_LOCATIONS(
+process FETCH_LOCATIONS {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
     
@@ -42,7 +42,7 @@ process FETCH_LOCATIONS(
     -i ${accessions_file} \
     --geo ${geo_metadata}
     """
-)
+}
 
 workflow METADATA_AND_PHYLOTREE {
 
