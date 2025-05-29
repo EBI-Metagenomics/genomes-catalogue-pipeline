@@ -29,12 +29,15 @@ process FETCH_LOCATIONS {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
     
+    errorStrategy = { task.attempt <= 3 ? 'retry' : 'finish' }
+    
     input:
     path accessions_file
     path geo_metadata
     
     output:
     path '*.locations', emit: locations_tsv
+    path 'warnings.txt', emit: warnings_txt
     
     script:
     """
@@ -43,6 +46,29 @@ process FETCH_LOCATIONS {
     --geo ${geo_metadata}
     """
 }
+
+process PUBLISH_WARNINGS {
+
+    publishDir(
+    "${params.outdir}/additional_data/intermediate_files/",
+    pattern: "ena_location_warnings.txt",
+    mode: "copy",
+    failOnError: true
+    )
+    
+    input:
+    path warning_file
+    
+    output:
+    path "ena_location_warnings.txt"
+    
+    script:
+    """
+    mv all_warnings.txt ena_location_warnings.txt
+    """
+
+}
+
 
 workflow METADATA_AND_PHYLOTREE {
 
@@ -66,7 +92,7 @@ workflow METADATA_AND_PHYLOTREE {
         )
         
         location_input_chunks = PREPARE_LOCATION_INPUT.out.locations_input_tsv.splitText(
-            by: 500,
+            by: 300,
             file: true
         )
         
@@ -77,6 +103,13 @@ workflow METADATA_AND_PHYLOTREE {
         
         location_table = FETCH_LOCATIONS.out.locations_tsv.collectFile(
             name: "locations.tsv",
+        )
+        warning_file = FETCH_LOCATIONS.out.warnings_txt.collectFile(
+            name: "all_warnings.txt",
+        )
+        
+        PUBLISH_WARNINGS(
+            warning_file
         )
         
         METADATA_TABLE(
