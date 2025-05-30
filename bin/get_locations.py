@@ -38,28 +38,39 @@ def main(input_file, geofile, disable_ncbi_lookup):
         for line in in_f:
             original_acc = line.strip()
             sample, project, country, error_text = get_metadata(original_acc, disable_ncbi_lookup)
-            if ":" in country:
-                country = country.split(":")[0]
-            if country in ["USA", "United States", "United States of America"]:
-                country = "US"
-            if country == "Russia":
-                country = "Russian Federation"
-            if country in ["UK", "England", "Scotland", "Wales", "Northern Ireland"]:
-                country = "United Kingdom"
+            country = refine_country_name(country)
             if country not in countries_continents:
-                continent = "not provided"
-                if country.lower() in ["not provided", "not collected", "not present", "na", "n/a"]:
-                    error_text += (f"Submitter did not provide a location for genome {original_acc}. Submitted value "
-                                   f"is '{country}'. Recording country and continent as 'not provided'.")
-                    country = "not provided"
+                if country == "Antarctica":
+                    continent = "Antarctica"
                 else:
-                    error_text += (f"Found location {country} for genome {original_acc}. Location not present in the "
-                                   f"countries file. Reporting continent as 'not provided'.")
+                    continent = "not provided"
+                    if country.lower() in ["not provided", "not collected", "not present", "na", "n/a"]:
+                        error_text += (f"Submitter did not provide a location for genome {original_acc}. "
+                                       f"Submitted value: '{country}'. Recording country and continent as "
+                                       f"'not provided'.")
+                        country = "not provided"
+                    else:
+                        error_text += (f"Found location {country} for genome {original_acc}. Location not present in "
+                                       f"the countries file. Reporting continent as 'not provided'.")
             else:
                 continent = countries_continents[country]
             out_f.write(f"{original_acc}\t{sample}\t{project}\t{country}\t{continent}\n")
             if error_text:
                 warn_f.write(error_text + "\n")
+
+
+def refine_country_name(country):
+    if ":" in country:
+        country = country.split(":")[0]
+    if country in ["USA", "United States", "United States of America"]:
+        return "US"
+    if country == "Russia":
+        return "Russian Federation"
+    if country in ["UK", "England", "Scotland", "Wales", "Northern Ireland"]:
+        return "United Kingdom"
+    if country == "Viet Nam":
+        return "Vietnam"
+    return country
 
 
 def get_metadata(acc, disable_ncbi_lookup):
