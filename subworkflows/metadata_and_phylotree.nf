@@ -122,7 +122,7 @@ workflow METADATA_AND_PHYLOTREE {
             gtdbtk_tables_ch,
             ftp_name,
             ftp_version,
-            geo_metadata,
+            location_table,
             gunc_failed_txt
         )
 
