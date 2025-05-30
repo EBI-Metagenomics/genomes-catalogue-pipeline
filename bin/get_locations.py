@@ -42,10 +42,19 @@ def main(input_file, geofile, disable_ncbi_lookup):
                 country = country.split(":")[0]
             if country in ["USA", "United States", "United States of America"]:
                 country = "US"
+            if country == "Russia":
+                country = "Russian Federation"
+            if country in ["UK", "England", "Scotland", "Wales", "Northern Ireland"]:
+                country = "United Kingdom"
             if country not in countries_continents:
-                error_text += (f"Found location {country} for genome {original_acc}. Location not present in the "
-                               f"countries file. Reporting continent as 'not provided'.")
                 continent = "not provided"
+                if country.lower() in ["not provided", "not collected", "not present", "na", "n/a"]:
+                    error_text += (f"Submitter did not provide a location for genome {original_acc}. Submitted value "
+                                   f"is '{country}'. Recording country and continent as 'not provided'.")
+                    country = "not provided"
+                else:
+                    error_text += (f"Found location {country} for genome {original_acc}. Location not present in the "
+                                   f"countries file. Reporting continent as 'not provided'.")
             else:
                 continent = countries_continents[country]
             out_f.write(f"{original_acc}\t{sample}\t{project}\t{country}\t{continent}\n")
