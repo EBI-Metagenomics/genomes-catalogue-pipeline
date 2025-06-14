@@ -20,6 +20,8 @@ import argparse
 import logging
 import multiprocessing as mp
 import os
+import threading
+from collections import defaultdict
 
 logging.basicConfig(level=logging.INFO)
 
@@ -116,10 +118,20 @@ def memory_efficient_workflow(ips, eggnog, genome_list, outdir, mmseqs_tsv, core
     cluster_map_path = "cluster_map.tsv"
     process_mmseqs_to_file(mmseqs_tsv, genome_list, cluster_map_path, cores)
     logging.info("Cluster information written to disk.")
-    stream_annotations(ips, cluster_map_path, outdir, "InterProScan")
-    logging.info("Processed InterProScan annotations.")
-    stream_annotations(eggnog, cluster_map_path, outdir, "eggNOG")
-    logging.info("Processed eggNOG annotations.")
+
+    threads = []
+    for tool, file in [("InterProScan", ips), ("eggNOG", eggnog)]:
+        t = threading.Thread(
+            target=stream_annotations,
+            args=(file, cluster_map_path, outdir, tool)
+        )
+        t.start()
+        threads.append(t)
+
+    for t in threads:
+        t.join()
+
+    logging.info("Processed all annotations.")
 
 
 def process_mmseqs_to_file(tsv_file, genome_list, out_path, cores):
@@ -165,18 +177,30 @@ def write_cluster_map(queue, out_path):
                 f.write(line + "\n")
 
 
-def stream_annotations(ann_file, cluster_map_path, outdir, tool):
-    clusters = {}
+def stream_annotations(ann_file, cluster_map_path, outdir, tool, buffer_size=10000):
+    clusters = defaultdict(list)
     with open(cluster_map_path, "r") as f:
         for line in f:
             rep, member = line.strip().split("\t")
-            clusters.setdefault(rep, []).append(member)
+            clusters[rep].append(member)
 
     header = None
-    writers = set()
+    buffers = defaultdict(list)
+    written_files = set()
+
+    def flush_buffers():
+        for genome, lines in buffers.items():
+            out_file = os.path.join(outdir, f"{genome}_{tool}.tsv")
+            mode = "a" if genome in written_files else "w"
+            with open(out_file, mode) as f_out:
+                if mode == "w" and header:
+                    f_out.write(header + "\n")
+                f_out.write("".join(lines))
+            written_files.add(genome)
+        buffers.clear()
 
     with open(ann_file, "r") as f:
-        for line in f:
+        for i, line in enumerate(f):
             line = line.strip()
             if line.startswith("#query"):
                 header = line
@@ -186,14 +210,13 @@ def stream_annotations(ann_file, cluster_map_path, outdir, tool):
                 continue
             for member_protein in clusters[rep_protein]:
                 genome = member_protein.split("_")[0]
-                replaced_line = line.replace(rep_protein, member_protein)
-                out_file = os.path.join(outdir, f"{genome}_{tool}.tsv")
-                mode = "a" if genome in writers else "w"
-                with open(out_file, mode) as f_out:
-                    if mode == "w" and header:
-                        f_out.write(header + "\n")
-                    f_out.write(replaced_line + "\n")
-                writers.add(genome)
+                replaced_line = line.replace(rep_protein, member_protein) + "\n"
+                buffers[genome].append(replaced_line)
+
+            if i % buffer_size == 0:
+                flush_buffers()
+
+    flush_buffers()
 
 
 # ------------------- COMMON -------------------
