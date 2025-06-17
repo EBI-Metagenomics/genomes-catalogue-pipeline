@@ -1,7 +1,5 @@
 
 process GUNC {
-
-    maxForks = 25 // limiting then number of processes to run to avoid java errors
     
     tag "${cluster_name}"
 
