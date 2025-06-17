@@ -17,7 +17,6 @@
 
 
 import os
-import sys
 import argparse
 
 
@@ -26,20 +25,52 @@ rRNAs_obs = {"5S_rRNA": [], "SSU_rRNA_bacteria": [], "LSU_rRNA_bacteria": []}
 rRNAs_merged = {}
 
 
+def get_tblout_column_indices(tool):
+    cmsearch_indices = {
+        "gene": 2,
+        "start": 5,
+        "end": 6,
+    }
+    cmscan_indices = {
+        "gene": 1,
+        "start": 7,
+        "end": 8,
+    }
+    if tool == "cmsearch":
+        return cmsearch_indices
+    else:
+        return cmscan_indices
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script detects bacretia rRNA")
     parser.add_argument(
         "-i", "--input", dest="input", help="rrna.tblout.deoverlapped", required=True
     )
+    parser.add_argument(
+        "-s", "--source", dest="source", help="Program that generated the tblout file", 
+        choices=['cmsearch', 'cmscan'], required=False, default="cmsearch"
+    )
+    parser.add_argument(
+        "-o", "--outfile", dest="outfile", help="Path to file where the output will be saved to", 
+        required=False
+    )
 
     args = parser.parse_args()
+
+    idx = get_tblout_column_indices(args.source)
+    
     # store start and end position of each hit
     with open(args.input, "r") as f:
         for line in f:
+            if line.startswith("#"):
+                continue
             cols = line.split()
-            rfam = cols[2]
-            rfam_start = int(cols[5])
-            rfam_end = int(cols[6])
+            rfam = cols[idx["gene"]]
+            if rfam not in rRNAs_exp:
+                continue
+            rfam_start = int(cols[idx["start"]])
+            rfam_end = int(cols[idx["end"]])
             rRNAs_obs[rfam].append([rfam_start, rfam_end])
 
     # sort intervals by start position and merge
@@ -60,9 +91,11 @@ if __name__ == "__main__":
 
     # calculate total length based on merged intervals
     # The name of the file is: MGYGXX.tblout.deoverlapped#
-    # and the name we need is the MGYGXX
+    # and the name we need is the MGYGXX (or a different style genome accession)
     run_name = os.path.basename(args.input).split(".")[0]
-
+    
+    if args.outfile:
+        file_out = open(args.outfile, "w")
     for rna in rRNAs_merged.keys():
         totalLen = 0
         for interval in rRNAs_merged[rna]:
@@ -70,6 +103,10 @@ if __name__ == "__main__":
                 totalLen += interval[1] - interval[0]
             except:
                 totalLen = 0
-        print(
-            "%s\t%s\t%.2f" % (run_name, rna, float(totalLen) / rRNAs_exp[rna] * 100)
-        )
+        new_line = "{}\t{}\t{:.2f}\n".format(run_name, rna, float(totalLen) / rRNAs_exp[rna] * 100)
+        if args.outfile:
+            file_out.write(new_line)
+        else:
+            print(new_line)
+    if args.outfile:
+        file_out.close()

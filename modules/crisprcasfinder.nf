@@ -30,6 +30,11 @@ process CRISPRCAS_FINDER {
 
     script:
     """
+    # Remove results folder if it already exists to prevent restarts from failing
+    if [ -d "crisprcasfinder_results" ]; then
+        rm -rf "crisprcasfinder_results"
+    fi
+    
     CRISPRCasFinder.pl -i $fasta \
     -so /opt/CRISPRCasFinder/sel392v2.so \
     -def G \

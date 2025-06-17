@@ -1,17 +1,15 @@
 /*
- * Functional annotation of the genomes of the cluster reps
+ * Functional annotation of the cluster rep genomes - prokaryotes and eukaryotes
 */
 
 include { IPS } from '../modules/interproscan'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ORTHOLOGS } from '../modules/eggnog'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
 include { PER_GENOME_ANNOTATION_GENERATOR } from '../modules/per_genome_annotations'
-include { SANNTIS } from '../modules/sanntis'
+include { DBCAN } from '../modules/dbcan'
 include { ANTISMASH } from '../modules/antismash'
 include { ANTISMASH_MAKE_GFF } from '../modules/antismash_make_gff'
-include { DEFENSE_FINDER } from '../modules/defense_finder'
-include { DBCAN } from '../modules/dbcan'
-include { GECCO_RUN } from '../modules/gecco'
+include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 
 
 process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
@@ -46,12 +44,11 @@ process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
     """
 }
 
-workflow ANNOTATE {
+workflow ANNOTATE_ALL_DOMAINS {
     take:
         mmseq_90_tsv
         mmseq_90_tarball
         mmseq_90_cluster_rep_faa
-        prokka_fnas
         prokka_gbk
         prokka_faa
         prokka_gff
@@ -60,9 +57,9 @@ workflow ANNOTATE {
         eggnog_db
         eggnog_diamond_db
         eggnog_data_dir
-        defense_finder_db
         dbcan_db
         antismash_db
+    
     main:
 
         mmseq_90_chunks = mmseq_90_cluster_rep_faa.flatten().splitFasta(
@@ -115,11 +112,6 @@ workflow ANNOTATE {
             mmseq_90_tsv
         )
         
-        DEFENSE_FINDER(
-            prokka_faa.join(prokka_gff),
-            defense_finder_db
-        )
-        
         DBCAN(
             prokka_faa.join(prokka_gff),
             dbcan_db
@@ -133,10 +125,6 @@ workflow ANNOTATE {
         ANTISMASH_MAKE_GFF(
             ANTISMASH.out.antismash_json
         )     
-        
-        GECCO_RUN(
-            prokka_gbk    
-        )     
 
         // Group by cluster //
         per_genome_ips_annotations = PER_GENOME_ANNOTATION_GENERATOR.out.ips_annotation_tsvs | flatten | map { file ->
@@ -148,17 +136,15 @@ workflow ANNOTATE {
             def key = file.name.toString().tokenize('_').get(0)
             return tuple(key, file)
         }
-
-        SANNTIS(
-            per_genome_ips_annotations.join(prokka_gbk)
+        
+        KEGG_COMPLETENESS(
+            per_genome_eggnog_annotations
         )
+
 
     emit:
         ips_annotation_tsvs = per_genome_ips_annotations
         eggnog_annotation_tsvs = per_genome_eggnog_annotations
-        sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
-        defense_finder_gffs = DEFENSE_FINDER.out.gff
         dbcan_gffs = DBCAN.out.dbcan_gff
         antismash_gffs = ANTISMASH_MAKE_GFF.out.antismash_gff
-        gecco_gffs = GECCO_RUN.out.gecco_gff
 }

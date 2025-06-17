@@ -32,50 +32,49 @@ def get_scores(sdb):
     return scores
 
 
-def getClusters(clst_file):
+def get_clusters(cluster_file):
     clusters = {}
-    with open(clst_file, "r") as f:
+    with open(cluster_file, "r") as f:
         next(f)
         for line in f:
-            args = line.rstrip().split(",")
-            clusters.setdefault(args[1], []).append(args[0])
+            genome, cluster_number, _, _, _, _ = line.rstrip().split(",")
+            clusters.setdefault(cluster_number, []).append(genome)
     return clusters
 
 
-def parse_mashfile(mash_dist, outname, genlist):
+def parse_mashfile(mash_dist, outname, genome_list):
     header = "genome1,genome2,dist,similarity"
-    with open(mash_dist, "r") as f, open(outname, "w") as fout:
-        fout.write("%s\n" % (header))
-        next(f)
-        for line in f:
-            line = line.rstrip()
-            cols = line.split(",")
-            if cols[0] in genlist and cols[1] in genlist:
-                fout.write("%s\n" % (line))
+    with open(mash_dist, "r") as infile, open(outname, "w") as outfile:
+        outfile.write(f"{header}\n")
+        next(infile)  # Skip header
+        for line in infile:
+            cols = line.strip().split(",")
+            if {cols[0], cols[1]}.issubset(genome_list):
+                outfile.write(line)
 
 
-def splitMash(mash_dist, genlist, outdir, cluster_name):
-    outname = "%s/%s/%s_mash.tsv" % (outdir, cluster_name, cluster_name)
-    print(outname)
-    if not os.path.isdir(os.path.join(outdir, cluster_name)):
-        os.makedirs(os.path.join(outdir, cluster_name))
-    parse_mashfile(mash_dist, outname, genlist)
+def split_mash(mash_dist, genome_list, outdir, cluster_name):
+    cluster_dir = os.path.join(outdir, cluster_name)
+    os.makedirs(cluster_dir, exist_ok=True)
+    outname = os.path.join(cluster_dir, f"{cluster_name}_mash.tsv")
+    parse_mashfile(mash_dist, outname, genome_list)
 
 
-def generate_mash_folder(mash_dist, out_mash_folder, cluster_name, genlist):
-    outname = os.path.join(out_mash_folder, cluster_name + "_mash.tsv")
-    parse_mashfile(mash_dist, outname, genlist)
+def generate_mash_folder(mash_dist, out_mash_folder, cluster_name, genome_list):
+    outname = os.path.join(out_mash_folder, f"{cluster_name}_mash.tsv")
+    parse_mashfile(mash_dist, outname, genome_list)
 
 
 def create_cluster_folders(out_folder, cluster, genomes, fasta_folder):
-    cluster_output = "%s/%s/%s" % (out_folder, "clusters", cluster)
-    if not os.path.isdir(cluster_output):
-        os.makedirs(cluster_output)
-    for genome in genomes:
-        src = "%s/%s" % (os.path.abspath(fasta_folder), genome)
-        dst = "%s/%s" % (cluster_output, genome)
-        copy(src, dst)
+    cluster_output = os.path.join(out_folder, "clusters", cluster)
+    os.makedirs(cluster_output, exist_ok=True)
 
+    fasta_abs = os.path.abspath(fasta_folder)
+    for genome in genomes:
+        src = os.path.join(fasta_abs, genome)
+        dst = os.path.join(cluster_output, genome)
+        copy(src, dst)
+        
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -120,7 +119,7 @@ if __name__ == "__main__":
         if args.create_clusters and not args.fasta_folder:
             print("--create-clusters option requires -f argument presented")
             exit(1)
-        clusters = getClusters(clst_file=args.cdb)
+        clusters = get_clusters(cluster_file=args.cdb)
 
         if not os.path.isdir(args.output_folder):
             os.makedirs(args.output_folder)
@@ -147,19 +146,12 @@ if __name__ == "__main__":
                             key=lambda pair: pair[0],
                         )
                     ]
-                    split_file.write(
-                        names[len(genomes) == 1]
-                        + ":"
-                        + c
-                        + ":"
-                        + ",".join(sorted_genomes)
-                        + "\n"
-                    )
+                    split_file.write(f"{names[len(genomes) == 1]}:{c}:{','.join(sorted_genomes)}\n")
                     main_rep_name = sorted_genomes[0].split(".")[0]
                     if args.mdb:
-                        splitMash(
+                        split_mash(
                             mash_dist=args.mdb,
-                            genlist=genomes,
+                            genome_list=genomes,
                             outdir=args.output_folder,
                             cluster_name=main_rep_name,
                         )
@@ -179,14 +171,7 @@ if __name__ == "__main__":
                             key=lambda pair: pair[0],
                         )
                     ]
-                    split_file.write(
-                        names[len(genomes) == 1]
-                        + ":"
-                        + c
-                        + ":"
-                        + ",".join(sorted_genomes)
-                        + "\n"
-                    )
+                    split_file.write(f"{names[len(genomes) == 1]}:{c}:{','.join(sorted_genomes)}\n")
                     if args.mdb:
                         main_rep_name = sorted_genomes[0].split(".")[0]
                         if len(genomes) > 1:
@@ -194,5 +179,5 @@ if __name__ == "__main__":
                                 mash_dist=args.mdb,
                                 out_mash_folder=out_mash_folder,
                                 cluster_name=main_rep_name,
-                                genlist=genomes,
+                                genome_list=genomes,
                             )

@@ -1,6 +1,6 @@
 
 process GUNC {
-
+    
     tag "${cluster_name}"
 
     publishDir(

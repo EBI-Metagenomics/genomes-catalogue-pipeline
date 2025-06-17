@@ -18,25 +18,33 @@
 
 
 import argparse
+import os
 
 
 def main(qc, gunc, gtdb, outfile):
     header_written = False
+    
     with open(outfile, 'w') as file_out:
-        with open(qc, 'r') as file_in:
-            for line in file_in:
-                header_written = write_header(file_out, header_written)
-                file_out.write("{}\tQS50 failed\n".format(line.strip()))
-        with open(gunc, 'r') as file_in:
-            for line in file_in:
-                header_written = write_header(file_out, header_written)
-                file_out.write("{}\tGUNC failed\n".format(line.strip()))
+        header_written = process_file(qc, file_out, header_written, "QS50 failed")
+        header_written = process_file(gunc, file_out, header_written, "GUNC failed")
+
         with open(gtdb, 'r') as file_in:
             for line in file_in:
                 parts = line.strip().split(',')
                 if parts[1] == "Undefined":
                     header_written = write_header(file_out, header_written)
-                    file_out.write("{}\tUnknown taxonomic domain\n".format(parts[0]))
+                    file_out.write(f"{parts[0]}\tUnknown taxonomic domain\n")
+
+
+def process_file(file_path, file_out, header_written, message, delimiter='\t'):
+    if not os.path.exists(file_path):
+        return header_written  # Skip if the file doesn't exist
+
+    with open(file_path, 'r') as file_in:
+        for line in file_in:
+            header_written = write_header(file_out, header_written)
+            file_out.write(f"{line.strip()}{delimiter}{message}\n")
+    return header_written
 
 
 def write_header(file_out, header_written):
