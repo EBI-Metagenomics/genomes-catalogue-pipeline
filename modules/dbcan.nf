@@ -48,7 +48,7 @@ process DBCAN {
         ${faa} \\
         protein
 
-    process_dbcan_result.py -i dbcan -o dbcan/${cluster_name}_dbcan.gff -v 4.1.2
+    process_dbcan_result.py -i dbcan -o dbcan/${cluster_name}_dbcan.gff -v 4.1.4
 
     """
 }

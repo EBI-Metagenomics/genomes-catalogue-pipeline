@@ -226,9 +226,9 @@ function CopyAdditionalFiles {
     cd "${RESULTS_PATH}"
     cp -r additional_data "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/"
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data"
-    bsub -q production -M 1G -n 1 -o /dev/null "tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes"
+    sbatch -p production --mem=1G --ntasks=1 -o /dev/null -J gzip_mgyg_genomes --wrap="tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes"
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/gene_catalogue"
-    bsub -q production -M 1G -n 1 -o /dev/null "gzip gene_catalogue-100.ffn"
+    sbatch -p production --mem=1G --ntasks=1 -o /dev/null -J gzip_gene_catalogue --wrap="gzip gene_catalogue-100.ffn"
 }
 
 
@@ -242,7 +242,7 @@ function ZipAllGenomes {
         SUBFOLDERS=$(ls -d MGYG*)
         for S in $SUBFOLDERS
         do
-            bsub -q production -M 1G -n 1 -o /dev/null "gzip ${S}/genomes1/MGYG*gff"
+            sbatch -p production --mem=1G --ntasks=1 -o /dev/null -J gzip_${S}_gffs --wrap="gzip ${S}/genomes1/MGYG*gff"
         done
         cd ..
     done
