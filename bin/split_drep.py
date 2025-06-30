@@ -16,10 +16,12 @@
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
 
+import csv
 import os
 import sys
 import argparse
 from shutil import copy
+from collections import defaultdict
 
 
 def get_scores(sdb):
@@ -79,26 +81,42 @@ def create_cluster_folders(out_folder, cluster, genomes, fasta_folder):
 
 def stream_and_split_mdb(mdb_file, genome_to_cluster_rep, output_folder):
     print("Streaming Mdb and writing Mash files per cluster...")
+    
+    flush_threshold = 1000
+    buffer = defaultdict(list)
+    
+    def flush_cluster(cluster_rep):
+        out_path = os.path.join(output_folder, f"{cluster_rep}_mash.tsv")
+        write_header = not os.path.exists(out_path)
+        with open(out_path, "a", newline='') as out_f:
+            writer = csv.writer(out_f)
+            if write_header:
+                writer.writerow(["genome1", "genome2", "dist", "similarity"])
+            writer.writerows(buffer[cluster_rep])
+        buffer[cluster_rep].clear()
 
     with open(mdb_file, "r") as f:
-        next(f)  # Skip header
+        reader = csv.reader(f)
+        next(reader)  # Skip header
 
-        for line in f:
-            line = line.strip()
-            cols = line.split(",")
+        for cols in reader:
             g1, g2 = cols[0], cols[1]
 
+            # check that both genomes in line are in the same species cluster
             c1 = genome_to_cluster_rep.get(g1)
             c2 = genome_to_cluster_rep.get(g2)
 
             if c1 and c1 == c2:
                 cluster_rep = c1
-                out_path = os.path.join(output_folder, f"{cluster_rep}_mash.tsv")
-                write_header = not os.path.exists(out_path)
-                with open(out_path, "a") as out_f:
-                    if write_header:
-                        out_f.write("genome1,genome2,dist,similarity\n")
-                    out_f.write(line + "\n")
+                buffer[cluster_rep].append(cols)
+
+                if len(buffer[cluster_rep]) >= flush_threshold:
+                    flush_cluster(cluster_rep)
+
+    # Final flush
+    for cluster_rep in buffer:
+        if buffer[cluster_rep]:
+            flush_cluster(cluster_rep)
 
 
 if __name__ == "__main__":
