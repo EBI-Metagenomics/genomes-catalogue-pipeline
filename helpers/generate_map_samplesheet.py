@@ -36,7 +36,7 @@ def main():
         if os.path.isdir(os.path.join(args.virify_folder, name)) and name.startswith("MGYG")
     ]
 
-    header = ['sample', 'assembly', 'user_proteins_gff', 'virify_gff']
+    header = ['sample', 'assembly', 'user_proteins_gff', 'virify_gff', 'skip_amrfinder_plus']
     
     with open(args.outfile, "w", newline='') as f_out:
         writer = csv.writer(f_out)
@@ -50,7 +50,7 @@ def main():
             virify_gff_record = virify_gff_path if os.path.exists(virify_gff_path) else ""
             if virify_gff_record:
                 count_virify_gff += 1
-            row = [accession, assembly, user_proteins_gff, virify_gff_record]
+            row = [accession, assembly, user_proteins_gff, virify_gff_record, 'true']
             writer.writerow(row)
     
     logging.info(f"Finished writing {len(mgyg_folders)} records. {count_virify_gff} records have a VIRify GFF.")
