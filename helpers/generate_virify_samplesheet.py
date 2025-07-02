@@ -33,7 +33,7 @@ def main():
     output_csv_base = args.output
     chunk_size = args.chunk_size
 
-    header = ['id', 'assembly', 'fastq_1', 'fastq_2', 'proteins']
+    header = ['id', 'assembly']
     rows = []
 
     # Traverse two levels down
@@ -50,10 +50,7 @@ def main():
                     if fna_file:
                         row = [
                             species_folder,
-                            os.path.abspath(fna_file),
-                            '',
-                            '',
-                            ''
+                            os.path.abspath(fna_file)
                         ]
                         rows.append(row)
                     else:
