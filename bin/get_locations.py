@@ -160,7 +160,7 @@ def get_metadata(acc, disable_ncbi_lookup):
 def ena_api_request(acc):
     biosample = project = ""
     if not acc.startswith(("GCA", "ERZ", "GUT")):
-        acc = acc + "0" * 7
+        acc = acc + "0" * 7  # e.g. CAVPYQ01 -> CAVPYQ010000000
     r = run_request(acc, "https://www.ebi.ac.uk/ena/browser/api/embl")
     if r.ok:
         match_pr = re.findall("PR +Project: *(PRJ[A-Z0-9]+)", r.text)
