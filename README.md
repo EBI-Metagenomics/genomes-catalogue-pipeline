@@ -43,7 +43,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Panaroo                                                                                          | 1.3.2             | Pan-genome computation                                                                                                 |
 | Seqtk                                                                                            | 1.3               | Generating a gene catalogue                                                                                            |
 | VIRify                                                                                           | 3.0.2             | Viral sequence annotation                                                                                              |
-| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 2.0.2             | Mobilome annotation                                                                                                    |
+| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 3.0.1             | Mobilome annotation                                                                                                    |
 | samtools                                                                                         | 1.15              | FASTA indexing                                                                                                         |
 
 ## Setup
