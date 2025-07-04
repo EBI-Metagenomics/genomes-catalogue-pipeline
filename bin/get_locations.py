@@ -73,87 +73,103 @@ def refine_country_name(country):
     return country
 
 
-def get_metadata(acc, disable_ncbi_lookup):
-    location = None
-    project = "N/A"
-    biosample = "N/A"
+def get_erz_metadata(acc):
+    json_data = load_xml(acc)
+    if not json_data:
+        logging.error(f"No XML data returned for {acc}")
+        sys.exit(1)
+
+    try:
+        analysis = json_data["ANALYSIS_SET"]["ANALYSIS"]
+        # Analysis can sometimes be a list
+        if isinstance(analysis, list):
+            analysis = analysis[0]
+        biosample = analysis["SAMPLE_REF"]["IDENTIFIERS"]["EXTERNAL_ID"]["#text"]
+    except KeyError:
+        logging.error(f"Unable to obtain biosample for {acc} - json does not contain expected fields.")
+        sys.exit(1)
+
+    try:
+        project = analysis["STUDY_REF"]["IDENTIFIERS"]["SECONDARY_ID"]
+    except KeyError:
+        logging.error(f"Unable to obtain project accession for {acc} - json does not contain expected fields.")
+        sys.exit(1)
+
+    return biosample, project
+
+
+def get_gca_metadata(acc):
     error_text = ""
-    if acc.startswith("ERZ"):
-        json_data_erz = load_xml(acc)
-        biosample = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["SAMPLE_REF"][
-            "IDENTIFIERS"
-        ]["EXTERNAL_ID"]["#text"]
-        project = json_data_erz["ANALYSIS_SET"]["ANALYSIS"]["STUDY_REF"]["IDENTIFIERS"][
-            "SECONDARY_ID"
-        ]
-    elif acc.startswith("GUT"):
-        pass
-    elif acc.startswith("GCA"):
+    try:
+        json_data = load_xml(acc)
+        biosample = json_data["ASSEMBLY_SET"]["ASSEMBLY"]["SAMPLE_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
+        project = json_data["ASSEMBLY_SET"]["ASSEMBLY"]["STUDY_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
+    except Exception:
+        logging.info(f"Missing metadata in ENA XML for sample {acc}. Using API instead.")
         try:
-            json_data_gca = load_xml(acc)
-            biosample = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["SAMPLE_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
-            project = json_data_gca["ASSEMBLY_SET"]["ASSEMBLY"]["STUDY_REF"]["IDENTIFIERS"]["PRIMARY_ID"]
-        except:
-            logging.info(f"Missing metadata in ENA XML for sample {acc}. Using API instead.")
-            try:
-                biosample, project = ena_api_request(acc)
-            except:
-                logging.exception(f"Could not obtain biosample and project information for {acc}")
-                error_text += f"Could not obtain biosample and project information for {acc} ."
-    else:
-        biosample, project = ena_api_request(acc)
-    if not acc.startswith("GUT"):
+            biosample, project = ena_api_request(acc)
+        except Exception:
+            logging.exception(f"Could not obtain biosample and project information for {acc}")
+            biosample, project = "N/A", "N/A"
+            error_text = f"Could not obtain biosample and project information for {acc}. "
+    return biosample, project, error_text
+
+
+def resolve_location(acc, biosample, disable_ncbi_lookup):
+    location = "not provided"
+    error_text = ""
+    try:
         if acc.startswith("GCA"):
             location = get_gca_location(biosample)
         else:
-            try:
-                location = get_location(biosample)
-            except:
-                if not disable_ncbi_lookup:
-                    logging.info(
-                        f"Unable to get location from ENA for sample {biosample} (genome {acc}) which is unexpected. "
-                        f"Trying NCBI.")
-                    error_text += f"Had to get location from NCBI for sample {biosample} (genome {acc})"
-                    location = get_sample_location_from_ncbi(biosample)
-                    logging.error(
-                        f"MAJOR WARNING: had to get location for sample {biosample} from NCBI. Location acquired: "
-                        f"{location}"
-                    )
-                else:
-                    logging.warning(
-                        f"Unable to obtain location for sample {biosample} (genome {acc}), which is unexpected. Unable "
-                        f"to look up the location in NCBI because the --disable-ncbi-lookup flag is used. Returning "
-                        f"'not provided'")
-                    location = "not provided"
-    if not location:
-        logging.warning(f"Unable to obtain location for sample {biosample} (genome {acc})")
-        location = "not provided"
-    if not acc.startswith("GUT"):
-        if acc.startswith("GCA"):
-            converted_sample = biosample
+            location = get_location(biosample)
+    except Exception:
+        if not disable_ncbi_lookup:
+            logging.info(f"Trying NCBI for biosample {biosample} (genome {acc})")
+            error_text = f"Had to get location from NCBI for sample {biosample} (genome {acc})"
+            location = get_sample_location_from_ncbi(biosample)
+            logging.error(f"MAJOR WARNING: Got location from NCBI: {location}")
         else:
-            json_data_sample = load_xml(biosample)
-            try:
-                converted_sample = json_data_sample["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"][
-                    "PRIMARY_ID"
-                ]
-            except:
-                converted_sample = biosample
-        if project == "N/A":
-            converted_project = "N/A"
-        else:
-            json_data_project = load_xml(project)
-            try:
-                converted_project = json_data_project["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"][
-                    "SECONDARY_ID"
-                ]
-            except:
-                converted_project = project
+            logging.warning(f"NCBI lookup disabled. Could not resolve location for {biosample} which is unexpected.")
+    return location or "not provided", error_text
+
+
+def convert_sample_id(biosample):
+    try:
+        json_data = load_xml(biosample)
+        return json_data["SAMPLE_SET"]["SAMPLE"]["IDENTIFIERS"]["PRIMARY_ID"]
+    except Exception:
+        return biosample
+
+
+def convert_project_id(project):
+    try:
+        json_data = load_xml(project)
+        return json_data["PROJECT_SET"]["PROJECT"]["IDENTIFIERS"]["SECONDARY_ID"]
+    except Exception:
+        return project
+
+
+def get_metadata(acc, disable_ncbi_lookup):
+    location = None
+    error_text = ""
+    if acc.startswith("ERZ"):
+        # No errors tolerated here - if unable to get values, something is wrong
+        biosample, project = get_erz_metadata(acc)
+    elif acc.startswith("GCA"):
+        biosample, project, error_text = get_gca_metadata(acc)
+    elif acc.startswith("GUT"):
+        # Return "FILL" for converted_project, converted_sample, and location
+        return "FILL", "FILL", "FILL", f"Could not find any information for genome {acc}, user has to fill manually. "
     else:
-        error_text += f"Could not find any information for genome {acc}, user has to fill manually. "
-        converted_sample = "FILL"
-        converted_project = "FILL"
-        location = "FILL"
+        biosample, project = ena_api_request(acc)
+
+    location, location_error = resolve_location(acc, biosample, disable_ncbi_lookup)
+    error_text += location_error
+
+    converted_sample = convert_sample_id(biosample) if not acc.startswith("GCA") else biosample
+    converted_project = convert_project_id(project) if project != "N/A" else "N/A"
+    
     return converted_sample, converted_project, location, error_text
 
 
