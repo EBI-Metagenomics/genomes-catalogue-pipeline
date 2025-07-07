@@ -44,9 +44,7 @@ process PROKKA {
 
     container "quay.io/biocontainers/prokka:1.14.6--pl5321hdfd78af_5"
     
-    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
-
-    label 'process_light'
+    label 'retry_twice'
 
     input:
     tuple val(cluster_name), path(fasta), val(domain)

@@ -73,7 +73,7 @@ process FETCH_LOCATIONS {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
     
-    errorStrategy = { task.attempt <= 3 ? 'retry' : 'finish' }
+    label 'retry_three_times'
     
     input:
     path accessions_file

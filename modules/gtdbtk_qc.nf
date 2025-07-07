@@ -3,7 +3,7 @@ process GTDBTK_QC {
     container 'quay.io/biocontainers/gtdbtk:2.4.1--pyhdfd78af_1'
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
     
-    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
+    label 'retry_twice'
 
     input:
     path genomes_fna, stageAs: "genomes_dir/*"

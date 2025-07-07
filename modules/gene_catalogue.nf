@@ -4,7 +4,7 @@ process GENE_CATALOGUE {
 
     container 'quay.io/biocontainers/seqtk:1.3--h7132678_4'
     
-    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
+    label 'retry_twice'
 
     input:
     path cluster_reps_ffn

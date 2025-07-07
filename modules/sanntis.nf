@@ -20,7 +20,7 @@ process SANNTIS {
 
     container 'quay.io/microbiome-informatics/sanntis:0.9.3.2'
     
-    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
+    label 'retry_twice'
 
     input:
     tuple val(cluster_name), path(interproscan_tsv), path(prokka_gbk)

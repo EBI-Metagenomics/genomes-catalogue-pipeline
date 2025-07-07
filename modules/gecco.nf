@@ -18,7 +18,7 @@ process GECCO_RUN {
         'https://depot.galaxyproject.org/singularity/gecco:0.9.8--pyhdfd78af_0':
         'biocontainers/gecco:0.9.8--pyhdfd78af_0' }"
     
-    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
+    label 'retry_twice'
 
     input:
     tuple val(cluster_name), path(input)
