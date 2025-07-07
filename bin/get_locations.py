@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.INFO)
 
 def main(input_file, geofile, disable_ncbi_lookup):
     outfile = input_file + ".locations"
-    warnings_file = "warnings.txt"
+    warnings_file = "ena_location_warnings.txt"
     countries_continents = load_geography(geofile)
     with open(input_file, "r") as in_f, open(outfile, "w") as out_f, open(warnings_file, "w") as warn_f:
         for line in in_f:
