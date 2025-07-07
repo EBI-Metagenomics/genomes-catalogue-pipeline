@@ -15,9 +15,8 @@ process AMRFINDER_PLUS {
         failOnError: true
     )
 
+    label 'retry_twice'
     container 'quay.io/biocontainers/ncbi-amrfinderplus:3.12.8--h283d18e_0'
-    
-    errorStrategy = { task.attempt <= 2 ? 'retry' : 'finish' }
 
     input:
     tuple val(cluster), path(fna), path(faa), path(gff)
