@@ -12,39 +12,8 @@ include { ANTISMASH_MAKE_GFF } from '../modules/antismash_make_gff'
 include { DEFENSE_FINDER } from '../modules/defense_finder'
 include { DBCAN } from '../modules/dbcan'
 include { GECCO_RUN } from '../modules/gecco'
+include { PROTEIN_CATALOGUE_STORE_ANNOTATIONS } from '../modules/utils'
 
-
-process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
-
-    publishDir(
-        "${params.outdir}/protein_catalogue/",
-        mode: 'copy'
-    )
-
-    stageInMode 'copy'
-
-    input:
-    file interproscan_annotations
-    file eggnog_annotations
-    file mmseq_90_tarball
-
-    output:
-    file "protein_catalogue-90.tar.gz"
-
-    script:
-    """
-    mv ${interproscan_annotations} protein_catalogue-90_InterProScan.tsv
-    mv ${eggnog_annotations} protein_catalogue-90_eggNOG.tsv
-
-    gunzip -c ${mmseq_90_tarball} > protein_catalogue-90.tar
-
-    rm ${mmseq_90_tarball}
-
-    tar -uf protein_catalogue-90.tar protein_catalogue-90_InterProScan.tsv protein_catalogue-90_eggNOG.tsv
-
-    gzip protein_catalogue-90.tar
-    """
-}
 
 workflow ANNOTATE {
     take:
