@@ -6,6 +6,8 @@ process IPS {
 
     container 'quay.io/microbiome-informatics/interproscan:5.73-104.0'
     containerOptions '--bind data:/opt/interproscan/data'
+    
+    label 'retry_twice'
 
     label 'ips'
 

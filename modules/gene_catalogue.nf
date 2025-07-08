@@ -3,6 +3,8 @@ process GENE_CATALOGUE {
     publishDir "${params.outdir}/", mode: 'copy', failOnError: true
 
     container 'quay.io/biocontainers/seqtk:1.3--h7132678_4'
+    
+    label 'retry_twice'
 
     input:
     path cluster_reps_ffn

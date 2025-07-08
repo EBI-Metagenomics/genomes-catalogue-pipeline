@@ -2,8 +2,11 @@
  * Phylogenetic tree generation and metadata colleciton.
 */
 
+include { PREPARE_LOCATION_INPUT } from '../modules/utils'
+include { FETCH_LOCATIONS } from '../modules/utils'
 include { METADATA_TABLE } from '../modules/metadata_table'
 include { PHYLO_TREE } from '../modules/phylo_tree'
+
 
 workflow METADATA_AND_PHYLOTREE {
 
@@ -21,6 +24,29 @@ workflow METADATA_AND_PHYLOTREE {
         gunc_failed_txt
         gtdbtk_tables_ch
     main:
+        PREPARE_LOCATION_INPUT(
+            gunc_failed_txt,
+            name_mapping_tsv
+        )
+        
+        location_input_chunks = PREPARE_LOCATION_INPUT.out.locations_input_tsv.splitText(
+            by: 300,
+            file: true
+        )
+        
+        FETCH_LOCATIONS(
+            location_input_chunks,
+            geo_metadata
+        )
+        
+        location_table = FETCH_LOCATIONS.out.locations_tsv.collectFile(
+            name: "locations.tsv",
+        )
+
+        FETCH_LOCATIONS.out.warnings_txt.collectFile(
+            name: "ena_location_warnings.txt", storeDir: "${params.outdir}/additional_data/intermediate_files/"
+        )
+        
         METADATA_TABLE(
             all_genomes_fnas,
             extra_weights_tsv,
@@ -31,7 +57,7 @@ workflow METADATA_AND_PHYLOTREE {
             gtdbtk_tables_ch,
             ftp_name,
             ftp_version,
-            geo_metadata,
+            location_table,
             gunc_failed_txt
         )
 

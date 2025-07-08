@@ -17,6 +17,8 @@ process GECCO_RUN {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/gecco:0.9.8--pyhdfd78af_0':
         'biocontainers/gecco:0.9.8--pyhdfd78af_0' }"
+    
+    label 'retry_twice'
 
     input:
     tuple val(cluster_name), path(input)

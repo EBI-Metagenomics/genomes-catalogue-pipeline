@@ -29,18 +29,22 @@ RETRY_DELAY_MIN = 15
 
 
 def get_json(url):
-    try:
-        for attempt in range(1, RETRY_ATTEMPTS + 1):
-            r = requests.get(url)   
-            if not r.ok:
-                print("Request failed with status code {}. Retrying...".format(r.status_code))
-                retry_delay = RETRY_DELAY_MIN * attempt
-                time.sleep(retry_delay)
-                continue
-            else:
+    for attempt in range(1, RETRY_ATTEMPTS + 1):
+        try:
+            r = requests.get(url, timeout=10)
+            if r.ok:
                 return r.text
-    except:
-        return None
+            else:
+                print(
+                    f"Request failed with status code {r.status_code}. Retrying in {RETRY_DELAY_MIN * attempt} "
+                    f"seconds...")
+        except requests.exceptions.RequestException as e:
+            print(f"Attempt {attempt} failed with exception: {e}. Retrying in {RETRY_DELAY_MIN * attempt} seconds...")
+
+        time.sleep(RETRY_DELAY_MIN * attempt)
+
+    print("All retry attempts failed.")
+    return None
     
     
 def get_ncbi_api_id(accession, db):
