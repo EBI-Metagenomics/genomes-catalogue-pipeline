@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from helpers.database-import-scripts.uniprot.preprocess_taxonomy_for_uniprot import (
+from helpers.database_import_scripts.uniprot.preprocess_taxonomy_for_uniprot import (
     get_species_level_taxonomy,
     match_taxid_to_gca,
     parse_metadata,
