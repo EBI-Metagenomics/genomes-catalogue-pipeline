@@ -13,7 +13,7 @@ import pandas as pd
 import requests
 from retry import retry
 
-import gtdb_to_ncbi_majority_vote, gtdb_to_ncbi_majority_vote_v2
+from helpers.database_import_scripts.uniprot import gtdb_to_ncbi_majority_vote, gtdb_to_ncbi_majority_vote_v2
 
 logging.basicConfig(level=logging.ERROR)
 
