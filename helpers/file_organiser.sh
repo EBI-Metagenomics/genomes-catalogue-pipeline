@@ -177,7 +177,7 @@ function GenerateWebsiteGFFs {
             else
                 echo "$line"
             fi
-        done < "${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff > ${R::-2}/${R}/${R}.gff.noseq"
+        done < "${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff" > "${R::-2}/${R}/${R}.gff.noseq"
     done
 }
 
