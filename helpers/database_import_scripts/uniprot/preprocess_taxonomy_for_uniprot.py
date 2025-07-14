@@ -402,7 +402,8 @@ def lookup_lineage(insdc_taxid):
 
     def get_lineage(taxid, taxdump_path):
         assert taxid, "Unable to use taxdump for an unknown taxid"
-        command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir", taxdump_path, "-I", "1", "-P"]
+        command = ["/hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/Taxonkit/taxonkit", "reformat", 
+                   "--data-dir", taxdump_path, "-I", "1", "-P"]
         result = subprocess.run(command, input=taxid, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
         detected_lineage = result.stdout.strip().split("\t")[1]
@@ -583,7 +584,8 @@ def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict):
     logging.debug("Function run_taxonkit_on_dict")
     input_data = "\n".join(
         set(lowest_taxon_mgyg_dict.values()))  # remove duplicate taxa and save all lines to a variable
-    command = ["/homes/tgurbich/Taxonkit/taxonkit", "name2taxid", "--data-dir", TAXDUMP_PATH]
+    command = ["/hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/Taxonkit/taxonkit", "name2taxid", 
+               "--data-dir", TAXDUMP_PATH]
     try:
         result = subprocess.run(command, input=input_data, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
@@ -609,7 +611,7 @@ def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict):
     filtered_taxid_dict = dict()
     # get synonyms from names.dmp
     synonyms = load_synonyms()  # key = taxid, value = list of synonyms
-    command = ["/homes/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir",
+    command = ["/hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir",
                TAXDUMP_PATH, "-I", "1"]
     for taxon_name, taxid_list in taxid_dict.items():
         if len(taxid_list) == 1:
