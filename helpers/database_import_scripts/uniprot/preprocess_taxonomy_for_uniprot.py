@@ -18,7 +18,6 @@ sys.path.insert(0, repo_root)
 
 from helpers.database_import_scripts.uniprot import gtdb_to_ncbi_majority_vote, gtdb_to_ncbi_majority_vote_v2
 
-logging.basicConfig(level=logging.ERROR)
 
 TAXDUMP_PATH = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/Taxonkit/taxdump_2022-12-01"
 TAXDUMP_PATH_NEW_VER = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/Taxonkit/new_taxdump_2023-11-01"
@@ -842,11 +841,20 @@ def parse_args():
     parser.add_argument('-s', '--species-level-taxonomy', action='store_true',
                         help='Flag to assign species-level taxonomy to everything (as uncultured X species)')
     parser.add_argument('-t', '--threads', required=True, type=int,
-                        help='Number of threads to use (only helps if --species-level-taxonomy flag is used')
+                        help='Number of threads to use (only helps if --species-level-taxonomy flag is used)')
+    parser.add_argument('-l', '--logging', choices=['error', 'info', 'debug'], default="error",
+                        help='Logging mode (error, info, or debug). Default: error')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
+    log_levels = {
+        'error': logging.ERROR,
+        'info': logging.INFO,
+        'debug': logging.DEBUG
+    }
+
+    logging.basicConfig(level=log_levels[args.logging])
     main(args.gtdbtk_folder, args.outfile, args.taxonomy_version, args.taxonomy_release, args.metadata,
          args.species_level_taxonomy, args.threads)
