@@ -798,7 +798,7 @@ def get_lowest_taxon(lineage):
 
 
 def select_dump(taxonomy_release):
-    return os.path.join(DB_DIR, f"new_taxdump_{DUMP_DICT[taxonomy_release]}", "fullnamelineage.dmp")
+    return os.path.join(DB_DIR, f"new_taxdump_{DUMP_DICT[taxonomy_release]}")
 
 
 def select_metadata(taxonomy_release, db_dir):
