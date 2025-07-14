@@ -501,6 +501,10 @@ def parse_metadata(metadata_file):
     original_df = pd.read_csv(metadata_file, sep='\t')
     filtered_df = original_df[original_df['Genome'] == original_df['Species_rep']]
     for index, row in filtered_df.iterrows():
+        # Remove any records with unknown taxonomy according to GTDB-Tk. This should never happen 
+        # except in marine v2.0 where this was a known issue
+        if str(row['Lineage']).startswith("d__;"):
+            continue
         sample_accessions[row['Genome']] = row['Sample_accession']
         if row['Genome_accession'].startswith("GCA"):
             gca_accessions[row['Genome']] = row['Genome_accession']
