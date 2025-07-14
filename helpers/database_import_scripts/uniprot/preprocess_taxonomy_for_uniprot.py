@@ -82,7 +82,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
         # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
 
-        taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict)
+        taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, tax_ncbi)
 
     # look up all unknown GCA accessions using converted GTDB lineages and updating them in case some species level
     # taxa names are missing and/or the lineage has outdated taxon names
@@ -580,12 +580,12 @@ def load_synonyms():
     return synonym_dict
 
 
-def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict):
+def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, tax_ncbi):
     logging.debug("Function run_taxonkit_on_dict")
     input_data = "\n".join(
         set(lowest_taxon_mgyg_dict.values()))  # remove duplicate taxa and save all lines to a variable
     command = ["/hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/Taxonkit/taxonkit", "name2taxid", 
-               "--data-dir", TAXDUMP_PATH]
+               "--data-dir", tax_ncbi]
     try:
         result = subprocess.run(command, input=input_data, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
@@ -758,6 +758,7 @@ def process_taxonkit_output(taxonkit_output):
     taxid_dict = dict()
     lines = taxonkit_output.split("\n")
     for line in lines:
+        logging.debug(f"Processing taxonkit ouput line {line}")
         line = line.strip()
         if len(line) > 0:
             parts = line.split("\t")
