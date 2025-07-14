@@ -229,10 +229,11 @@ function CopyAdditionalFiles {
     echo "Copying additional files"
     cd "${RESULTS_PATH}"
     cp -r additional_data "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/"
+    rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data/intermediate_files/ena_location_warnings.txt"
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data"
-    sbatch -p production --mem=1G --ntasks=1 -o /dev/null -J gzip_mgyg_genomes --wrap="tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes"
+    sbatch -p production --mem=1G -t 20:00:00 --ntasks=1 -o /dev/null -J gzip_mgyg_genomes --wrap="tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes"
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/gene_catalogue"
-    sbatch -p production --mem=1G --ntasks=1 -o /dev/null -J gzip_gene_catalogue --wrap="gzip gene_catalogue-100.ffn"
+    sbatch -p production --mem=1G -t 10:00:00 --ntasks=1 -o /dev/null -J gzip_gene_catalogue --wrap="gzip gene_catalogue-100.ffn"
 }
 
 
