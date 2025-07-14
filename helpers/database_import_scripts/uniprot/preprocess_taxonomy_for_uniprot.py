@@ -77,7 +77,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         lineage_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, selected_bacteria_metadata, "gtdbtk")
 
         # lookup tax id
-        lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict)
+        lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict = get_lowest_taxa(lineage_dict, sample_accessions)
 
         # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
         # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
@@ -503,6 +503,7 @@ def parse_metadata(metadata_file):
         # Remove any records with unknown taxonomy according to GTDB-Tk. This should never happen 
         # except in marine v2.0 where this was a known issue
         if str(row['Lineage']).startswith("d__;"):
+            logging.info(f"Skipping accession {row['Genome_accession']}; invalid taxonomy: {row['Lineage']}")
             continue
         sample_accessions[row['Genome']] = row['Sample_accession']
         if row['Genome_accession'].startswith("GCA"):
@@ -767,11 +768,16 @@ def process_taxonkit_output(taxonkit_output):
     return taxid_dict
 
 
-def get_lowest_taxa(tax_dict):
+def get_lowest_taxa(tax_dict, sample_accessions):
     logging.debug("Function get_lowest_taxa")
     lowest_taxon_mgyg_dict = dict()
     lowest_taxon_lineage_dict = dict()
     for mgyg, lineage in tax_dict.items():
+        # Don't try to process accessions that we have previously filtered out when reading the metadata table.
+        # This should only happen in cases where the taxonomic lineage in the metadata table is empty (no known 
+        # domain). This was a known error in marine v2.0
+        if mgyg not in sample_accessions:
+            continue
         lowest_known_taxon, lowest_known_rank = get_lowest_taxon(lineage)
         lowest_taxon_mgyg_dict[mgyg] = lowest_known_taxon
         lowest_taxon_lineage_dict.setdefault(lowest_known_taxon, list()).append(lineage)
