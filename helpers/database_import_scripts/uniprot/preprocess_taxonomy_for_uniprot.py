@@ -781,7 +781,7 @@ def process_taxonkit_output(taxonkit_output):
                 logging.error("No taxid for taxon {}. Potentially unresolvable problem. Recording None".format(parts[0]))
                 failed_to_get_taxonkit_taxid.append(parts[0])
                 taxon = parts[0]
-                taxid_dict.setdefault(taxon, list()).append(None)
+                taxid_dict.setdefault(taxon, list()).append("")
             else:
                 taxon, taxid = parts[:2]
                 taxid_dict.setdefault(taxon, list()).append(taxid)
