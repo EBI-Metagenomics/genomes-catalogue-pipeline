@@ -257,13 +257,13 @@ def recover_possible_new_name(gtdb_taxid, taxdump_path):
 
 def get_species_level_taxonomy(lineage, taxdump_path):
     lowest_taxon, lowest_rank = get_lowest_taxon(lineage)
-    if lineage.startswith(("k__", "d__")):
-        lineage = lineage.replace("k__", "sk__").replace("d__", "sk__")
-    if lineage.lower().startswith("sk__b"):
+    if lineage.startswith(("sk__", "k__")):
+        lineage = lineage.replace("sk__", "d__").replace("k__", "d__")
+    if lineage.lower().startswith("d__b"):
         submittable, name, taxid = extract_bacteria_info(lowest_taxon, lowest_rank)
-    elif lineage.lower().startswith("sk__a"):
+    elif lineage.lower().startswith("d__a"):
         submittable, name, taxid = extract_archaea_info(lowest_taxon, lowest_rank)
-    elif lineage.lower().startswith("sk__e"):
+    elif lineage.lower().startswith("d__e"):
         submittable, name, taxid = extract_eukaryota_info(lowest_taxon, lowest_rank)
     else:
         sys.exit("Unknown domain in lineage {}. Aborting".format(lineage))
@@ -426,7 +426,7 @@ def lookup_lineage(insdc_taxid, taxdump_path):
                                 stderr=subprocess.PIPE, check=True)
         detected_lineage = result.stdout.strip().split("\t")[1]
         if detected_lineage.lower().startswith(("k__bacteria", "k__archaea")):
-            detected_lineage = detected_lineage.replace("k__", "sk__")
+            detected_lineage = detected_lineage.replace("k__", "d__")
         return detected_lineage
 
     logging.info("Looking up lineage for taxid {} in ENA".format(insdc_taxid))
@@ -507,7 +507,7 @@ def reformat_lineage(lineage, scientific_name):
         "Detected rank {} for scientific name {} in function reformat_lineage. After adding this to existing ranks we get {}. Formatted lineage now is {}.".format(
             lowest_rank, scientific_name, ranks_values, reformatted_lineage))
     if reformatted_lineage.startswith("k__"):
-        reformatted_lineage = reformatted_lineage.replace("k__", "sk__")
+        reformatted_lineage = reformatted_lineage.replace("k__", "d__")
 
     logging.debug(reformatted_lineage)
     return reformatted_lineage
