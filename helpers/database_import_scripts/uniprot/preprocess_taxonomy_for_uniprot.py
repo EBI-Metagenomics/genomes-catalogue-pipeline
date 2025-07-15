@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+from functools import partial
 import concurrent.futures
 import json
 import logging
@@ -44,6 +45,9 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     if not versions_compatible(taxonomy_version, taxonomy_release):
         sys.exit("GTDB versions {} and {} are not compatible".format(taxonomy_version, taxonomy_release))
 
+    taxdump_path = select_dump(taxonomy_release)
+    assert os.path.exists(taxdump_path), "Taxonomy release {} does not exist".format(taxdump_path)
+        
     # for each MGYG accession, get the corresponding GCA (where available) and sample accessions from the metadata file
     gca_accessions, sample_accessions = parse_metadata(metadata_file)  # key=mgyg, value=gca accession/sample accession
 
@@ -59,7 +63,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         na_true = True
 
     # get a lineage for each taxid (from taxonkit or from ENA if unable)    
-    gca_taxid_to_lineage = match_lineage_to_gca_taxid(gca_to_taxid, threads)  # key = taxid, value = lineage
+    gca_taxid_to_lineage = match_lineage_to_gca_taxid(gca_to_taxid, threads, taxdump_path)  # key: taxid, value: lineage
 
     # check if any taxa are not real species (for example, a species is "metagenome")
     # we want to remove them and replace with converted ones from GTDB
@@ -70,8 +74,6 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         # the GCA accession or the taxonomy we got from GCA is invalid. We need to use GTDB taxonomy and convert it
         # to NCBI taxonomy.
         selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, DB_DIR)
-        taxdump_path = select_dump(taxonomy_release)
-        assert os.path.exists(taxdump_path), "Taxonomy release {} does not exist".format(taxdump_path)
         print(
             "Using the following databases:\n{}\n{}\n{}\n".format(selected_archaea_metadata, selected_bacteria_metadata,
                                                                   taxdump_path))
@@ -217,11 +219,15 @@ def remove_invalid_taxa(gca_to_taxid, gca_taxid_to_lineage):
     return gca_to_taxid, invalid_flag
 
 
-def match_lineage_to_gca_taxid(gca_to_taxid, threads):
+def match_lineage_to_gca_taxid(gca_to_taxid, threads, taxdump_path):
     logging.debug("Function match_lineage_to_gca_taxid")
     taxids = list(gca_to_taxid.values())
+    # Create a partial function to add the taxdump_path argument (technical solution to be able to run concurrent 
+    # with two arguments
+    partial_lookup_lineage = partial(lookup_lineage, taxdump_path=taxdump_path)
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-        taxid_to_lineage = {taxid: lineage for taxid, lineage in zip(taxids, executor.map(lookup_lineage, taxids))}
+        taxid_to_lineage = {taxid: lineage for taxid, lineage in zip(taxids, executor.map(
+            partial_lookup_lineage, taxids))}
     return taxid_to_lineage
 
 
