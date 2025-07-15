@@ -149,7 +149,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                     source = "taxonkit/ENA"
                     if not taxid_to_report:
                         # Check if the taxon name has changed and update accordingly
-                        gtdb_taxid = taxid_dict[lowest_taxon_mgyg_dict[mgyg]][lineage]
+                        gtdb_taxid = taxid_dict.get(lowest_taxon_mgyg_dict.get(mgyg, {}), {}).get(lineage, "")
                         logging.debug("No taxid to report so using GTDBs: {}".format(gtdb_taxid))
                         taxid_to_report, lineage = recover_possible_new_name(gtdb_taxid, taxdump_path)
                         logging.debug(
