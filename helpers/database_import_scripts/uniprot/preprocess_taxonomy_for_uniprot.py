@@ -19,8 +19,6 @@ sys.path.insert(0, repo_root)
 from helpers.database_import_scripts.uniprot import gtdb_to_ncbi_majority_vote, gtdb_to_ncbi_majority_vote_v2
 
 
-TAXDUMP_PATH = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/Taxonkit/taxdump_2022-12-01"
-TAXDUMP_PATH_NEW_VER = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/Taxonkit/new_taxdump_2023-11-01"
 DB_DIR = "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/"
 
 DUMP_DICT = {
@@ -32,7 +30,15 @@ DUMP_DICT = {
 }
 
 
-def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_file, species_level_taxonomy, threads):
+def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_file, species_level_taxonomy, threads,
+         logging_mode):
+    log_levels = {
+        'error': logging.ERROR,
+        'info': logging.INFO,
+        'debug': logging.DEBUG
+    }
+
+    logging.basicConfig(level=log_levels[logging_mode])
     if not os.path.isdir(gtdbtk_folder):
         sys.exit("GTDB folder {} is not a directory. EXITING.".format(gtdbtk_folder))
     if not versions_compatible(taxonomy_version, taxonomy_release):
@@ -63,16 +69,19 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         # the GCA accession or the taxonomy we got from GCA is invalid. We need to use GTDB taxonomy and convert it
         # to NCBI taxonomy.
         selected_archaea_metadata, selected_bacteria_metadata = select_metadata(taxonomy_release, DB_DIR)
-        tax_ncbi = select_dump(taxonomy_release)
-        assert os.path.exists(tax_ncbi), "Taxonomy release {} does not exist".format(tax_ncbi)
+        taxdump_path = select_dump(taxonomy_release)
+        assert os.path.exists(taxdump_path), "Taxonomy release {} does not exist".format(taxdump_path)
         print(
             "Using the following databases:\n{}\n{}\n{}\n".format(selected_archaea_metadata, selected_bacteria_metadata,
-                                                                  tax_ncbi))
+                                                                  taxdump_path))
 
         if taxonomy_version == "1":
             tax = gtdb_to_ncbi_majority_vote.Translate()
         else:
             tax = gtdb_to_ncbi_majority_vote_v2.Translate()
+
+        # Restarting logging because the modules above reset it
+        logging.basicConfig(level=log_levels[logging_mode], force=True)
 
         lineage_dict = tax.run(gtdbtk_folder, selected_archaea_metadata, selected_bacteria_metadata, "gtdbtk")
 
@@ -82,7 +91,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
         # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
 
-        taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, tax_ncbi)
+        taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, taxdump_path)
 
     # look up all unknown GCA accessions using converted GTDB lineages and updating them in case some species level
     # taxa names are missing and/or the lineage has outdated taxon names
@@ -116,7 +125,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                 logging.debug("In invalid")
                 lineage = lineage_dict[key]
                 logging.debug("Lineage from GTDB was {}".format(lineage))
-                taxid_to_report, _, submittable, lineage = get_species_level_taxonomy(lineage)
+                taxid_to_report, _, submittable, lineage = get_species_level_taxonomy(lineage, taxdump_path)
                 logging.debug("Lineage after processing is {}".format(lineage))
                 source = "ENA"
                 lowest_taxon = get_lowest_taxon(lineage)[0]
@@ -237,7 +246,7 @@ def recover_possible_new_name(gtdb_taxid):
     return taxid, full_lineage
 
 
-def get_species_level_taxonomy(lineage):
+def get_species_level_taxonomy(lineage, taxdump_path):
     lowest_taxon, lowest_rank = get_lowest_taxon(lineage)
     if lineage.startswith(("k__", "d__")):
         lineage = lineage.replace("k__", "sk__").replace("d__", "sk__")
@@ -251,7 +260,7 @@ def get_species_level_taxonomy(lineage):
         sys.exit("Unknown domain in lineage {}. Aborting".format(lineage))
     if taxid:
         logging.debug("Lineage for unknown GCA before updating {}".format(lineage))
-        lineage = lookup_lineage(taxid)
+        lineage = lookup_lineage(taxid, taxdump_path)
         if lineage.endswith("__"):
             lineage = lineage + name
         logging.debug("Lineage for unknown GCA after updating {}".format(lineage))
@@ -397,7 +406,7 @@ def extract_archaea_info(name, rank):
     return submittable, name, taxid
 
 
-def lookup_lineage(insdc_taxid):
+def lookup_lineage(insdc_taxid, taxdump_path):
     logging.debug("Function lookup_lineage")
 
     def get_lineage(taxid, taxdump_path):
@@ -418,7 +427,7 @@ def lookup_lineage(insdc_taxid):
     except Exception as ena_e:
         logging.error("Unable to retrieve lineage from ENA due to error: {}. Trying taxonkit.".format(ena_e))
         try:
-            lineage = get_lineage(insdc_taxid, TAXDUMP_PATH)
+            lineage = get_lineage(insdc_taxid, taxdump_path)
             if lineage == ";;;;;;":
                 raise Exception("Empty lineage in taxdump for {}".format(insdc_taxid))
             logging.debug("Got INSDC lineage from taxdump", lineage)
@@ -426,7 +435,7 @@ def lookup_lineage(insdc_taxid):
         except Exception as e:
             logging.error("Error: {}".format(str(e)))
             try:
-                lineage = get_lineage(insdc_taxid, TAXDUMP_PATH_NEW_VER)
+                lineage = get_lineage(insdc_taxid, taxdump_path)
                 if lineage == ";;;;;;":
                     raise Exception("Empty lineage in taxdump for {}".format(insdc_taxid))
                 logging.debug("Got INSDC lineage from taxdump", lineage)
@@ -565,8 +574,8 @@ def lookup_taxid_online(gca_acc):
         sys.exit("Failed to fetch taxid for GCA accession {}. Aborting.".format(gca_acc))
 
 
-def load_synonyms():
-    namesdump = os.path.join(TAXDUMP_PATH, "names.dmp")
+def load_synonyms(taxdump_path):
+    namesdump = os.path.join(taxdump_path, "names.dmp")
     synonym_dict = dict()
     with open(namesdump, "r") as file_in:
         for line in file_in:
@@ -580,24 +589,24 @@ def load_synonyms():
     return synonym_dict
 
 
-def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, tax_ncbi):
+def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, taxdump_path):
     logging.debug("Function run_taxonkit_on_dict")
     input_data = "\n".join(
         set(lowest_taxon_mgyg_dict.values()))  # remove duplicate taxa and save all lines to a variable
     command = ["/hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/Taxonkit/taxonkit", "name2taxid", 
-               "--data-dir", tax_ncbi]
+               "--data-dir", taxdump_path]
     try:
         result = subprocess.run(command, input=input_data, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
-        taxid_dict = process_taxonkit_output(result.stdout)
-        filtered_taxid_dict = filter_taxid_dict(taxid_dict,
-                                                lowest_taxon_lineage_dict)  # resolve cases where multiple taxid are assigned to taxon
+        taxid_dict, failed_to_get_taxonkit_taxid = process_taxonkit_output(result.stdout)
+        # resolve cases where multiple taxid are assigned to a taxon
+        filtered_taxid_dict = filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict, taxdump_path)
         return filtered_taxid_dict
     except subprocess.CalledProcessError as e:
         print("Error:", e.stderr)
 
 
-def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict):
+def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict, taxdump_path):
     """
     Resolve cases where multiple taxids are assigned to the same taxon by matching domain and phylum. 
     If domain and phylum match multiple taxon ids, the function picks the first one.
@@ -610,9 +619,9 @@ def filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict):
     """
     filtered_taxid_dict = dict()
     # get synonyms from names.dmp
-    synonyms = load_synonyms()  # key = taxid, value = list of synonyms
+    synonyms = load_synonyms(taxdump_path)  # key = taxid, value = list of synonyms
     command = ["/hps/nobackup/rdf/metagenomics/service-team/users/tgurbich/Taxonkit/taxonkit", "reformat", "--data-dir",
-               TAXDUMP_PATH, "-I", "1"]
+               taxdump_path, "-I", "1"]
     for taxon_name, taxid_list in taxid_dict.items():
         if len(taxid_list) == 1:
             # no need to filter anything, save to results
@@ -755,6 +764,7 @@ def get_domains_and_phyla(lineage_list):
 
 
 def process_taxonkit_output(taxonkit_output):
+    failed_to_get_taxonkit_taxid = list()
     taxid_dict = dict()
     lines = taxonkit_output.split("\n")
     for line in lines:
@@ -763,12 +773,12 @@ def process_taxonkit_output(taxonkit_output):
         if len(line) > 0:
             parts = line.split("\t")
             if len(parts) == 1:
-                logging.error("No taxid for taxon {}. EXITING!".format(parts[0]))
-                sys.exit(1)
+                logging.error("No taxid for taxon {}. Potentially unresolvable problem".format(parts[0]))
+                failed_to_get_taxonkit_taxid.append(parts[0])
             else:
                 taxon, taxid = parts[:2]
                 taxid_dict.setdefault(taxon, list()).append(taxid)
-    return taxid_dict
+    return taxid_dict, failed_to_get_taxonkit_taxid
 
 
 def get_lowest_taxa(tax_dict, sample_accessions):
@@ -858,12 +868,6 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    log_levels = {
-        'error': logging.ERROR,
-        'info': logging.INFO,
-        'debug': logging.DEBUG
-    }
 
-    logging.basicConfig(level=log_levels[args.logging])
     main(args.gtdbtk_folder, args.outfile, args.taxonomy_version, args.taxonomy_release, args.metadata,
-         args.species_level_taxonomy, args.threads)
+         args.species_level_taxonomy, args.threads, args.logging)
