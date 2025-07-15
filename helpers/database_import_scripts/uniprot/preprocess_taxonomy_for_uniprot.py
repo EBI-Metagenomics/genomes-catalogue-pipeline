@@ -602,11 +602,9 @@ def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, taxd
         result = subprocess.run(command, input=input_data, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
         taxid_dict, failed_to_get_taxonkit_taxid = process_taxonkit_output(result.stdout)
-        # roll up taxonomies for which we couldn't get a taxid from taxonkit (lowest taxon name doesn't exist in 
-        # taxonkit, try a higher taxonomic level
         # resolve cases where multiple taxid are assigned to a taxon
-        print("Failed to get taxid from taxonkit: ")
-        print(failed_to_get_taxonkit_taxid)
+        logging.info(f"Failed to get taxid from taxonkit: {failed_to_get_taxonkit_taxid}. Will attempt to resolve "
+                     f"this later if a GTDB taxid is needed (last resort case).")
         filtered_taxid_dict = filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict, taxdump_path)
         return filtered_taxid_dict
     except subprocess.CalledProcessError as e:
@@ -780,8 +778,10 @@ def process_taxonkit_output(taxonkit_output):
         if len(line) > 0:
             parts = line.split("\t")
             if len(parts) == 1:
-                logging.error("No taxid for taxon {}. Potentially unresolvable problem".format(parts[0]))
+                logging.error("No taxid for taxon {}. Potentially unresolvable problem. Recording None".format(parts[0]))
                 failed_to_get_taxonkit_taxid.append(parts[0])
+                taxon = parts[0]
+                taxid_dict.setdefault(taxon, list()).append(None)
             else:
                 taxon, taxid = parts[:2]
                 taxid_dict.setdefault(taxon, list()).append(taxid)
