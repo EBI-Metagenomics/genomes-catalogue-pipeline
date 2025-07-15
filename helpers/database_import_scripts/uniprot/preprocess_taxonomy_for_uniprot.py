@@ -49,6 +49,7 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
 
     # supplement the gca accessions from the metadata table by looking them up in ENA. For each GCA accession, look up
     # corresponding taxid in ENA
+    # Some of the GCA accessions may be "N/A" if they don't exist
     mgyg_to_gca, gca_to_taxid = match_taxid_to_gca(gca_accessions, sample_accessions, threads)
 
     # remove N/A's if present before looking up lineages
@@ -120,45 +121,45 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
             unknown_gca_mgyg_and_lineage[mgyg] = na_associated_lineages[lineage]
 
     with open(outfile, "w") as file_out:
-        for key, gca_accession in mgyg_to_gca.items():
-            logging.debug("Processing {}".format(key))
+        for mgyg, gca_accession in mgyg_to_gca.items():
+            logging.debug("Processing {}".format(mgyg))
             if gca_accession in gca_to_taxid and gca_to_taxid[gca_accession] == "invalid":
                 logging.debug("In invalid")
-                lineage = lineage_dict[key]
+                lineage = lineage_dict[mgyg]
                 logging.debug("Lineage from GTDB was {}".format(lineage))
                 taxid_to_report, _, submittable, lineage = get_species_level_taxonomy(lineage, taxdump_path)
                 logging.debug("Lineage after processing is {}".format(lineage))
                 source = "ENA"
                 lowest_taxon = get_lowest_taxon(lineage)[0]
-                logging.debug("Done processing {}".format(key))
+                logging.debug("Done processing {}".format(mgyg))
             elif gca_accession == "N/A" and species_level_taxonomy:
                 logging.debug("In N/A")
                 source = "ENA"
-                taxid_to_report = unknown_gca_mgyg_and_lineage[key]["taxid"]
-                lineage = unknown_gca_mgyg_and_lineage[key]["lineage"]
+                taxid_to_report = unknown_gca_mgyg_and_lineage[mgyg]["taxid"]
+                lineage = unknown_gca_mgyg_and_lineage[mgyg]["lineage"]
                 logging.debug("Starting function with taxid {} and lineage {}".format(taxid_to_report, lineage))
                 if not taxid_to_report:
                     logging.debug("In no taxid to report condition")
-                    lineage = lineage_dict[key]
+                    lineage = lineage_dict[mgyg]
                     logging.debug("Got lineage from GTDB: {}".format(lineage))
-                    taxid_to_report, _, _, lineage = get_species_level_taxonomy(lineage)
+                    taxid_to_report, _, _, lineage = get_species_level_taxonomy(lineage, taxdump_path)
                     logging.debug("After processing lineage is {} and taxid is {}".format(lineage, taxid_to_report))
                     source = "taxonkit/ENA"
                     if not taxid_to_report:
                         # Check if the taxon name has changed and update accordingly
-                        gtdb_taxid = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
+                        gtdb_taxid = taxid_dict[lowest_taxon_mgyg_dict[mgyg]][lineage]
                         logging.debug("No taxid to report so using GTDBs: {}".format(gtdb_taxid))
-                        taxid_to_report, lineage = recover_possible_new_name(gtdb_taxid)
+                        taxid_to_report, lineage = recover_possible_new_name(gtdb_taxid, taxdump_path)
                         logging.debug(
                             "Tried to recover possible new name. Result taxid {} lineage {}".format(taxid_to_report,
                                                                                                     lineage))
                         if not taxid_to_report:
                             source = "GTDB"
-                            lineage = lineage_dict[key]
+                            lineage = lineage_dict[mgyg]
                             taxid_to_report = gtdb_taxid
                             logging.debug("That didnt work so reporting GTDB: lineage {} taxid {}".format(lineage,
                                                                                                           taxid_to_report))
-                logging.debug("Done processing {}".format(key))
+                logging.debug("Done processing {}".format(mgyg))
                 lowest_taxon = get_lowest_taxon(lineage)[0]
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             elif gca_accession.startswith("GCA") and species_level_taxonomy:
@@ -179,8 +180,8 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
                     source = "taxonkit/ENA"
                 else:
                     source = "GTDB"
-                    lineage = lineage_dict[key]
-                    taxid_to_report = taxid_dict[lowest_taxon_mgyg_dict[key]][lineage]
+                    lineage = lineage_dict[mgyg]
+                    taxid_to_report = taxid_dict[lowest_taxon_mgyg_dict[mgyg]][lineage]
                 lowest_taxon = get_lowest_taxon(lineage)[0]
                 submittable, _ = query_scientific_name_from_ena(lowest_taxon, search_rank=False)
             species_level = False if lineage.endswith("s__") else True
@@ -189,8 +190,8 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
             else:
                 submittable_print = "Not valid for ENA"
             file_out.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                key, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level, submittable_print))
-            logging.debug("{} {} {}".format(key, lineage, source))
+                mgyg, lowest_taxon, lineage, gca_accession, taxid_to_report, species_level, submittable_print))
+            logging.debug("{} {} {}".format(mgyg, lineage, source))
     logging.info("Printed results to {}".format(outfile))
 
 
@@ -238,13 +239,13 @@ def match_taxid_to_gca(gca_accessions, sample_accessions, threads):
     return mgyg_to_gca, gca_to_taxid
 
 
-def recover_possible_new_name(gtdb_taxid):
+def recover_possible_new_name(gtdb_taxid, taxdump_path):
     logging.debug("Function recover_possible_new_name")
     try:
         ena_lineage = lookup_lineage_in_ena(gtdb_taxid)
     except:
         return "", ""
-    taxid, _, _, full_lineage = get_species_level_taxonomy(ena_lineage)
+    taxid, _, _, full_lineage = get_species_level_taxonomy(ena_lineage, taxdump_path)
     return taxid, full_lineage
 
 
