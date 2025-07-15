@@ -45,17 +45,19 @@ class TestPreprocessTaxonomyForUniprot(unittest.TestCase):
 
     def test_get_species_level_taxonomy(self):
         _, name1, submittable1, lineage1 = get_species_level_taxonomy(
-            "k__Bacteria;p__Bacillota_I;c__Bacilli_A;o__RFN20;f__CAG-826;g__UBA3207;s__UBA3207 sp946183335"
+            "k__Bacteria;p__Bacillota_I;c__Bacilli_A;o__RFN20;f__CAG-826;g__UBA3207;s__UBA3207 sp946183335",
+            "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/new_taxdump_2022-12-01"
         )
         self.assertEqual(
             lineage1,
-            "sk__Bacteria;p__Bacillota_I;c__Bacilli_A;o__RFN20;f__CAG-826;g__UBA3207;s__UBA3207 sp946183335",
+            "d__Bacteria;p__Bacillota_I;c__Bacilli_A;o__RFN20;f__CAG-826;g__UBA3207;s__UBA3207 sp946183335",
         )
         self.assertEqual(submittable1, False)
         self.assertEqual(name1, "UBA3207 sp946183335")
 
         taxid2, _, submittable2, _ = get_species_level_taxonomy(
-            "d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia; s__Escherichia coli"
+            "d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia; s__Escherichia coli",
+            "/nfs/production/rdf/metagenomics/pipelines/prod/assembly-pipeline/taxonomy_dbs/new_taxdump_2022-12-01"
         )
         self.assertEqual(submittable2, True)
         self.assertEqual(taxid2, "562")
