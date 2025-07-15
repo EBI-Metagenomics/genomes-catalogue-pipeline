@@ -784,7 +784,8 @@ def process_taxonkit_output(taxonkit_output):
         if len(line) > 0:
             parts = line.split("\t")
             if len(parts) == 1:
-                logging.error("No taxid for taxon {}. Potentially unresolvable problem. Recording None".format(parts[0]))
+                logging.error("No taxid for taxon {}. Potentially unresolvable problem. Recording an empty "
+                              "string".format(parts[0]))
                 failed_to_get_taxonkit_taxid.append(parts[0])
                 taxon = parts[0]
                 taxid_dict.setdefault(taxon, list()).append("")
