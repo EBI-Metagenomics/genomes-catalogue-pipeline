@@ -247,7 +247,7 @@ function ZipAllGenomes {
         SUBFOLDERS=$(ls -d MGYG*)
         for S in $SUBFOLDERS
         do
-            sbatch -p production --mem=1G --ntasks=1 -o /dev/null -J gzip_${S}_gffs --wrap="gzip ${S}/genomes1/MGYG*gff"
+            sbatch -p production --mem=1G --ntasks=1 -t 05:00:00 -o /dev/null -J gzip_${S}_gffs --wrap="gzip ${S}/genomes1/MGYG*gff"
         done
         cd ..
     done
