@@ -91,20 +91,21 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
         # lowest_taxon_mgyg_dict: # key = mgyg, value = name of the lowest known taxon
         # lowest_taxon_lineage_dict: # key = lowest taxon, value = list of lineages where this taxon is lowest
 
+        # create a dictionary called taxid_dict; key: taxon name, value: dictionary where key: lineage, value: taxid
         taxid_dict = run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, taxdump_path)
 
     # look up all unknown GCA accessions using converted GTDB lineages and updating them in case some species level
     # taxa names are missing and/or the lineage has outdated taxon names
     if species_level_taxonomy and na_true:
         logging.debug("========================= Looking up lineages for unknown GCAs")
-        lineages_to_lookup = list(set([lineage_dict[key] for key, value in mgyg_to_gca.items() if value == 'N/A']))
-        unknown_gca_mgyg_and_lineage = {k: lineage_dict[k] for k, v in mgyg_to_gca.items() if v == 'N/A'}
+        lineages_to_lookup = list(set([lineage_dict[mgyg] for mgyg, gca in mgyg_to_gca.items() if gca == 'N/A']))
+        unknown_gca_mgyg_and_lineage = {mgyg: lineage_dict[mgyg] for mgyg, gca in mgyg_to_gca.items() if gca == 'N/A'}
         na_associated_lineages = dict()
 
         # Use ThreadPoolExecutor to parallelize the execution
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             # Submit the tasks and get the Future objects
-            futures = {executor.submit(process_lineage, l): l for l in lineages_to_lookup}
+            futures = {executor.submit(process_lineage, (l, taxdump_path)): l for l in lineages_to_lookup}
 
             # Retrieve the results as they become available
             for future in concurrent.futures.as_completed(futures):
@@ -193,8 +194,9 @@ def main(gtdbtk_folder, outfile, taxonomy_version, taxonomy_release, metadata_fi
     logging.info("Printed results to {}".format(outfile))
 
 
-def process_lineage(l):
-    taxid, name, submittable, lineage = get_species_level_taxonomy(l)
+def process_lineage(arguments):
+    l, taxdump_path = arguments
+    taxid, name, submittable, lineage = get_species_level_taxonomy(l, taxdump_path)
     return {"taxid": taxid, "name": name, "submittable": submittable, "lineage": lineage}
 
 
@@ -599,7 +601,11 @@ def run_taxonkit_on_dict(lowest_taxon_mgyg_dict, lowest_taxon_lineage_dict, taxd
         result = subprocess.run(command, input=input_data, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, check=True)
         taxid_dict, failed_to_get_taxonkit_taxid = process_taxonkit_output(result.stdout)
+        # roll up taxonomies for which we couldn't get a taxid from taxonkit (lowest taxon name doesn't exist in 
+        # taxonkit, try a higher taxonomic level
         # resolve cases where multiple taxid are assigned to a taxon
+        print("Failed to get taxid from taxonkit: ")
+        print(failed_to_get_taxonkit_taxid)
         filtered_taxid_dict = filter_taxid_dict(taxid_dict, lowest_taxon_lineage_dict, taxdump_path)
         return filtered_taxid_dict
     except subprocess.CalledProcessError as e:
