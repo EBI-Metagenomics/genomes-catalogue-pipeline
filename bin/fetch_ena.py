@@ -172,8 +172,7 @@ def parse_args():
                         help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
                              'provided in the input file. Default = False')
     parser.add_argument('--ignore-metadata', action='store_true',
-                        help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
-                             'provided in the input file. Default = False')
+                        help='Skip QS filtering. Default = False')
     parser.add_argument('--debug', action='store_true', help='set logging to DEBUG')
     return parser.parse_args()
 
