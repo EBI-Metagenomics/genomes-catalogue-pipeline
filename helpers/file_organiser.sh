@@ -58,6 +58,7 @@ function CopyWebsiteFiles {
     echo "Copying files to the website folder"
     cd "${RESULTS_PATH}"
     cp phylo_tree.json "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/"
+    cp catalogue_summary.json "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/"
     for R in $(GET_REPS)
     do
         cp -r "species_catalogue/${R::-2}/${R}" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/"
