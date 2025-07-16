@@ -144,7 +144,7 @@ Website URL: {url}
     * [species_accession].faa : Protein sequence FASTA file of the species representative.
     * [species_accession].fna : DNA sequence FASTA file of the genome assembly of the species representative.
     * [species_accession].fna.fai : A samtools-generated index of the genome assembly FASTA file.
-    * [species_accession].gff : Genome GFF file with various sequence annotations, including InterPro, eggNOG, Pfam, KEGG, COG, ncRNAs, CRISPR (filtered results with evidence level >= 2), mobilome and viral annotations, biosynthetic gene clusters, antimicrobial resistance genes.
+    * [species_accession].gff : Genome GFF file with various sequence annotations, including InterPro, eggNOG, Pfam, KEGG, COG, ncRNAs, CRISPR (filtered results with evidence level >= 2), mobilome and viral annotations, biosynthetic gene clusters, antimicrobial resistance genes, putative polysaccharide utilisation loci, anti-phage and anti-defense systems.
     * [species_accession]_InterProScan.tsv : InterProScan annotation of the protein coding sequences.
     * [species_accession]_kegg_classes.tsv : KEGG classes and their counts.
     * [species_accession]_kegg_modules.tsv : KEGG modules and their counts.
