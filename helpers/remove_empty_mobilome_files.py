@@ -18,6 +18,7 @@
 import argparse
 import glob
 import os
+import re
 
 
 def main(results_folder):
@@ -25,7 +26,10 @@ def main(results_folder):
     count_removed = 0
     pattern = os.path.join(results_folder, "species_catalogue", '**', '*_mobilome.gff')
     all_matching_files = glob.glob(pattern, recursive=True)
-    filtered_files = [file for file in all_matching_files if os.path.basename(file).count('_') == 1]
+    # Matching files will include mobilome-only files (MGYG123_mobilome.gff) and full annotation with mobilome
+    # (MGYG123_annotated_with_mobilome.gff). Exclude the latter - filtered files should only have mobilome-only GFFs.
+    mobilome_regex = re.compile(r'[^/\\]+(?<!_annotated_with)_mobilome\.gff$')
+    filtered_files = [file for file in all_matching_files if mobilome_regex.search(os.path.basename(file))]
     for mobilome_file in filtered_files:
         count_total += 1
         file_has_contents = evaluate_file(mobilome_file)
