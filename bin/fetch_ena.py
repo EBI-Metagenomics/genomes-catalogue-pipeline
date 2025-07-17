@@ -135,7 +135,8 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
                     logging.info(f'Skipping MAG {mag_acc} because it already exists')
                     # saving metadata for that MAG
                     if not ignore_metadata:
-                        study_metadata.append('{},{},{}'.format('{}.fa.gz'.format(mag_acc), completeness, contamination))
+                        study_metadata.append(
+                            '{},{},{}'.format('{}.fa.gz'.format(mag_acc), completeness, contamination))
                 else:
                     saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
                     if not saved_fasta:
@@ -183,5 +184,5 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-        
+
     main(args.infile, args.dir, args.unzip, args.bins, args.ignore_metadata)
