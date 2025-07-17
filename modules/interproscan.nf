@@ -4,8 +4,10 @@
 
 process IPS {
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.ips:5.62-94.0'
-    containerOptions '--bind data:/opt/interproscan-5.62-94.0/data'
+    container 'quay.io/microbiome-informatics/interproscan:5.73-104.0'
+    containerOptions '--bind data:/opt/interproscan/data'
+    
+    label 'retry_twice'
 
     label 'ips'
 

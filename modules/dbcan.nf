@@ -14,7 +14,9 @@ process DBCAN {
         failOnError: true
     )
 
-    container 'quay.io/biocontainers/dbcan:4.1.2--pyhdfd78af_0'
+    container 'quay.io/biocontainers/dbcan:4.1.4--pyhdfd78af_0'
+    
+    label 'retry_twice'
 
     input:
     tuple val(cluster_name), path(faa), path(gff)
@@ -46,7 +48,7 @@ process DBCAN {
         ${faa} \\
         protein
 
-    process_dbcan_result.py -i dbcan -o dbcan/${cluster_name}_dbcan.gff -v 4.1.2
+    process_dbcan_result.py -i dbcan -o dbcan/${cluster_name}_dbcan.gff -v 4.1.4
 
     """
 }

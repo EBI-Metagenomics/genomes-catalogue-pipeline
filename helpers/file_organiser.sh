@@ -36,88 +36,6 @@ function GenerateDirectories {
 }
 
 
-function GenerateRNACentralJSON {
-    echo "Generating RNAcentral JSON. This could take a while..."
-    mkdir -p "${RESULTS_PATH}"/additional_data/rnacentral
-    mkdir -p "${RESULTS_PATH}"/additional_data/rnacentral/GFFs
-
-    echo "Copying GFFs"
-    for R in $(GET_REPS)
-    do
-        mkdir -p "${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/"
-        python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/move_files.py --command move --dir-from "${RESULTS_PATH}/all_genomes/${R::-2}/${R}/" --dir-to "${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/"
-        python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/move_files.py --command copy --dir-from "${RESULTS_PATH}/all_genomes/${R::-2}/${R}/genomes1/" --dir-to "${RESULTS_PATH}/additional_data/rnacentral/GFFs/" --filename "${R}.gff"
-    done
-
-    echo "Running JSON generation"
-    mitload miniconda && conda activate pybase
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/generate_rnacentral_json.py \
-    -r /nfs/production/rdf/metagenomics/pipelines/prod/genomes-pipeline/helpers/database-import-scripts/rnacentral/rfam_model_lengths_14.9.txt \
-    -m "${RESULTS_PATH}/genomes-all_metadata.tsv" -o "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json" \
-    -d "${RESULTS_PATH}/additional_data/ncrna_deoverlapped_species_reps/" -g "${RESULTS_PATH}/additional_data/rnacentral/GFFs/ "\
-     -f "${RESULTS_PATH}/additional_data/mgyg_genomes/"
-
-    echo "Removing GFFs"
-    rm -r "${RESULTS_PATH}/additional_data/rnacentral/GFFs/"
-
-    if [[ ! -f "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json" ]]
-    then
-        echo "Did not generate the RNAcentral JSON successfully"
-        exit 1
-    fi
-
-}
-
-
-function CheckRNACentralErrors {
-    # Read the file line by line, check specific lines, and extract second column
-    value_3=$(awk -F '\t' 'NR==3 {print $2}' "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json.report")
-    value_5=$(awk -F '\t' 'NR==5 {print $2}' "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json.report")
-    value_6=$(awk -F '\t' 'NR==6 {print $2}' "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json.report")
-
-    # Check if any of the values are greater than 0
-    if (( value_3 > 0 || value_5 > 0 || value_6 > 0 )); then
-        echo "Warning: the RNAcentral script had to skip some records. Make sure this is what is expected. If not,
-        abort execution of the script and investigate."
-        cat "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json.report"
-
-        while true; do
-            read -r -p "Do you want to abort? (yes/no): " answer
-            case "$answer" in
-                no)
-                    break
-                    ;;
-                yes)
-                    echo "Aborted."
-                    exit 1
-                    ;;
-                *)
-                    echo "Invalid response. Please enter 'yes' or 'no'."
-                    ;;
-            esac
-        done
-    fi
-}
-
-
-function RunRNACentralValidator {
-    echo "Running RNAcentral validator"
-    mitload miniconda && conda activate pybase
-    cd /nfs/production/rdf/metagenomics/pipelines/prod/rnacentral-data-schema/
-    python3 /nfs/production/rdf/metagenomics/pipelines/prod/rnacentral-data-schema/validate.py \
-    "${RESULTS_PATH}/additional_data/rnacentral/${CATALOGUE_FOLDER}-rnacentral.json" > \
-    "${RESULTS_PATH}/additional_data/rnacentral/validator_output.txt"
-
-    cd "${RESULTS_PATH}"
-
-    if [ -s "${RESULTS_PATH}/additional_data/rnacentral/validator_output.txt" ]; then
-    echo "RNAcentral validator found issues. Aborting."
-    cat "${RESULTS_PATH}/additional_data/rnacentral/validator_output.txt"
-    exit 1
-    fi
-}
-
-
 function GenerateWebsiteGFFs {
     echo "Generating GFFs for the website"
     cd "${RESULTS_PATH}/species_catalogue"
@@ -131,7 +49,7 @@ function GenerateWebsiteGFFs {
             else
                 echo "$line"
             fi
-        done < "${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff > ${R::-2}/${R}/${R}.gff.noseq"
+        done < "${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff" > "${R::-2}/${R}/${R}.gff.noseq"
     done
 }
 
@@ -140,6 +58,7 @@ function CopyWebsiteFiles {
     echo "Copying files to the website folder"
     cd "${RESULTS_PATH}"
     cp phylo_tree.json "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/"
+    cp catalogue_summary.json "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/"
     for R in $(GET_REPS)
     do
         cp -r "species_catalogue/${R::-2}/${R}" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/"
@@ -171,6 +90,10 @@ function CopyFTPFiles {
         mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff" \
         "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.gff"
         rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/${R}.gff.noseq"
+        # Replace the all_genomes GFF with a GFF that includes the mobilome
+        rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/${R}.gff"
+        cp "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.gff" \
+        "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/"
     done
 }
 
@@ -179,10 +102,11 @@ function CopyAdditionalFiles {
     echo "Copying additional files"
     cd "${RESULTS_PATH}"
     cp -r additional_data "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/"
+    rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data/intermediate_files/ena_location_warnings.txt"
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data"
-    bsub -q production -M 1G -n 1 -o /dev/null "tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes"
+    sbatch -p production --mem=1G -t 20:00:00 --ntasks=1 -o /dev/null -J gzip_mgyg_genomes --wrap="tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes"
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/gene_catalogue"
-    bsub -q production -M 1G -n 1 -o /dev/null "gzip gene_catalogue-100.ffn"
+    sbatch -p production --mem=1G -t 10:00:00 --ntasks=1 -o /dev/null -J gzip_gene_catalogue --wrap="gzip gene_catalogue-100.ffn"
 }
 
 
@@ -196,19 +120,20 @@ function ZipAllGenomes {
         SUBFOLDERS=$(ls -d MGYG*)
         for S in $SUBFOLDERS
         do
-            bsub -q production -M 1G -n 1 -o /dev/null "gzip ${S}/genomes1/MGYG*gff"
+            sbatch -p production --mem=1G --ntasks=1 -t 05:00:00 -o /dev/null -J gzip_${S}_gffs --wrap="gzip ${S}/genomes1/MGYG*gff"
         done
         cd ..
     done
 }
 
 
-while getopts 'd:f:v:r:' flag; do
+while getopts 'd:f:v:r:j:' flag; do
     case "${flag}" in
         d) export SAVE_TO_PATH=$OPTARG ;;
         f) export CATALOGUE_FOLDER=$OPTARG ;;
         v) export CATALOGUE_VERSION=$OPTARG ;;
         r) export RESULTS_PATH=$OPTARG ;;
+        j) PREV_JSON_PATH=$OPTARG ;;
         *) Usage exit 1 ;;
     esac
 done
@@ -218,12 +143,12 @@ if [[ -z $SAVE_TO_PATH ]] || [[ -z $CATALOGUE_FOLDER ]] || [[ -z $RESULTS_PATH ]
   Usage
 fi
 
+if [[ -n "$PREV_JSON_PATH" ]]; then
+    export PREV_JSON_PATH
+fi
 
 GenerateDirectories
 cd "${RESULTS_PATH}"
-GenerateRNACentralJSON
-CheckRNACentralErrors
-RunRNACentralValidator
 GenerateWebsiteGFFs
 CopyWebsiteFiles
 CopyFTPFiles

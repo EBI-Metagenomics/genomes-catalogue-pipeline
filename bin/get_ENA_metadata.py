@@ -56,8 +56,9 @@ def get_location(sample_id):
     for attribute in json_data["SAMPLE_SET"]["SAMPLE"]["SAMPLE_ATTRIBUTES"][
         "SAMPLE_ATTRIBUTE"
     ]:
-        if attribute.get("TAG") == "geographic location (country and/or sea)":
+        if attribute.get("TAG") in ["geographic location (country and/or sea)", "geo_loc_name"]:
             location = attribute.get("VALUE")
+            return location
     return location
 
 
@@ -88,30 +89,30 @@ def get_gca_location(sample_id):
 
 def load_xml(sample_id):
     retry_attempts = 3
-    retry_delay_min = 15
-    xml_url = "https://www.ebi.ac.uk/ena/browser/api/xml/{}".format(sample_id)
+    retry_delay_min = 7
+    xml_url = f"https://www.ebi.ac.uk/ena/browser/api/xml/{sample_id}"
+    error_text = ""
 
     for attempt in range(1, retry_attempts + 1):
-        r = requests.get(xml_url)
-        if not r.ok:
-            retry_delay = retry_delay_min * attempt
-            if r.status_code == 500:
-                print(f"Received HTTP 500 error for sample {sample_id}. Retrying in {retry_delay} seconds...")
-                time.sleep(retry_delay)
-                continue
+        try:
+            r = requests.get(xml_url)
+            if r.ok:
+                data_dict = xmltodict.parse(r.content)
+                return json.loads(json.dumps(data_dict))
             else:
-                print(f"Unable to fetch xml for sample {sample_id}. Retrying in {retry_delay} seconds...")
+                retry_delay = retry_delay_min * attempt
+                print(f"Error {r.status_code} for sample {sample_id}. Retrying in {retry_delay} seconds...")
+                error_text = r.text
                 time.sleep(retry_delay)
-                continue
-        if r.ok:
-            data_dict = xmltodict.parse(r.content)
-            json_dump = json.dumps(data_dict)
-            json_data = json.loads(json_dump)
-            return json_data
-        else:
-            print("Could not retrieve xml for accession", sample_id)
-            print(r.text)
-            return None
+        except requests.RequestException as e:
+            retry_delay = retry_delay_min * attempt
+            print(f"Request error for sample {sample_id}: {e}. Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+
+    print(f"Failed to retrieve XML for sample {sample_id} after {retry_attempts} attempts.")
+    if error_text:
+        print(error_text)
+    return None
 
 
 def load_gca_json(sample_id):

@@ -139,12 +139,12 @@ Website URL: {url}
     * [species_accession]_crisprcasfinder.gff : Unfiltered CRISPRCasFinder results file, including calls that have evidence level 1 and are less likely to be genuine.
     * [species_accession]_crisprcasfinder.tsv : Additional data for CRISPRCasFinder records reported in [species_accession]_crisprcasfinder.gff.
     * [species_accession]_dbcan.gff : dbCAN annotation file containing putative polysaccharide utilisation loci, predicted substrates and functions of member genes.
-    * [species_accession]_defense_finder.gff : Anti-phage system annotations.
+    * [species_accession]_defense_finder.gff : Anti-phage and anti-defense system annotations.
     * [species_accession]_eggNOG.tsv : eggNOG annotations of the protein coding sequences.
     * [species_accession].faa : Protein sequence FASTA file of the species representative.
     * [species_accession].fna : DNA sequence FASTA file of the genome assembly of the species representative.
     * [species_accession].fna.fai : A samtools-generated index of the genome assembly FASTA file.
-    * [species_accession].gff : Genome GFF file with various sequence annotations, including InterPro, eggNOG, Pfam, KEGG, COG, ncRNAs, CRISPR (filtered results with evidence level >= 2), mobilome and viral annotations, biosynthetic gene clusters, antimicrobial resistance genes.
+    * [species_accession].gff : Genome GFF file with various sequence annotations, including InterPro, eggNOG, Pfam, KEGG, COG, ncRNAs, CRISPR (filtered results with evidence level >= 2), mobilome and viral annotations, biosynthetic gene clusters, antimicrobial resistance genes, putative polysaccharide utilisation loci, anti-phage and anti-defense systems.
     * [species_accession]_InterProScan.tsv : InterProScan annotation of the protein coding sequences.
     * [species_accession]_kegg_classes.tsv : KEGG classes and their counts.
     * [species_accession]_kegg_modules.tsv : KEGG modules and their counts.
