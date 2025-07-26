@@ -29,8 +29,6 @@ workflow EUK_GENE_CALLING {
             ch_repeat_masker
         }
 
-        ch_repeat_masker.genome_proteins.view()
-
         REPEAT_MASKER(
             ch_repeat_masker.genome_proteins, 
             ch_repeat_masker.repeat_families, 
