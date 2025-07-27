@@ -24,6 +24,7 @@ workflow ANNOTATE_EUKARYOTES {
             cluster_reps_faas,
             cluster_reps_faas.map { tuple(it[0], "NO_FILE") },  // use the cluster rep names in position 0 of tuple to have correct names
             channel.value('mapper'),
+            channel.value('eukaryota_broad'),
             eggnog_db,
             eggnog_diamond_db,
             eggnog_data_dir
@@ -33,6 +34,7 @@ workflow ANNOTATE_EUKARYOTES {
             cluster_reps_faas.map { tuple(it[0], "NO_FILE") },  // use the cluster rep names in position 0 of tuple to have correct names
             EGGNOG_MAPPER_ORTHOLOGS_PER_GENOME.out.orthologs,
             channel.value('annotations'),
+            channel.value('eukaryota_broad'),
             eggnog_db,
             eggnog_diamond_db,
             eggnog_data_dir

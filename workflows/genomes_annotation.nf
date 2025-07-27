@@ -361,6 +361,7 @@ workflow GAP {
         ch_eggnog_db,
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
+        channel.value("prokaryota_broad"), // tax scope for eggNOG
         ch_dbcan_db,
         ch_antismash_db
     )

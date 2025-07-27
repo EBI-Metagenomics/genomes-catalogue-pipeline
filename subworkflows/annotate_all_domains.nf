@@ -55,6 +55,7 @@ workflow ANNOTATE_ALL_DOMAINS {
         eggnog_db
         eggnog_diamond_db
         eggnog_data_dir
+        eggnog_tax_scope
         dbcan_db
         antismash_db
     
@@ -74,6 +75,7 @@ workflow ANNOTATE_ALL_DOMAINS {
             mmseq_90_chunks,
             tuple("empty", "NO_FILE"),
             channel.value('mapper'),
+            eggnog_tax_scope,
             eggnog_db,
             eggnog_diamond_db,
             eggnog_data_dir
@@ -83,6 +85,7 @@ workflow ANNOTATE_ALL_DOMAINS {
             tuple("empty", "NO_FILE"),
             EGGNOG_MAPPER_ORTHOLOGS.out.orthologs,
             channel.value('annotations'),
+            eggnog_tax_scope,
             eggnog_db,
             eggnog_diamond_db,
             eggnog_data_dir
