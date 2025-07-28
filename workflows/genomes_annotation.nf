@@ -405,7 +405,8 @@ workflow GAP {
         PROCESS_SINGLETON_GENOMES.out.gunc_failed_txt.ifEmpty("EMPTY"),
         gtdbtk_tables_ch,
         ch_previous_catalogue_location,
-        all_assembly_stats
+        all_assembly_stats,
+        file("NO_FILE_BUSCO")
     )
 
     /*
