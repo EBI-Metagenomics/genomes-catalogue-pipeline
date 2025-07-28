@@ -27,9 +27,9 @@ process PANAROO {
         failOnError: true
     )
 
-    label 'process_medium'
-
     container 'quay.io/biocontainers/panaroo:1.3.2--pyhdfd78af_0'
+    
+    label 'retry_twice'
 
     input:
     tuple val(cluster_name), path(gff_files)

@@ -19,6 +19,8 @@ process DREP {
     )
 
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
+    
+    label 'retry_twice'
 
     input:
     path genomes_directory

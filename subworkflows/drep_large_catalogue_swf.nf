@@ -7,37 +7,10 @@ include { DREP_CHUNKED as DREP_SPECIES_REPS } from '../modules/drep_chunked'
 include { COMBINE_CHUNKED_DREP } from '../modules/combine_chunked_drep'
 include { SPLIT_DREP } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
+include { COLLECT_DREP_RESULTS } from '../modules/utils'
 include { MASH_COMPARE } from '../modules/mash_compare'
 
-process COLLECT_DREP_RESULTS {
 
-    publishDir(
-        path: "${params.outdir}/additional_data/intermediate_files",
-        mode: "copy",
-        failOnError: true
-    )
-
-    stageInMode "copy"
-
-    input:
-    path drep_tables_tarballs
-    path cdb_csv
-    path sdb_csv
-    path mdb_csv
-
-    output:
-    path "drep_data_tables.tar.gz"
-
-    script:
-    """
-    tar -czf drep_data_tables.tar.gz \
-        ${cdb_csv} \
-        ${sdb_csv} \
-        ${mdb_csv} \
-        ${drep_tables_tarballs.join(' ')}
-    """
-
-}
 
 workflow DREP_LARGE_SWF {
     take:

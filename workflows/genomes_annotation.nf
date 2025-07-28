@@ -84,6 +84,8 @@ include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
 include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
+include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
+include { AMRFINDER_PLUS } from '../modules/amrfinder_plus'
 include { CATALOGUE_SUMMARY } from '../modules/catalogue_summary'
 
 /*

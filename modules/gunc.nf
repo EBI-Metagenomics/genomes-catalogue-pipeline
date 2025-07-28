@@ -19,7 +19,9 @@ process GUNC {
         failOnError: true
     )
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.gunc:1.0.3'
+    container 'quay.io/biocontainers/gunc:1.0.6--pyhdfd78af_0'
+    
+    label 'retry_twice'
 
     input:
     tuple val(cluster_name), path(fasta), val(domain)

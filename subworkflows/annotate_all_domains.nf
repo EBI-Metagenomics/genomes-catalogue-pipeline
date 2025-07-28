@@ -6,39 +6,7 @@ include { IPS } from '../modules/interproscan'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ORTHOLOGS } from '../modules/eggnog'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
 include { DBCAN } from '../modules/dbcan'
-
-
-process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
-
-    publishDir(
-        "${params.outdir}/protein_catalogue/",
-        mode: 'copy'
-    )
-
-    stageInMode 'copy'
-
-    input:
-    file interproscan_annotations
-    file eggnog_annotations
-    file mmseq_90_tarball
-
-    output:
-    file "protein_catalogue-90.tar.gz"
-
-    script:
-    """
-    mv ${interproscan_annotations} protein_catalogue-90_InterProScan.tsv
-    mv ${eggnog_annotations} protein_catalogue-90_eggNOG.tsv
-
-    gunzip -c ${mmseq_90_tarball} > protein_catalogue-90.tar
-
-    rm ${mmseq_90_tarball}
-
-    tar -uf protein_catalogue-90.tar protein_catalogue-90_InterProScan.tsv protein_catalogue-90_eggNOG.tsv
-
-    gzip protein_catalogue-90.tar
-    """
-}
+include { PROTEIN_CATALOGUE_STORE_ANNOTATIONS } from '../modules/utils'
 
 workflow ANNOTATE_ALL_DOMAINS {
     take:

@@ -135,7 +135,8 @@ def load_study(acc, directory, unzip, bins, ignore_metadata):
                     logging.info(f'Skipping MAG {mag_acc} because it already exists')
                     # saving metadata for that MAG
                     if not ignore_metadata:
-                        study_metadata.append('{},{},{}'.format('{}.fa.gz'.format(mag_acc), completeness, contamination))
+                        study_metadata.append(
+                            '{},{},{}'.format('{}.fa.gz'.format(mag_acc), completeness, contamination))
                 else:
                     saved_fasta = download_fasta(ftp_location, directory, mag_acc, unzip, '')
                     if not saved_fasta:
@@ -172,8 +173,7 @@ def parse_args():
                         help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
                              'provided in the input file. Default = False')
     parser.add_argument('--ignore-metadata', action='store_true',
-                        help='Download bins instead of MAGs. Does not work if biomes rather than accessions are '
-                             'provided in the input file. Default = False')
+                        help='Skip QS filtering. Default = False')
     parser.add_argument('--debug', action='store_true', help='set logging to DEBUG')
     return parser.parse_args()
 
@@ -184,5 +184,5 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-        
+
     main(args.infile, args.dir, args.unzip, args.bins, args.ignore_metadata)

@@ -21,7 +21,7 @@ process METADATA_TABLE {
     path gtdb_summary_tsv
     val ftp_name
     val ftp_version
-    path geo_metadata
+    file location_table
     file gunc_failed_txt
     path previous_catalogue_location
     path all_assembly_stats
@@ -56,8 +56,8 @@ process METADATA_TABLE {
     --taxonomy ${gtdb_summary_tsv} \
     --ftp-name ${ftp_name} \
     --ftp-version ${ftp_version} \
-    --geo ${geo_metadata} ${args} \
     --precomputed_genome_stats ${all_assembly_stats} \
+    --location-table ${location_table} ${args} \
     --outfile genomes-all_metadata.tsv
     """
 

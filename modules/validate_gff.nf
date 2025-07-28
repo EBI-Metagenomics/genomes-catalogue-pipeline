@@ -9,7 +9,7 @@ process VALIDATE_GFF {
         failOnError: true
     )
 
-    errorStrategy 'ignore'
+    label 'ignore_errors'
 
     container 'quay.io/biocontainers/genometools-genometools:1.6.2--py310he7ef181_3'
 
