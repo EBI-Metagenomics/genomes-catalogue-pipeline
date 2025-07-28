@@ -20,4 +20,4 @@ jobs:
         pip install -U -r requirements-test.txt
     - name: Testing
       run: |
-        pytest
+        PYTHONPATH="$PYTHONPATH:bin" pytest
