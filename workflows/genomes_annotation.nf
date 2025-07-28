@@ -362,8 +362,7 @@ workflow GAP {
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
         channel.value("prokaryota_broad"), // tax scope for eggNOG
-        ch_dbcan_db,
-        ch_antismash_db
+        ch_dbcan_db
     )
     
     ANNOTATE_PROKARYOTES(
@@ -375,7 +374,8 @@ workflow GAP {
         ANNOTATE_ALL_DOMAINS.out.eggnog_annotations_mmseqs90,
         species_reps_names_list,
         MMSEQ_SWF.out.mmseq_90_cluster_tsv,
-        ch_defense_finder_db
+        ch_defense_finder_db,
+        ch_antismash_db
     )
     ips_annotation_tsvs = ANNOTATE_PROKARYOTES.out.ips_annotation_tsvs
     eggnog_annotation_tsvs = ANNOTATE_PROKARYOTES.out.eggnog_annotation_tsvs
@@ -499,7 +499,7 @@ workflow GAP {
         ).join(
             ANNOTATE_PROKARYOTES.out.amrfinder_tsv, remainder: true
         ).join(
-            ANNOTATE_ALL_DOMAINS.out.antismash_gffs, remainder: true
+            ANNOTATE_PROKARYOTES.out.antismash_gffs, remainder: true
         ).join(
             ANNOTATE_PROKARYOTES.out.gecco_gffs, remainder: true
         ).join(

@@ -8,6 +8,8 @@ include { DEFENSE_FINDER } from '../modules/defense_finder'
 include { GECCO_RUN } from '../modules/gecco'
 include { CRISPRCAS_FINDER } from '../modules/crisprcasfinder'
 include { AMRFINDER_PLUS } from '../modules/amrfinder_plus'
+include { ANTISMASH } from '../modules/antismash'
+include { ANTISMASH_MAKE_GFF } from '../modules/antismash_make_gff'
 
 
 workflow ANNOTATE_PROKARYOTES {
@@ -21,6 +23,7 @@ workflow ANNOTATE_PROKARYOTES {
         species_reps_names_list
         mmseq_90_tsv
         defense_finder_db
+        antismash_db
 
     main:
      
@@ -66,6 +69,15 @@ workflow ANNOTATE_PROKARYOTES {
                 prokka_gff
             )
         )
+        
+        ANTISMASH(
+             prokka_gbk,
+             antismash_db
+        )
+        
+        ANTISMASH_MAKE_GFF(
+             ANTISMASH.out.antismash_json
+        )  
 
     emit:
         ips_annotation_tsvs = per_genome_ips_annotations
@@ -75,4 +87,5 @@ workflow ANNOTATE_PROKARYOTES {
         gecco_gffs = GECCO_RUN.out.gecco_gff
         crisprcasfinder_hq_gff = CRISPRCAS_FINDER.out.hq_gff
         amrfinder_tsv = AMRFINDER_PLUS.out.amrfinder_tsv
+        antismash_gffs = ANTISMASH_MAKE_GFF.out.antismash_gff
 }

@@ -306,8 +306,7 @@ workflow GAP_EUKS {
         ch_eggnog_diamond_db,
         ch_eggnog_data_dir,
         channel.value("eukaryota_broad"), // tax scope for eggNOG
-        ch_dbcan_db,
-        ch_antismash_db
+        ch_dbcan_db
     )
     
     ANNOTATE_EUKARYOTES(

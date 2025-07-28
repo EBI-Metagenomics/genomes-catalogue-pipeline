@@ -6,8 +6,6 @@ include { IPS } from '../modules/interproscan'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ORTHOLOGS } from '../modules/eggnog'
 include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS } from '../modules/eggnog'
 include { DBCAN } from '../modules/dbcan'
-include { ANTISMASH } from '../modules/antismash'
-include { ANTISMASH_MAKE_GFF } from '../modules/antismash_make_gff'
 
 
 process PROTEIN_CATALOGUE_STORE_ANNOTATIONS {
@@ -57,7 +55,6 @@ workflow ANNOTATE_ALL_DOMAINS {
         eggnog_data_dir
         eggnog_tax_scope
         dbcan_db
-        antismash_db
     
     main:
 
@@ -107,7 +104,6 @@ workflow ANNOTATE_ALL_DOMAINS {
             mmseq_90_tarball
         )
 
-        
         DBCAN(
             prokka_faa.join(
                 prokka_gff
@@ -115,21 +111,10 @@ workflow ANNOTATE_ALL_DOMAINS {
                     accessions_with_domains_ch, remainder: true
                 ).filter { it -> it[1] != null },
             dbcan_db
-        ) 
-        
-        // ANTISMASH(
-        //     prokka_gbk,
-        //     antismash_db
-        // )
-        
-        // ANTISMASH_MAKE_GFF(
-        //     ANTISMASH.out.antismash_json
-        // )     
-
+        )            
 
     emit:
         dbcan_gffs = DBCAN.out.dbcan_gff
-        // antismash_gffs = ANTISMASH_MAKE_GFF.out.antismash_gff
         interproscan_annotations_mmseqs90 = interproscan_annotations
         eggnog_annotations_mmseqs90 = eggnog_mapper_annotations
         
