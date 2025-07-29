@@ -5,10 +5,9 @@ import os
 
 from pathlib import Path
 
-script_dir = Path(__file__).resolve().parent
+from bin.check_sample_and_mag_validity import main as check_validity_main
 
-check_validity = importlib.import_module("bin.check_sample_and_mag_validity")
-check_validity_main = check_validity.main
+script_dir = Path(__file__).resolve().parent
 
 
 class TestMAGValidityScript(unittest.TestCase):
