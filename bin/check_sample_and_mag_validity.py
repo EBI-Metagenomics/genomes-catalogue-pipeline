@@ -188,7 +188,7 @@ def load_metadata_table(metadata_table_file, remove_list):
             acc_index = header_fields.index("Genome_accession")
             sample_index = header_fields.index("Sample_accession")
         except ValueError as e:
-            sys.exit("Unable to load the metadata table. Field not found:", e)
+            sys.exit(f"Unable to load the metadata table. Field not found: {e}")
         for line in f:
             parts = line.strip().split("\t")
             acc = parts[acc_index]
