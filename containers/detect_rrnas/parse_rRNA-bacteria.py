@@ -26,20 +26,19 @@ rRNAs_merged = {}
 
 
 def get_tblout_column_indices(tool):
-    cmsearch_indices = {
-        "gene": 2,
-        "start": 5,
-        "end": 6,
+    tool_indices = {
+        "cmsearch": {
+            "gene": 2,
+            "start": 5,
+            "end": 6,
+        },
+        "cmscan": {
+            "gene": 1,
+            "start": 7,
+            "end": 8,
+        },
     }
-    cmscan_indices = {
-        "gene": 1,
-        "start": 7,
-        "end": 8,
-    }
-    if tool == "cmsearch":
-        return cmsearch_indices
-    else:
-        return cmscan_indices
+    return tool_indices.get(tool)
 
 
 if __name__ == "__main__":
