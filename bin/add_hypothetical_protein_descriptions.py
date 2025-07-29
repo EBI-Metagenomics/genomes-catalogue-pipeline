@@ -982,6 +982,7 @@ def cleanup_duf(description):
 def clean_panther(sig_description):
     starts_to_exclude = [
         "meiotically up-regulated gene",
+        "domain protein"
     ]
     full_strings_to_exclude = [
         "family protein, putative-related",
@@ -991,12 +992,20 @@ def clean_panther(sig_description):
         "domain-containing protein, putative-related",
         "unnamed product",
         "unnamed product-related",
+        "expressed protein",
+        "orf",
+    ]
+    partial_strings_to_exclude = [
+        "whole genome shotgun sequence"
     ]
     for start in starts_to_exclude:
         if sig_description.lower().startswith(start):
             return "-"
     for full_string in full_strings_to_exclude:
         if sig_description.lower() == full_string:
+            return "-"
+    for partial_string in partial_strings_to_exclude:
+        if partial_string in sig_description.lower():
             return "-"
     return sig_description
 
