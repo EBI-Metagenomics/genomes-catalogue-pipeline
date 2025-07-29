@@ -39,7 +39,7 @@ def main(input_folder, remove_list_file, outfile, num_threads):
         remove_list = load_remove_list(remove_list_file, metadata_table_file)
     else:
         remove_list = list()
-    sample_mag_dictionary = load_metadata_table(metadata_table_file, remove_list)
+    sample_mag_dictionary = load_metadata_table(metadata_table_file, remove_list)  # key=sample;val=list of mgygs
 
     missing_samples = []
     missing_genomes = []
@@ -66,7 +66,10 @@ def main(input_folder, remove_list_file, outfile, num_threads):
             for genome in missing_genomes:
                 file_out.write("{}\tgenome\n".format(genome))
         logging.error("Missing genomes and samples are saved to {}. Check that these are indeed missing in ENA, "
-                      "add them to the file containing a list of genomes to remove and restart the pipeline.".
+                      "add them to the file containing a list of genomes to remove and restart the pipeline. If a "
+                      "sample is missing, all of the associated genomes have been added to the file and should be "
+                      "removed from the catalogue. If the sample is found in ENA but some of the genomes are missing, "
+                      "only the missing genomes will be saved to this file to be removed.".
                       format(outfile))
     else:
         logging.info("No missing genomes or samples found in the previous version of the catalogue")
