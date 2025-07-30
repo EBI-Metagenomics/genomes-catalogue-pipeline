@@ -24,26 +24,25 @@ from Bio import SeqIO
 
 
 def get_tblout_column_indices(tool):
-    cmsearch_indices = {
-        "contig": 0,
-        "gene": 2,
-        "model": 3,
-        "strand": 9,
-        "start": 7,
-        "end": 8,
+    tool_indices = {
+        "cmsearch": {
+            "contig": 0,
+            "gene": 2,
+            "model": 3,
+            "strand": 9,
+            "start": 7,
+            "end": 8,
+        },
+        "cmscan": {
+            "contig": 3,
+            "gene": 1,
+            "model": 2,
+            "strand": 11,
+            "start": 9,
+            "end": 10,
+        },
     }
-    cmscan_indices = {
-        "contig": 3,
-        "gene": 1,
-        "model": 2,
-        "strand": 11,
-        "start": 9,
-        "end": 10,
-    }
-    if tool == "cmsearch":
-        return cmsearch_indices
-    else:
-        return cmscan_indices
+    return tool_indices.get(tool)
     
     
 if __name__ == "__main__":
