@@ -10,15 +10,17 @@ workflow DETECT_RNA {
         fnas
         accessions_with_domains
         rfam_ncrna_models
+        kingdom
     main:
         DETECT_TRNA(
-            fnas.map(it -> [it[1].baseName, it[1]]).join(
-                accessions_with_domains
-            )
+            fnas.map(it -> [it[1].baseName.replace("_sm", ""), it[1]]).join(
+                accessions_with_domains, remainder: true
+            ).filter{  it -> it[1] != null } // remove genomes that were filtered out during QC and don't have an fna
         )
        DETECT_NCRNA(
             fnas,
-            rfam_ncrna_models
+            rfam_ncrna_models,
+            kingdom
        )
     emit:
         ncrna_tblout = DETECT_NCRNA.out.ncrna_tblout

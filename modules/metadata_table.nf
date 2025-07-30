@@ -23,6 +23,9 @@ process METADATA_TABLE {
     val ftp_version
     file location_table
     file gunc_failed_txt
+    path previous_catalogue_location
+    path all_assembly_stats
+    file busco_summary
 
     output:
     path "genomes-all_metadata.tsv", emit: metadata_tsv
@@ -32,6 +35,16 @@ process METADATA_TABLE {
     if (gunc_failed_txt != "EMPTY") {
         args = args + "--gunc-failed ${gunc_failed_txt}"
     }
+    if (previous_catalogue_location.toString() != "NO_PREVIOUS_CATALOGUE_VERSION"){
+        args = args + " " + "--previous-metadata-table ${previous_catalogue_location}/ftp/genomes-all_metadata.tsv"
+    }
+    if (busco_summary != "NO_FILE_BUSCO"){
+        args = args + " " + "--busco-output ${busco_summary}"
+    }
+    if (params.kingdom == "eukaryotes"){
+        args = args + " " + "--euk"
+    }
+    
     """
     create_metadata_table.py \
     --genomes-dir genomes_dir \
@@ -43,6 +56,7 @@ process METADATA_TABLE {
     --taxonomy ${gtdb_summary_tsv} \
     --ftp-name ${ftp_name} \
     --ftp-version ${ftp_version} \
+    --precomputed_genome_stats ${all_assembly_stats} \
     --location-table ${location_table} ${args} \
     --outfile genomes-all_metadata.tsv
     """

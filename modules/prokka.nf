@@ -68,7 +68,9 @@ process PROKKA {
     --outdir ${fasta.baseName}_prokka \
     --prefix ${fasta.baseName} \
     --force \
-    --locustag ${fasta.baseName}
+    --locustag ${fasta.baseName} \
+    --norrna \
+    --notrna 
     """
 
     // stub:

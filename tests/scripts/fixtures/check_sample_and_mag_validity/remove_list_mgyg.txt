@@ -1,0 +1,3 @@
+MGYG000298001	suppressed
+CAJZFF01	low quality
+GCA_015263975	wrong biome   

@@ -75,7 +75,7 @@ def parse_args():
                         help='Path to the folder containing genomes downloaded from NCBI')
     parser.add_argument('-c', '--checkm', required=True,
                         help='Path to the CheckM results file')
-    parser.add_argument('-o', '--output', default='QC_failed_genomes.txt',
+    parser.add_argument('-o', '--output', default='QS50_failed_genomes.txt',
                         help='Name of the file to print the list of QS<50 genomes to')
     parser.add_argument('--output-csv', default='filtered_genomes.csv',
                         help='CSV with filtered genomes')

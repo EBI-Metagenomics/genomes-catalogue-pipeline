@@ -46,7 +46,9 @@ def main(
     outdir=None,
     max_number=None,
     csv=None,
+    busco=None,
     map_file=None,
+    spades_style=False,
 ):
     names = dict()  # matches old and new names
     if map_file:
@@ -82,10 +84,11 @@ def main(
                     accession,
                     input_dir=fasta_file_directory,
                     output_dir=outdir,
+                    spades_style=spades_style,
                 )
             else:
                 rename_fasta(
-                    file, new_name, fasta_file_directory, rename_deflines, accession
+                    file, new_name, fasta_file_directory, rename_deflines, accession, spades_style=spades_style
                 )
                 try:
                     os.remove(os.path.join(fasta_file_directory, file))
@@ -98,10 +101,10 @@ def main(
         rename_clusters(names, cluster_file)
     if csv:
         logging.info("Renaming csv...")
-        rename_csv(names, csv)
+        rename_csv(names, csv, busco)
 
 
-def write_fasta(old_path, new_path, accession):
+def write_fasta(old_path, new_path, accession, spades_style=False):
     file_in = open(old_path, "r")
     file_out = open(new_path, "w")
     spades_regex = re.compile("NODE_[0-9]+_length_([0-9]+)_cov_([0-9.]+)")
@@ -113,30 +116,35 @@ def write_fasta(old_path, new_path, accession):
                 length, coverage = [m for m in spades_regex.findall(line.strip())[0]]
             else:
                 length, coverage = "NA", "NA"
-            file_out.write(
-                ">{}_{}-length-{}-cov-{}\n".format(accession, n, length, coverage)
-            )
+            if spades_style:
+                file_out.write(
+                    ">{}_{}-length-{}-cov-{}\n".format(accession, n, length, coverage)
+                )
+            else:
+                file_out.write(
+                    ">{}_{}\n".format(accession, n)
+                )
         else:
             file_out.write(line)
     file_in.close()
     file_out.close()
 
 
-def rename_to_outdir(file, new_name, accession, input_dir, output_dir):
+def rename_to_outdir(file, new_name, accession, input_dir, output_dir, spades_style):
     new_path = os.path.join(output_dir, new_name)
     old_path = os.path.join(input_dir, file)
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
-    write_fasta(old_path, new_path, accession)
+    write_fasta(old_path, new_path, accession, spades_style)
 
 
-def rename_fasta(file, new_name, fasta_file_directory, rename_deflines, accession):
+def rename_fasta(file, new_name, fasta_file_directory, rename_deflines, accession, spades_style):
     new_path = os.path.join(fasta_file_directory, new_name)
     old_path = os.path.join(fasta_file_directory, file)
     if not rename_deflines:
         shutil.copyfile(old_path, new_path)
     else:
-        write_fasta(old_path, new_path, accession)
+        write_fasta(old_path, new_path, accession, spades_style)
 
 
 def print_table(names, table_file):
@@ -161,13 +169,20 @@ def rename_clusters(names, cluster_file):
     file_out.close()
 
 
-def rename_csv(names, csv_file):
+def rename_csv(names, csv_file, busco):
     clusters_renamed = "renamed_" + os.path.basename(csv_file)
     with open(csv_file, "r") as file_in, open(clusters_renamed, "w") as file_out:
         for line in file_in:
             items = line.strip().split(",")
             genome = names[items[0]] if items[0] in names else items[0]
             file_out.write(",".join([genome] + items[1:3]) + "\n")
+    if busco:
+        busco_renamed = "renamed_" + os.path.basename(busco) + ".summary"
+        with open(busco, "r") as busco_in, open(busco_renamed, "w") as busco_out:
+            for line in busco_in:
+                items = line.strip().split("\t")
+                genome = names[items[0]] if items[0] in names else items[0]
+                busco_out.write("\t".join([genome] + items[1:2]) + "\n")
 
 
 def parse_args():
@@ -235,6 +250,15 @@ def parse_args():
         ),
     )
     parser.add_argument(
+        "--spades-style",
+        action="store_true",
+        help=(
+            "If this flag is on, deflines within the FASTA file will be named in the format that spades uses: "
+            "{contig_name}-length-{num}-cov-{num}, for example, MGYG00001_1--length--112345--cov--4.7. Without this "
+            "flag, the names will be kept to the contig accession only, for example, MGYG00001_1."
+        ),
+    )
+    parser.add_argument(
         "-o",
         dest="outputdir",
         required=False,
@@ -249,6 +273,15 @@ def parse_args():
         dest="csv",
         required=False,
         help="CSV file with completeness and contamination. If provided, the genomes inside the file "
+             "will be renamed using their new filenames and saved into a new file.",
+    )
+
+    parser.add_argument(
+        "--busco",
+        dest="busco",
+        required=False,
+        default=None,
+        help="TSV file with busco scores. If provided, the genomes inside the file "
              "will be renamed using their new filenames and saved into a new file.",
     )
 
@@ -283,5 +316,7 @@ if __name__ == "__main__":
         outdir=args.outputdir,
         max_number=args.max,
         csv=args.csv,
+        busco=args.busco,
         map_file=args.map_file,
+        spades_style=args.spades_style,
     )

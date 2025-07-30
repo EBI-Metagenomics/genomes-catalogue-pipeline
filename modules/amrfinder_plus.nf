@@ -16,6 +16,7 @@ process AMRFINDER_PLUS {
     )
 
     label 'retry_twice'
+    
     container 'quay.io/biocontainers/ncbi-amrfinderplus:3.12.8--h283d18e_0'
 
     input:

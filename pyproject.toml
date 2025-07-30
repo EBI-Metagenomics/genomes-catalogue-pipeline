@@ -1,5 +1,5 @@
 [tool.pytest.ini_options]
-pythonpath = [".", "tests"]
+pythonpath = [".", "bin", "helpers/database_import_scripts/uniprot", "tests"]
 python_files = ["test_*.py"]
 
 [tool.ruff]
