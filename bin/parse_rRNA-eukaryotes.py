@@ -42,7 +42,7 @@ def get_tblout_column_indices(tool):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script detects bacretia rRNA")
+    parser = argparse.ArgumentParser(description="Script detects eukaryotic rRNA")
     parser.add_argument(
         "-i", "--input", dest="input", help="rrna.tblout.deoverlapped", required=True
     )
