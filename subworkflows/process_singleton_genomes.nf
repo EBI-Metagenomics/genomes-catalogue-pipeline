@@ -15,21 +15,22 @@ workflow PROCESS_SINGLETON_GENOMES {
         gunc_db
     main:
     
-        singleton_cluster_tuple_with_domain = singleton_cluster_tuple \
-        .join(accessions_with_domains_tuples) \
-        .filter({ !it[2].contains('Undefined') })
+        singleton_cluster_tuple_with_domain = singleton_cluster_tuple
+        .join(accessions_with_domains_tuples, remainder: true)
+        .filter { it[1] != null && !it[2].contains('Undefined') }
         
         GUNC(
             singleton_cluster_tuple_with_domain,
-            genomes_checkm,
+            genomes_checkm.first(),
             gunc_db
         )
 
         PROKKA(
             GUNC.out.cluster_gunc_result.filter({
                 it[2].name.contains('_complete.txt')
-            }).join(accessions_with_domains_tuples
-            ).map({ cluster_name, cluster_fasta, cluster_gunc, cluster_domain ->
+            }).join(accessions_with_domains_tuples, remainder: true)
+            .filter { it[1] != null }
+            .map({ cluster_name, cluster_fasta, cluster_gunc, cluster_domain ->
                 return tuple(cluster_name, cluster_fasta, cluster_domain)
             })
         )

@@ -11,13 +11,14 @@ workflow DREP_SWF {
         genomes_directory
         checkm_csv
         extra_weight_table
+        drep_args
+
     main:
-
-
         DREP(
             genomes_directory,
             checkm_csv,
-            extra_weight_table
+            extra_weight_table,
+            drep_args
         )
 
         SPLIT_DREP(
@@ -35,7 +36,8 @@ workflow DREP_SWF {
             def cluster = fna_file.parent.toString().tokenize("/")[-1]
             return tuple(cluster, fna_file)
         }
-
+        many_genomes_fna_tuples = Channel.empty()
+        single_genomes_fna_tuples = Channel.empty()
         many_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.many_genomes_fnas | flatten | map(groupGenomes)
         single_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.one_genome_fnas | flatten | map(groupGenomes)
 

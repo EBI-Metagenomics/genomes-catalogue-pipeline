@@ -9,17 +9,18 @@ process EGGNOG_MAPPER {
 
     input:
     // on mode "annotations" will be ignored, submit an empty path (channel.path("NO_FILE"))
-    file fasta
+    tuple val(id), file(fasta)
     // on mode "mapper" will be ignored, submit an empty path (channel.path("NO_FILE"))
-    file annotation_hit_table
+    tuple val(id), file(annotation_hit_table)
     val mode // mapper or annotations
+    val scope // 'prokaryota_broad' or 'eukaryota_broad'
     path eggnog_db
     path eggnog_diamond_db
     path eggnog_data_dir
 
     output:
-    path "*annotations*", emit: annotations, optional: true
-    path "*orthologs*", emit: orthologs, optional: true
+    tuple val(id), path ("*annotations*"), emit: annotations, optional: true
+    tuple val(id), path ("*orthologs*"), emit: orthologs, optional: true
 
     script:
     if ( mode == "mapper" )
@@ -43,7 +44,7 @@ process EGGNOG_MAPPER {
         --cpu ${task.cpus} \
         --annotate_hits_table ${annotation_hit_table} \
         --dbmem \
-        --tax_scope 'prokaryota_broad' \
+        --tax_scope ${scope} \
         -o ${annotation_hit_table.baseName}
         """
     else

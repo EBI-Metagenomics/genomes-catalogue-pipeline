@@ -1,0 +1,79 @@
+process ANNOTATE_EUKS_GFF {
+
+    tag "${cluster}"
+
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                String cluster_rep_prefix = cluster.substring(0, cluster.length() - 2);
+                return "species_catalogue/${cluster_rep_prefix}/${cluster}/genome/${gff.simpleName}_annotated.gff";
+            }
+        },
+        mode: 'copy',
+        failOnError: true
+    )
+    publishDir(
+        path: "${params.outdir}",
+        saveAs: {
+            filename -> {
+                String cluster_rep_prefix = cluster.substring(0, cluster.length() - 2);
+                return "all_genomes/${cluster_rep_prefix}/${cluster}/${gff.simpleName}.gff";
+            }
+        },
+        mode: 'copy',
+        failOnError: true
+    )
+
+    label 'process_light'
+
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
+
+    input:
+    tuple val(cluster),
+        file(gff),
+        file(eggnog_annotations_tsv),
+        file(ncrna_tsv),
+        file(trna_gff),
+        file(antismash_gff),
+        file(dbcan_gff),
+        file(ips_annotations_tsv)
+    path(interpro_entry_list)
+    
+    output:
+    tuple val(cluster), path("*_annotated.gff"), emit: annotated_gff
+
+    script:
+    antismash_flag = ""
+    if ( antismash_gff.toString() != "NO_FILE" ) {
+        antismash_flag = "--antismash ${antismash_gff}"
+    }
+    if ( dbcan_gff ) {
+        dbcan_flag = "--dbcan ${dbcan_gff}"
+    }
+
+    """
+    
+    annotate_euk_gff.py \
+    -g ${gff} \
+    -i ${ips_annotations_tsv} \
+    -e ${eggnog_annotations_tsv} \
+    -r ${ncrna_tsv} \
+    -t ${trna_gff} \
+    -o ${cluster}_annotated_temp.gff \
+    ${antismash_flag} ${dbcan_flag}
+    
+    add_hypothetical_protein_descriptions.py \\
+    --eggnog-output ${eggnog_annotations_tsv} \\
+    --ipr-entries ${interpro_entry_list}/entry.list \\
+    --ipr-hierarchy ${interpro_entry_list}/ParentChildTreeFile.txt \\
+    --ipr-output ${ips_annotations_tsv} \\
+    -i ${cluster}_annotated_temp.gff \\
+    -o ${cluster}_annotated.gff
+    """
+
+    stub:
+    """
+    touch ${gff.simpleName}_annotated.gff
+    """
+}

@@ -38,18 +38,26 @@ process CLASSIFY_CLUSTERS {
     file text_file
 
     output:
-    path "pg/**/*.fa", emit: many_genomes_fnas
-    path "sg/**/*.fa", emit: one_genome_fnas
+    path "pg/**/*.fa", optional: true, emit: many_genomes_fnas
+    path "sg/**/*.fa", optional: true, emit: one_genome_fnas
 
     script:
     """
     classify_folders.py -g ${genomes_folder} --text-file ${text_file}
 
     # Clean any empty directories #
-    find many_genomes -type d -empty -print -delete
-    find one_genome -type d -empty -print -delete
+    [ -d many_genomes ] && find many_genomes -type d -empty -print -delete
+    [ -d one_genome ] && find one_genome -type d -empty -print -delete
 
-    mv many_genomes pg
-    mv one_genome sg
+    if [ -d many_genomes ]; then 
+        mv many_genomes pg
+    else
+        mkdir pg
+    fi
+    if [ -d one_genome ]; then
+        mv one_genome sg
+    else
+        mkdir sg
+    fi
     """
 }

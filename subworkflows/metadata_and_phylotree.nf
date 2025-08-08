@@ -7,7 +7,6 @@ include { FETCH_LOCATIONS } from '../modules/utils'
 include { METADATA_TABLE } from '../modules/metadata_table'
 include { PHYLO_TREE } from '../modules/phylo_tree'
 
-
 workflow METADATA_AND_PHYLOTREE {
 
     take:
@@ -23,6 +22,9 @@ workflow METADATA_AND_PHYLOTREE {
         geo_metadata
         gunc_failed_txt
         gtdbtk_tables_ch
+        ch_previous_catalogue_location
+        all_assembly_stats
+        busco_summary
     main:
         PREPARE_LOCATION_INPUT(
             gunc_failed_txt,
@@ -58,7 +60,10 @@ workflow METADATA_AND_PHYLOTREE {
             ftp_name,
             ftp_version,
             location_table,
-            gunc_failed_txt
+            gunc_failed_txt,
+            ch_previous_catalogue_location,
+            all_assembly_stats,
+            busco_summary
         )
 
         PHYLO_TREE(gtdbtk_tables_ch)

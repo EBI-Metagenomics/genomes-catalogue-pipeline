@@ -26,7 +26,7 @@ NAME_MANY_GENOMES = "many_genomes"
 NAME_ONE_GENOME = "one_genome"
 
 
-def classify_splitted_folders(input_folder):
+def classify_split_folders(input_folder):
     if not os.path.exists(NAME_MASH):
         os.makedirs(NAME_MASH)
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
         if args.input_folder:
             print("Classify splitted folders")
-            classify_splitted_folders(args.input_folder)
+            classify_split_folders(args.input_folder)
         elif args.text_file:
             if args.genomes:
                 classify_by_file(split_text=args.text_file, genomes_folder=args.genomes)

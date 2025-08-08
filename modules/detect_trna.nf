@@ -3,7 +3,7 @@
 */
 process DETECT_TRNA {
 
-    tag "${fasta.baseName}"
+    tag "${genome_name}"
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3.2'
     
@@ -15,7 +15,7 @@ process DETECT_TRNA {
                     return null;
                 }
                 def output_file = file(filename);
-                def genome_id = fasta.baseName;
+                def genome_id = fasta.baseName.replace("_sm", "");
                 if ( output_file.name.contains("_tRNA_20aa") ) {
                     return "additional_data/rRNA_outs/${genome_id}/${output_file.name}";
                 }
@@ -30,10 +30,10 @@ process DETECT_TRNA {
     tuple val(genome_name), path(fasta), val(detected_kingdom)
 
     output:
-    tuple val(fasta.baseName), path('*_trna.out'), emit: trna_out
-    tuple val(fasta.baseName), path('*_stats.out'), emit: trna_stats
-    tuple val(fasta.baseName), path('*_tRNA_20aa.out'), emit: trna_count
-    tuple val(fasta.baseName), path('*_trna.gff'), emit: trna_gff
+    tuple val(genome_name), path('*_trna.out'), emit: trna_out
+    tuple val(genome_name), path('*_stats.out'), emit: trna_stats
+    tuple val(genome_name), path('*_tRNA_20aa.out'), emit: trna_count
+    tuple val(genome_name), path('*_trna.gff'), emit: trna_gff
 
     script:
     """
@@ -49,12 +49,12 @@ process DETECT_TRNA {
     echo "[ Detecting tRNAs ]"
     kingdom=\$(echo ${detected_kingdom} | cut -c1)
     tRNAscan-SE -\${kingdom} -Q \
-    -m ${fasta.baseName}_stats.out \
-    -o ${fasta.baseName}_trna.out \
-    --gff ${fasta.baseName}_trna.gff \
+    -m ${genome_name}_stats.out \
+    -o ${genome_name}_trna.out \
+    --gff ${genome_name}_trna.gff \
     ${fasta}
 
-    parse_tRNA.py -i ${fasta.baseName}_stats.out -o ${fasta.baseName}_tRNA_20aa.out
+    parse_tRNA.py -i ${genome_name}_stats.out -o ${genome_name}_tRNA_20aa.out
 
     echo "Completed"
 
