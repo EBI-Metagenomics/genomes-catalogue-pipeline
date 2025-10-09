@@ -85,8 +85,8 @@ workflow EUK_GENE_CALLING {
         }
 
     emit:
-        gff = output_ch.gff
+        gffs = output_ch.gff
         proteins = output_ch.faa
-        ffn = output_ch.ffn
-        softmasked_genome = output_ch.masked_genome
+        ffns = output_ch.ffn
+        softmasked_genomes = output_ch.masked_genome
 }

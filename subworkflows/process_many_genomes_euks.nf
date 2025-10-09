@@ -23,30 +23,30 @@ workflow PROCESS_MANY_GENOMES_EUKS {
 
         EUK_GENE_CALLING(GROUP_GENOME_PROTEINS.out.tuple_with_proteins)
 
-        rep_braker_gff = EUK_GENE_CALLING.out.gff.filter {
+        rep_braker_gff = EUK_GENE_CALLING.out.gffs.filter {
             it[1].name.contains(it[0])
         }
         rep_braker_faa = EUK_GENE_CALLING.out.proteins.filter {
             it[1].name.contains(it[0])
         }
-        rep_braker_fna = EUK_GENE_CALLING.out.softmasked_genome.filter {
+        rep_braker_fna = EUK_GENE_CALLING.out.softmasked_genomes.filter {
             it[1].name.contains(it[0])
         }
-        rep_braker_ffn = EUK_GENE_CALLING.out.ffn.filter {
+        rep_braker_ffn = EUK_GENE_CALLING.out.ffns.filter {
             it[1].name.contains(it[0])
         }
 
-        non_rep_braker_gff = EUK_GENE_CALLING.out.gff.filter {
+        non_rep_braker_gff = EUK_GENE_CALLING.out.gffs.filter {
             !it[1].name.contains(it[0])
         }
-        non_rep_braker_fna = EUK_GENE_CALLING.out.softmasked_genome.filter {
+        non_rep_braker_fna = EUK_GENE_CALLING.out.softmasked_genomes.filter {
             !it[1].name.contains(it[0])
         }
 
     emit:
         braker_faas = EUK_GENE_CALLING.out.proteins
-        braker_fnas = EUK_GENE_CALLING.out.softmasked_genome
-        braker_gffs = EUK_GENE_CALLING.out.gff
+        braker_fnas = EUK_GENE_CALLING.out.softmasked_genomes
+        braker_gffs = EUK_GENE_CALLING.out.gffs
         rep_braker_fna = rep_braker_fna
         rep_braker_gff = rep_braker_gff
         rep_braker_faa = rep_braker_faa

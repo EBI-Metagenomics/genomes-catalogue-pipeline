@@ -497,9 +497,9 @@ workflow GAP {
         ).join(
             reps_trna_gff
         ).join(
-            ANNOTATE_PROKARYOTES.out.crisprcasfinder_hq_gff, remainder: true
+            ANNOTATE_PROKARYOTES.out.crisprcasfinder_hq_gffs, remainder: true
         ).join(
-            ANNOTATE_PROKARYOTES.out.amrfinder_tsv, remainder: true
+            ANNOTATE_PROKARYOTES.out.amrfinder_tsvs, remainder: true
         ).join(
             ANNOTATE_PROKARYOTES.out.antismash_gffs, remainder: true
         ).join(

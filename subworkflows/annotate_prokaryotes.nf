@@ -85,7 +85,7 @@ workflow ANNOTATE_PROKARYOTES {
         sanntis_annotation_gffs = SANNTIS.out.sanntis_gff
         defense_finder_gffs = DEFENSE_FINDER.out.gff
         gecco_gffs = GECCO_RUN.out.gecco_gff
-        crisprcasfinder_hq_gff = CRISPRCAS_FINDER.out.hq_gff
-        amrfinder_tsv = AMRFINDER_PLUS.out.amrfinder_tsv
+        crisprcasfinder_hq_gffs = CRISPRCAS_FINDER.out.hq_gff
+        amrfinder_tsvs = AMRFINDER_PLUS.out.amrfinder_tsv
         antismash_gffs = ANTISMASH_MAKE_GFF.out.antismash_gff
 }
