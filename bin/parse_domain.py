@@ -35,6 +35,8 @@ def main(infile, outfile, clusters_file):
                     domain = "Bacteria"
                 elif first_segment.lower().endswith("archaea"):
                     domain = "Archaea"
+                elif first_segment.lower().endswith("eukaryota"):
+                    domain = "Eukaryota"
                 else:
                     domain = "Undefined"
                 file_out.write("{},{}\n".format(genome, domain))
@@ -59,7 +61,7 @@ def load_clusters(clusters_file):
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
-            "This script takes the output of GTDB-Tk (tsv file) and returns the domain detected by GTDB-Tk"
+            "This script takes the output of GTDB-Tk (tsv file) or reformatted BAT and returns the domain detected by GTDB-Tk"
             "in a text file."
         )
     )

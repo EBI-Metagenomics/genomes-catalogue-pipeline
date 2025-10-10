@@ -62,7 +62,7 @@ def load_metadata(metadata_table_file):
     
 def load_proteins(file):
     with open(file) as f:
-        return f.readline().strip()
+        return int(f.readline().strip())
 
     
 def save_dict_to_json(data, filename):
