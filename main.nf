@@ -2,6 +2,10 @@
 
 nextflow.enable.dsl = 2
 
+include { validateParameters } from 'plugin/nf-schema'
+
+validateParameters()
+
 if (params.kingdom == 'eukaryotes') {
     include { GAP_EUKS } from './workflows/genomes_annotation_euks'
 } else {

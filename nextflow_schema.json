@@ -1,0 +1,151 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com///nextflow_schema.json",
+    "title": " Catalogue pipeline parameters",
+    "description": "MGnify Genomes catalogue generation pipeline",
+    "type": "object",
+    "$defs": {
+        "input_output_options": {
+            "title": "Input/output options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data and save output data.",
+            "required": ["outdir"],
+            "properties": {
+                "outdir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+                    "fa_icon": "fas fa-folder-open"
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/$defs/input_output_options"
+        }
+    ],
+    "properties": {
+        "catalogue_version": {
+            "type": "string",
+            "help_text": "For example, 1.0"
+        },
+        "catalogue_name": {
+            "type": "string"
+        },
+        "ftp_name": {
+            "type": "string"
+        },
+        "ftp_version": {
+            "type": "string"
+        },
+        "mmseq_coverage_threshold": {
+            "type": "number",
+            "default": 0.8
+        },
+        "genome_prefix": {
+            "type": "string"
+        },
+        "biome": {
+            "type": "string"
+        },
+        "mgyg_start": {
+            "type": "string"
+        },
+        "mgyg_end": {
+            "type": "string"
+        },
+        "preassigned_accessions": {
+            "type": "string"
+        },
+        "ena_genomes": {
+            "type": "string"
+        },
+        "ena_genomes_checkm": {
+            "type": "string"
+        },
+        "ncbi_genomes": {
+            "type": "string"
+        },
+        "xlarge": {
+            "type": "string"
+        },
+        "xlarge_chunk_size": {
+            "type": "integer",
+            "default": 25000
+        },
+        "genomes_information": {
+            "type": "string"
+        },
+        "study_genomes_information": {
+            "type": "string"
+        },
+        "update_catalogue_path": {
+            "type": "string"
+        },
+        "remove_genomes": {
+            "type": "string"
+        },
+        "rerun_checkm2": {
+            "type": "string"
+        },
+        "recompute_pangenomes": {
+            "type": "string"
+        },
+        "skip_genome_validity_check": {
+            "type": "string"
+        },
+        "gtdb_db": {
+            "type": "string"
+        },
+        "gunc_db": {
+            "type": "string"
+        },
+        "interproscan_db": {
+            "type": "string"
+        },
+        "eggnog_db": {
+            "type": "string"
+        },
+        "eggnong_diamond_db": {
+            "type": "string"
+        },
+        "eggnong_data_dir": {
+            "type": "string"
+        },
+        "rfam_rrna_models": {
+            "type": "string"
+        },
+        "rfam_ncrna_models": {
+            "type": "string"
+        },
+        "geo_metadata": {
+            "type": "string"
+        },
+        "kegg_classes": {
+            "type": "string"
+        },
+        "amrfinder_plus_db": {
+            "type": "string"
+        },
+        "euk_drep_args": {
+            "type": "string",
+            "default": "-pa 0.80 -sa 0.95 -nc 0.40 -cm larger -comp 50 -con 5"
+        },
+        "prok_drep_args": {
+            "type": "string",
+            "default": "-pa 0.90 -sa 0.95 -nc 0.30 -cm larger -comp 50 -con 5"
+        },
+        "protein_evidence": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "catalogue_version",
+        "catalogue_name",
+        "ftp_name",
+        "ftp_version",
+        "biome"
+    ]
+}
