@@ -1,0 +1,19 @@
+{
+  "ftp": [
+    "genomes-all_metadata.tsv",
+    "all_genomes",
+    "species_catalogue"
+  ],
+  "additional_data": [
+    "panaroo_output",
+    "mgyg_genomes",
+    {
+      "intermediate_files": [
+        "extra_weight_table.txt",
+        "drep_data_tables.tar.gz",
+        "renamed_genomes_name_mapping.tsv"
+      ]
+    }
+  ]
+}
+

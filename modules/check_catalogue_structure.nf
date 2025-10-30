@@ -21,7 +21,7 @@ process CHECK_CATALOGUE_STRUCTURE {
     
     script:
     """
-    check_catalogue_structure.py -i ${previous_catalogue_location}
+    check_catalogue_structure.py -i ${previous_catalogue_location} -s $projectDir/assets/output_folder_structure.json
     
     # Check if error file exists
     if [ ! -f PREVIOUS_CATALOGUE_STRUCTURE_OK.txt ]; then

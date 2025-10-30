@@ -15,63 +15,98 @@
 # You should have received a copy of the GNU General Public License
 # along with MGnify genomes catalogue pipeline. If not, see <https://www.gnu.org/licenses/>.
 
+
 import argparse
+import json
 import logging
-import os
+import sys
+from pathlib import Path
+from jsonschema import validate
 
 logging.basicConfig(level=logging.INFO)
 
 
-def main(input_folder):
-    issues = list()
-    # verify that all expected folders are where they are
-    main_folders = ["ftp", "additional_data"]  # not checking "website" because we don't need it
-    for folder in main_folders:
-        if not verify_folder(input_folder, folder):
-            issues.append("Folder {} is not found.".format(os.path.join(input_folder, folder)))
-    ftp_checklist = ["genomes-all_metadata.tsv", "all_genomes", "species_catalogue"]
-    additional_data_checklist = ["panaroo_output", "mgyg_genomes"]
-    intermediate_files_checklist = ["extra_weight_table.txt", "drep_data_tables.tar.gz",
-                                    "renamed_genomes_name_mapping.tsv"]
-    for element in ftp_checklist:
-        ftp_path = os.path.join(input_folder, "ftp")
-        if not verify_folder(ftp_path, element):
-            issues.append("{} is not found.".format(os.path.join(ftp_path, element)))
-    for element in additional_data_checklist:
-        additional_data_path = os.path.join(input_folder, "additional_data")
-        if not verify_folder(additional_data_path, element):
-            issues.append("{} is not found.".format(os.path.join(additional_data_path, element)))
-    for element in intermediate_files_checklist:
-        intermediate_files_path = os.path.join(input_folder, "additional_data", "intermediate_files")
-        if not verify_folder(intermediate_files_path, element):
-            issues.append("{} is not found.".format(os.path.join(intermediate_files_path, element)))
-    if len(issues) > 0:
-        with open("PREVIOUS_CATALOGUE_STRUCTURE_ERRORS.txt", "w") as f:
-            f.write("\n".join(issues))
-        logging.error("Catalogue structure issues found")
+def check_structure(base_folder: Path, structure: dict):
+    """Recursively verify that expected structure exists under base_folder."""
+    issues = []
+
+    for key, expected_items in structure.items():
+        folder_path = base_folder / key
+        if not folder_path.exists():
+            issues.append(f"Missing folder: {folder_path}")
+            continue
+
+        for item in expected_items:
+            # If it's a string → file or folder expected
+            if isinstance(item, str):
+                item_path = folder_path / item
+                if not item_path.exists():
+                    issues.append(f"Missing: {item_path}")
+
+            # If it's a dict → nested structure
+            elif isinstance(item, dict):
+                issues.extend(check_structure(folder_path, item))
+
+    return issues
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Validate folder structure of the previous catalogue version using a JSON definition."
+    )
+    parser.add_argument(
+        "-i", "--input_folder", required=True,
+        help="Path to the output folder of the previous catalogue version. Folders 'ftp' and 'additional_data' should"
+             "be inside of it."
+    )
+    parser.add_argument(
+        "-s", "--schema", required=True,
+        help="Path to JSON file defining expected folder structure."
+    )
+    args = parser.parse_args()
+
+    base_folder = Path(args.input_folder)
+    schema_path = Path(args.schema)
+
+    if not base_folder.exists():
+        logging.error(f"Input folder does not exist: {base_folder}")
+        sys.exit(1)
+
+    if not schema_path.exists():
+        logging.error(f"Schema file not found: {schema_path}")
+        sys.exit(1)
+
+    with open(schema_path) as f:
+        expected_structure = json.load(f)
+
+    # Validate JSON format itself
+    validate(
+        instance=expected_structure,
+        schema={
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {"type": "string"},
+                            {"type": "object"}
+                        ]
+                    }
+                }
+            }
+        }
+    )
+
+    issues = check_structure(base_folder, expected_structure)
+
+    if issues:
+        Path("PREVIOUS_CATALOGUE_STRUCTURE_ERRORS.txt").write_text("\n".join(issues))
+        logging.error("Catalogue structure issues found.")
     else:
-        with open("PREVIOUS_CATALOGUE_STRUCTURE_OK.txt", "w") as f:
-            logging.info("Catalogue structure OK")
+        Path("PREVIOUS_CATALOGUE_STRUCTURE_OK.txt").write_text("Catalogue structure OK")
+        logging.info("Catalogue structure OK.")
 
 
-def verify_folder(main_path, element_to_check):
-    if os.path.exists(os.path.join(main_path, element_to_check)):
-        return True
-    else:
-        return False
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description='The script is part of the catalogue update pipeline. It checks '
-                                                 'that all expected files from the previous version of the catalogue '
-                                                 'are present in the expected locations.')
-    parser.add_argument('-i', dest='input_folder', required=True, help='Location of the previous catalogue. '
-                                                                       'Folders "ftp", "website", "additional_data" '
-                                                                       'should be inside this folder')
-
-    return parser.parse_args()
-
-
-if __name__ == '__main__':
-    args = parse_args()
-    main(args.input_folder)
+if __name__ == "__main__":
+    main()
