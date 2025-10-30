@@ -7,7 +7,7 @@ process CHECK_CATALOGUE_STRUCTURE {
         failOnError: true
     )
     
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.2'
     
     label 'process_light'
     
