@@ -28,7 +28,7 @@
     ],
     "properties": {
         "catalogue_version": {
-            "type": "string",
+            "type": "number",
             "help_text": "For example, 1.0"
         },
         "catalogue_name": {
@@ -69,7 +69,7 @@
             "type": "string"
         },
         "xlarge": {
-            "type": "string"
+            "type": "boolean"
         },
         "xlarge_chunk_size": {
             "type": "integer",
@@ -88,13 +88,13 @@
             "type": "string"
         },
         "rerun_checkm2": {
-            "type": "string"
+            "type": "boolean"
         },
         "recompute_pangenomes": {
-            "type": "string"
+            "type": "boolean"
         },
         "skip_genome_validity_check": {
-            "type": "string"
+            "type": "boolean"
         },
         "gtdb_db": {
             "type": "string"
