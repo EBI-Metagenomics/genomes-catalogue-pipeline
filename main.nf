@@ -4,6 +4,8 @@ nextflow.enable.dsl = 2
 
 include { validateParameters } from 'plugin/nf-schema'
 
+params.kingdom = params.kingdom ?: 'prokaryotes'
+
 validateParameters()
 
 if (params.kingdom == 'eukaryotes') {
