@@ -32,29 +32,34 @@
             "help_text": "For example, 1.0"
         },
         "catalogue_name": {
-            "type": "string"
+            "type": "string",
+            "help_text": "For example, non-model-fish-gut"
         },
         "ftp_name": {
-            "type": "string"
+            "type": "string",
+            "help_text": "For example, non-model-fish-gut"
         },
         "ftp_version": {
-            "type": "string"
+            "type": "string",
+            "help_text": "For example, v1.0"
         },
         "mmseq_coverage_threshold": {
             "type": "number",
             "default": 0.8
         },
         "genome_prefix": {
-            "type": "string"
+            "type": "string",
+            "help_text": "MGYG"
         },
         "biome": {
-            "type": "string"
+            "type": "string",
+            "help_text": "Only existing MGnify biome linieages can be used. Example: root:Host-associated:Fish:Digestive system"
         },
         "mgyg_start": {
-            "type": "string"
+            "type": "number"
         },
         "mgyg_end": {
-            "type": "string"
+            "type": "number"
         },
         "preassigned_accessions": {
             "type": "string"
@@ -129,6 +134,33 @@
         "amrfinder_plus_db": {
             "type": "string"
         },
+        "antismash_db": {
+            "type": "string"
+        },
+        "interpro_entry_list": {
+            "type": "string"
+        },
+        "checkm2_db": {
+            "type": "string"
+        },
+        "dbcan_db": {
+            "type": "string"
+        },
+        "busco_db": {
+            "type": "string"
+        },
+        "eukcc_db": {
+            "type": "string"
+        },
+        "defense_finder_db": {
+            "type": "string"
+        },
+        "cat_taxonomy_db": {
+            "type": "string"
+        },
+        "cat_db_folder": {
+            "type": "string"
+        },
         "euk_drep_args": {
             "type": "string",
             "default": "-pa 0.80 -sa 0.95 -nc 0.40 -cm larger -comp 50 -con 5"
@@ -139,6 +171,10 @@
         },
         "protein_evidence": {
             "type": "string"
+        },
+        "kingdom": {
+            "type": "string",
+            "default": "prokaryotes"
         }
     },
     "required": [
