@@ -182,6 +182,7 @@ workflow GAP {
             remove_list_mgyg,
             PREPARE_UPDATE.out.previous_version_quality,
             PREPARE_UPDATE.out.previous_version_assembly_stats,
+            new_genomes,
             new_data_checkm,
             new_genome_stats,
             extra_weight_table_new_genomes,

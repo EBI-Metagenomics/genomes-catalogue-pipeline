@@ -2,6 +2,7 @@
  * Update clusters (runs during catalogue update/reannotation only)
 */
 
+include { MASH_FOR_UPDATE } from '../modules/mash_for_update'
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { SPLIT_DREP } from '../modules/split_drep'
@@ -12,13 +13,31 @@ workflow UPDATE_CLUSTERS {
         remove_genomes
         previous_version_quality_file
         previous_version_assembly_stats
+        new_genomes
         new_data_checkm
         new_genome_stats
         extra_weight_table_new_genomes
         genomes_name_mapping
     main:
         // to do for genome addition:
-        // run mash
+        // run mash but first checkm if we are adding genomes
+        // Filter out the dummy file and only process real genome files
+        // Run mash if there are new genomes being added (if not, new_genomes contains a dummy file called
+        // "NO_FILE_NEW_GENOMES")
+        // Check if the first (and possibly only) file is the dummy
+        first_file = new_genomes.first()
+        is_dummy = first_file.map { file -> file.name.contains("NO_FILE_NEW_GENOMES") }
+        if (!is_dummy) {
+            MASH_FOR_UPDATE (
+                previous_catalogue_location,
+                new_genomes
+            )
+            mash_results = MASH_FOR_UPDATE.out.update_mash_out
+        } else {
+            log.info "Dummy file detected, skipping MASH analysis"
+            mash_results = Channel.empty()
+        }
+        
         // parse mash - keep mind that script might need to be modified because before we ran mash with 0.05 cut-off
         // cluster new species
         // run GUNC on singletons
