@@ -24,8 +24,9 @@ workflow UPDATE_CLUSTERS {
         // Filter out the dummy file and only process real genome files
         // Run mash if there are new genomes being added (if not, new_genomes contains a dummy file called
         // "NO_FILE_NEW_GENOMES")
-        // Remove the dummy file from new_genomes
-        real_genomes = new_genomes.filter { file -> 
+        // Remove the dummy file from new_genomes and save the remaining files into the real_genomes channel
+        new_genomes_channel = Channel.fromPath(new_genomes)
+        real_genomes = new_genomes_channel.filter { file -> 
             !file.name.contains("NO_FILE_NEW_GENOMES") 
         }
         
