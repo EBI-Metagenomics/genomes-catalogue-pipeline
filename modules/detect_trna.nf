@@ -41,10 +41,18 @@ process DETECT_TRNA {
 
     # tRNAscan-SE needs a tmp folder otherwise it will use the base TMPDIR (with no subfolder)
     # and that causes issues as other detect_trna process will crash when the files are cleaned
-    PROCESSTMP="\$(mktemp -d)"
+    export PROCESSTMP="\$(mktemp -d)"
     export TMPDIR="\${PROCESSTMP}"
-    # bash trap to clean the tmp directory
-    trap 'rm -r -- "\${PROCESSTMP}"' EXIT
+    
+    # Cleanup on exit, but ignore .nfs* files
+    trap '
+        if [ -d "\${PROCESSTMP}" ]; then
+           # Remove everything except .nfs* files
+           find "\${PROCESSTMP}" -mindepth 1 ! -name ".nfs*" -exec rm -rf {} +
+           # Try removing the directory (will fail if .nfs files remain, which is fine)
+           rmdir "\${PROCESSTMP}" 2>/dev/null || true
+        fi
+    ' EXIT
 
     echo "[ Detecting tRNAs ]"
     kingdom=\$(echo ${detected_kingdom} | cut -c1)
