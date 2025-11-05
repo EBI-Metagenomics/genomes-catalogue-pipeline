@@ -37,13 +37,15 @@ process DETECT_TRNA {
 
     script:
     """
+    # TODO: We should migrate to https://github.com/nf-core/modules/blob/master/modules/nf-core/trnascanse/main.nf
+
     shopt -s extglob
 
     # tRNAscan-SE needs a tmp folder otherwise it will use the base TMPDIR (with no subfolder)
     # and that causes issues as other detect_trna process will crash when the files are cleaned
     export PROCESSTMP="\$(mktemp -d)"
     export TMPDIR="\${PROCESSTMP}"
-    
+   
     # Cleanup on exit, but ignore .nfs* files
     trap '
         if [ -d "\${PROCESSTMP}" ]; then
@@ -56,11 +58,12 @@ process DETECT_TRNA {
 
     echo "[ Detecting tRNAs ]"
     kingdom=\$(echo ${detected_kingdom} | cut -c1)
-    tRNAscan-SE -\${kingdom} -Q \
-    -m ${genome_name}_stats.out \
-    -o ${genome_name}_trna.out \
-    --gff ${genome_name}_trna.gff \
-    ${fasta}
+    tRNAscan-SE -\${kingdom} -Q \\
+      -m ${genome_name}_stats.out \\
+      -o ${genome_name}_trna.out \\
+      --gff ${genome_name}_trna.gff \\
+      --thread ${task.cpus} \\
+      ${fasta}
 
     parse_tRNA.py -i ${genome_name}_stats.out -o ${genome_name}_tRNA_20aa.out
 
