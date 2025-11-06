@@ -43,7 +43,8 @@ workflow PREPARE_DATA {
             genomes_checkm_ch = MERGE_NCBI_ENA.out.merged_checkm_csv
         } else if ( ncbi_assemblies ) {
             CHECKM2_NCBI(
-                ncbi_assemblies
+                ncbi_assemblies,
+                ch_checkm2_db
             )
             genomes_ch = ncbi_assemblies
             genomes_checkm_ch = CHECKM2_NCBI.out.checkm_csv
