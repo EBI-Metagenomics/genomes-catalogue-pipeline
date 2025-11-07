@@ -19,21 +19,10 @@ workflow UPDATE_CLUSTERS {
         extra_weight_table_new_genomes
         genomes_name_mapping
     main:
-        // to do for genome addition:
-        // run mash but first checkm if we are adding genomes
-        // Filter out the dummy file and only process real genome files
-        // Run mash if there are new genomes being added (if not, new_genomes contains a dummy file called
-        // "NO_FILE_NEW_GENOMES")
-        // Remove the dummy file from new_genomes and save the remaining files into the real_genomes channel
-        new_genomes_channel = Channel.fromPath(new_genomes)
-        real_genomes = new_genomes_channel.filter { file -> 
-            !file.name.contains("NO_FILE_NEW_GENOMES") 
-        }
-        
-        // Run MASH_FOR_UPDATE - won't execute if real_genomes is empty
+        // Run mash if there are new genomes being added (if not, new_genomes is and empty channel)
         MASH_FOR_UPDATE (
             previous_catalogue_location,
-            real_genomes
+            new_genomes
         )
         
         // Ensure mash_results exists even when process doesn't run
@@ -42,7 +31,6 @@ workflow UPDATE_CLUSTERS {
         
         // parse mash - keep mind that script might need to be modified because before we ran mash with 0.05 cut-off
         // cluster new species
-        // run GUNC on singletons
         
         // gather genome stats and remake clusters
         RUN_CLUSTER_UPDATE (
