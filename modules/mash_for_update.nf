@@ -15,7 +15,7 @@ process MASH_FOR_UPDATE {
     -p ${task.cpus} \
     -d 0.05 \
     ${previous_catalogue_location}/ftp/all_genomes.msh \
-    ${new_genomes.join( ' ' )} \
+    ${new_genomes}/*fa \
     > new_genomes_against_catalogue.out
     """
 
