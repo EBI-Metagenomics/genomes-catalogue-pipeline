@@ -164,11 +164,11 @@ workflow GAP {
         genomes_name_mapping = PREPARE_DATA.out.genomes_name_mapping
         
     } else {
-        // if we are not adding new genomes, make dummy files
+        // if we are not adding new genomes, make empty channels - this could only happen during a catalogue update
         new_data_checkm = file("NO_FILE_NEW_GENOMES_CHECKM")
         new_genome_stats = file("NO_FILE_NEW_GENOMES_STATS")
         extra_weight_table_new_genomes = file("NO_FILE_NEW_GENOMES_EXTRA_WEIGHT")
-        new_genomes = file("NO_FILE_NEW_GENOMES")
+        new_genomes = channel.empty()
         qs50_failed = file("NO_FILE_QS50_FAILED")
         genomes_name_mapping = file("NO_FILE_GENOMES_NAME_MAPPING")
     }
