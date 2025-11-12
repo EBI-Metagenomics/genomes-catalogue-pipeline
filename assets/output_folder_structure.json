@@ -11,7 +11,7 @@
     {
       "intermediate_files": [
           "extra_weight_table.txt", 
-          "drep_data_tables", 
+          "drep_output", 
           "renamed_genomes_name_mapping.tsv"
       ]
     }
