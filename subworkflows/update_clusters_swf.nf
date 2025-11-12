@@ -2,10 +2,12 @@
  * Update clusters (runs during catalogue update/reannotation only)
 */
 
+include { QS50_FILTER_PREVIOUS_VERSION } from '../modules/filter_qs50_previous_version'
 include { MASH_FOR_UPDATE } from '../modules/mash_for_update'
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { SPLIT_DREP } from '../modules/split_drep'
+include { PRINT_DREP_FILES } from '../modules/print_drep_files'
 
 workflow UPDATE_CLUSTERS {
     take:
@@ -19,6 +21,13 @@ workflow UPDATE_CLUSTERS {
         extra_weight_table_new_genomes
         genomes_name_mapping
     main:
+        // check if any genomes from the previous version fail QS50
+        QS50_FILTER_PREVIOUS_VERSION (
+            previous_version_quality_file,
+            remove_genomes,
+            "${previous_catalogue_location}/additional_data/mgyg_genomes/"
+        )
+        
         // Run mash if there are new genomes being added (if not, new_genomes is and empty channel)
         MASH_FOR_UPDATE (
             previous_catalogue_location,
@@ -53,6 +62,12 @@ workflow UPDATE_CLUSTERS {
         
         // Run only to retain mash_splits; temporary solution - works for reannotation only
         SPLIT_DREP(
+            RUN_CLUSTER_UPDATE.out.updated_cdb_csv,
+            RUN_CLUSTER_UPDATE.out.updated_mdb_csv,
+            RUN_CLUSTER_UPDATE.out.updated_sdb_csv
+        )
+        
+        PRINT_DREP_FILES(
             RUN_CLUSTER_UPDATE.out.updated_cdb_csv,
             RUN_CLUSTER_UPDATE.out.updated_mdb_csv,
             RUN_CLUSTER_UPDATE.out.updated_sdb_csv
