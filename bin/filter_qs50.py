@@ -28,14 +28,14 @@ logging.basicConfig(level=logging.INFO)
 def main(input_folder, checkm, output, output_csv, details_csv, remove, filter):
     genome_list = [_ for _ in os.listdir(input_folder) if _.endswith(("fa", "fna", "fasta"))]
     logging.info("Found {} input genomes. Beginning filtering.".format(len(genome_list)))
-    remove_list = load_checkm(checkm, genome_list, output_csv, details_csv=details_csv)
+    remove_list, no_file = load_checkm(checkm, genome_list, output_csv, details_csv=details_csv)
     print_result(remove_list, output)
     output_genomes = os.path.basename(input_folder) + '_filtered'
     if filter:
         if not os.path.exists(output_genomes):
             os.mkdir(output_genomes)
         for genome in genome_list:
-            if genome not in remove_list:
+            if genome not in remove_list and genome not in no_file:
                 shutil.copy(os.path.join(input_folder, genome), os.path.join(output_genomes, genome))
     if remove:
         for genome in remove_list:
@@ -44,6 +44,7 @@ def main(input_folder, checkm, output, output_csv, details_csv, remove, filter):
 
 def load_checkm(checkm, genome_list, output_csv, details_csv=None):
     remove_list = set()
+    no_file = set()
     details = list()
     
     # Make a list of genome accessions in the file folder (without extensions)
@@ -72,11 +73,12 @@ def load_checkm(checkm, genome_list, output_csv, details_csv=None):
                 else:
                     logging.warning("Genome {} is present in the CheckM file but genome FASTA doesn't exist".format(
                         genome))
+                    no_file.add(genome)
     if details_csv:
         with open(details_csv, "w") as details_out:
             for line in details:
                 details_out.write(line)
-    return remove_list
+    return remove_list, no_file 
 
 
 def print_result(remove_list, output):
