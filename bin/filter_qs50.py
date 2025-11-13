@@ -44,7 +44,7 @@ def main(input_folder, checkm, output, output_csv, details_csv, remove, filter):
 
 def load_checkm(checkm, genome_list, output_csv, details_csv=None):
     remove_list = set()
-    no_file = set()
+    no_file = set()  # track genomes that are not present in the fasta list but still are in the quality CSV
     details = list()
     
     # Make a list of genome accessions in the file folder (without extensions)
@@ -71,6 +71,8 @@ def load_checkm(checkm, genome_list, output_csv, details_csv=None):
                         "incorrect or missing file extension."
                     )
                 else:
+                    # Sometimes a genome might have been filtered out from the fasta set but left behind in the
+                    # checkm output; log this but don't fail
                     logging.warning("Genome {} is present in the CheckM file but genome FASTA doesn't exist".format(
                         genome))
                     no_file.add(genome)
