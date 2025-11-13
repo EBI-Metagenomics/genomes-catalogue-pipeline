@@ -61,7 +61,7 @@ def load_checkm(checkm, genome_list, output_csv, details_csv=None):
                     remove_list.add(genome)
                     details.append(line)
                 else:
-                    file_out.write(line)
+                    file_out.write(line + "\n")
             else:
                 # Check if the genome is missing in the genomes folder because of an incorrect file extension - this
                 # needs to be fixed
@@ -79,7 +79,7 @@ def load_checkm(checkm, genome_list, output_csv, details_csv=None):
     if details_csv:
         with open(details_csv, "w") as details_out:
             for line in details:
-                details_out.write(line)
+                details_out.write(line + "\n")
     return remove_list, no_file 
 
 
