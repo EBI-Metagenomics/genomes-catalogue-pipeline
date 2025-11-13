@@ -182,6 +182,7 @@
         "catalogue_name",
         "ftp_name",
         "ftp_version",
-        "biome"
+        "biome",
+        "genomes_information"
     ]
 }
