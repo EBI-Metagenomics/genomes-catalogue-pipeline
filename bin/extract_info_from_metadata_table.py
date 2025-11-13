@@ -17,12 +17,15 @@
 
 import argparse
 import csv
+import os
 import sys
 
 
-def main(metadata_table, prefix):
+def main(metadata_table, prefix, genomes_folder):
     outfile_quality = f'{prefix}_checkm_quality.csv'
     outfile_stats = f'{prefix}_assembly_stats.tsv'
+    # Make a dictionary from the genomes FASTA folder where keys=accessions, values=FASTA file names with extensions
+    genome_dict = {os.path.splitext(f)[0]: f for f in os.listdir(genomes_folder)}
     with (open(metadata_table, "r") as file_in, open(outfile_quality, "w") as checkm_out,
           open(outfile_stats, "w") as stats_out):
         csv_writer_checkm = csv.writer(checkm_out)
@@ -43,9 +46,11 @@ def main(metadata_table, prefix):
 
         for line in file_in:
             parts = line.strip().split("\t")
-            csv_writer_stats.writerow([parts[genome_idx], parts[length_idx], parts[n50_idx], parts[gc_idx], 
+            genome_name = parts[genome_idx]  # this is the genome name without extension
+            fasta_name = genome_dict.get(genome_name)
+            csv_writer_stats.writerow([genome_name, parts[length_idx], parts[n50_idx], parts[gc_idx], 
                                        parts[num_contigs_idx]])
-            csv_writer_checkm.writerow([f"{parts[genome_idx]}.fa", parts[comp_idx], parts[cont_idx]])
+            csv_writer_checkm.writerow([fasta_name, parts[comp_idx], parts[cont_idx]])
 
 
 def get_field_index(field_name, fields, metadata_table):
@@ -62,10 +67,12 @@ def parse_args():
     parser.add_argument('-i', dest='metadata_table', required=True, help='Location of the metadata table from the '
                                                                          'previous catalogue version.')
     parser.add_argument('-o', dest='prefix', required=True, help='Prefix for the output files.')
+    parser.add_argument('--genomes', required=True, help='Path to the mgyg_genomes folder for the previous catalogue '
+                                                         'version.')
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.metadata_table, args.prefix)
+    main(args.metadata_table, args.prefix, args.genomes)
