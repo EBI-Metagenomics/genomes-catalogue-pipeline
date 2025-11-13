@@ -18,6 +18,7 @@
 
 
 import argparse
+import glob
 import logging
 import os
 import shutil
@@ -85,7 +86,8 @@ def identify_genome_cluster_position(clusters, remove_list):
     
     
 def output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix):
-    drep_files = os.listdir(previous_drep_dir)
+    all_paths = glob.glob(os.path.join(previous_drep_dir, '**', '*'), recursive=True)
+    drep_files = [f for f in all_paths if os.path.isfile(f)]
     for file in drep_files:
         new_filename = f"{output_prefix}_{file}"
         shutil.copy(os.path.join(previous_drep_dir, file), new_filename)
