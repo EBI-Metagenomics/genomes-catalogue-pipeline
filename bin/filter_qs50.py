@@ -17,13 +17,17 @@
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import logging
 import os
 import sys
 import shutil
 
+logging.basicConfig(level=logging.INFO)
+
 
 def main(input_folder, checkm, output, output_csv, details_csv, remove, filter):
     genome_list = [_ for _ in os.listdir(input_folder) if _.endswith(("fa", "fna", "fasta"))]
+    logging.info("Found {} input genomes. Beginning filtering.".format(len(genome_list)))
     remove_list = load_checkm(checkm, genome_list, output_csv, details_csv=details_csv)
     print_result(remove_list, output)
     output_genomes = os.path.basename(input_folder) + '_filtered'
@@ -41,16 +45,33 @@ def main(input_folder, checkm, output, output_csv, details_csv, remove, filter):
 def load_checkm(checkm, genome_list, output_csv, details_csv=None):
     remove_list = set()
     details = list()
+    
+    # Make a list of genome accessions in the file folder (without extensions)
+    genome_basenames = {os.path.splitext(g)[0] for g in genome_list}  # removes extension only (splits on the last .)
     with open(checkm, "r") as file_in, open(output_csv, "w") as file_out:
         file_out.write("genome,completeness,contamination\n")
         for line in file_in:
-            fields = line.strip().split(",")
-            if fields[0] in genome_list:
-                if not qs50(float(fields[2]), float(fields[1])): 
-                    remove_list.add(fields[0])
+            line = line.strip()
+            if line.startswith("genome,"):
+                continue
+            genome, completeness, contamination = line.split(",")
+            if genome in genome_list:
+                if not qs50(float(contamination), float(completeness)): 
+                    remove_list.add(genome)
                     details.append(line)
                 else:
                     file_out.write(line)
+            else:
+                # Check if the genome is missing in the genomes folder because of an incorrect file extension - this
+                # needs to be fixed
+                if genome in genome_basenames:
+                    raise ValueError(
+                        f"Genome '{genome}' in the CheckM file does not match the name of the FASTA file due to "
+                        "incorrect or missing file extension."
+                    )
+                else:
+                    logging.warning("Genome {} is present in the CheckM file but genome FASTA doesn't exist".format(
+                        genome))
     if details_csv:
         with open(details_csv, "w") as details_out:
             for line in details:
