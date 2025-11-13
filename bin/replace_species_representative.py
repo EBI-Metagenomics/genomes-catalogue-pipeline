@@ -90,7 +90,7 @@ def output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_pr
     drep_files = [f for f in all_paths if os.path.isfile(f)]
     for file in drep_files:
         new_filename = f"{output_prefix}_{file}"
-        shutil.copy(os.path.join(previous_drep_dir, file), new_filename)
+        shutil.copy(file, new_filename)
     updated_cluster_split_file = f"{output_prefix}_{os.path.basename(cluster_split_file)}"
     shutil.copy(cluster_split_file, updated_cluster_split_file)
     logging.info("No changes made to the clusters. Original file contents are written to output.")
