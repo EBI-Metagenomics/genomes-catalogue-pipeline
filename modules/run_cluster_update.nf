@@ -46,7 +46,7 @@ process RUN_CLUSTER_UPDATE {
     --cluster-split-file ${previous_catalogue_location}/additional_data/intermediate_files/clusters_split.txt \
     --new-strain-list new_strain_list_no_file.txt \
     --mash-result mash_no_file.txt \
-    --previous-drep-dir ${previous_catalogue_location}/additional_data/intermediate_files/drep_output \
+    --previous-drep-dir drep_output \
     --output-prefix update \
     --assembly-stats assembly_stats_all_genomes.tsv \
     --isolates extra_weight_table_all_genomes.tsv \
