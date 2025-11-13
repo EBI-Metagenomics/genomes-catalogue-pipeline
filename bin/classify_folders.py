@@ -16,6 +16,7 @@
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
 
+import glob
 import os
 import shutil
 import argparse
@@ -72,9 +73,15 @@ def classify_by_file(split_text, genomes_folder):
             if not os.path.exists(path_cluster):
                 os.mkdir(path_cluster)
             for genome in genomes:
-                old_path = os.path.join(genomes_folder, genome)
-                new_path = os.path.join(path_cluster, genome)
-                shutil.copy(old_path, new_path)
+                base_name, _ = os.path.splitext(genome)  # remove extension from genome filename in cluster split file
+                pattern = os.path.join(genomes_folder, base_name + ".*")  # match any extension
+                matches = glob.glob(pattern)
+                if matches:
+                    old_path = matches[0]  # take the first matching file
+                    new_path = os.path.join(path_cluster, os.path.basename(old_path))
+                    shutil.copy(old_path, new_path)
+                else:
+                    sys.exit("Cannot find expected genome {}".format(genome))
 
 
 if __name__ == "__main__":
