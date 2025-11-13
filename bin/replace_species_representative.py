@@ -89,7 +89,7 @@ def output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_pr
     all_paths = glob.glob(os.path.join(previous_drep_dir, '**', '*'), recursive=True)
     drep_files = [f for f in all_paths if os.path.isfile(f)]
     for file in drep_files:
-        new_filename = f"{output_prefix}_{file}"
+        new_filename = f"{output_prefix}_{os.path.basename(file)}"
         shutil.copy(file, new_filename)
     updated_cluster_split_file = f"{output_prefix}_{os.path.basename(cluster_split_file)}"
     shutil.copy(cluster_split_file, updated_cluster_split_file)
