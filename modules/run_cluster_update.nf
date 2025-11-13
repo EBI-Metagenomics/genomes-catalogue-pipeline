@@ -25,6 +25,7 @@ process RUN_CLUSTER_UPDATE {
     script:
     """
     tar -xf ${previous_catalogue_location}/additional_data/intermediate_files/drep_data_tables.tar.gz
+    # then unpacked folder will be called 'drep_output'
     
     gather_qc_stats_for_update.py \
     --stats-file-new ${new_genome_stats} \
@@ -45,7 +46,7 @@ process RUN_CLUSTER_UPDATE {
     --cluster-split-file ${previous_catalogue_location}/additional_data/intermediate_files/clusters_split.txt \
     --new-strain-list new_strain_list_no_file.txt \
     --mash-result mash_no_file.txt \
-    --previous-drep-dir ${previous_catalogue_location}/additional_data/intermediate_files/drep_data_tables \
+    --previous-drep-dir ${previous_catalogue_location}/additional_data/intermediate_files/drep_output \
     --output-prefix update \
     --assembly-stats assembly_stats_all_genomes.tsv \
     --isolates extra_weight_table_all_genomes.tsv \
