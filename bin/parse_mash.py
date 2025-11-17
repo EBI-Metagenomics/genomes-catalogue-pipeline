@@ -131,8 +131,8 @@ def parse_args():
     parser.add_argument('-o', '--outfolder', required=True,
                         help='Path to folder where the results will be saved to')
     parser.add_argument('-f', '--input-folder', required=True,
-                        help='Path to folder where the dereplicated new genome fasta files are located')
-    parser.add_argument('-f', '--remove-list', required=False,
+                        help='Path to folder where the deduplicated new genome fasta files are located')
+    parser.add_argument('-r', '--remove-list', required=False,
                         help='Path to file containing a list of accessions from the previous catalogue '
                              'version that are being removed during the update.')
     return parser.parse_args()
