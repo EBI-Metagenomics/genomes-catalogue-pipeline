@@ -35,7 +35,7 @@ def classify_split_folders(input_folder):
     clusters = os.listdir(drep_clusters)
     for cluster in clusters:
         dir_files = os.listdir(os.path.join(drep_clusters, cluster))
-        genomes = [i for i in dir_files if i.endswith(".fa")]
+        genomes = [i for i in dir_files if i.endswith((".fa", ".fna"))]
         number_of_genomes = len(genomes)
         path_cluster_many = os.path.join(NAME_MANY_GENOMES, cluster)
         path_cluster_one = os.path.join(NAME_ONE_GENOME, cluster)
