@@ -1,5 +1,11 @@
 process MASH_FOR_UPDATE {
 
+    publishDir(
+        "${params.outdir}/additional_data/update_execution_reports/",
+        mode: 'copy',
+        failOnError: true
+    )
+    
     container 'quay.io/biocontainers/mash:2.3--hd3113c8_4'
     
     input:
@@ -7,7 +13,7 @@ process MASH_FOR_UPDATE {
     path new_genomes
     
     output:
-    path("new_genomes_against_catalogue.out"), emit: update_mash_out
+    path("mash_new_genomes_against_catalogue.out"), emit: update_mash_out
     
     script:
     """
