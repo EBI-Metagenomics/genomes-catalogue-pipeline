@@ -4,6 +4,7 @@
 
 include { QS50_FILTER_PREVIOUS_VERSION } from '../modules/filter_qs50_previous_version'
 include { MASH_FOR_UPDATE } from '../modules/mash_for_update'
+include { PARSE_MASH_FOR_UPDATE } from '../modules/parse_mash_for_update'
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { SPLIT_DREP } from '../modules/split_drep'
@@ -34,8 +35,14 @@ workflow UPDATE_CLUSTERS {
             new_genomes
         )
         
-        // Ensure mash_results exists even when process doesn't run
+        // Ensure mash_results exists even when process doesn't run (not genomes to add)
         mash_results = MASH_FOR_UPDATE.out.update_mash_out.ifEmpty(Channel.empty())
+        
+        PARSE_MASH_FOR_UPDATE (
+            new_genomes,
+            mash_results,
+            remove_genomes
+        )
 
         
         // parse mash - keep mind that script might need to be modified because before we ran mash with 0.05 cut-off
