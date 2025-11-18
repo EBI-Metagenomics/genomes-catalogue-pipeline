@@ -50,7 +50,7 @@ workflow UPDATE_CLUSTERS {
         DREP (
             PARSE_MASH_FOR_UPDATE.out.new_species_folder,
             new_data_checkm,
-            extra_weight_table,
+            extra_weight_table_new_genomes,
             new_genome_stats
         )
         
