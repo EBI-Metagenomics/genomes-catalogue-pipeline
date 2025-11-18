@@ -6,7 +6,7 @@ process MASH_FOR_UPDATE {
         failOnError: true
     )
     
-    container 'quay.io/biocontainers/mash:2.3--hd3113c8_4'
+    container 'quay.io/biocontainers/mash:2.3--hb105d93_10'
     
     input:
     path previous_catalogue_location
