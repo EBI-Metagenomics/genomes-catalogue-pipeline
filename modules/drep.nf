@@ -3,21 +3,6 @@
 */
 process DREP {
 
-    publishDir(
-        path: "${params.outdir}",
-        saveAs: {
-            filename -> {
-                def result_file = file(filename);
-                if ( result_file.name == "drep_data_tables.tar.gz" ) {
-                    return "additional_data/intermediate_files/drep_data_tables.tar.gz";
-                }
-                return null;
-            }
-        },
-        mode: 'copy',
-        failOnError: true
-    )
-
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
     
     label 'retry_twice'
