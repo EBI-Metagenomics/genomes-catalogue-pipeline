@@ -186,7 +186,8 @@ workflow GAP {
             new_data_checkm,
             new_genome_stats,
             extra_weight_table_new_genomes,
-            genomes_name_mapping
+            genomes_name_mapping,
+            params.prok_drep_args
         )
         dereplicated_genomes = UPDATE_CLUSTERS
         all_assembly_stats = UPDATE_CLUSTERS.out.assembly_stats_all_genomes
