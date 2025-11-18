@@ -32,7 +32,7 @@ process RUN_CLUSTER_UPDATE {
     
     filter_cluster_split.py \
     -i ${previous_catalogue_location}/additional_data/intermediate_files/clusters_split.txt \
-    -o clusters_split_previous_version_filtered.txt \
+    -o clusters_split_filtered.txt \
     -m ${previous_catalogue_location}/ftp/genomes-all_metadata.tsv
     
     gather_qc_stats_for_update.py \
