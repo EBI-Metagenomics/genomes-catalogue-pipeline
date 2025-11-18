@@ -2,7 +2,7 @@
  * De-replicate
  */
 
-include { DREP } from '../modules/drep'
+include { DREP as DREP_CATALOGUE } from '../modules/drep'
 include { SPLIT_DREP } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 
@@ -14,7 +14,7 @@ workflow DREP_SWF {
         drep_args
 
     main:
-        DREP(
+        DREP_CATALOGUE(
             genomes_directory,
             checkm_csv,
             extra_weight_table,
@@ -22,9 +22,9 @@ workflow DREP_SWF {
         )
 
         SPLIT_DREP(
-            DREP.out.cdb_csv,
-            DREP.out.mdb_csv,
-            DREP.out.sdb_csv
+            DREP_CATALOGUE.out.cdb_csv,
+            DREP_CATALOGUE.out.mdb_csv,
+            DREP_CATALOGUE.out.sdb_csv
         )
 
         CLASSIFY_CLUSTERS(
@@ -46,7 +46,7 @@ workflow DREP_SWF {
         single_genomes_fna_tuples = single_genomes_fna_tuples
         drep_split_text = SPLIT_DREP.out.text_split
         mash_splits = SPLIT_DREP.out.mash_splits
-        drep_cdb_csv = DREP.out.cdb_csv
-        drep_mdb_csv = DREP.out.mdb_csv
-        drep_sdb_csv = DREP.out.sdb_csv
+        drep_cdb_csv = DREP_CATALOGUE.out.cdb_csv
+        drep_mdb_csv = DREP_CATALOGUE.out.mdb_csv
+        drep_sdb_csv = DREP_CATALOGUE.out.sdb_csv
 }
