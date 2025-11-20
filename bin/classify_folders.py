@@ -120,7 +120,7 @@ if __name__ == "__main__":
             os.makedirs(NAME_ONE_GENOME)
 
         if args.input_folder:
-            print("Classify splitted folders")
+            print("Classify split folders")
             classify_split_folders(args.input_folder)
         elif args.text_file:
             if args.genomes:
