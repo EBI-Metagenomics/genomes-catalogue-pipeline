@@ -5,7 +5,6 @@ process PARSE_MASH_FOR_UPDATE {
     input:
     path new_genomes
     path mash_results
-    path remove_genomes
     
     output:
     path("mash_parse_results/New_species"), emit: new_species_folder
@@ -17,8 +16,7 @@ process PARSE_MASH_FOR_UPDATE {
     parse_mash.py \
     --mash ${mash_results} \
     --outfolder mash_parse_results \
-    --input-folder ${new_genomes} \
-    --remove-list ${remove_genomes}
+    --input-folder ${new_genomes}
     """
     
 }

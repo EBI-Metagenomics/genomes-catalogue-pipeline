@@ -28,7 +28,7 @@ NEW_SPECIES_CUTOFF = 0.05
 SAME_STRAIN_CUTOFF = 0.001
 
 
-def main(mash, genomes_file, outfolder, infolder, remove_file):
+def main(mash, genomes_file, outfolder, infolder):
     scores = dict()
     # We need to use a list of genomes to check because not all query genomes will be in the mash file (everything
     # that didn't have a close enough hit is filtered out)
@@ -36,10 +36,6 @@ def main(mash, genomes_file, outfolder, infolder, remove_file):
         genomes = load_list(genomes_file)
     else:
         genomes = os.listdir(infolder)
-    if remove_file:
-        remove_list = load_list(remove_file, remove_ext=True)
-    else:
-        remove_list = []
     with open(mash, 'r') as infile:
         # mash output files have no heading and lines look like this:
         # MGYG000518640.fna       renamed_genomes/MGYG000535623.fa        0.0201478       0       487/1000
@@ -48,7 +44,7 @@ def main(mash, genomes_file, outfolder, infolder, remove_file):
                 break
             catalogue_genome, query_genome_path, score, _, _ = line.strip().split()
             query_genome = os.path.basename(query_genome_path)  # get just the genome file name
-            if query_genome in genomes and os.path.splitext(query_genome)[0] not in remove_list:
+            if query_genome in genomes:
                 score = float(score)
                 # Update only if new score is lower (or missing)
                 previous_score = scores.get(query_genome)
@@ -132,12 +128,9 @@ def parse_args():
                         help='Path to folder where the results will be saved to')
     parser.add_argument('-f', '--input-folder', required=True,
                         help='Path to folder where the deduplicated new genome fasta files are located')
-    parser.add_argument('-r', '--remove-list', required=False,
-                        help='Path to file containing a list of accessions from the previous catalogue '
-                             'version that are being removed during the update.')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.mash, args.evaluate_list, args.outfolder, args.input_folder, args.remove_list)
+    main(args.mash, args.evaluate_list, args.outfolder, args.input_folder)
