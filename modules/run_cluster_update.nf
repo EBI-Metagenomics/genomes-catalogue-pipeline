@@ -11,6 +11,11 @@ process RUN_CLUSTER_UPDATE {
     path new_genome_stats
     path extra_weight_table_new_genomes
     path new_genomes_name_mapping
+    path new_strains_file
+    path repeat_strains_file
+    path new_species_cdb_csv,
+    path new_species_mdb_csv,
+    path new_species_sdb_csv       
     
     output:
     path "assembly_stats_all_genomes.tsv", emit: assembly_stats_all_genomes

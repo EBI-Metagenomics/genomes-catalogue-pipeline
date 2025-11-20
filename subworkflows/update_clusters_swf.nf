@@ -54,8 +54,10 @@ workflow UPDATE_CLUSTERS {
             extra_weight_table_new_genomes,
             drep_args
         )
-        
+         // TODO: make empty outputs if we are not adding anything to the catalogue
+                 
         // gather genome stats and remake clusters
+        // TODO: add new drep outputs to this
         RUN_CLUSTER_UPDATE (
             previous_catalogue_location,
             remove_genomes,
@@ -64,7 +66,12 @@ workflow UPDATE_CLUSTERS {
             new_data_checkm,
             new_genome_stats,
             extra_weight_table_new_genomes,
-            genomes_name_mapping
+            genomes_name_mapping,
+            PARSE_MASH_FOR_UPDATE.out.new_strains_file,
+            PARSE_MASH_FOR_UPDATE.out.repeat_strains_file,
+            DREP.out.cdb_csv,
+            DREP.out.mdb_csv,
+            DREP.out.sdb_csv
         )
         
         // gather all genomes into one folder, run classify_clusters.nf on it (using the clusters_split file)
