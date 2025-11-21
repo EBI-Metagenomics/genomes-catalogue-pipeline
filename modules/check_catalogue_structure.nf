@@ -11,6 +11,7 @@ process CHECK_CATALOGUE_STRUCTURE {
     
     label 'process_light'
     
+    cache false
     errorStrategy = 'terminate'
     
     input:
