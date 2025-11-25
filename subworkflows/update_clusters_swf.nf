@@ -5,6 +5,7 @@
 include { QS50_FILTER_PREVIOUS_VERSION } from '../modules/filter_qs50_previous_version'
 include { MASH_FOR_UPDATE } from '../modules/mash_for_update'
 include { PARSE_MASH_FOR_UPDATE } from '../modules/parse_mash_for_update'
+include { REMOVE_GENOMES_FROM_CLUSTERS } from '../modules/remove_genomes_from_clusters'
 include { DREP } from '../modules/drep'
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
@@ -31,6 +32,7 @@ workflow UPDATE_CLUSTERS {
             "${previous_catalogue_location}/additional_data/mgyg_genomes/"
         )
         
+        /////// STEP 1: measure distances between new genomes and the previous catalogue (as is)
         // Run mash if there are new genomes being added (if not, new_genomes is and empty channel)
         MASH_FOR_UPDATE (
             previous_catalogue_location,
@@ -40,13 +42,14 @@ workflow UPDATE_CLUSTERS {
         // Ensure mash_results exists even when process doesn't run (no genomes to add)
         mash_results = MASH_FOR_UPDATE.out.update_mash_out.ifEmpty(Channel.empty())
         
-        // Use mash results to separate new genomes into new species, new strains and repeat strains
+        /////// STEP 2: Use mash results to separate new genomes into new species, new strains and repeat strains
         PARSE_MASH_FOR_UPDATE (
             new_genomes,
-            mash_results
+            mash_results,
+            previous_catalogue_location
         )
         
-        // Dereplicate genomes in the new species folder
+        /////// STEP 3: cluster new genomes that will form new catalogue species
         DREP (
             PARSE_MASH_FOR_UPDATE.out.new_species_folder,
             new_data_checkm,
@@ -54,12 +57,14 @@ workflow UPDATE_CLUSTERS {
             drep_args
         )
          // TODO: make empty outputs if we are not adding anything to the catalogue
-                 
+         
+         /////// STEP 4: remove genomes from the original clusters (if there is anything to remove)
+              
         // gather genome stats and remake clusters
         // TODO: add new drep outputs to this
         RUN_CLUSTER_UPDATE (
             previous_catalogue_location,
-            remove_genomes,
+            QS50_FILTER_PREVIOUS_VERSION.out.remove_list_mgyg_updated,
             previous_version_quality_file,
             previous_version_assembly_stats,
             new_data_checkm,
