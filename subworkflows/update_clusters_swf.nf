@@ -5,7 +5,6 @@
 include { QS50_FILTER_PREVIOUS_VERSION } from '../modules/filter_qs50_previous_version'
 include { MASH_FOR_UPDATE } from '../modules/mash_for_update'
 include { PARSE_MASH_FOR_UPDATE } from '../modules/parse_mash_for_update'
-include { REMOVE_GENOMES_FROM_CLUSTERS } from '../modules/remove_genomes_from_clusters'
 include { DREP } from '../modules/drep'
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
