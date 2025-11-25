@@ -11,6 +11,7 @@ process RUN_CLUSTER_UPDATE {
     path new_genome_stats
     path extra_weight_table_new_genomes
     path new_genomes_name_mapping
+    path mash_result_file
     path new_strains_file
     path repeat_strains_file
     path new_species_cdb_csv
@@ -53,12 +54,13 @@ process RUN_CLUSTER_UPDATE {
     
     # temporary files
     touch new_strain_list_no_file.txt
-    touch mash_no_file.txt
     
+    # place all new genomes into clusters and replace species reps as needed
     replace_species_representative.py \
     --cluster-split-file clusters_split_filtered.txt \
     --new-strain-list new_strain_list_no_file.txt \
-    --mash-result mash_no_file.txt \
+    --repeat-strain-list ${repeat_strains_file} \
+    --mash-result ${mash_result_file} \
     --previous-drep-dir drep_output \
     --output-prefix update \
     --assembly-stats assembly_stats_all_genomes.tsv \
