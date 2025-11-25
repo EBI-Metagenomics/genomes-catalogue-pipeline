@@ -28,14 +28,19 @@ NEW_SPECIES_CUTOFF = 0.05
 SAME_STRAIN_CUTOFF = 0.001
 
 
-def main(mash, genomes_file, outfolder, infolder):
-    scores = dict()
+def main(mash, genomes_file, outfolder, infolder, metadata_table):
+    scores = dict()  # query_genome → (best_hit, best_score)
+    distances_to_reps = dict()  # query_genome → (best_rep_hit, best_rep_score)
     # We need to use a list of genomes to check because not all query genomes will be in the mash file (everything
     # that didn't have a close enough hit is filtered out)
     if genomes_file:
         genomes = load_list(genomes_file)
     else:
         genomes = os.listdir(infolder)
+    
+    rep_to_member, member_to_rep = load_metadata_table(metadata_table)
+    species_reps = set(rep_to_member.keys())  # for faster lookup
+    
     with open(mash, 'r') as infile:
         # mash output files have no heading and lines look like this:
         # MGYG000518640.fna       renamed_genomes/MGYG000535623.fa        0.0201478       0       487/1000
@@ -44,16 +49,49 @@ def main(mash, genomes_file, outfolder, infolder):
                 break
             catalogue_genome, query_genome_path, score, _, _ = line.strip().split()
             query_genome = os.path.basename(query_genome_path)  # get just the genome file name
-            if query_genome in genomes:
-                score = float(score)
-                # Update only if new score is lower (or missing)
-                previous_score = scores.get(query_genome)
-                if previous_score is None or score < previous_score:
-                    scores[query_genome] = score
+            
+            if query_genome not in genomes:
+                continue
+            score = float(score)
+            
+            # ---------------------------
+            # 1. Track best genome hit overall
+            # ---------------------------
+            # Update only if new score is lower (or missing)
+            previous_record = scores.get(query_genome)
+            if previous_record is None or score < previous_record[1]:
+                scores[query_genome] = (catalogue_genome, score)
+            
+            # ---------------------------
+            # 2. Track distance if it's a species rep
+            # ---------------------------
+            if catalogue_genome in species_reps:
+                distances_to_reps.setdefault(query_genome, []).append((catalogue_genome, score))
+
     same_strains, new_strains, new_species = evaluate(genomes, scores)
-    generate_output(same_strains, new_strains, new_species, outfolder, infolder)
+    generate_output(same_strains, new_strains, new_species, scores, distances_to_reps, member_to_rep, outfolder, infolder)
 
 
+def load_metadata_table(metadata_table_file):
+    rep_to_member = dict()
+    member_to_rep = dict()
+    with open(metadata_table_file, "r") as f:
+        header = f.readline().strip()
+        header_fields = header.split("\t")
+        try:
+            acc_index = header_fields.index("Genome_accession")
+            rep_index = header_fields.index("Species_rep")
+        except ValueError as e:
+            raise RuntimeError(f"Missing required field: {e}")
+        for line in f:
+            parts = line.strip().split("\t")
+            rep = parts[rep_index]
+            acc = parts[acc_index]
+            rep_to_member.setdefault(rep, list()).append(acc)
+            member_to_rep[acc] = rep
+    return rep_to_member, member_to_rep
+        
+            
 def load_list(genomes_file, remove_ext=False):
     genomes = set()
     with open(genomes_file, 'r') as infile:
@@ -92,27 +130,88 @@ def evaluate(genomes, scores):
     return same_strains, new_strains, new_species
 
 
-def generate_output(repeat_strains, new_strains, new_species, outfolder, infolder):
+def generate_output(repeat_strains, new_strains, new_species, scores, distances_to_reps, member_to_rep, outfolder, 
+                    infolder):
     # Output paths
     new_species_folder = os.path.join(outfolder, 'New_species')
-    new_strains_file = os.path.join(outfolder, 'new_strains.txt')
-    repeat_strains_file = os.path.join(outfolder, 'repeat_strains.txt')
+    new_strains_file = os.path.join(outfolder, 'new_strains.tsv')
+    repeat_strains_file = os.path.join(outfolder, 'repeat_strains.tsv')
     
     # Create output root and new species folder
     os.makedirs(outfolder, exist_ok=True)
     os.makedirs(new_species_folder, exist_ok=True)
-    
-    # ---- Write strain lists to text files ----
-    with open(new_strains_file, 'w') as out_ns:
-        out_ns.write("\n".join(new_strains) + "\n" if new_strains else "")
-
-    with open(repeat_strains_file, 'w') as out_rs:
-        out_rs.write("\n".join(repeat_strains) + "\n" if repeat_strains else "")
 
     # ---- Copy only new species ----
     copy_file_list(new_species, infolder, new_species_folder)
+    
+    # ---- Header for the output tables ----
+    header = [
+        "Accession",
+        "Nearest_hit",
+        "Nearest_hit_score",
+        "Hit_rep",
+        "Score_for_hit_rep",
+        "Closest_rep",
+        "Score_to_closest_rep",
+        "Closest_rep_matches_hit_rep"
+    ]
+    header_line = "\t".join(header) + "\n"
 
+    # ---- Helper to compute table for a list of accessions ----
+    def build_rows(accession_list):
+        rows = []
 
+        for acc in accession_list:
+            # nearest genome hit
+            hit, hit_score = scores.get(acc, (None, None))
+
+            # get the species representative for this catalogue genome
+            hit_rep = member_to_rep.get(hit)
+
+            # get all hits to species reps for this query
+            all_rep_hits = distances_to_reps.get(acc, [])
+            rep_score_for_hit = None
+            # find if the species rep for the cluster the best hit belongs to is there and record distance to it
+            for species_rep, distance_to_rep in all_rep_hits:
+                if species_rep == hit_rep:
+                    rep_score_for_hit = distance_to_rep
+                    break
+
+            # best rep overall for this accession
+            if all_rep_hits:
+                best_rep, best_rep_score = min(all_rep_hits, key=lambda x: x[1])
+            else:
+                best_rep, best_rep_score = None, None
+
+            # YES/NO whether the rep for the hit matches the accession's best rep
+            matches = "YES" if hit_rep == best_rep and best_rep is not None else "NO"
+
+            row = [
+                acc,
+                hit,
+                str(hit_score) if hit_score is not None else "NA",
+                hit_rep if hit_rep else "NA",
+                str(rep_score_for_hit) if rep_score_for_hit is not None else "NA",
+                best_rep if best_rep else "NA",
+                str(best_rep_score) if best_rep_score is not None else "NA",
+                matches
+            ]
+
+            rows.append("\t".join(row))
+
+        return rows
+
+    # ---- Write new strain table ----
+    with open(new_strains_file, 'w') as out_ns:
+        out_ns.write(header_line)
+        out_ns.write("\n".join(build_rows(new_strains)) + "\n")
+
+    # ---- Write repeat strain table ----
+    with open(repeat_strains_file, 'w') as out_rs:
+        out_rs.write(header_line)
+        out_rs.write("\n".join(build_rows(repeat_strains)) + "\n")
+        
+    
 def parse_args():
     parser = argparse.ArgumentParser(description='''
     The script parses mash output (dereplicated genomes compared against a mash sketch of the existing genome 
@@ -128,9 +227,11 @@ def parse_args():
                         help='Path to folder where the results will be saved to')
     parser.add_argument('-f', '--input-folder', required=True,
                         help='Path to folder where the deduplicated new genome fasta files are located')
+    parser.add_argument('--metadata-table', required=True,
+                        help='Path to metadata table of the previous catalogue version')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.mash, args.evaluate_list, args.outfolder, args.input_folder)
+    main(args.mash, args.evaluate_list, args.outfolder, args.input_folder, args.metadata_table)
