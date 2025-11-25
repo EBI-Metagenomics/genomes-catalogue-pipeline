@@ -118,9 +118,11 @@ def evaluate(genomes, scores):
     for genome in genomes:
         if genome not in scores:
             new_species.add(genome)
-        elif scores[genome] < SAME_STRAIN_CUTOFF:
+            continue
+        _, score_value = scores[genome]
+        if score_value < SAME_STRAIN_CUTOFF:
             same_strains.add(genome)
-        elif scores[genome] > NEW_SPECIES_CUTOFF:
+        elif score_value > NEW_SPECIES_CUTOFF:
             new_species.add(genome)
         else:
             new_strains.add(genome)
