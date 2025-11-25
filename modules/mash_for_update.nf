@@ -19,7 +19,7 @@ process MASH_FOR_UPDATE {
     """
     mash dist \
     -p ${task.cpus} \
-    -d 0.05 \
+    -d 0.2 \
     ${previous_catalogue_location}/ftp/all_genomes.msh \
     ${new_genomes}/*fa \
     > mash_new_genomes_against_catalogue.out
