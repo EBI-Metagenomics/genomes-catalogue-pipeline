@@ -164,6 +164,8 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
         rows = []
 
         for acc in accession_list:
+            for ext in (".fa", ".fna", ".fasta"):
+                acc = acc.removesuffix(ext)
             # nearest genome hit
             hit, hit_score = scores.get(acc, (None, None))
 
