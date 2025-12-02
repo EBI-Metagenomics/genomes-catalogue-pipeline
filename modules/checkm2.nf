@@ -1,6 +1,6 @@
 process CHECKM2 {
 
-    container 'quay.io/biocontainers/checkm2:1.0.1--pyh7cba7a3_0'
+    container 'quay.io/biocontainers/checkm2:1.1.0--pyh7e72e81_1'
     
     errorStrategy = { task.attempt <= 3 ? 'retry' : 'finish' }
 
