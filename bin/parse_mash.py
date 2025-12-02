@@ -65,7 +65,7 @@ def main(mash, genomes_file, outfolder, infolder, metadata_table):
             # ---------------------------
             # 2. Track distance if it's a species rep
             # ---------------------------
-            if catalogue_genome in species_reps:
+            if remove_extension(catalogue_genome) in species_reps:
                 distances_to_reps.setdefault(query_genome, []).append((catalogue_genome, score))
 
     same_strains, new_strains, new_species = evaluate(genomes, scores)
@@ -79,7 +79,7 @@ def load_metadata_table(metadata_table_file):
         header = f.readline().strip()
         header_fields = header.split("\t")
         try:
-            acc_index = header_fields.index("Genome_accession")
+            acc_index = header_fields.index("Genome")
             rep_index = header_fields.index("Species_rep")
         except ValueError as e:
             raise RuntimeError(f"Missing required field: {e}")
@@ -98,7 +98,7 @@ def load_list(genomes_file, remove_ext=False):
         for line in infile:
             fasta_file = os.path.basename(line.strip())
             if remove_ext:
-                fasta_file = os.path.splitext(fasta_file)[0]
+                fasta_file = remove_extension(fasta_file)
             genomes.add(fasta_file)
     return genomes
 
@@ -132,6 +132,13 @@ def evaluate(genomes, scores):
     return same_strains, new_strains, new_species
 
 
+def remove_extension(acc):
+    for ext in (".fa", ".fna", ".fasta"):
+        if acc.endswith(ext):
+            return acc.removesuffix(ext)
+    return acc 
+    
+
 def generate_output(repeat_strains, new_strains, new_species, scores, distances_to_reps, member_to_rep, outfolder, 
                     infolder):
     # Output paths
@@ -164,20 +171,18 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
         rows = []
 
         for acc in accession_list:
-            for ext in (".fa", ".fna", ".fasta"):
-                acc = acc.removesuffix(ext)
             # nearest genome hit
             hit, hit_score = scores.get(acc, (None, None))
 
             # get the species representative for this catalogue genome
-            hit_rep = member_to_rep.get(hit)
+            hit_rep = member_to_rep.get(remove_extension(hit))
 
             # get all hits to species reps for this query
             all_rep_hits = distances_to_reps.get(acc, [])
             rep_score_for_hit = None
             # find if the species rep for the cluster the best hit belongs to is there and record distance to it
             for species_rep, distance_to_rep in all_rep_hits:
-                if species_rep == hit_rep:
+                if remove_extension(species_rep) == hit_rep:
                     rep_score_for_hit = distance_to_rep
                     break
 
@@ -188,7 +193,7 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
                 best_rep, best_rep_score = None, None
 
             # YES/NO whether the rep for the hit matches the accession's best rep
-            matches = "YES" if hit_rep == best_rep and best_rep is not None else "NO"
+            matches = "YES" if remove_extension(hit_rep) == remove_extension(best_rep) and best_rep is not None else "NO"
 
             row = [
                 acc,
