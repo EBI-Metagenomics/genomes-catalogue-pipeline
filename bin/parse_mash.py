@@ -31,12 +31,17 @@ SAME_STRAIN_CUTOFF = 0.001
 def main(mash, genomes_file, outfolder, infolder, metadata_table):
     scores = dict()  # query_genome → (best_hit, best_score)
     distances_to_reps = dict()  # query_genome → (best_rep_hit, best_rep_score)
+    filename_dict = dict()  # accession  → accession.extension
     # We need to use a list of genomes to check because not all query genomes will be in the mash file (everything
     # that didn't have a close enough hit is filtered out)
     if genomes_file:
-        genomes = load_list(genomes_file)
+        genomes = load_list(genomes_file, remove_ext=True, filename_dict=filename_dict)
     else:
-        genomes = os.listdir(infolder)
+        genomes = set()
+        for f in os.listdir(infolder):
+            name = remove_extension(f)
+            genomes.add(name)
+            filename_dict[name] = f
     
     rep_to_member, member_to_rep = load_metadata_table(metadata_table)
     species_reps = set(rep_to_member.keys())  # for faster lookup
@@ -48,8 +53,12 @@ def main(mash, genomes_file, outfolder, infolder, metadata_table):
             if line == "\n":
                 break
             catalogue_genome, query_genome_path, score, _, _ = line.strip().split()
-            query_genome = os.path.basename(query_genome_path)  # get just the genome file name
-            
+            catalogue_genome = remove_extension(catalogue_genome)
+            query_genome_no_ext = remove_extension(os.path.basename(query_genome_path))
+            # save file name with extension for copying
+            filename_dict[query_genome_no_ext] = os.path.basename(query_genome_path)
+            query_genome = query_genome_no_ext
+                        
             if query_genome not in genomes:
                 continue
             score = float(score)
@@ -65,11 +74,12 @@ def main(mash, genomes_file, outfolder, infolder, metadata_table):
             # ---------------------------
             # 2. Track distance if it's a species rep
             # ---------------------------
-            if remove_extension(catalogue_genome) in species_reps:
+            if catalogue_genome in species_reps:
                 distances_to_reps.setdefault(query_genome, []).append((catalogue_genome, score))
 
     same_strains, new_strains, new_species = evaluate(genomes, scores)
-    generate_output(same_strains, new_strains, new_species, scores, distances_to_reps, member_to_rep, outfolder, infolder)
+    generate_output(same_strains, new_strains, new_species, scores, distances_to_reps, member_to_rep, outfolder, 
+                    infolder, filename_dict)
 
 
 def load_metadata_table(metadata_table_file):
@@ -92,22 +102,32 @@ def load_metadata_table(metadata_table_file):
     return rep_to_member, member_to_rep
         
             
-def load_list(genomes_file, remove_ext=False):
+def load_list(genomes_file, remove_ext=False, filename_dict=None):
+    """
+    Load genomes from a file into a set.
+    If remove_ext=True, store names without extensions.
+    Optionally populate filename_dict: no-ext name -> filename with extension
+    """
     genomes = set()
     with open(genomes_file, 'r') as infile:
         for line in infile:
-            fasta_file = os.path.basename(line.strip())
-            if remove_ext:
-                fasta_file = remove_extension(fasta_file)
-            genomes.add(fasta_file)
+            full_filename = os.path.basename(line.strip())
+            name = remove_extension(full_filename) if remove_ext else full_filename
+
+            genomes.add(name)
+
+            if filename_dict is not None:
+                filename_dict[name] = full_filename
+
     return genomes
 
 
-def copy_file_list(names, infolder, outfolder):
+def copy_file_list(names, infolder, outfolder, filename_dict):
     """Copies each file in `names` from `infolder` to `outfolder`."""
     for name in names:
-        src = os.path.join(infolder, name)
-        dst = os.path.join(outfolder, name)
+        name_with_ext = filename_dict.get(name, name)
+        src = os.path.join(infolder, name_with_ext)
+        dst = os.path.join(outfolder, name_with_ext)
         copy2(src, dst)
 
 
@@ -140,7 +160,7 @@ def remove_extension(acc):
     
 
 def generate_output(repeat_strains, new_strains, new_species, scores, distances_to_reps, member_to_rep, outfolder, 
-                    infolder):
+                    infolder, filename_dict):
     # Output paths
     new_species_folder = os.path.join(outfolder, 'New_species')
     new_strains_file = os.path.join(outfolder, 'new_strains.tsv')
@@ -151,7 +171,7 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
     os.makedirs(new_species_folder, exist_ok=True)
 
     # ---- Copy only new species ----
-    copy_file_list(new_species, infolder, new_species_folder)
+    copy_file_list(new_species, infolder, new_species_folder, filename_dict)
     
     # ---- Header for the output tables ----
     header = [
@@ -175,14 +195,14 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
             hit, hit_score = scores.get(acc, (None, None))
 
             # get the species representative for this catalogue genome
-            hit_rep = member_to_rep.get(remove_extension(hit))
+            hit_rep = member_to_rep.get(hit)
 
             # get all hits to species reps for this query
             all_rep_hits = distances_to_reps.get(acc, [])
             rep_score_for_hit = None
             # find if the species rep for the cluster the best hit belongs to is there and record distance to it
             for species_rep, distance_to_rep in all_rep_hits:
-                if remove_extension(species_rep) == hit_rep:
+                if species_rep == hit_rep:
                     rep_score_for_hit = distance_to_rep
                     break
 
@@ -193,7 +213,7 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
                 best_rep, best_rep_score = None, None
 
             # YES/NO whether the rep for the hit matches the accession's best rep
-            matches = "YES" if remove_extension(hit_rep) == remove_extension(best_rep) and best_rep is not None else "NO"
+            matches = "YES" if hit_rep == best_rep and best_rep is not None else "NO"
 
             row = [
                 acc,
