@@ -18,6 +18,7 @@
 
 
 import argparse
+import copy
 import csv
 import glob
 import logging
@@ -68,30 +69,13 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     current_clusters_minus_removed, remove_log = remove_genomes_from_clusters(current_clusters, remove_list)
     rep_lookup_dict = invert_clusters(current_clusters)  # any_catalogue_genome → its_species_rep
     
-    replacement_results = recompute_clusters(current_clusters, qs_values, isolates, current_clusters_minus_removed, 
+    replacement_results = recompute_clusters(qs_values, isolates, current_clusters_minus_removed, 
                                              new_strain_placement, repeat_strain_placement, rep_lookup_dict)
 
-    
-    # when reassigning rep to a cluster that had the existing rep completely removed, don't stick with the 10% increase rule
-    # assign the best genome there is
-    # add existing strains to this
-    # previous code to change to handle clusters
 
-    #clusters_outfile = outfile.replace(outfile_extension, 'clusters.{}'.format(outfile_extension))
-    # The script goes over the mash results again to identify which species rep the genome fits in best
-    # This is done because dRep uses centrality when choosing the species rep; if a new strain is close to a strain 
-    # if might not necessarily be best placed with the species rep of that strain
-    
-    #replace_results = replacement_decision_old(clusters, qs_values, isolates)
-    #save_clusters_to_file(clusters, replace_results, clusters_outfile)
-    #with open(outfile, 'w') as outfile_out:
-    #    for key, value in replace_results.items():
-    #        outfile_out.write('\t'.join([key, value]) + '\n')    
-
-
-def recompute_clusters(current_clusters, qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
-                         repeat_strain_placement, rep_lookup_dict):
-    replacement_results = dict()
+def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
+                       repeat_strain_placement, rep_lookup_dict):
+    replacement_results = copy.deepcopy(current_clusters_minus_removed)
     added_genomes = dict()  # cluster_rep → [list of added genomes]
     
     # Step 1: add in repeat strains
@@ -103,25 +87,31 @@ def recompute_clusters(current_clusters, qs_values, isolates, current_clusters_m
         catalogue_match_is_isolate = placement.actual_match in isolates
         if genome_is_isolate and not catalogue_match_is_isolate:
             # Case 1: genome is an isolate, catalogue match is not → add
-            #add_to_clusters(genome)
-            added_genomes.setdefault(placement.closest_rep, []).append(genome)
+            replacement_results = add_to_clusters(genome, rep_lookup_dict[placement.actual_match], replacement_results)
+            added_genomes.setdefault(rep_lookup_dict[placement.actual_match], []).append(genome)
             pass  # Todo: implement actual addition
         else:
             # Case 2: add if quality is sufficiently higher
             if evaluate_quality_increase(qs_values[genome], qs_values[placement.actual_match]):
-                #add_to_clusters(genome)
-                added_genomes.setdefault(placement.closest_rep, []).append(genome)
+                replacement_results = add_to_clusters(genome, rep_lookup_dict[placement.actual_match], 
+                                                      replacement_results)
+                added_genomes.setdefault(rep_lookup_dict[placement.actual_match], []).append(genome)
                 pass
             
     # Step 2: add all new strains into the clusters
     for genome, placement in new_strain_placement.items():
-        # add_to_clusters(genome)
+        replacement_results = add_to_clusters(genome, placement.closest_rep, replacement_results)
         added_genomes.setdefault(placement.closest_rep, []).append(genome)
         pass
     
     # Step 3: decide on rep replacement
     replacement_results = replacement_decision(replacement_results, added_genomes, qs_values)
     
+    return replacement_results
+
+
+def add_to_clusters(genome, rep, replacement_results):
+    replacement_results[rep]["genome_list"].append(genome)
     return replacement_results
 
 
@@ -242,21 +232,6 @@ def remove_genomes_from_clusters(current_clusters, remove_list):
 
     return current_clusters_minus_removed, remove_log
     
-
-def identify_genome_cluster_position(clusters, remove_list):
-    singletons_removed = list()
-    cluster_rep_removed = list()
-    cluster_member_removed = dict()
-
-    # generate a reverse dictionary where keys are non-reps and values are their corresponding reps
-    reverse_lookup_nonreps = dict()
-    for species_rep, members in clusters.items():
-        if isinstance(members, list):
-            for acc in members:
-                reverse_lookup_nonreps[acc] = species_rep
-    print(reverse_lookup_nonreps)
-    return singletons_removed, cluster_rep_removed, cluster_member_removed
-    
     
 def output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix):
     all_paths = glob.glob(os.path.join(previous_drep_dir, '**', '*'), recursive=True)
@@ -304,53 +279,6 @@ def load_strain_placement(file_path, same_strain=False):
                 actual_match=nearest_hit,
             )
     return strain_placement
-    
-
-def replacement_decision_old(clusters, qs_values, isolates, current_clusters_minus_removed):
-    replace_results = dict()
-    replaced_with_isolates = 0
-    replaced_with_better_qs = 0
-    for representative in clusters.keys():
-        logging.info('##### EVALUATING {}'.format(representative))
-        isolate_representative = False
-        if representative in isolates:
-            logging.info('{} is an isolate, QS {}'.format(representative, qs_values[representative]))
-            isolate_representative = True
-        substitute_genome = ''
-        substitute_score = 0.0
-        isolate_score = 0.0
-        score_to_beat = float(qs_values[representative]) * 1.1
-        for candidate in clusters[representative]:
-            if candidate in isolates:
-                logging.info('{} is a candidate and an isolate, QS {}'.format(candidate, float(qs_values[candidate])))
-                if isolate_representative:
-                    if float(qs_values[candidate]) > isolate_score and float(qs_values[candidate]) > score_to_beat:
-                        substitute_genome = candidate
-                        isolate_score = float(qs_values[candidate])
-                elif float(qs_values[candidate]) > isolate_score:
-                    substitute_genome = candidate
-                    isolate_score = float(qs_values[candidate])
-            else:
-                if isolate_representative:
-                    pass
-                else:
-                    logging.info('Evaluating {}, {}; score to beat is {}'.format(
-                        candidate, qs_values[candidate], score_to_beat))
-                    if float(qs_values[candidate]) > score_to_beat and float(qs_values[candidate]) > substitute_score \
-                            and isolate_score == 0.0:
-                        logging.info('Score is beat {} {}'.format(qs_values[candidate], candidate))
-                        substitute_genome = candidate
-                        substitute_score = float(qs_values[candidate])
-        if substitute_genome:
-            logging.info('Replacing {} with {}'.format(representative, substitute_genome))
-            replace_results[representative] = substitute_genome
-            if isolate_score > 0:
-                replaced_with_isolates += 1
-            else:
-                replaced_with_better_qs += 1
-    logging.info('Number of genomes replaced with an isolate: {}'.format(replaced_with_isolates))
-    logging.info('Number of genomes replaced with a MAG with better qs: {}'.format(replaced_with_better_qs))
-    return replace_results
 
 
 def load_isolates(isolates_file):
@@ -377,8 +305,8 @@ def load_qs(stats_file, checkm_file):
                 contamination=float(row["contamination"]),
                 n50=0,  # placeholder, will fill later
                 qs=0.0,  # placeholder, will calculate later
-                length=0, # placeholder, will calculate later
-                n_contigs=0 # placeholder, will calculate later
+                length=0,  # placeholder, will calculate later
+                n_contigs=0  # placeholder, will calculate later
             )
             
     # Load N50        
@@ -404,73 +332,6 @@ def load_qs(stats_file, checkm_file):
 def calc_qs(completeness, contamination, n50):
     qs = float(completeness) - float(contamination) * 5 + 0.5 * math.log(float(n50))
     return qs
-
-
-def get_mash_clusters(mash_result, current_species_rep_list, new_strain_list):
-    new_strain_mash_clusters = dict()
-    cluster_filter = dict()  # used to sort out situations when the same genome is in multiple clusters
-    with open(mash_result, 'r') as mash_in:
-        for line in mash_in:
-            if line == "\n":
-                break
-            catalogue_genome, query_genome_path, score, _, _ = line.strip().split()
-            query_genome = os.path.basename(query_genome_path)  # get just the genome file name
-            score = float(score)
-
-            # the actual similarity interval we need to place a strain into its cluster is between 0.05 and 0.001
-            # the interval below is extended because mash is not sufficiently accurate. It might have had a match
-            # with a genome that is not a species rep that was within the interval while its match with the
-            # species rep falls outside the interval
-            if (
-                catalogue_genome in current_species_rep_list
-                and query_genome in new_strain_list
-                and 0.0001 <= score <= 0.1
-            ):
-                existing = cluster_filter.get(query_genome)
-                # Case 1: query_genome is not yet assigned to any catalogue species rep genome
-                if existing is None:
-                    new_strain_mash_clusters.setdefault(catalogue_genome, []).append(query_genome)
-                    cluster_filter[query_genome] = {
-                        "match": catalogue_genome,
-                        "score": score
-                    }
-
-                # Case 2: query_genome is assigned, but this score is better (smaller)
-                elif score < existing["score"]:
-                    old_match = existing["match"]
-
-                    logging.info(
-                        f"Removing genome {query_genome} from {old_match}. New score is {score}"
-                    )
-
-                    new_strain_mash_clusters[old_match].remove(query_genome)
-                    new_strain_mash_clusters.setdefault(catalogue_genome, []).append(query_genome)
-
-                    existing["match"] = catalogue_genome
-                    existing["score"] = score
-
-                    logging.info(
-                        f"Reassigned genome {query_genome} to {catalogue_genome}"
-                    )
-    logging.info("------------------> Final cluster placement <--------------------")
-    logging.info("New strain\tAssigned cluster\tDistance from current species rep")
-    for genome in cluster_filter.keys():
-        logging.info("{}\t{}\t{}".format(genome, cluster_filter[genome]['match'], cluster_filter[genome]['score']))
-    return new_strain_mash_clusters
-
-
-def save_clusters_to_file(clusters, replace_results, clusters_outfile):
-    with open(clusters_outfile, 'w') as clusters_out:
-        for key in clusters:
-            if key in replace_results:
-                rep = replace_results[key]
-            else:
-                rep = key
-            for g in clusters[key]:
-                if g == rep:
-                    clusters_out.write('\t'.join([rep, key]) + '\n')
-                else:
-                    clusters_out.write('\t'.join([rep, g]) + '\n')
 
 
 def parse_args():
