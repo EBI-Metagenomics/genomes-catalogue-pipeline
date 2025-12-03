@@ -70,7 +70,6 @@ workflow UPDATE_CLUSTERS {
             new_genome_stats,
             extra_weight_table_new_genomes,
             genomes_name_mapping,
-            mash_results,
             PARSE_MASH_FOR_UPDATE.out.new_strains_file,
             PARSE_MASH_FOR_UPDATE.out.repeat_strains_file,
             DREP.out.cdb_csv,
