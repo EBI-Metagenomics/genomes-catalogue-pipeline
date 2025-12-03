@@ -179,7 +179,7 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
         "Nearest_hit",
         "Nearest_hit_score",
         "Hit_rep",
-        "Score_for_hit_rep",
+        "Score_to_hit_rep",
         "Closest_rep",
         "Score_to_closest_rep",
         "Closest_rep_matches_hit_rep"
