@@ -25,6 +25,7 @@ import logging
 import math
 import os
 import shutil
+import sys
 
 from dataclasses import dataclass
 
@@ -57,12 +58,17 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     repeat_strain_placement = load_strain_placement(repeat_strain_file, same_strain=True)  # strain_acc → Placement
     remove_list = load_first_column_to_list(remove_list_file)
     
+    logging.info(f"Loaded data: {len(new_strain_placement)} new strains, {len(repeat_strain_placement)} repeat strains "
+                 f"before evaluation, {len(remove_list)} genomes to remove.")
+    
     # If we are not adding or removing genomes, we don't need to do anything, just output old files for 
     # everything - this is not an update, just a reannotation
     if not (new_strain_placement or remove_list or repeat_strain_placement):  # TODO: add new species here too
+        logging.info("No genomes are added or removed, printing old catalogue results and existing.")
         output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix)
         return
     
+    logging.info("Evaluating changes...")
     isolates = load_isolates(isolates_file)  # all isolates (old and new)
     qs_values = load_qs(assembly_stats_file, checkm_file)  # genome → Quality
     current_clusters = load_clusters(cluster_split_file)  # species_rep → [list of non-reps]
@@ -71,6 +77,8 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     
     replacement_results = recompute_clusters(qs_values, isolates, current_clusters_minus_removed, 
                                              new_strain_placement, repeat_strain_placement, rep_lookup_dict)
+    
+    sanity_check(replacement_results, remove_list, current_clusters)
 
 
 def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
@@ -332,6 +340,48 @@ def load_qs(stats_file, checkm_file):
 def calc_qs(completeness, contamination, n50):
     qs = float(completeness) - float(contamination) * 5 + 0.5 * math.log(float(n50))
     return qs
+
+
+def sanity_check(replacement_results, remove_list, current_clusters):
+    results_ok = True
+    
+    # Step 1: Count genomes in current_clusters (this is how many genomes we had in the old catalogue)
+    current_genomes = set(current_clusters.keys())  # keys
+    for genomes in current_clusters.values():  # genomes in lists
+        current_genomes.update(genomes)
+
+    total_current_genomes = len(current_genomes)
+
+    # Step 2: Subtract genomes in remove_list
+    total_minimum = total_current_genomes - len(remove_list)
+
+    # Step 3: Count genomes in replacement_results (ignore keys)
+    seen_genomes = set()
+    replacement_count = 0
+    for rep in replacement_results.values():
+        # Count new_rep if not None
+        if rep["new_rep"] is not None:
+            if rep["new_rep"] in seen_genomes:
+                print(f"Genome {rep['new_rep']} appears more than once in replacement_results")
+                results_ok = False
+            seen_genomes.add(rep["new_rep"])
+            replacement_count += 1
+        # Count genomes in genome_list
+        for g in rep["genome_list"]:
+            if g in seen_genomes:
+                print(f"Genome {g} appears more than once in replacement_results")
+                results_ok = False
+            seen_genomes.add(g)
+            replacement_count += 1
+
+    # Step 4: Check that replacement_count equals at least the original count minus the number of removed genomes
+    if replacement_count < total_minimum:
+        print(f"Replacement results ({replacement_count}) exceed allowed number of genomes ({total_minimum})")
+        results_ok = False
+
+    # Step 5: Exit if sanity check fails
+    if not results_ok:
+        sys.exit("Sanity check not passed")
 
 
 def parse_args():
