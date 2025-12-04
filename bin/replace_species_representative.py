@@ -75,17 +75,18 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     current_clusters_minus_removed, remove_log = remove_genomes_from_clusters(current_clusters, remove_list)
     rep_lookup_dict = invert_clusters(current_clusters)  # any_catalogue_genome → its_species_rep
     
-    replacement_results = recompute_clusters(qs_values, isolates, current_clusters_minus_removed, 
-                                             new_strain_placement, repeat_strain_placement, rep_lookup_dict)
+    replacement_results, report_to_print = recompute_clusters(qs_values, isolates, current_clusters_minus_removed, 
+                                                              new_strain_placement, repeat_strain_placement, 
+                                                              rep_lookup_dict)
 
-    print(replacement_results)
-    sanity_check(replacement_results, remove_list, current_clusters)
+    sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement)
 
 
 def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
                        repeat_strain_placement, rep_lookup_dict):
     replacement_results = copy.deepcopy(current_clusters_minus_removed)
     added_genomes = dict()  # cluster_rep → [list of added genomes]
+    report_to_print = dict()
     # Step 1: add in repeat strains
     # We will only consider adding a repeat strain in the following cases:
     # 1. if it's an isolate and existing strain is not (always add)
@@ -115,7 +116,7 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
     # Step 3: decide on rep replacement
     replacement_results = replacement_decision(replacement_results, added_genomes, qs_values)
     
-    return replacement_results
+    return replacement_results, report_to_print
 
 
 def add_to_clusters(genome, rep, replacement_results):
@@ -383,7 +384,7 @@ def calc_qs(completeness, contamination, n50):
     return qs
 
 
-def sanity_check(replacement_results, remove_list, current_clusters):
+def sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement):
     results_ok = True
     
     # Step 1: Count genomes in current_clusters (this is how many genomes we had in the old catalogue)
@@ -420,7 +421,13 @@ def sanity_check(replacement_results, remove_list, current_clusters):
         print(f"Replacement results ({replacement_count}) exceed allowed number of genomes ({total_minimum})")
         results_ok = False
 
-    # Step 5: Exit if sanity check fails
+    # Step 5: Ensure all genomes from new_strain_placement are in seen_genomes
+    for genome in new_strain_placement.keys():
+        if genome not in seen_genomes:
+            print(f"Genome {genome} from new_strain_placement not found in replacement results")
+            results_ok = False
+
+    # Step 6: Exit if sanity check fails
     if not results_ok:
         sys.exit("Sanity check not passed")
 
