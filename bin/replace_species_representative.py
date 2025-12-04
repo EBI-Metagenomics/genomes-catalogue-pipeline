@@ -125,20 +125,44 @@ def add_to_clusters(genome, rep, replacement_results):
 
 def replacement_decision(replacement_results, added_genomes, qs_values):
     for old_rep, new_genome_list in added_genomes.items():
-        # Check if there is no rep at all because if was removed - in that case we must select new rep
+        # Check if there is no rep at all because it was removed - in that case we must select new rep
         if not replacement_results[old_rep]["new_rep"]:
             new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values, 
                                          replacement_required=True)
         else:
             new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
                                          replacement_required=False)
-        replacement_results[old_rep]["new_rep"] = new_rep
+        if new_rep:
+            replacement_results[old_rep]["new_rep"] = new_rep
     # Go through clusters that lost species rep due to genome removal but had no new genomes added
     for old_rep in replacement_results:
         if old_rep not in added_genomes and not replacement_results[old_rep]["new_rep"]:
             new_rep = select_replacement(replacement_results, old_rep, [], qs_values,
                                          replacement_required=True)
-            replacement_results[old_rep]["new_rep"] = new_rep
+            if new_rep:
+                replacement_results[old_rep]["new_rep"] = new_rep
+    replacement_results = clean_up_result(replacement_results)  # remove new_rep from genome lists, add in old_reps
+    return replacement_results
+
+
+def clean_up_result(replacement_results):
+    for old_rep in replacement_results:
+        new_rep = replacement_results[old_rep]["new_rep"]
+        genome_list = replacement_results[old_rep]["genome_list"]
+
+        # consistency check
+        if new_rep == "" and len(genome_list) > 0:
+            sys.exit(
+                f"Replacement of {old_rep} is none but genome list is not empty: {genome_list}."
+            )
+
+        # only try to remove if it is actually present
+        if old_rep != new_rep:
+            if new_rep and new_rep in genome_list:
+                genome_list.remove(new_rep)
+
+            genome_list.append(old_rep)
+
     return replacement_results
 
 
@@ -377,7 +401,7 @@ def sanity_check(replacement_results, remove_list, current_clusters):
     replacement_count = 0
     for rep in replacement_results.values():
         # Count new_rep if not None
-        if rep["new_rep"] is not None:
+        if rep["new_rep"]:
             if rep["new_rep"] in seen_genomes:
                 print(f"Genome {rep['new_rep']} appears more than once in replacement_results")
                 results_ok = False
