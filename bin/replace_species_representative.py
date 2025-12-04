@@ -77,7 +77,8 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     
     replacement_results = recompute_clusters(qs_values, isolates, current_clusters_minus_removed, 
                                              new_strain_placement, repeat_strain_placement, rep_lookup_dict)
-    
+
+    print(replacement_results)
     sanity_check(replacement_results, remove_list, current_clusters)
 
 
@@ -85,7 +86,6 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
                        repeat_strain_placement, rep_lookup_dict):
     replacement_results = copy.deepcopy(current_clusters_minus_removed)
     added_genomes = dict()  # cluster_rep → [list of added genomes]
-    
     # Step 1: add in repeat strains
     # We will only consider adding a repeat strain in the following cases:
     # 1. if it's an isolate and existing strain is not (always add)
@@ -250,15 +250,26 @@ def output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_pr
     updated_cluster_split_file = f"{output_prefix}_{os.path.basename(cluster_split_file)}"
     shutil.copy(cluster_split_file, updated_cluster_split_file)
     logging.info("No changes made to the clusters. Original file contents are written to output.")
-    
-    
+
+
 def load_first_column_to_list(file_path):
     first_column_values = []
     with open(file_path, 'r') as file_in:
         for line in file_in:
             columns = line.strip().split('\t')
-            if columns:  # line is not empty
-                first_column_values.append(columns[0])
+            if not columns:
+                continue
+
+            value = columns[0]
+
+            # Remove known extensions
+            for ext in (".fa", ".fna", ".fasta"):
+                if value.endswith(ext):
+                    value = value[: -len(ext)]
+                    break
+
+            first_column_values.append(value)
+
     return first_column_values
 
 
