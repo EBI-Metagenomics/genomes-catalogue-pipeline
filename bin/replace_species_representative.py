@@ -77,16 +77,18 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     
     replacement_results, report_to_print = recompute_clusters(qs_values, isolates, current_clusters_minus_removed, 
                                                               new_strain_placement, repeat_strain_placement, 
-                                                              rep_lookup_dict)
+                                                              rep_lookup_dict, remove_list)
 
-    sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement)
+    sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, report_to_print)
 
 
 def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
-                       repeat_strain_placement, rep_lookup_dict):
+                       repeat_strain_placement, rep_lookup_dict, remove_list):
     replacement_results = copy.deepcopy(current_clusters_minus_removed)
     added_genomes = dict()  # cluster_rep → [list of added genomes]
     report_to_print = dict()
+    repeat_strains_added = 0
+    new_strains_added = 0
     # Step 1: add in repeat strains
     # We will only consider adding a repeat strain in the following cases:
     # 1. if it's an isolate and existing strain is not (always add)
@@ -98,23 +100,27 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
             # Case 1: genome is an isolate, catalogue match is not → add
             replacement_results = add_to_clusters(genome, rep_lookup_dict[placement.actual_match], replacement_results)
             added_genomes.setdefault(rep_lookup_dict[placement.actual_match], []).append(genome)
-            pass  # Todo: implement actual addition
+            repeat_strains_added += 1
         else:
             # Case 2: add if quality is sufficiently higher
             if evaluate_quality_increase(qs_values[genome], qs_values[placement.actual_match]):
                 replacement_results = add_to_clusters(genome, rep_lookup_dict[placement.actual_match], 
                                                       replacement_results)
                 added_genomes.setdefault(rep_lookup_dict[placement.actual_match], []).append(genome)
-                pass
+                repeat_strains_added += 1
             
     # Step 2: add all new strains into the clusters
     for genome, placement in new_strain_placement.items():
         replacement_results = add_to_clusters(genome, placement.closest_rep, replacement_results)
         added_genomes.setdefault(placement.closest_rep, []).append(genome)
-        pass
+        new_strains_added += 1
     
     # Step 3: decide on rep replacement
-    replacement_results = replacement_decision(replacement_results, added_genomes, qs_values)
+    replacement_results = replacement_decision(replacement_results, added_genomes, qs_values, remove_list)
+    
+    print("New strains", new_strains_added, "Repeat strains", repeat_strains_added)
+    report_to_print["new_strains_added"] = new_strains_added
+    report_to_print["repeat_strains_added"] = repeat_strains_added
     
     return replacement_results, report_to_print
 
@@ -124,7 +130,7 @@ def add_to_clusters(genome, rep, replacement_results):
     return replacement_results
 
 
-def replacement_decision(replacement_results, added_genomes, qs_values):
+def replacement_decision(replacement_results, added_genomes, qs_values, remove_list):
     for old_rep, new_genome_list in added_genomes.items():
         # Check if there is no rep at all because it was removed - in that case we must select new rep
         if not replacement_results[old_rep]["new_rep"]:
@@ -142,27 +148,30 @@ def replacement_decision(replacement_results, added_genomes, qs_values):
                                          replacement_required=True)
             if new_rep:
                 replacement_results[old_rep]["new_rep"] = new_rep
-    replacement_results = clean_up_result(replacement_results)  # remove new_rep from genome lists, add in old_reps
+    # remove new_rep from genome lists, add in old_reps
+    replacement_results = clean_up_result(replacement_results, remove_list)  
     return replacement_results
 
 
-def clean_up_result(replacement_results):
+def clean_up_result(replacement_results, remove_list):
     for old_rep in replacement_results:
         new_rep = replacement_results[old_rep]["new_rep"]
         genome_list = replacement_results[old_rep]["genome_list"]
 
-        # consistency check
+        # check that no new_rep assignment was missed (if there are genomes in the list, there must be a rep)
         if new_rep == "" and len(genome_list) > 0:
             sys.exit(
                 f"Replacement of {old_rep} is none but genome list is not empty: {genome_list}."
             )
 
-        # only try to remove if it is actually present
+        # if old_rep was replaced, move it to the cluster member list
         if old_rep != new_rep:
             if new_rep and new_rep in genome_list:
-                genome_list.remove(new_rep)
-
-            genome_list.append(old_rep)
+                genome_list.remove(new_rep)  # the list should only contain members, not reps
+            
+            # Add the old rep to the genome list unless it needs to be removed from the catalogue
+            if old_rep not in remove_list:
+                genome_list.append(old_rep)
 
     return replacement_results
 
@@ -384,7 +393,7 @@ def calc_qs(completeness, contamination, n50):
     return qs
 
 
-def sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement):
+def sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, report_to_print):
     results_ok = True
     
     # Step 1: Count genomes in current_clusters (this is how many genomes we had in the old catalogue)
@@ -394,8 +403,9 @@ def sanity_check(replacement_results, remove_list, current_clusters, new_strain_
 
     total_current_genomes = len(current_genomes)
 
-    # Step 2: Subtract genomes in remove_list
-    total_minimum = total_current_genomes - len(remove_list)
+    # Step 2: Subtract genomes in remove_list and add new/repeat strains
+    total_expected = (total_current_genomes - len(remove_list) + report_to_print["new_strains_added"] + 
+                      report_to_print["repeat_strains_added"])
 
     # Step 3: Count genomes in replacement_results (ignore keys)
     seen_genomes = set()
@@ -417,8 +427,9 @@ def sanity_check(replacement_results, remove_list, current_clusters, new_strain_
             replacement_count += 1
 
     # Step 4: Check that replacement_count equals at least the original count minus the number of removed genomes
-    if replacement_count < total_minimum:
-        print(f"Replacement results ({replacement_count}) exceed allowed number of genomes ({total_minimum})")
+    if replacement_count != total_expected:
+        print(f"Replacement results ({replacement_count}) do not match the expected number of genomes "
+              f"({total_expected})")
         results_ok = False
 
     # Step 5: Ensure all genomes from new_strain_placement are in seen_genomes
