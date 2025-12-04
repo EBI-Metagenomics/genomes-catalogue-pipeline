@@ -137,7 +137,8 @@ def replacement_decision(replacement_results, added_genomes, qs_values):
     for old_rep in replacement_results:
         if old_rep not in added_genomes and not replacement_results[old_rep]["new_rep"]:
             new_rep = select_replacement(replacement_results, old_rep, [], qs_values,
-                                         replacement_required=True)            
+                                         replacement_required=True)
+            replacement_results[old_rep]["new_rep"] = new_rep
     return replacement_results
 
 
