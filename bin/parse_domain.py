@@ -48,14 +48,18 @@ def load_clusters(clusters_file):
     clusters = dict()
     with open(clusters_file, "r") as file_in:
         for line in file_in:
-            # many_genomes: 24_1:MGYG000519938.fa, MGYG000520940.fa
-            # one_genome: 24_2:MGYG000529281.fa
+            # many_genomes:24_1:MGYG000519938.fa, MGYG000520940.fa
+            # one_genome:24_2:MGYG000529281.fa
             line = line.strip()
-            _, _, genomes_str = line.partition(":")
+            parts = line.split(":", 2)
+            if len(parts) != 3:
+                raise ValueError(f"Invalid cluster line: {line}")
+
+            prefix, _, genomes_str = parts
             genomes = [g.rsplit('.', 1)[0] for g in genomes_str.split(",")]  # get genomes without extensions
             cluster_rep = genomes[0]  # first genome is the cluster representative
 
-            if line.startswith("one_genome"):
+            if prefix == "one_genome":
                 clusters[cluster_rep] = []  # no cluster members
             else:
                 clusters[cluster_rep] = genomes[1:]  # remaining genomes are cluster members    
