@@ -271,6 +271,8 @@ def load_strain_placement(file_path, same_strain=False):
     score_col = "Score_to_hit_rep" if same_strain else "Score_to_closest_rep"
     with open(file_path, 'r') as file_in:
         reader = csv.DictReader(file_in, delimiter="\t")
+        if not reader.fieldnames:
+            return {}
         required_fields = {"Accession", rep_col, score_col}
         missing = required_fields - set(reader.fieldnames or [])
         if missing:
