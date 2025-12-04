@@ -51,13 +51,10 @@ process RUN_CLUSTER_UPDATE {
     --outfile-extra-weight extra_weight_table_all_genomes.tsv \
     --outfile-checkm checkm_all_genomes.csv
     
-    # temporary files
-    touch new_strain_list_no_file.txt
-    
     # place all new genomes into clusters and replace species reps as needed
     replace_species_representative.py \
     --cluster-split-file clusters_split_filtered.txt \
-    --new-strain-list new_strain_list_no_file.txt \
+    --new-strain-list ${new_strains_file} \
     --repeat-strain-list ${repeat_strains_file} \
     --previous-drep-dir drep_output \
     --output-prefix update \
