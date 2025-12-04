@@ -166,6 +166,9 @@ def select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
         if replacement_required else
         new_genome_list
     )
+    
+    if not replacement_pool:
+        return ""
 
     # CASE 1: replacement required → pick best by QS, then N50
     if replacement_required:
