@@ -86,7 +86,7 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
                        repeat_strain_placement, rep_lookup_dict, remove_list):
     replacement_results = copy.deepcopy(current_clusters_minus_removed)
     added_genomes = dict()  # cluster_rep → [list of added genomes]
-    report_to_print = dict()
+    stats_to_print = dict()
     repeat_strains_added = 0
     new_strains_added = 0
     # Step 1: add in repeat strains
@@ -116,13 +116,13 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
         new_strains_added += 1
     
     # Step 3: decide on rep replacement
-    replacement_results = replacement_decision(replacement_results, added_genomes, qs_values, remove_list)
+    replacement_results = replacement_decision(replacement_results, added_genomes, qs_values, remove_list, 
+                                               stats_to_print)
     
-    print("New strains", new_strains_added, "Repeat strains", repeat_strains_added)
-    report_to_print["new_strains_added"] = new_strains_added
-    report_to_print["repeat_strains_added"] = repeat_strains_added
+    stats_to_print["new_strains_added"] = new_strains_added
+    stats_to_print["repeat_strains_added"] = repeat_strains_added
     
-    return replacement_results, report_to_print
+    return replacement_results, stats_to_print
 
 
 def add_to_clusters(genome, rep, replacement_results):
@@ -130,12 +130,15 @@ def add_to_clusters(genome, rep, replacement_results):
     return replacement_results
 
 
-def replacement_decision(replacement_results, added_genomes, qs_values, remove_list):
+def replacement_decision(replacement_results, added_genomes, qs_values, remove_list, stats_to_print):
     for old_rep, new_genome_list in added_genomes.items():
         # Check if there is no rep at all because it was removed - in that case we must select new rep
         if not replacement_results[old_rep]["new_rep"]:
             new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values, 
                                          replacement_required=True)
+            stats_to_print.setdefault("new_reps", dict())
+
+            
         else:
             new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
                                          replacement_required=False)
@@ -414,21 +417,21 @@ def sanity_check(replacement_results, remove_list, current_clusters, new_strain_
         # Count new_rep if not None
         if rep["new_rep"]:
             if rep["new_rep"] in seen_genomes:
-                print(f"Genome {rep['new_rep']} appears more than once in replacement_results")
+                logging.error(f"Genome {rep['new_rep']} appears more than once in replacement_results")
                 results_ok = False
             seen_genomes.add(rep["new_rep"])
             replacement_count += 1
         # Count genomes in genome_list
         for g in rep["genome_list"]:
             if g in seen_genomes:
-                print(f"Genome {g} appears more than once in replacement_results")
+                logging.error(f"Genome {g} appears more than once in replacement_results")
                 results_ok = False
             seen_genomes.add(g)
             replacement_count += 1
 
     # Step 4: Check that replacement_count equals at least the original count minus the number of removed genomes
     if replacement_count != total_expected:
-        print(f"Replacement results ({replacement_count}) do not match the expected number of genomes "
+        logging.error(f"Replacement results ({replacement_count}) do not match the expected number of genomes "
               f"({total_expected})")
         results_ok = False
 
