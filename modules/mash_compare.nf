@@ -7,8 +7,8 @@ process MASH_COMPARE {
         mode: 'copy',
         failOnError: true
     )
-
-    container 'quay.io/biocontainers/mash:2.3--hb105d93_10'
+    // using an older container because latest one fails in this module
+    container 'quay.io/biocontainers/mash:2.3--hd3113c8_4'
 
     input:
     tuple val(cluster), path(many_genomes_fnas)
