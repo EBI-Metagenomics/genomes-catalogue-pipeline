@@ -84,9 +84,9 @@ workflow UPDATE_CLUSTERS {
        
        // gather old and new genomes into one folder
        combined_genomes = COMBINE_GENOME_FOLDERS(
-        "${previous_catalogue_location}/additional_data/mgyg_genomes/",
-        PARSE_MASH_FOR_UPDATE.out.new_species_folder
-    )
+            "${previous_catalogue_location}/additional_data/mgyg_genomes/",
+            new_genomes
+       )
     
         CLASSIFY_CLUSTERS (
             combined_genomes,
