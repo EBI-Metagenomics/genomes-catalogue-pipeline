@@ -75,18 +75,21 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     current_clusters_minus_removed, remove_log = remove_genomes_from_clusters(current_clusters, remove_list)
     rep_lookup_dict = invert_clusters(current_clusters)  # any_catalogue_genome → its_species_rep
     
-    replacement_results, report_to_print = recompute_clusters(qs_values, isolates, current_clusters_minus_removed, 
-                                                              new_strain_placement, repeat_strain_placement, 
-                                                              rep_lookup_dict, remove_list)
+    replacement_results, stats_to_print, report_to_print = recompute_clusters(qs_values, isolates, 
+                                                                              current_clusters_minus_removed, 
+                                                                              new_strain_placement, 
+                                                                              repeat_strain_placement, rep_lookup_dict, 
+                                                                              remove_list)
 
-    sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, report_to_print)
+    sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, stats_to_print)
 
 
 def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
                        repeat_strain_placement, rep_lookup_dict, remove_list):
     replacement_results = copy.deepcopy(current_clusters_minus_removed)
     added_genomes = dict()  # cluster_rep → [list of added genomes]
-    stats_to_print = dict()
+    stats_to_print = dict()  # numbers of added strains and species
+    report_to_print = dict()  # reasons for rep replacements
     repeat_strains_added = 0
     new_strains_added = 0
     # Step 1: add in repeat strains
@@ -114,15 +117,16 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
         replacement_results = add_to_clusters(genome, placement.closest_rep, replacement_results)
         added_genomes.setdefault(placement.closest_rep, []).append(genome)
         new_strains_added += 1
-    
+    # Todo: factor in whether a genome is an isolate or not below
     # Step 3: decide on rep replacement
-    replacement_results = replacement_decision(replacement_results, added_genomes, qs_values, remove_list, 
-                                               stats_to_print)
+    replacement_results, stats_to_print, report_to_print = replacement_decision(replacement_results, added_genomes, 
+                                                                                qs_values, remove_list, stats_to_print, 
+                                                                                report_to_print)
     
     stats_to_print["new_strains_added"] = new_strains_added
     stats_to_print["repeat_strains_added"] = repeat_strains_added
     
-    return replacement_results, stats_to_print
+    return replacement_results, stats_to_print, report_to_print
 
 
 def add_to_clusters(genome, rep, replacement_results):
@@ -130,15 +134,13 @@ def add_to_clusters(genome, rep, replacement_results):
     return replacement_results
 
 
-def replacement_decision(replacement_results, added_genomes, qs_values, remove_list, stats_to_print):
+def replacement_decision(replacement_results, added_genomes, qs_values, remove_list, stats_to_print, report_to_print):
     for old_rep, new_genome_list in added_genomes.items():
         # Check if there is no rep at all because it was removed - in that case we must select new rep
         if not replacement_results[old_rep]["new_rep"]:
             new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values, 
                                          replacement_required=True)
-            stats_to_print.setdefault("new_reps", dict())
-
-            
+            report_to_print.setdefault("new_reps", dict())    
         else:
             new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
                                          replacement_required=False)
@@ -153,7 +155,7 @@ def replacement_decision(replacement_results, added_genomes, qs_values, remove_l
                 replacement_results[old_rep]["new_rep"] = new_rep
     # remove new_rep from genome lists, add in old_reps
     replacement_results = clean_up_result(replacement_results, remove_list)  
-    return replacement_results
+    return replacement_results, stats_to_print, report_to_print
 
 
 def clean_up_result(replacement_results, remove_list):
