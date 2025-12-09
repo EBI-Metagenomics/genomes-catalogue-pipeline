@@ -181,5 +181,11 @@ process COMBINE_GENOME_FOLDERS {
     mkdir -p combined_genomes
     cp -r ${folder_one}/* combined_genomes/ || true
     cp -r ${folder_two}/* combined_genomes/ || true
+    
+    # change extension of all genomes to .fa
+    for f in combined_genomes/*; do
+        base="${f%.*}"
+        mv "$f" "${base}.fa"
+    done
     """
 }
