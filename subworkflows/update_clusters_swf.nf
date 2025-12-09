@@ -10,6 +10,7 @@ include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { SPLIT_DREP as SPLIT_DREP_NEW_SPECIES } from '../modules/split_drep'
 include { PRINT_DREP_FILES } from '../modules/print_drep_files'
+include { MASH_COMPARE } from '../modules/mash_compare'
 
 workflow UPDATE_CLUSTERS {
     take:
@@ -105,6 +106,14 @@ workflow UPDATE_CLUSTERS {
             return tuple(cluster, fna_file)
         }
         
+        single_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.one_genome_fnas | flatten | map(groupGenomes)
+        many_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.many_genomes_fnas | flatten | map(groupGenomes)
+        
+        // Make mash splits
+        MASH_COMPARE(
+            many_genomes_fna_tuples | groupTuple
+        )
+        
     emit:
         // tuples (many_genomes and single_genomes) from classify_clusters.nf
         // text_split, Cdb, Sdb from RUN_CLUSTER_UPDATE (replace_species_representative.py + output of new species drep)
@@ -112,9 +121,9 @@ workflow UPDATE_CLUSTERS {
         assembly_stats_all_genomes = RUN_CLUSTER_UPDATE.out.assembly_stats_all_genomes
         extra_weight_table_all_genomes = RUN_CLUSTER_UPDATE.out.extra_weight_table_all_genomes
         checkm_all_genomes = RUN_CLUSTER_UPDATE.out.checkm_all_genomes
-        //mash_splits = SPLIT_DREP.out.mash_splits // needs to be reworked for genome addition/removal
-        single_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.one_genome_fnas | flatten | map(groupGenomes)
-        many_genomes_fna_tuples = CLASSIFY_CLUSTERS.out.many_genomes_fnas | flatten | map(groupGenomes)
+        mash_splits = MASH_COMPARE.out.mash_split
+        single_genomes_fna_tuples = single_genomes_fna_tuples
+        many_genomes_fna_tuples = many_genomes_fna_tuples
         drep_split_text = RUN_CLUSTER_UPDATE.out.updated_text_split
         updated_genomes_name_mapping = RUN_CLUSTER_UPDATE.out.updated_genomes_name_mapping
         
