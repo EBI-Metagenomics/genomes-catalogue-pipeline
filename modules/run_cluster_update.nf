@@ -19,9 +19,6 @@ process RUN_CLUSTER_UPDATE {
     path "assembly_stats_all_genomes.tsv", emit: assembly_stats_all_genomes
     path "extra_weight_table_all_genomes.tsv", emit: extra_weight_table_all_genomes
     path "update_clusters_split_filtered.txt", emit: updated_text_split
-    path "update_Cdb.csv", emit: updated_cdb_csv
-    path "update_Mdb.csv", emit: updated_mdb_csv
-    path "update_Sdb.csv", emit: updated_sdb_csv
     path "update_renamed_genomes_name_mapping.tsv", emit: updated_genomes_name_mapping
     path "checkm_all_genomes.csv", emit: checkm_all_genomes
     path "update_cluster_rep_changes_report.tsv", emit: species_rep_replacement_report
