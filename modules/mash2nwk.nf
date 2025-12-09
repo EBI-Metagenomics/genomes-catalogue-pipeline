@@ -1,5 +1,7 @@
 process MASH_TO_NWK {
 
+    tag "${cluster}"
+    
     publishDir(
         path: "${params.outdir}",
         saveAs: {
