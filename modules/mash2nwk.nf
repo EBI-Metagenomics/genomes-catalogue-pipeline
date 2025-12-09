@@ -1,6 +1,6 @@
 process MASH_TO_NWK {
 
-    tag "${cluster}"
+    tag "${mash.baseName}"
     
     publishDir(
         path: "${params.outdir}",
