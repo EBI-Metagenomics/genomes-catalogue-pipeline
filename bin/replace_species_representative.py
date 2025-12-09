@@ -51,7 +51,7 @@ class Quality:
     n_contigs: int
     
     
-def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_dir, output_prefix, assembly_stats_file, 
+def main(cluster_split_file, new_strain_file, repeat_strain_file, output_prefix, assembly_stats_file, 
          isolates_file, checkm_file, remove_list_file, new_species_split_file=None):
     
     new_strain_placement = load_strain_placement(new_strain_file, same_strain=False)  # strain_acc → Placement
@@ -65,7 +65,7 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     # everything - this is not an update, just a reannotation
     if not (new_strain_placement or remove_list or repeat_strain_placement or new_species_split_file):
         logging.info("No genomes are added or removed, printing old catalogue results and existing.")
-        output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix)
+        output_existing_drep_tables(cluster_split_file, output_prefix)
         return
     
     logging.info("Evaluating changes...")
@@ -412,12 +412,7 @@ def remove_genomes_from_clusters(current_clusters, remove_list):
     return current_clusters_minus_removed, remove_log
     
     
-def output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix):
-    all_paths = glob.glob(os.path.join(previous_drep_dir, '**', '*'), recursive=True)
-    drep_files = [f for f in all_paths if os.path.isfile(f)]
-    for file in drep_files:
-        new_filename = f"{output_prefix}_{os.path.basename(file)}"
-        shutil.copy(file, new_filename)
+def output_existing_drep_tables(cluster_split_file, output_prefix):
     updated_cluster_split_file = f"{output_prefix}_{os.path.basename(cluster_split_file)}"
     shutil.copy(cluster_split_file, updated_cluster_split_file)
     logging.info("No changes made to the clusters. Original file contents are written to output.")
@@ -585,8 +580,6 @@ def parse_args():
                         help='Path to the file containing a list of new strains')
     parser.add_argument('--repeat-strain-list', required=False,
                         help='Path to the file containing a list of repeat strains')
-    parser.add_argument('--previous-drep-dir', required=False,
-                        help='Path to the drep_data_tables folder for the previous catalogues')
     parser.add_argument('-o', '--output-prefix', required=True,
                         help='Prefix to use for the output files')
     parser.add_argument('--assembly-stats', required=True,
@@ -607,6 +600,6 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.cluster_split_file, args.new_strain_list, args.repeat_strain_list, args.previous_drep_dir, args.output_prefix, 
+    main(args.cluster_split_file, args.new_strain_list, args.repeat_strain_list, args.output_prefix, 
          args.assembly_stats, args.isolates, args.checkm, args.remove_list, args.new_species_split_file)
     

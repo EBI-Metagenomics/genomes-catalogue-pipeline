@@ -28,9 +28,6 @@ process RUN_CLUSTER_UPDATE {
         
     script:
     """
-    tar -xf ${previous_catalogue_location}/additional_data/intermediate_files/drep_data_tables.tar.gz
-    # then unpacked folder will be called 'drep_output'
-    
     # filter out singletons from the previous version's cluster split file if they weren't
     # in the metadata table (meaning they were filtered out by GUNC)
     
@@ -55,7 +52,6 @@ process RUN_CLUSTER_UPDATE {
     --cluster-split-file clusters_split_filtered.txt \
     --new-strain-list ${new_strains_file} \
     --repeat-strain-list ${repeat_strains_file} \
-    --previous-drep-dir drep_output \
     --output-prefix update \
     --assembly-stats assembly_stats_all_genomes.tsv \
     --isolates extra_weight_table_all_genomes.tsv \
