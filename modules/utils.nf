@@ -184,8 +184,8 @@ process COMBINE_GENOME_FOLDERS {
     
     # change extension of all genomes to .fa
     for f in combined_genomes/*; do
-        base="${f%.*}"
-        mv "$f" "${base}.fa"
+        base="\${f%.*}"
+        mv "\$f" "\${base}.fa"
     done
     """
 }
