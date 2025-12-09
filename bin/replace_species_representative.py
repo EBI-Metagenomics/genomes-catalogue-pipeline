@@ -497,7 +497,7 @@ def load_qs(stats_file, checkm_file):
 
 
 def calc_qs(completeness, contamination, n50):
-    qs = float(completeness) - float(contamination) * 5 + 0.5 * math.log(float(n50))
+    qs = float(completeness) - float(contamination) * 5 + 0.5 * math.log10(float(n50))
     return qs
 
 
