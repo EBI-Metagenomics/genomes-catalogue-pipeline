@@ -57,9 +57,9 @@ workflow UPDATE_CLUSTERS {
         )
         
         SPLIT_DREP_NEW_SPECIES (
-            DREP.out.updated_cdb_csv,
-            DREP.out.updated_mdb_csv,
-            DREP.out.updated_sdb_csv
+            DREP.out.cdb_csv,
+            DREP.out.mdb_csv,
+            DREP.out.sdb_csv
         )
         
          // TODO: make empty outputs if we are not adding anything to the catalogue
