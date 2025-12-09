@@ -3,7 +3,7 @@
  */
 
 include { DREP as DREP_CATALOGUE } from '../modules/drep'
-include { SPLIT_DREP } from '../modules/split_drep'
+include { SPLIT_DREP as SPLIT_DREP_MAIN } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 
 workflow DREP_SWF {
@@ -21,7 +21,7 @@ workflow DREP_SWF {
             drep_args
         )
 
-        SPLIT_DREP(
+        SPLIT_DREP_MAIN(
             DREP_CATALOGUE.out.cdb_csv,
             DREP_CATALOGUE.out.mdb_csv,
             DREP_CATALOGUE.out.sdb_csv
@@ -29,7 +29,7 @@ workflow DREP_SWF {
 
         CLASSIFY_CLUSTERS(
             genomes_directory,
-            SPLIT_DREP.out.text_split
+            SPLIT_DREP_MAIN.out.text_split
         )
 
         groupGenomes = { fna_file ->
@@ -44,8 +44,8 @@ workflow DREP_SWF {
     emit:
         many_genomes_fna_tuples = many_genomes_fna_tuples
         single_genomes_fna_tuples = single_genomes_fna_tuples
-        drep_split_text = SPLIT_DREP.out.text_split
-        mash_splits = SPLIT_DREP.out.mash_splits
+        drep_split_text = SPLIT_DREP_MAIN.out.text_split
+        mash_splits = SPLIT_DREP_MAIN.out.mash_splits
         drep_cdb_csv = DREP_CATALOGUE.out.cdb_csv
         drep_mdb_csv = DREP_CATALOGUE.out.mdb_csv
         drep_sdb_csv = DREP_CATALOGUE.out.sdb_csv

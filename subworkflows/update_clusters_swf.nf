@@ -56,9 +56,7 @@ workflow UPDATE_CLUSTERS {
             drep_args
         )
          // TODO: make empty outputs if we are not adding anything to the catalogue
-         
-         /////// STEP 4: remove genomes from the original clusters (if there is anything to remove)
-              
+                       
         // gather genome stats and remake clusters
         // TODO: add new drep outputs to this
         RUN_CLUSTER_UPDATE (
