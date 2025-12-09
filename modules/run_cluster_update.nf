@@ -26,6 +26,7 @@ process RUN_CLUSTER_UPDATE {
     path "update_Sdb.csv", emit: updated_sdb_csv
     path "update_renamed_genomes_name_mapping.tsv", emit: updated_genomes_name_mapping
     path "checkm_all_genomes.csv", emit: checkm_all_genomes
+    path "update_cluster_rep_replacement_report.tsv", emit: species_rep_replacement_report
         
     script:
     """

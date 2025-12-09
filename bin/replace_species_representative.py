@@ -82,7 +82,7 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
                                                                               remove_list)
 
     sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, stats_to_print)
-    write_report_tsv(report_to_print, f"{output_prefix}_cluster_update_report.tsv")
+    write_report_tsv(report_to_print, f"{output_prefix}_cluster_rep_replacement_report.tsv")
 
 
 def write_report_tsv(report_dict, outfile):
