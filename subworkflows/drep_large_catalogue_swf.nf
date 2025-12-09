@@ -5,7 +5,7 @@
 include { DREP_CHUNKED } from '../modules/drep_chunked'
 include { DREP_CHUNKED as DREP_SPECIES_REPS } from '../modules/drep_chunked'
 include { COMBINE_CHUNKED_DREP } from '../modules/combine_chunked_drep'
-include { SPLIT_DREP_MAIN } from '../modules/split_drep'
+include { SPLIT_DREP as SPLIT_DREP_MAIN } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { COLLECT_DREP_RESULTS } from '../modules/utils'
 include { MASH_COMPARE } from '../modules/mash_compare'
