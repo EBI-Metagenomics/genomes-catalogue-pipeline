@@ -8,7 +8,7 @@ include { PARSE_MASH_FOR_UPDATE } from '../modules/parse_mash_for_update'
 include { DREP } from '../modules/drep'
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
-include { SPLIT_DREP } from '../modules/split_drep'
+include { SPLIT_DREP as SPLIT_DREP_NEW_SPECIES } from '../modules/split_drep'
 include { PRINT_DREP_FILES } from '../modules/print_drep_files'
 
 workflow UPDATE_CLUSTERS {
@@ -55,6 +55,13 @@ workflow UPDATE_CLUSTERS {
             extra_weight_table_new_genomes,
             drep_args
         )
+        
+        SPLIT_DREP_NEW_SPECIES (
+            DREP.out.updated_cdb_csv,
+            DREP.out.updated_mdb_csv,
+            DREP.out.updated_sdb_csv
+        )
+        
          // TODO: make empty outputs if we are not adding anything to the catalogue
                        
         // gather genome stats and remake clusters
@@ -70,9 +77,7 @@ workflow UPDATE_CLUSTERS {
             genomes_name_mapping,
             PARSE_MASH_FOR_UPDATE.out.new_strains_file,
             PARSE_MASH_FOR_UPDATE.out.repeat_strains_file,
-            DREP.out.cdb_csv,
-            DREP.out.mdb_csv,
-            DREP.out.sdb_csv
+            SPLIT_DREP_NEW_SPECIES.out.text_split
         )
         
         // gather all genomes into one folder, run classify_clusters.nf on it (using the clusters_split file)
@@ -83,17 +88,17 @@ workflow UPDATE_CLUSTERS {
         )
         
         // Run only to retain mash_splits; temporary solution - works for reannotation only
-        SPLIT_DREP(
-            RUN_CLUSTER_UPDATE.out.updated_cdb_csv,
-            RUN_CLUSTER_UPDATE.out.updated_mdb_csv,
-            RUN_CLUSTER_UPDATE.out.updated_sdb_csv
-        )
+        //SPLIT_DREP(
+        //    RUN_CLUSTER_UPDATE.out.updated_cdb_csv,
+        //    RUN_CLUSTER_UPDATE.out.updated_mdb_csv,
+        //    RUN_CLUSTER_UPDATE.out.updated_sdb_csv
+        //)
         
-        PRINT_DREP_FILES(
-            RUN_CLUSTER_UPDATE.out.updated_cdb_csv,
-            RUN_CLUSTER_UPDATE.out.updated_mdb_csv,
-            RUN_CLUSTER_UPDATE.out.updated_sdb_csv
-        )
+        //PRINT_DREP_FILES(
+        //    RUN_CLUSTER_UPDATE.out.updated_cdb_csv,
+        //    RUN_CLUSTER_UPDATE.out.updated_mdb_csv,
+        //    RUN_CLUSTER_UPDATE.out.updated_sdb_csv
+        //)
         
         groupGenomes = { fna_file ->
             def cluster = fna_file.parent.toString().tokenize("/")[-1]

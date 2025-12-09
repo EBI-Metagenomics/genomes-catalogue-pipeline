@@ -52,7 +52,7 @@ class Quality:
     
     
 def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_dir, output_prefix, assembly_stats_file, 
-         isolates_file, checkm_file, remove_list_file):
+         isolates_file, checkm_file, remove_list_file, new_species_split_file=None):
     
     new_strain_placement = load_strain_placement(new_strain_file, same_strain=False)  # strain_acc → Placement
     repeat_strain_placement = load_strain_placement(repeat_strain_file, same_strain=True)  # strain_acc → Placement
@@ -63,7 +63,7 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
     
     # If we are not adding or removing genomes, we don't need to do anything, just output old files for 
     # everything - this is not an update, just a reannotation
-    if not (new_strain_placement or remove_list or repeat_strain_placement):  # TODO: add new species here too
+    if not (new_strain_placement or remove_list or repeat_strain_placement or new_species_split_file):
         logging.info("No genomes are added or removed, printing old catalogue results and existing.")
         output_existing_drep_tables(previous_drep_dir, cluster_split_file, output_prefix)
         return
@@ -82,8 +82,33 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
                                                                               remove_list)
 
     sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, stats_to_print)
-    write_report_tsv(report_to_print, f"{output_prefix}_cluster_rep_replacement_report.tsv")
+    write_report_tsv(report_to_print, f"{output_prefix}_cluster_rep_changes_report.tsv")
+    write_cluster_split_file(replacement_results, output_prefix, new_species_split_file)
 
+
+def write_cluster_split_file(replacement_results, output_prefix, new_species_split_file):
+    output_file = f"{output_prefix}_clusters_split.txt"
+    counter = 0
+    with open(output_file, "w") as f_out:
+        # If there's an existing split file, copy it and get the last cluster number
+        if new_species_split_file:
+            with open(new_species_split_file, "r") as f_in:
+                for line in f_in:
+                    f_out.write(line)
+                    # Extract cluster number from line like "one_genome:45_0:MGYG000518610.fa"
+                    counter = int(line.strip().split(":")[1].split("_")[0])
+        
+        # Write recomputed clusters from replacement_results
+        for old_rep, data in replacement_results.items():
+            if data["new_rep"]:  # skips empty entries where species have been removed
+                counter += 1
+                genome_list = data["genome_list"]
+                new_rep = data["new_rep"]
+                cluster_size = "many_genomes" if len(genome_list) > 0 else "one_genome"
+                genome_list_str = ",".join([f"{new_rep}.fa"] + [f"{genome}.fa" for genome in genome_list])
+                line_to_print = f"{cluster_size}:{counter}_0:{genome_list_str}\n"
+                f_out.write(line_to_print)
+                
 
 def write_report_tsv(report_dict, outfile):
     """
@@ -575,11 +600,13 @@ def parse_args():
                         help='Path to the CheckM2 CSV file for all genomes (old and new)')
     parser.add_argument('--remove-list', required=False,
                         help='Path to the tab-delimited file containing a list of genomes (MGYG) to remove in column 1')
+    parser.add_argument('--new-species-split-file', required=False,
+                        help='Path to the cluster split file for new species')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
     main(args.cluster_split_file, args.new_strain_list, args.repeat_strain_list, args.previous_drep_dir, args.output_prefix, 
-         args.assembly_stats, args.isolates, args.checkm, args.remove_list)
+         args.assembly_stats, args.isolates, args.checkm, args.remove_list, args.new_species_split_file)
     

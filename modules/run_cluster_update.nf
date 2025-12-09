@@ -13,9 +13,7 @@ process RUN_CLUSTER_UPDATE {
     path new_genomes_name_mapping
     path new_strains_file
     path repeat_strains_file
-    path new_species_cdb_csv
-    path new_species_mdb_csv
-    path new_species_sdb_csv       
+    path new_species_split_file, stageAs: "new_species_cluster_split.txt"      
     
     output:
     path "assembly_stats_all_genomes.tsv", emit: assembly_stats_all_genomes
@@ -26,7 +24,7 @@ process RUN_CLUSTER_UPDATE {
     path "update_Sdb.csv", emit: updated_sdb_csv
     path "update_renamed_genomes_name_mapping.tsv", emit: updated_genomes_name_mapping
     path "checkm_all_genomes.csv", emit: checkm_all_genomes
-    path "update_cluster_rep_replacement_report.tsv", emit: species_rep_replacement_report
+    path "update_cluster_rep_changes_report.tsv", emit: species_rep_replacement_report
         
     script:
     """
@@ -62,7 +60,8 @@ process RUN_CLUSTER_UPDATE {
     --assembly-stats assembly_stats_all_genomes.tsv \
     --isolates extra_weight_table_all_genomes.tsv \
     --checkm checkm_all_genomes.csv \
-    --remove-list ${remove_genomes}
+    --remove-list ${remove_genomes} \
+    --new-species-split-file new_species_cluster_split.txt
     
     # combine name mapping files
     if [ -s ${new_genomes_name_mapping} ]; then
