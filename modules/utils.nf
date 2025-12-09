@@ -167,3 +167,19 @@ process COLLECT_FAILED_GUNC {
     done
     """
 }
+
+process COMBINE_GENOME_FOLDERS {
+    input:
+    path folder_one
+    path folder_two
+    
+    output:
+    path "combined_genomes"
+    
+    script:
+    """
+    mkdir -p combined_genomes
+    cp -r ${folder_one}/* combined_genomes/ || true
+    cp -r ${folder_two}/* combined_genomes/ || true
+    """
+}

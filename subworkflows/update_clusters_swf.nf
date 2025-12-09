@@ -11,6 +11,7 @@ include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { SPLIT_DREP as SPLIT_DREP_NEW_SPECIES } from '../modules/split_drep'
 include { PRINT_DREP_FILES } from '../modules/print_drep_files'
 include { MASH_COMPARE } from '../modules/mash_compare'
+include { COMBINE_GENOME_FOLDERS } from '../modules/utils'
 
 workflow UPDATE_CLUSTERS {
     take:
@@ -80,11 +81,15 @@ workflow UPDATE_CLUSTERS {
             PARSE_MASH_FOR_UPDATE.out.repeat_strains_file,
             SPLIT_DREP_NEW_SPECIES.out.text_split
         )
-        
-        // gather all genomes into one folder, run classify_clusters.nf on it (using the clusters_split file)
+       
+       // gather old and new genomes into one folder
+       combined_genomes = COMBINE_GENOME_FOLDERS(
+        "${previous_catalogue_location}/additional_data/mgyg_genomes/",
+        PARSE_MASH_FOR_UPDATE.out.new_species_folder
+    )
+    
         CLASSIFY_CLUSTERS (
-            // temporary solution, replace with all genomes folder
-            "${previous_catalogue_location}/additional_data/mgyg_genomes/",
+            combined_genomes,
             RUN_CLUSTER_UPDATE.out.updated_text_split
         )
         
