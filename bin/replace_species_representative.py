@@ -82,8 +82,38 @@ def main(cluster_split_file, new_strain_file, repeat_strain_file, previous_drep_
                                                                               remove_list)
 
     sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, stats_to_print)
+    write_report_tsv(report_to_print, f"{output_prefix}_cluster_update_report.tsv")
 
 
+def write_report_tsv(report_dict, outfile):
+    """
+    Writes the report_to_print dictionary to a TSV.
+    Only prints fields that exist in each entry (missing fields become blank).
+    """
+
+    # Define full set of expected keys in the desired order
+    fieldnames = [
+        "old_rep",
+        "new_rep",
+        "reason",
+        "old_comp", "old_cont", "old_qs", "old_n50", "old_length",
+        "new_comp", "new_cont", "new_qs", "new_n50", "new_length",
+        "quality_improvement"
+    ]
+
+    with open(outfile, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter="\t")
+        writer.writeheader()
+
+        for genome_id, info in report_dict.items():
+            row = {"old_rep": genome_id}
+            # Add only existing fields; missing ones will be written as blanks
+            for key in fieldnames[1:]:  # skip "id"
+                if key in info:
+                    row[key] = info[key]
+            writer.writerow(row)
+        
+        
 def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
                        repeat_strain_placement, rep_lookup_dict, remove_list):
     replacement_results = copy.deepcopy(current_clusters_minus_removed)
@@ -117,16 +147,25 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
         replacement_results = add_to_clusters(genome, placement.closest_rep, replacement_results)
         added_genomes.setdefault(placement.closest_rep, []).append(genome)
         new_strains_added += 1
-    # Todo: factor in whether a genome is an isolate or not below
     # Step 3: decide on rep replacement
     replacement_results, stats_to_print, report_to_print = replacement_decision(replacement_results, added_genomes, 
                                                                                 qs_values, remove_list, stats_to_print, 
-                                                                                report_to_print)
+                                                                                report_to_print, isolates)
     
     stats_to_print["new_strains_added"] = new_strains_added
     stats_to_print["repeat_strains_added"] = repeat_strains_added
     
+    # Step 4: record species that have been completely removed
+    report_to_print = add_removed_species(report_to_print, replacement_results)
+    
     return replacement_results, stats_to_print, report_to_print
+
+
+def add_removed_species(report_to_print, replacement_results):
+    for old_rep, replacement_data in replacement_results.items():
+        if not replacement_results[old_rep]["new_rep"] and len(replacement_results[old_rep]["genome_list"]) == 0:
+            report_to_print[old_rep] = {"reason": "Species removed from catalogue"}    
+    return report_to_print
 
 
 def add_to_clusters(genome, rep, replacement_results):
@@ -134,29 +173,58 @@ def add_to_clusters(genome, rep, replacement_results):
     return replacement_results
 
 
-def replacement_decision(replacement_results, added_genomes, qs_values, remove_list, stats_to_print, report_to_print):
-    for old_rep, new_genome_list in added_genomes.items():
-        # Check if there is no rep at all because it was removed - in that case we must select new rep
-        if not replacement_results[old_rep]["new_rep"]:
-            new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values, 
-                                         replacement_required=True)
-            report_to_print.setdefault("new_reps", dict())    
+def replacement_decision(replacement_results, added_genomes_dict, qs_values, remove_list, stats_to_print, report_to_print,
+                         isolates):
+    # ------------------------------------------------------------------
+    # Helper: Build report entry for a replacement
+    # ------------------------------------------------------------------
+    def add_report_entry(old_rep, new_rep):
+        if old_rep in remove_list:
+            reason = "Previous species representative genome has been removed from the catalogue"
+        elif old_rep not in isolates and new_rep in isolates:
+            reason = "Replaced with an isolate"
         else:
-            new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
-                                         replacement_required=False)
+            reason = "Replaced with a higher quality genome"
+
+        report_to_print[old_rep] = {
+            "new_rep": new_rep,
+            "reason": reason,
+            "old_comp": qs_values[old_rep].completeness,
+            "old_cont": qs_values[old_rep].contamination,
+            "old_qs": qs_values[old_rep].qs,
+            "old_n50": qs_values[old_rep].n50,
+            "old_length": qs_values[old_rep].length,
+            "new_comp": qs_values[new_rep].completeness,
+            "new_cont": qs_values[new_rep].contamination,
+            "new_qs": qs_values[new_rep].qs,
+            "new_n50": qs_values[new_rep].n50,
+            "new_length": qs_values[new_rep].length,
+            "quality_improvement": qs_values[new_rep].qs/qs_values[old_rep].qs
+        }
+        
+    for old_rep, new_genome_list in added_genomes_dict.items():
+        # Check if there is no rep at all because it was removed - in that case we must select new rep
+        must_replace = not replacement_results[old_rep]["new_rep"]
+        new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values, isolates, 
+                                     replacement_required=must_replace)   
+
         if new_rep:
             replacement_results[old_rep]["new_rep"] = new_rep
-    # Go through clusters that lost species rep due to genome removal but had no new genomes added
+            add_report_entry(old_rep, new_rep)
+    
+    # Go through clusters that lost species rep due to genome removal but had no new genomes added.
+    # In such cases the old genome will not be in the list of keys of added_genomes_dict.
     for old_rep in replacement_results:
-        if old_rep not in added_genomes and not replacement_results[old_rep]["new_rep"]:
-            new_rep = select_replacement(replacement_results, old_rep, [], qs_values,
+        if old_rep not in added_genomes_dict and not replacement_results[old_rep]["new_rep"]:
+            new_rep = select_replacement(replacement_results, old_rep, [], qs_values, isolates, 
                                          replacement_required=True)
             if new_rep:
                 replacement_results[old_rep]["new_rep"] = new_rep
+                add_report_entry(old_rep, new_rep)
     # remove new_rep from genome lists, add in old_reps
-    replacement_results = clean_up_result(replacement_results, remove_list)  
+    replacement_results = clean_up_result(replacement_results, remove_list)
     return replacement_results, stats_to_print, report_to_print
-
+        
 
 def clean_up_result(replacement_results, remove_list):
     for old_rep in replacement_results:
@@ -181,7 +249,7 @@ def clean_up_result(replacement_results, remove_list):
     return replacement_results
 
 
-def select_replacement(replacement_results, old_rep, new_genome_list, qs_values, replacement_required=False):
+def select_replacement(replacement_results, old_rep, new_genome_list, qs_values, isolates, replacement_required=False):
     """
     Choose a replacement genome for old_rep.
 
@@ -189,9 +257,12 @@ def select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
         - Look at replacement_results[old_rep]["genome_list"]
         - Choose genome with highest QS
         - Break ties using highest N50
+        - If replacement_results[old_rep]["genome_list"] contains isolates, only choose among isolates
 
     If replacement_required = False:
         - Look at new_genome_list
+        - If current rep is an isolate or there are any isolates in new_genome_list, only consider isolates as a
+         replacement
         - Use evaluate_quality_increase() to see if any genome is sufficiently better
         - Among genomes that pass, choose the one with:
               1. highest QS
@@ -200,26 +271,58 @@ def select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
     """
     old_quality = qs_values[old_rep]
 
-    # Determine candidate pool
-    replacement_pool = (
+    # ---------------------------------------------------------
+    # STEP 1: Determine candidate genome pool to select a replacement species rep from (before isolate filtering)
+    # ---------------------------------------------------------
+    base_replacement_pool = (
         replacement_results[old_rep]["genome_list"]
         if replacement_required else
         new_genome_list
     )
     
-    if not replacement_pool:
+    if not base_replacement_pool:
+        return ""
+    
+    # ---------------------------------------------------------
+    # STEP 2: Isolate-based filtering
+    # ---------------------------------------------------------
+
+    # Identify which members of the base pool are isolates
+    replacement_pool_isolates = [g for g in base_replacement_pool if g in isolates]
+    
+    if replacement_required:
+        # If any isolates are present in the pool → only consider isolates
+        if replacement_pool_isolates:
+            candidate_pool = replacement_pool_isolates
+        else:
+            candidate_pool = base_replacement_pool
+
+    else:
+        # Replacement not required:
+        # If old rep is an isolate OR pool contains isolates → restrict to isolates
+        if (old_rep in isolates) or replacement_pool_isolates:
+            candidate_pool = replacement_pool_isolates
+        else:
+            candidate_pool = base_replacement_pool
+
+    if not candidate_pool:
         return ""
 
-    # CASE 1: replacement required → pick best by QS, then N50
+    # ---------------------------------------------------------
+    # STEP 3a: replacement required → pick best by QS, then N50
+    # ---------------------------------------------------------
     if replacement_required:
         return max(
-            replacement_pool,
+            candidate_pool,
             key=lambda g: (qs_values[g].qs, qs_values[g].n50)
         )
 
-    # CASE 2: replacement only if there is a better genome → filter by quality improvement first
+    # ---------------------------------------------------------
+    # STEP 3b: replacement_required=False → replacement only if there is a better genome → filter by quality 
+    # improvement first
+    # ---------------------------------------------------------
     passing = [
-        genome for genome in replacement_pool
+        genome for genome in candidate_pool
         if evaluate_quality_increase(qs_values[genome], old_quality)
     ]
 
@@ -369,8 +472,8 @@ def load_qs(stats_file, checkm_file):
                 contamination=float(row["contamination"]),
                 n50=0,  # placeholder, will fill later
                 qs=0.0,  # placeholder, will calculate later
-                length=0,  # placeholder, will calculate later
-                n_contigs=0  # placeholder, will calculate later
+                length=0,  # placeholder, will fill later
+                n_contigs=0  # placeholder, will fill later
             )
             
     # Load N50        
