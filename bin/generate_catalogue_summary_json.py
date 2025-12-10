@@ -22,11 +22,13 @@ import json
 import sys
 
 
-def main(protein_count_file, metadata_table_file, outfile):
+def main(protein_count_file, cluster90_count_file, metadata_table_file, outfile):
     results = dict()
     num_proteins = load_proteins(protein_count_file)
+    num_clusters90 = load_proteins(cluster90_count_file)
     num_clusters_with_isolates, num_multigenome_clusters = load_metadata(metadata_table_file)
     results["Total proteins"] = num_proteins
+    results["Proteins clustered at 90% amino acid identity"] = num_clusters90
     results["Clusters with isolate genomes"] = num_clusters_with_isolates
     results["Clusters with pan-genomes"] = num_multigenome_clusters
     save_dict_to_json(results, outfile)
@@ -82,6 +84,8 @@ def parse_args():
     )
     parser.add_argument('-p', '--protein-count', required=True, help="A text file containing the number of proteins "
                                                                      "in the catalogue (from mmseqs)")
+    parser.add_argument('-c', '--cluster90-count', required=True, help="A text file containing the number of protein "
+                                                                       "clusters clustered at 90% aa identity")
     parser.add_argument('-m', '--metadata-table', required=True, help="Path to the metadata file")
     parser.add_argument('-o', '--outfile', required=True, help="Path to the output JSON file.")
     return parser.parse_args()
@@ -89,4 +93,4 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.protein_count, args.metadata_table, args.outfile)
+    main(args.protein_count, args.cluster90_count, args.metadata_table, args.outfile)
