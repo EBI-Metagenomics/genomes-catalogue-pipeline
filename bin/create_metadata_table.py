@@ -137,14 +137,20 @@ def add_sample_project_loc(df, location_file, previous_version_data):
     df = df.merge(location_data_df, on='Genome_accession', how='left')
 
     # If previous version data is available, override where applicable
+    # Replace uninformative country/continent with "not provided" as is already done for all new genomes
+    uninformative = {"not collected", "not present", "na", "n/a", "missing", "not applicable"}
     if not previous_version_data.empty:
         prev_data_dict = previous_version_data.set_index("Genome").to_dict(orient="index")
         for idx, row in df.iterrows():
             genome = row["Genome"]
             if genome in prev_data_dict:
                 for col in ["Sample_accession", "Study_accession", "Country", "Continent"]:
-                    # TODO: add checks that this is informative (not "not provided")
-                    df.at[idx, col] = prev_data_dict[genome][col]
+                    val = prev_data_dict[genome][col]
+                    if col in ["Country", "Continent"]:
+                        if isinstance(val, str) and val.strip().lower() in uninformative:
+                            df.at[idx, col] = "not provided"
+                            continue
+                    df.at[idx, col] = val
                     
     return df
 
