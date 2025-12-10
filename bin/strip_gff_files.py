@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
+# The script was written as part of the catalogue update pipeline but is not currently in use. It may be 
+# reintegrated in the future.
+
 import argparse
 
 
