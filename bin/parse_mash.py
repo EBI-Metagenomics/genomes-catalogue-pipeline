@@ -162,7 +162,7 @@ def remove_extension(acc):
 def generate_output(repeat_strains, new_strains, new_species, scores, distances_to_reps, member_to_rep, outfolder, 
                     infolder, filename_dict):
     # Output paths
-    new_species_folder = os.path.join(outfolder, 'New_species')
+    new_species_folder = os.path.join(outfolder, 'new_species')
     new_strains_file = os.path.join(outfolder, 'new_strains.tsv')
     repeat_strains_file = os.path.join(outfolder, 'repeat_strains.tsv')
     

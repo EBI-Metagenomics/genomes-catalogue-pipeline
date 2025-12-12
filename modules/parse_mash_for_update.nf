@@ -8,7 +8,7 @@ process PARSE_MASH_FOR_UPDATE {
     path previous_catalogue_location
     
     output:
-    path("mash_parse_results/New_species"), emit: new_species_folder
+    path("mash_parse_results/new_species"), emit: new_species_folder
     path("mash_parse_results/new_strains.tsv"), emit: new_strains_file
     path("mash_parse_results/repeat_strains.tsv"), emit: repeat_strains_file
     
