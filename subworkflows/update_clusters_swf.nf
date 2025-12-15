@@ -93,19 +93,6 @@ workflow UPDATE_CLUSTERS {
             RUN_CLUSTER_UPDATE.out.updated_text_split
         )
         
-        // Run only to retain mash_splits; temporary solution - works for reannotation only
-        //SPLIT_DREP(
-        //    RUN_CLUSTER_UPDATE.out.updated_cdb_csv,
-        //    RUN_CLUSTER_UPDATE.out.updated_mdb_csv,
-        //    RUN_CLUSTER_UPDATE.out.updated_sdb_csv
-        //)
-        
-        //PRINT_DREP_FILES(
-        //    RUN_CLUSTER_UPDATE.out.updated_cdb_csv,
-        //    RUN_CLUSTER_UPDATE.out.updated_mdb_csv,
-        //    RUN_CLUSTER_UPDATE.out.updated_sdb_csv
-        //)
-        
         groupGenomes = { fna_file ->
             def cluster = fna_file.parent.toString().tokenize("/")[-1]
             return tuple(cluster, fna_file)
