@@ -20,7 +20,6 @@
 import argparse
 import copy
 import csv
-import glob
 import logging
 import math
 import os
