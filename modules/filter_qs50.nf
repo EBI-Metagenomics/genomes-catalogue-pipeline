@@ -9,7 +9,7 @@ process FILTER_QS50 {
     publishDir(
         path: "${params.outdir}",
         pattern: "filtered_genomes.csv",
-        saveAs: { "additional_data/intermediate_files/filtered_genomes.csv" },
+        saveAs: { "additional_data/intermediate_files/filtered_new_genomes.csv" },
         mode: "copy"
     )
 
