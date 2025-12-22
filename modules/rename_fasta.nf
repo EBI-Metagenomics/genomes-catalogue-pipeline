@@ -1,20 +1,5 @@
 process RENAME_FASTA {
 
-    publishDir(
-        path: "${params.outdir}",
-        pattern: "*.txt",
-        saveAs: { "additional_data/intermediate_files/renamed_genomes_stats.txt" },
-        mode: "copy",
-        failOnError: true
-    )
-    publishDir(
-        path: "${params.outdir}",
-        pattern: "*.tsv",
-        saveAs: { "additional_data/intermediate_files/renamed_genomes_name_mapping.tsv" },
-        mode: "copy",
-        failOnError: true
-    )
-
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'
