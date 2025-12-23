@@ -316,6 +316,10 @@ def select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
     # Identify which members of the base pool are isolates
     replacement_pool_isolates = [g for g in base_replacement_pool if g in isolates]
     
+    # If an isolate has been added and the old rep is not an isolate, replacement is required
+    if replacement_pool_isolates and old_rep not in isolates:
+        replacement_required = True
+    
     if replacement_required:
         # If any isolates are present in the pool → only consider isolates
         if replacement_pool_isolates:
