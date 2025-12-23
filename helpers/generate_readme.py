@@ -174,7 +174,7 @@ def summarise_new_genomes(new_genomes):
             study_parts.append(f"{mags} MAGs")
 
         if study_parts:
-            parts.append(f"{' and '.join(study_parts)} from study {study}.")
+            parts.append(f"{' and '.join(study_parts)} from study {study}")
 
     summary = (
         "* The following genomes were added to the catalogue: "
