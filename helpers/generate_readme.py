@@ -212,6 +212,7 @@ def summarise_new_genomes(new_genomes):
     summary = (
         "* The following genomes were added to the catalogue: "
         + ", ".join(parts)
+        + "."
     )
 
     return summary
