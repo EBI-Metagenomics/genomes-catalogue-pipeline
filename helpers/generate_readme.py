@@ -135,7 +135,7 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
                      new_species_count, new_strains_count):
     new_genome_dict = count_new_genomes(metadata_table, previous_metadata_table)
     species_rep_replacements, removals = load_rep_changes(additional_data_path)
-    changelog_header = f"## Changes in release {version} since {previous_version}"
+    changelog_header = f"## Changes in release {version} since {previous_version}\n"
     
     # Initialize lines
     lines = [changelog_header]
