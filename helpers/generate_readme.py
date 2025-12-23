@@ -16,7 +16,9 @@ def main(
     previous_readme,
     previous_version,
     previous_metadata_table,
-    additional_data_path
+    additional_data_path,
+    new_species_count,
+    new_strains_count
 ):
     # If this is a README for an updated catalogue, check that all arguments are provided
     if previous_readme or previous_version or previous_metadata_table:
@@ -42,8 +44,11 @@ def main(
     # If this is an update, generate a changelog from the previous version  
     if previous_readme:
         changelog = create_changelog(version, previous_version, metadata_table, previous_metadata_table, 
-                                     additional_data_path)
-        print(changelog)
+                                     additional_data_path, new_species_count, new_strains_count)
+        previous_changelog = extract_previous_changelogs(previous_readme)
+    else:
+        changelog = ""
+        previous_changelog = ""
         
     print_file(
         outfile_name,
@@ -57,10 +62,42 @@ def main(
         biome,
         git_link,
         archaea,
-        xlarge
+        xlarge,
+        changelog,
+        previous_changelog
     )
 
 
+def extract_previous_changelogs(previous_readme):
+    """
+    Extract the changelog section from a previous README file.
+
+    Parameters
+    ----------
+    previous_readme : str
+        Path to the previous README file.
+
+    Returns
+    -------
+    str
+        Changelog section starting from the first line that begins with
+        "## Changes in release" until the end of the file.
+        Returns an empty string if no such line is found.
+    """
+
+    changelog_lines = []
+    found = False
+
+    with open(previous_readme, "r") as fh:
+        for line in fh:
+            if not found and line.startswith("## Changes in release"):
+                found = True
+            if found:
+                changelog_lines.append(line.rstrip("\n"))  # remove trailing newline
+
+    return "\n".join(changelog_lines)
+    
+    
 def get_tree_tool(count):
     if count > 1999:
         return "fasttree"
@@ -94,7 +131,8 @@ def process_metadata_table(metadata_table):
     return total_genomes, num_reps, study_list, version, catalog_name, archaea
 
 
-def create_changelog(version, previous_version, metadata_table, previous_metadata_table, additional_data_path):
+def create_changelog(version, previous_version, metadata_table, previous_metadata_table, additional_data_path, 
+                     new_species_count, new_strains_count):
     new_genome_dict = count_new_genomes(metadata_table, previous_metadata_table)
     species_rep_replacements, removals = load_rep_changes(additional_data_path)
     changelog_header = f"## Changes in release {version} since {previous_version}"
@@ -103,21 +141,14 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
     lines = [changelog_header]
     
     if new_genome_dict:
-        total_new_species = sum(
-            study_data["new_species"]
-            for study_data in new_genome_dict.values()
-        )
 
-        total_new_strains = sum(
-            study_data["new_strains"]
-            for study_data in new_genome_dict.values()
-        )
         new_genome_line = summarise_new_genomes(new_genome_dict)
         lines.append(new_genome_line)
         
         # New species/strain line
-        if total_new_species > 0 or total_new_strains > 0:
-            new_species_line = f"This resulted in {total_new_species} new species and {total_new_strains} new strains."
+        # Todo: retrieve these numbers automatically
+        if new_species_count > 0 or new_strains_count > 0:
+            new_species_line = f"This resulted in {new_species_count} new species and {new_strains_count} new strains."
             lines.append(new_species_line)
     
     if species_rep_replacements:
@@ -281,21 +312,12 @@ def count_new_genomes(metadata_table, previous_metadata_table):
             new_genomes[study] = {
                 "isolates": 0,
                 "mags": 0,
-                "new_species": 0,
-                "new_strains": 0,
             }
 
         if genome_type == "Isolate":
             new_genomes[study]["isolates"] += 1
         elif genome_type == "MAG":
             new_genomes[study]["mags"] += 1
-
-        # Count species vs strains
-        if genome == species_rep:
-            new_genomes[study]["new_species"] += 1
-        else:
-            new_genomes[study]["new_strains"] += 1
-
     return new_genomes
 
     
@@ -311,7 +333,9 @@ def print_file(
     biome,
     git_link,
     archaea,
-    xlarge
+    xlarge,
+    changelog,
+    previous_changelog
 ):
     bacteria = int(num_species.replace(",", "")) - archaea
     tree_tool_ar = get_tree_tool(archaea)
@@ -426,6 +450,13 @@ Website URL: {url}
         catalog_name=catalog_name,
         phylo_text=phylo_text
     )
+
+    # Append changelogs if they exist
+    if changelog:
+        readme_text += "\n\n" + changelog
+    if previous_changelog:
+        readme_text += "\n\n" + previous_changelog
+        
     with open(outfile_name, "w") as outfile:
         outfile.write(readme_text)
 
@@ -481,6 +512,14 @@ def parse_args():
         help="If this README is for an update, provide the path to the 'additional_data' folder "
              "(in the catalogue pipeline output).",
     )
+    parser.add_argument(
+        "--new-species-count", required=False,
+        help="If this README is for an update, provide the number of new species added.",
+    )
+    parser.add_argument(
+        "--new-strains-count", required=False,
+        help="If this README is for an update, provide the number of new strains added.",
+    )
     return parser.parse_args()
 
 
@@ -497,4 +536,6 @@ if __name__ == "__main__":
         args.previous_version,
         args.previous_metadata_table,
         args.additional_data_path,
+        args.new_species_count,
+        args.new_strains_count,
     )
