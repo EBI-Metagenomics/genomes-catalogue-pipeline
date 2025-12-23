@@ -172,6 +172,8 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
         added_genomes.setdefault(placement.closest_rep, []).append(genome)
         new_strains_added += 1
     # Step 3: decide on rep replacement
+    # TODO: add replacement for cases where no genomes were added or removed, but rep changed because of the 
+    #  CheckM -> CheckM2 switch
     replacement_results, stats_to_print, report_to_print = replacement_decision(replacement_results, added_genomes, 
                                                                                 qs_values, remove_list, stats_to_print, 
                                                                                 report_to_print, isolates)
