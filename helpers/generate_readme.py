@@ -2,6 +2,8 @@
 # coding=utf-8
 
 import argparse
+from pathlib import Path
+import pandas as pd
 
 
 def main(
@@ -10,8 +12,20 @@ def main(
     biome,
     ver_pipeline,
     git_link,
-    xlarge
+    xlarge,
+    previous_readme,
+    previous_version,
+    previous_metadata_table,
+    additional_data_path
 ):
+    # If this is a README for an updated catalogue, check that all arguments are provided
+    if previous_readme or previous_version or previous_metadata_table:
+        if not all([previous_readme, previous_version, previous_metadata_table, additional_data_path]):
+            raise ValueError(
+                "For updates, you must provide --previous-readme, "
+                "--previous-version, --additional-data-path, and --previous-metadata-table together."
+            )
+        
     (
         num_genomes,
         num_species,
@@ -24,6 +38,13 @@ def main(
         catalog_name, version.replace(".", "-")
     )
     study_list_string = ", ".join(sorted(study_list))
+   
+    # If this is an update, generate a changelog from the previous version  
+    if previous_readme:
+        changelog = create_changelog(version, previous_version, metadata_table, previous_metadata_table, 
+                                     additional_data_path)
+        print(changelog)
+        
     print_file(
         outfile_name,
         version,
@@ -73,6 +94,211 @@ def process_metadata_table(metadata_table):
     return total_genomes, num_reps, study_list, version, catalog_name, archaea
 
 
+def create_changelog(version, previous_version, metadata_table, previous_metadata_table, additional_data_path):
+    new_genome_dict = count_new_genomes(metadata_table, previous_metadata_table)
+    species_rep_replacements, removals = load_rep_changes(additional_data_path)
+    changelog_header = f"## Changes in release {version} since {previous_version}"
+    
+    # Initialize lines
+    lines = [changelog_header]
+    
+    if new_genome_dict:
+        total_new_species = sum(
+            study_data["new_species"]
+            for study_data in new_genome_dict.values()
+        )
+
+        total_new_strains = sum(
+            study_data["new_strains"]
+            for study_data in new_genome_dict.values()
+        )
+        new_genome_line = summarise_new_genomes(new_genome_dict)
+        lines.append(new_genome_line)
+        
+        # New species/strain line
+        if total_new_species > 0 or total_new_strains > 0:
+            new_species_line = f"This resulted in {total_new_species} new species and {total_new_strains} new strains."
+            lines.append(new_species_line)
+    
+    if species_rep_replacements:
+        lines.append("The following species representatives were replaced:")
+        lines.append("Old rep\tNew rep\tReason for replacement")
+        for old_rep in species_rep_replacements:
+            lines.append(f"{old_rep}\t{species_rep_replacements[old_rep]['new_rep']}\t"
+                         f"{species_rep_replacements[old_rep]['reason']}")
+        
+    if removals:
+        lines.append("The following genomes were removed from the catalogue:")
+        for genome in removals:
+            lines.append(genome)
+            
+    # Join all lines into a single block
+    changelog_text = "\n".join(lines)
+    return changelog_text
+
+
+def summarise_new_genomes(new_genomes):
+    """
+    Build a summary string of new genomes added per study.
+
+    Parameters
+    ----------
+    new_genomes : dict
+        Output from count_new_genomes(), e.g.
+        {
+            study_accession: {
+                'isolates': count,
+                'mags': count,
+                'new_species': count,
+                'new_strains': count
+            }
+        }
+
+    Returns
+    -------
+    str
+        Human-readable summary of new genomes added.
+    """
+
+    parts = []
+
+    for study, counts in new_genomes.items():
+        isolates = counts["isolates"]
+        mags = counts["mags"]
+
+        study_parts = []
+
+        if isolates > 0:
+            study_parts.append(f"{isolates} isolates")
+        if mags > 0:
+            study_parts.append(f"{mags} MAGs")
+
+        if study_parts:
+            parts.append(f"{' and '.join(study_parts)} from study [{study}]")
+
+    summary = (
+        "* The following genomes were added to the catalogue: "
+        + ", ".join(parts)
+    )
+
+    return summary
+
+
+def load_rep_changes(additional_data_path):
+    """
+    Load species representative changes from the update report.
+
+    Parameters
+    ----------
+    additional_data_path : str
+        Base directory containing update_execution_reports/
+
+    Returns
+    -------
+    species_rep_replacements : dict
+        {old_rep: {"new_rep": new_rep, "reason": reason}}
+    removals : list
+        [old_rep, ...]
+    """
+
+    report_path = (
+        Path(additional_data_path)
+        / "update_execution_reports"
+        / "update_cluster_rep_changes_report.tsv"
+    )
+
+    # Fail if file does not exist
+    if not report_path.exists():
+        raise FileNotFoundError(f"Missing report file: {report_path}")
+
+    # Read TSV
+    df = pd.read_csv(report_path, sep="\t")
+
+    species_rep_replacements = {}
+    removals = []
+
+    for _, row in df.iterrows():
+        old_rep = row["old_rep"]
+        new_rep = row["new_rep"]
+        reason = row["reason"]
+
+        # Treat NaN or empty new_rep as removal
+        if pd.isna(new_rep) or new_rep == "":
+            removals.append(old_rep)
+        else:
+            species_rep_replacements[old_rep] = {
+                "new_rep": new_rep,
+                "reason": reason,
+            }
+
+    return species_rep_replacements, removals
+
+    
+def count_new_genomes(metadata_table, previous_metadata_table):
+    """
+    Count new genomes by study accession and genome type from tab-delimited files.
+
+    Parameters
+    ----------
+    metadata_table : str
+        Path to current metadata TSV file.
+        Required columns: 'Genome', 'Genome_type', 'Study_accession'
+    previous_metadata_table : str
+        Path to previous metadata TSV file.
+        Required column: 'Genome'
+
+    Returns
+    -------
+    dict
+        {
+            study_accession: {
+                'isolates': count,
+                'mags': count
+            }
+        }
+    """
+
+    # Read tab-delimited metadata tables
+    current_df = pd.read_csv(metadata_table, sep="\t")
+    previous_df = pd.read_csv(previous_metadata_table, sep="\t")
+
+    # Identify new genomes
+    new_genomes_set = set(current_df["Genome"]) - set(previous_df["Genome"])
+
+    # Filter current metadata to new genomes
+    new_df = current_df[current_df["Genome"].isin(new_genomes_set)]
+
+    # Summarise by study accession and genome type
+    new_genomes = {}
+
+    for _, row in new_df.iterrows():
+        study = row["Study_accession"]
+        genome_type = row["Genome_type"]
+        genome = row["Genome"]
+        species_rep = row["Species_rep"]
+
+        if study not in new_genomes:
+            new_genomes[study] = {
+                "isolates": 0,
+                "mags": 0,
+                "new_species": 0,
+                "new_strains": 0,
+            }
+
+        if genome_type == "Isolate":
+            new_genomes[study]["isolates"] += 1
+        elif genome_type == "MAG":
+            new_genomes[study]["mags"] += 1
+
+        # Count species vs strains
+        if genome == species_rep:
+            new_genomes[study]["new_species"] += 1
+        else:
+            new_genomes[study]["new_strains"] += 1
+
+    return new_genomes
+
+    
 def print_file(
     outfile_name,
     version,
@@ -238,6 +464,23 @@ def parse_args():
         help="Specify this flag if the catalogue was generated using the --xlarge flag and "
              "the number of genomes is over 25,000 (meaning chunked dRep was performed).",
     )
+    parser.add_argument(
+        "--previous-readme", required=False,
+        help="If this README is for an update, provide the path to the previous README version.",
+    )
+    parser.add_argument(
+        "--previous-version", required=False,
+        help="If this README is for an update, provide the previous catalogue version. For example, 'v1.0'.",
+    )
+    parser.add_argument(
+        "--previous-metadata-table", required=False,
+        help="If this README is for an update, provide the path to the previous metadata table.",
+    )
+    parser.add_argument(
+        "--additional-data-path", required=False,
+        help="If this README is for an update, provide the path to the 'additional_data' folder "
+             "(in the catalogue pipeline output).",
+    )
     return parser.parse_args()
 
 
@@ -249,5 +492,9 @@ if __name__ == "__main__":
         args.biome,
         args.pipeline_version,
         args.git_link,
-        args.xlarge
+        args.xlarge,
+        args.previous_readme,
+        args.previous_version,
+        args.previous_metadata_table,
+        args.additional_data_path,
     )
