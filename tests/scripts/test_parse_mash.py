@@ -38,7 +38,7 @@ class TestGenomePipeline(unittest.TestCase):
         self.assertEqual(genomes, {"genome1", "genome2"})
         self.assertEqual(filename_dict, {"genome1": "genome1.fa", "genome2": "genome2.fna"})
 
-    @patch("shutil.copy2")
+    @patch("bin.parse_mash.copy2")
     def test_copy_file_list(self, mock_copy):
         infolder = "/input"
         outfolder = "/output"
