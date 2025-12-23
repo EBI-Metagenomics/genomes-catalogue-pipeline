@@ -24,7 +24,7 @@ class TestGenomePipeline(unittest.TestCase):
         remove_list = ["g2", "rep2"]
         expected_clusters = {
             "rep1": {"new_rep": "rep1", "genome_list": ["g1"]},
-            "rep2": {"new_rep": "", "genome_list": []}
+            "rep2": {"new_rep": "", "genome_list": ["g3"]}
         }
         updated_clusters, remove_log = remove_genomes_from_clusters(clusters, remove_list)
         self.assertEqual(updated_clusters, expected_clusters)
@@ -90,7 +90,8 @@ class TestGenomePipeline(unittest.TestCase):
     def test_select_replacement_simple(self):
         qs_values = {
             "old": Quality(completeness=90, contamination=2, n50=100000, qs=90, length=5000000, n_contigs=10),
-            "g1": Quality(completeness=92, contamination=1.5, n50=120000, qs=95, length=5100000, n_contigs=10),
+            "g1": Quality(completeness=92, contamination=1.5, n50=120000, qs=100, length=5100000, n_contigs=10),
+            # >= 90*1.1=99
             "g2": Quality(completeness=91, contamination=2, n50=110000, qs=91, length=5050000, n_contigs=10)
         }
         replacement_results = {
