@@ -100,7 +100,7 @@ cd containers && bash build.sh
  - catalogue biome (for example, root:Host-associated:Human:Digestive system:Large intestine:Fecal)
  - min and max accession number to be assigned to the genomes (only MGnify specific). Max - Min = #total number of genomes (NCBI+ENA)
 
-### Execution
+## Execution
 
 The pipeline is built in [Nextflow](https://www.nextflow.io), and utilized containers to run the software (we don't support conda ATM).
 In order to run the pipeline it's required that the user creates a profile that suits their needs, there is an `ebi` profile in `nexflow.config` that can be used as template.
@@ -122,6 +122,43 @@ nextflow run EBI-Metagenomics/genomes-pipeline -c <custom.config> -profile <prof
 --ftp_version="v1.0" \
 --outdir="<path-to-results>"
 ```
+
+## Catalogue update process
+
+The pipeline has an update functionality, triggered by the `--update_catalogue_path` argument. The update process
+performs the following:
+- removes genomes (if a list of accessions to remove is provided or any of the existing genomes are no longer present in the ENA or fail QC)
+- adds genomes (if a list of genomes to add is specified)
+- reannotates new and existing genomes and recomputes associated databases (in all cases)
+
+While a regular pipeline execution uses dRep to cluster genomes, **the clustering during the update process is different in the following ways**:
+
+- existing clustering from the previous catalogue version is preserved 
+- the genomes that are flagged for removal (by the user or the pipeline) are removed without disrupting the existing clusters
+- if new genomes are being added, their placement is determined using [Mash](https://github.com/marbl/Mash) and the following rules:
+  1. if the smallest Mash distance between the new genome and any of the existing catalogue genomes is less than 0.001, the new genome is classified as a repeat strain
+  2. if the smallest distance is greater than 0.05, the new genome is classified as a new species
+  3. all other new genomes are classified as new strains
+  4. a repeat strain is only added to the catalogue in the following cases: 1) if it is an isolate while the closest match in the catalogue is a MAG OR 2) if the quality improvement of the new strain compared to the one in the catalogue is at least 10% (see notes on quality comparison below)
+  5. new strains and new species are always added to the catalogue, as long as they pass the general quality control checks used for new genomes
+
+### Quality comparisons for new genomes
+During the catalogue cluster update process, the quality scores for all genomes are calculated as:  
+`QS = % completeness – 5 * % contamination + 0.5 * log(N50)`  
+A 10% quality improvement is computed as `threshold = QS * 1.1`.  
+The quality score improvement is used to decide:
+- if a repeat strain should be added to the catalogue
+- if the species representative genome should be re-assigned.
+
+For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.  
+If threshold > 100, the decision process changes to prioritise genome contiguity. The species represenative is replaced if there is a genome that satisfies the following conditions:
+- QS and completeness is same or higher than the existing rep
+- Contamination is the same or less than the existing rep
+- N50 is at least 10% AND 10,000bp higher than that of the existing species rep (to account for small increases to an already low N50 - only a significant increase should justify a replacement)
+- The length of the new representative should be at least 90% of the length of the old represenative
+
+An isolate genome is always prioritised over a MAG. That means, if the current representative is an isolate, it can only be replaced with a better quality isolate. If the current species rep is a MAG and an isolate has been added to the cluster, a species representative replacement will be made even if the new genome has lower quality.
+
 
 ### Development
 
