@@ -151,6 +151,8 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
             new_species_line = f"This resulted in {new_species_count} new species and {new_strains_count} new strains."
             lines.append(new_species_line)
     
+    lines.append("* Due to version changes and updates to the pipeline, all annotations were regenerated.")
+    
     if species_rep_replacements:
         lines.append("\nThe following species representatives were replaced:")
         lines.append("Old rep\tNew rep\tReason for replacement")
