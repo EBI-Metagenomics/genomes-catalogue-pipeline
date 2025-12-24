@@ -308,8 +308,6 @@ def count_new_genomes(metadata_table, previous_metadata_table):
     for _, row in new_df.iterrows():
         study = row["Study_accession"]
         genome_type = row["Genome_type"]
-        genome = row["Genome"]
-        species_rep = row["Species_rep"]
 
         if study not in new_genomes:
             new_genomes[study] = {
