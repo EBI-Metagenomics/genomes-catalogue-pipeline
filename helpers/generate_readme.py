@@ -175,9 +175,10 @@ def count_new_species_and_strains(additional_data_path, metadata_table):
     )
     
     mash_new_strains_path = (
-        Path(additional_data_path) 
+        Path(additional_data_path)
+        / "update_execution_reports"
         / "mash_parse_results"
-        / "mash_new_strains.txt"
+        / "new_strains.tsv"
     )
 
     def strip_extension(acc):
