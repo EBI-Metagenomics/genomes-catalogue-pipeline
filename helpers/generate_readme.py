@@ -144,8 +144,7 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
         lines.append(new_genome_line)
         
         # New species/strain line
-        # Todo: retrieve these numbers automatically
-        if int(new_species_count) > 0 or int(new_strains_count) > 0:
+        if new_species_count > 0 or new_strains_count > 0:
             new_species_line = f"This resulted in {new_species_count} new species and {new_strains_count} new strains."
             lines.append(new_species_line)
     
