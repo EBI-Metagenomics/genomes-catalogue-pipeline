@@ -16,9 +16,7 @@ def main(
     previous_readme,
     previous_version,
     previous_metadata_table,
-    additional_data_path,
-    new_species_count,
-    new_strains_count
+    additional_data_path
 ):
     # If this is a README for an updated catalogue, check that all arguments are provided
     if previous_readme or previous_version or previous_metadata_table:
@@ -44,7 +42,7 @@ def main(
     # If this is an update, generate a changelog from the previous version  
     if previous_readme:
         changelog = create_changelog(version, previous_version, metadata_table, previous_metadata_table, 
-                                     additional_data_path, new_species_count, new_strains_count)
+                                     additional_data_path)
         previous_changelog = extract_previous_changelogs(previous_readme)
     else:
         changelog = ""
@@ -131,10 +129,10 @@ def process_metadata_table(metadata_table):
     return total_genomes, num_reps, study_list, version, catalog_name, archaea
 
 
-def create_changelog(version, previous_version, metadata_table, previous_metadata_table, additional_data_path, 
-                     new_species_count, new_strains_count):
+def create_changelog(version, previous_version, metadata_table, previous_metadata_table, additional_data_path):
     new_genome_dict = count_new_genomes(metadata_table, previous_metadata_table)
     species_rep_replacements, removals = load_rep_changes(additional_data_path)
+    new_species_count, new_strains_count = count_new_species_and_strains(additional_data_path, metadata_table)
     changelog_header = f"## Changes in release {version} since {previous_version}\n"
     
     # Initialize lines
@@ -168,6 +166,71 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
     # Join all lines into a single block
     changelog_text = "\n".join(lines)
     return changelog_text
+
+
+def count_new_species_and_strains(additional_data_path, metadata_table):
+    clusters_split_path = (
+        Path(additional_data_path)
+        / "update_execution_reports"
+        / "clusters_split_new_species.txt"
+    )
+    
+    mash_new_strains_path = (
+        Path(additional_data_path) 
+        / "mash_parse_results"
+        / "mash_new_strains.txt"
+    )
+
+    def strip_extension(acc):
+        for ext in (".fa", ".fna", ".fasta"):
+            if acc.endswith(ext):
+                return acc[: -len(ext)]
+        return acc
+
+    new_species_count = 0
+    new_strains_count = 0
+
+    df = pd.read_csv(metadata_table, sep="\t")
+    catalogue_genomes = set(df["Genome"])
+    
+    # it's ok if clusters split doesn't exist - it won't if there were no new species added
+    if clusters_split_path.exists():  
+        with open(clusters_split_path, "r") as file_in:
+            for line in file_in:
+                line = line.strip()
+                if not line:
+                    continue
+
+                # Take everything after the last colon
+                # The lines look like this:
+                # many_genomes: 14_1:MGYG000535625.fa, MGYG000535617.fa
+                # one_genome: 15_0:MGYG000535607.fa
+                accession_part = line.rsplit(":", 1)[-1]
+
+                accessions = [
+                    strip_extension(a.strip())
+                    for a in accession_part.split(",")
+                ]
+
+                # First accession → species
+                species_acc = accessions[0]
+                if species_acc in catalogue_genomes:
+                    new_species_count += 1
+
+                # Remaining accessions → strains
+                for acc in accessions[1:]:
+                    if acc in catalogue_genomes:
+                        new_strains_count += 1
+
+    # New strains that were added to existing catalogue clusters are reported separately, and we need to count them.
+    # We do not report repeat strains in the readme (they are in a separate output file)
+    if mash_new_strains_path.exists():
+        mash_df = pd.read_csv(mash_new_strains_path, sep="\t")
+        new_strains = set(mash_df["Accession"])
+        for strain in new_strains:
+            if strain in catalogue_genomes:
+                new_strains_count += 1
+    return new_species_count, new_strains_count
 
 
 def summarise_new_genomes(new_genomes):
@@ -513,14 +576,6 @@ def parse_args():
         help="If this README is for an update, provide the path to the 'additional_data' folder "
              "(in the catalogue pipeline output).",
     )
-    parser.add_argument(
-        "--new-species-count", required=False,
-        help="If this README is for an update, provide the number of new species added.",
-    )
-    parser.add_argument(
-        "--new-strains-count", required=False,
-        help="If this README is for an update, provide the number of new strains added.",
-    )
     return parser.parse_args()
 
 
@@ -536,7 +591,5 @@ if __name__ == "__main__":
         args.previous_readme,
         args.previous_version,
         args.previous_metadata_table,
-        args.additional_data_path,
-        args.new_species_count,
-        args.new_strains_count,
+        args.additional_data_path
     )
