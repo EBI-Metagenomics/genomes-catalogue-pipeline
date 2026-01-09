@@ -47,7 +47,10 @@ def main(metadata_table, prefix, genomes_folder):
         for line in file_in:
             parts = line.strip().split("\t")
             genome_name = parts[genome_idx]  # this is the genome name without extension
-            fasta_name = genome_dict.get(genome_name)
+            try:
+                fasta_name = genome_dict[genome_name]
+            except KeyError:
+                raise KeyError(f"Genome '{genome_name}' not found in the genome directory")
             csv_writer_stats.writerow([genome_name, parts[length_idx], parts[n50_idx], parts[gc_idx], 
                                        parts[num_contigs_idx]])
             csv_writer_checkm.writerow([fasta_name, parts[comp_idx], parts[cont_idx]])
