@@ -5,6 +5,7 @@ import argparse
 from pathlib import Path
 import pandas as pd
 
+TREE_TOOL_TRANSITION_COUNT = 1999  # we used fasttree to generate trees for large genome sets (2000+), otherwise iqtree
 
 def main(
     metadata_table,
@@ -97,7 +98,7 @@ def extract_previous_changelogs(previous_readme):
     
     
 def get_tree_tool(count):
-    if count > 1999:
+    if count > TREE_TOOL_TRANSITION_COUNT:
         return "fasttree"
     else:
         return "iqtree"
