@@ -264,3 +264,4 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     main(args.mash, args.evaluate_list, args.outfolder, args.input_folder, args.metadata_table)
+    
