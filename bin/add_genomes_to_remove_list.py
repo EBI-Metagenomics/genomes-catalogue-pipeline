@@ -27,7 +27,8 @@ def main(remove_list_file, add_list_file, message, output_file):
             for line in file_in:
                 if line.startswith("MGYG"):
                     file_out.write(line)
-                    already_in_remove_list.add(line.split('\t')[0].strip())
+                    accession = line.split('\t')[0].strip()
+                    already_in_remove_list.add(accession)
 
     with open(add_list_file, 'r') as file_in, open(output_file, 'a') as file_out:
         for line in file_in:
