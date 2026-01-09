@@ -2,8 +2,8 @@
  * De-replicate
  */
 
-include { DREP } from '../modules/drep'
-include { SPLIT_DREP } from '../modules/split_drep'
+include { DREP as DREP_CATALOGUE } from '../modules/drep'
+include { SPLIT_DREP as SPLIT_DREP_MAIN } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 
 workflow DREP_SWF {
@@ -14,22 +14,22 @@ workflow DREP_SWF {
         drep_args
 
     main:
-        DREP(
+        DREP_CATALOGUE(
             genomes_directory,
             checkm_csv,
             extra_weight_table,
             drep_args
         )
 
-        SPLIT_DREP(
-            DREP.out.cdb_csv,
-            DREP.out.mdb_csv,
-            DREP.out.sdb_csv
+        SPLIT_DREP_MAIN(
+            DREP_CATALOGUE.out.cdb_csv,
+            DREP_CATALOGUE.out.mdb_csv,
+            DREP_CATALOGUE.out.sdb_csv
         )
 
         CLASSIFY_CLUSTERS(
             genomes_directory,
-            SPLIT_DREP.out.text_split
+            SPLIT_DREP_MAIN.out.text_split
         )
 
         groupGenomes = { fna_file ->
@@ -44,9 +44,9 @@ workflow DREP_SWF {
     emit:
         many_genomes_fna_tuples = many_genomes_fna_tuples
         single_genomes_fna_tuples = single_genomes_fna_tuples
-        drep_split_text = SPLIT_DREP.out.text_split
-        mash_splits = SPLIT_DREP.out.mash_splits
-        drep_cdb_csv = DREP.out.cdb_csv
-        drep_mdb_csv = DREP.out.mdb_csv
-        drep_sdb_csv = DREP.out.sdb_csv
+        drep_split_text = SPLIT_DREP_MAIN.out.text_split
+        mash_splits = SPLIT_DREP_MAIN.out.mash_splits
+        drep_cdb_csv = DREP_CATALOGUE.out.cdb_csv
+        drep_mdb_csv = DREP_CATALOGUE.out.mdb_csv
+        drep_sdb_csv = DREP_CATALOGUE.out.sdb_csv
 }

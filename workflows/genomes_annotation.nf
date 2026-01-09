@@ -164,11 +164,11 @@ workflow GAP {
         genomes_name_mapping = PREPARE_DATA.out.genomes_name_mapping
         
     } else {
-        // if we are not adding new genomes, make dummy files
+        // if we are not adding new genomes, make empty channels - this could only happen during a catalogue update
         new_data_checkm = file("NO_FILE_NEW_GENOMES_CHECKM")
         new_genome_stats = file("NO_FILE_NEW_GENOMES_STATS")
         extra_weight_table_new_genomes = file("NO_FILE_NEW_GENOMES_EXTRA_WEIGHT")
-        new_genomes = file("NO_FILE_NEW_GENOMES")
+        new_genomes = channel.empty()
         qs50_failed = file("NO_FILE_QS50_FAILED")
         genomes_name_mapping = file("NO_FILE_GENOMES_NAME_MAPPING")
     }
@@ -182,10 +182,12 @@ workflow GAP {
             remove_list_mgyg,
             PREPARE_UPDATE.out.previous_version_quality,
             PREPARE_UPDATE.out.previous_version_assembly_stats,
+            new_genomes,
             new_data_checkm,
             new_genome_stats,
             extra_weight_table_new_genomes,
-            genomes_name_mapping
+            genomes_name_mapping,
+            params.prok_drep_args
         )
         dereplicated_genomes = UPDATE_CLUSTERS
         all_assembly_stats = UPDATE_CLUSTERS.out.assembly_stats_all_genomes

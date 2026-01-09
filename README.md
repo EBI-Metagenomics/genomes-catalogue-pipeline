@@ -7,49 +7,50 @@ Gurbich TA, Almeida A, Beracochea M, Burdett T, Burgin J, Cochrane G, Raj S, Ric
 Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/genome-viewer.html
 
 ### Tools used in the pipeline
-| Tool/Database                                                                                    | Version           | Purpose                                                                                                                |
-|--------------------------------------------------------------------------------------------------|-------------------|------------------------------------------------------------------------------------------------------------------------|
-| CheckM2                                                                                          | 1.0.1             | Determining genome quality                                                                                             |
-| dRep                                                                                             | 3.2.2             | Genome clustering                                                                                                      |
-| Mash                                                                                             | 2.3               | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree                                |
-| GUNC                                                                                             | 1.0.6             | Quality control                                                                                                        |
-| GUNC DB                                                                                          | 2.0.4             | Database for GUNC                                                                                                      |
-| GTDB-Tk                                                                                          | 2.4.1             | Assigning taxonomy; generating alignments                                                                              |
-| GTDB                                                                                             | r226              | Database for GTDB-Tk                                                                                                   |
-| Prokka                                                                                           | 1.14.6            | Protein annotation                                                                                                     |
-| IQ-TREE 2                                                                                        | 2.2.0.3           | Generating a phylogenetic tree                                                                                         |
-| Kraken 2                                                                                         | 2.1.2             | Generating a kraken database                                                                                           |
-| Bracken                                                                                          | 2.6.2             | Generating a bracken database                                                                                          |
-| MMseqs2                                                                                          | 13.45111          | Generating a protein catalogue                                                                                         |
-| eggNOG-mapper                                                                                    | 2.1.11            | Protein annotation (eggNOG, KEGG, COG,  CAZy)                                                                          |
-| eggNOG DB                                                                                        | 5.0.2             | Database for eggNOG-mapper                                                                                             |
-| Diamond                                                                                          | 2.0.11            | Protein annotation (eggNOG)                                                                                            |
-| InterProScan                                                                                     | 5.73-104.0        | Protein annotation (InterPro, Pfam)                                                                                    |
-| kegg-pathways-completeness tool                                                                  | 1.3.0             | Computes KEGG pathway completeness                                                                                     |
-| CRISPRCasFinder                                                                                  | 4.3.2             | Annotation of CRISPR arrays                                                                                            |
-| AMRFinderPlus                                                                                    | 3.12.8            | Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation |
-| AMRFinderPlus DB                                                                                 | 3.12 2024-01-31.1 | Database for AMRFinderPlus                                                                                             |
-| antiSMASH                                                                                        | 7.1.0             | Biosynthetic gene cluster annotation                                                                                   |
-| GECCO                                                                                            | 0.9.8             | Biosynthetic gene cluster annotation                                                                                   |
-| SanntiS                                                                                          | 0.9.3.2           | Biosynthetic gene cluster annotation                                                                                   |
-| DefenseFinder                                                                                    | 2.0.0             | Annotation of anti-phage and anti-defense systems                                                                      |
-| DefenseFinder models                                                                             | 2.0.2             | Database for DefenseFinder                                                                                             |
-| CasFinder                                                                                        | 3.1.0             | Database for DefenseFinder                                                                                             |
-| run_dbCAN                                                                                        | 4.1.4             | Polysaccharide utilization loci prediction                                                                             |
-| dbCAN DB                                                                                         | V13               | Database for run_dbCAN                                                                                                 |
-| Infernal                                                                                         | 1.1.4             | RNA predictions                                                                                                        |
-| tRNAscan-SE                                                                                      | 2.0.9             | tRNA predictions                                                                                                       |
-| Rfam                                                                                             | 15.0              | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
-| Panaroo                                                                                          | 1.3.2             | Pan-genome computation                                                                                                 |
-| Seqtk                                                                                            | 1.3               | Generating a gene catalogue                                                                                            |
-| VIRify                                                                                           | 3.0.2             | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
-| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 3.0.1             | Mobilome annotation (executed as a separate step)                                                                      |
-| samtools                                                                                         | 1.15              | FASTA indexing                                                                                                         |
-| EukCC                                                                                            | 2.1.3             | Completeness and contamination of eukaryotic genomes                                                                   |
-| BUSCO                                                                                            | 5.8.0             | Eukaryotic genome quality                                                                                              |
-| RepeatModeler                                                                                    | 2.0.6             | Identification of repeat elements in eukaryotic genomes                                                                |
-| RepeatMasker                                                                                     | 4.1.7             | Repeat masking in eukaryotic genomes                                                                                   |
-| Braker                                                                                           | 3.0.8             | Gene calling in eukaryotic genomes                                                                                     |
+| Tool/Database                                                                                    | Version          | Purpose                                                                                                                |
+|--------------------------------------------------------------------------------------------------|------------------|------------------------------------------------------------------------------------------------------------------------|
+| CheckM2                                                                                          | 1.1.0            | Determining genome quality                                                                                             |
+| CheckM2 DB                                                                                       | V3               | DIAMOND database for CheckM2                                                                                           |
+| dRep                                                                                             | 3.2.2            | Genome clustering                                                                                                      |
+| Mash                                                                                             | 2.3              | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree                                |
+| GUNC                                                                                             | 1.0.6            | Quality control                                                                                                        |
+| GUNC DB                                                                                          | 2.0.4            | Database for GUNC                                                                                                      |
+| GTDB-Tk                                                                                          | 2.4.1            | Assigning taxonomy; generating alignments                                                                              |
+| GTDB                                                                                             | r226             | Database for GTDB-Tk                                                                                                   |
+| Prokka                                                                                           | 1.14.6           | Protein annotation                                                                                                     |
+| IQ-TREE 2                                                                                        | 2.2.0.3          | Generating a phylogenetic tree                                                                                         |
+| Kraken 2                                                                                         | 2.1.2            | Generating a kraken database                                                                                           |
+| Bracken                                                                                          | 2.6.2            | Generating a bracken database                                                                                          |
+| MMseqs2                                                                                          | 13.45111         | Generating a protein catalogue                                                                                         |
+| eggNOG-mapper                                                                                    | 2.1.11           | Protein annotation (eggNOG, KEGG, COG,  CAZy)                                                                          |
+| eggNOG DB                                                                                        | 5.0.2            | Database for eggNOG-mapper                                                                                             |
+| DIAMOND                                                                                          | 2.0.11           | Protein annotation (eggNOG)                                                                                            |
+| InterProScan                                                                                     | 5.76-107.0       | Protein annotation (InterPro, Pfam)                                                                                    |
+| kegg-pathways-completeness tool                                                                  | 1.3.0            | Computes KEGG pathway completeness                                                                                     |
+| CRISPRCasFinder                                                                                  | 4.3.2            | Annotation of CRISPR arrays                                                                                            |
+| AMRFinderPlus                                                                                    | 4.0.23           | Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation |
+| AMRFinderPlus DB                                                                                 | 4.0 2025-07-16.1 | Database for AMRFinderPlus                                                                                             |
+| antiSMASH                                                                                        | 7.1.0            | Biosynthetic gene cluster annotation                                                                                   |
+| GECCO                                                                                            | 0.9.8            | Biosynthetic gene cluster annotation                                                                                   |
+| SanntiS                                                                                          | 0.9.3.2          | Biosynthetic gene cluster annotation                                                                                   |
+| DefenseFinder                                                                                    | 2.0.0            | Annotation of anti-phage and anti-defense systems                                                                      |
+| DefenseFinder models                                                                             | 2.0.2            | Database for DefenseFinder                                                                                             |
+| CasFinder                                                                                        | 3.1.0            | Database for DefenseFinder                                                                                             |
+| run_dbCAN                                                                                        | 4.1.4            | Polysaccharide utilization loci prediction                                                                             |
+| dbCAN DB                                                                                         | V13              | Database for run_dbCAN                                                                                                 |
+| Infernal                                                                                         | 1.1.4            | RNA predictions                                                                                                        |
+| tRNAscan-SE                                                                                      | 2.0.9            | tRNA predictions                                                                                                       |
+| Rfam                                                                                             | 15.0             | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
+| Panaroo                                                                                          | 1.3.2            | Pan-genome computation                                                                                                 |
+| Seqtk                                                                                            | 1.3              | Generating a gene catalogue                                                                                            |
+| VIRify                                                                                           | 3.0.2            | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
+| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 3.0.1            | Mobilome annotation (executed as a separate step)                                                                      |
+| samtools                                                                                         | 1.15             | FASTA indexing                                                                                                         |
+| EukCC                                                                                            | 2.1.3            | Completeness and contamination of eukaryotic genomes                                                                   |
+| BUSCO                                                                                            | 5.8.0            | Eukaryotic genome quality                                                                                              |
+| RepeatModeler                                                                                    | 2.0.6            | Identification of repeat elements in eukaryotic genomes                                                                |
+| RepeatMasker                                                                                     | 4.1.7            | Repeat masking in eukaryotic genomes                                                                                   |
+| Braker                                                                                           | 3.0.8            | Gene calling in eukaryotic genomes                                                                                     |
 
 ## Setup
 
@@ -99,7 +100,7 @@ cd containers && bash build.sh
  - catalogue biome (for example, root:Host-associated:Human:Digestive system:Large intestine:Fecal)
  - min and max accession number to be assigned to the genomes (only MGnify specific). Max - Min = #total number of genomes (NCBI+ENA)
 
-### Execution
+## Execution
 
 The pipeline is built in [Nextflow](https://www.nextflow.io), and utilized containers to run the software (we don't support conda ATM).
 In order to run the pipeline it's required that the user creates a profile that suits their needs, there is an `ebi` profile in `nexflow.config` that can be used as template.
@@ -121,6 +122,43 @@ nextflow run EBI-Metagenomics/genomes-pipeline -c <custom.config> -profile <prof
 --ftp_version="v1.0" \
 --outdir="<path-to-results>"
 ```
+
+## Catalogue update process
+
+The pipeline has an update functionality, triggered by the `--update_catalogue_path` argument. The update process
+performs the following:
+- removes genomes (if a list of accessions to remove is provided or any of the existing genomes are no longer present in the ENA or fail QC)
+- adds genomes (if a list of genomes to add is specified)
+- reannotates new and existing genomes and recomputes associated databases (in all cases)
+
+While a regular pipeline execution uses dRep to cluster genomes, **the clustering during the update process is different in the following ways**:
+
+- existing clustering from the previous catalogue version is preserved 
+- the genomes that are flagged for removal (by the user or the pipeline) are removed without disrupting the existing clusters
+- if new genomes are being added, their placement is determined using [Mash](https://github.com/marbl/Mash) and the following rules:
+  1. if the smallest Mash distance between the new genome and any of the existing catalogue genomes is less than 0.001, the new genome is classified as a repeat strain
+  2. if the smallest distance is greater than 0.05, the new genome is classified as a new species
+  3. all other new genomes are classified as new strains
+  4. a repeat strain is only added to the catalogue in the following cases: 1) if it is an isolate while the closest match in the catalogue is a MAG OR 2) if the quality improvement of the new strain compared to the one in the catalogue is at least 10% (see notes on quality comparison below)
+  5. new strains and new species are always added to the catalogue, as long as they pass the general quality control checks used for new genomes
+
+### Quality comparisons for new genomes
+During the catalogue cluster update process, the quality scores for all genomes are calculated as:  
+`QS = % completeness – 5 * % contamination + 0.5 * log(N50)`  
+A 10% quality improvement is computed as `threshold = QS * 1.1`.  
+The quality score improvement is used to decide:
+- if a repeat strain should be added to the catalogue
+- if the species representative genome should be re-assigned.
+
+For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.  
+If threshold > 100, the decision process changes to prioritise genome contiguity. The species representative is replaced if there is a genome that satisfies the following conditions:
+- QS and completeness is same or higher than the existing rep
+- Contamination is the same or less than the existing rep
+- N50 is at least 10% AND 10,000bp higher than that of the existing species rep (to account for small increases to an already low N50 - only a significant increase should justify a replacement)
+- The length of the new representative should be at least 90% of the length of the old represenative
+
+An isolate genome is always prioritised over a MAG. That means, if the current representative is an isolate, it can only be replaced with a better quality isolate. If the current species rep is a MAG and an isolate has been added to the cluster, a species representative replacement will be made even if the new genome has lower quality.
+
 
 ### Development
 

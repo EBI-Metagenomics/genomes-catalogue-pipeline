@@ -5,7 +5,7 @@
 include { DREP_CHUNKED } from '../modules/drep_chunked'
 include { DREP_CHUNKED as DREP_SPECIES_REPS } from '../modules/drep_chunked'
 include { COMBINE_CHUNKED_DREP } from '../modules/combine_chunked_drep'
-include { SPLIT_DREP } from '../modules/split_drep'
+include { SPLIT_DREP as SPLIT_DREP_MAIN } from '../modules/split_drep'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { COLLECT_DREP_RESULTS } from '../modules/utils'
 include { MASH_COMPARE } from '../modules/mash_compare'
@@ -53,7 +53,7 @@ workflow DREP_LARGE_SWF {
             DREP_SPECIES_REPS.out.cdb_csv
         )
 
-        SPLIT_DREP(
+        SPLIT_DREP_MAIN(
             COMBINE_CHUNKED_DREP.out.combined_cdb,
             file("NO_FILE"), // optional mdb file
             COMBINE_CHUNKED_DREP.out.combined_sdb,
@@ -61,7 +61,7 @@ workflow DREP_LARGE_SWF {
 
         CLASSIFY_CLUSTERS(
             genomes_directory,
-            SPLIT_DREP.out.text_split
+            SPLIT_DREP_MAIN.out.text_split
         )
 
         // The mdb.csv files are contacenated and published as a single file
@@ -93,7 +93,7 @@ workflow DREP_LARGE_SWF {
     emit:
         many_genomes_fna_tuples = many_genomes_fna_tuples
         single_genomes_fna_tuples = single_genomes_fna_tuples
-        drep_split_text = SPLIT_DREP.out.text_split
+        drep_split_text = SPLIT_DREP_MAIN.out.text_split
         mash_splits = MASH_COMPARE.out.mash_split
         drep_cdb_csv = DREP_SPECIES_REPS.out.cdb_csv
         drep_sdb_csv = DREP_SPECIES_REPS.out.sdb_csv

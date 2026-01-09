@@ -1,5 +1,7 @@
 process MASH_TO_NWK {
 
+    tag "${mash.baseName}"
+    
     publishDir(
         path: "${params.outdir}",
         saveAs: {

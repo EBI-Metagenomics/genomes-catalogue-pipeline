@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
+# This script was written as part of the catalogue update workflow but is not currently in use.
+# It can be integrated into the pipeline in the future if handling of pan-genomes during the update process changes.
+
 import argparse
 import os
 import sys

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
+# This script was written as part of the genome catalogue update workflow but is not currently in use.
+# It can be incorporated in the future if the mmseqs update procedure is changed from regeneration to update.
+
 import argparse
 
 

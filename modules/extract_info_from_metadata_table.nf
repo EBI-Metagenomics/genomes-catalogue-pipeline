@@ -8,6 +8,7 @@ process EXTRACT_METADATA_FROM_TABLE {
     
     input:
     path(previous_metadata_table)
+    path(mgyg_folder)
     
     output:
     path("previous_version_checkm_quality.csv"), emit: quality_csv // contains completeness and contamination    
@@ -15,7 +16,7 @@ process EXTRACT_METADATA_FROM_TABLE {
     
     script:
     """
-    extract_info_from_metadata_table.py -i ${previous_metadata_table} -o previous_version
+    extract_info_from_metadata_table.py -i ${previous_metadata_table} -o previous_version --genomes ${mgyg_folder}
     
     """
     

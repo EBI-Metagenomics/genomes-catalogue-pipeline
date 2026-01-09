@@ -7,10 +7,11 @@ process CHECK_CATALOGUE_STRUCTURE {
         failOnError: true
     )
     
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
+    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.2'
     
     label 'process_light'
     
+    cache false
     errorStrategy = 'terminate'
     
     input:
@@ -21,7 +22,7 @@ process CHECK_CATALOGUE_STRUCTURE {
     
     script:
     """
-    check_catalogue_structure.py -i ${previous_catalogue_location}
+    check_catalogue_structure.py -i ${previous_catalogue_location} -s $projectDir/assets/output_folder_structure.json
     
     # Check if error file exists
     if [ ! -f PREVIOUS_CATALOGUE_STRUCTURE_OK.txt ]; then

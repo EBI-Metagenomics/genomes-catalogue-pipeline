@@ -45,7 +45,8 @@ workflow PREPARE_UPDATE {
         }
         
         EXTRACT_METADATA_FROM_TABLE(
-            "${previous_catalogue_location}/ftp/genomes-all_metadata.tsv"
+            "${previous_catalogue_location}/ftp/genomes-all_metadata.tsv",
+            "${previous_catalogue_location}/additional_data/mgyg_genomes/"
         )
         
         CONVERT_REMOVE_LIST_TO_MGYG(

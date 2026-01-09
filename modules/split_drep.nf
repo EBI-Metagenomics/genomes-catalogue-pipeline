@@ -1,20 +1,5 @@
 process SPLIT_DREP {
 
-    publishDir(
-        path: "${params.outdir}",
-        saveAs: {
-            filename -> {
-                def output_file = file(filename);
-                if ( output_file.name == "clusters_split.txt" ) {
-                    return "additional_data/intermediate_files/clusters_split.txt";
-                }
-                return null;
-            }
-        },
-        mode: "copy",
-        failOnError: true
-    )
-
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'

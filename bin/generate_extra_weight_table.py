@@ -351,6 +351,8 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
+    if not args.genome_info and not args.study_info:
+        sys.exit("At least one of --genome-info or --study-info must be provided.")
     main(
         args.genome_info,
         args.study_info,
