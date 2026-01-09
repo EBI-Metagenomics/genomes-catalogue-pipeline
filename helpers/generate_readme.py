@@ -116,14 +116,18 @@ def process_metadata_table(metadata_table):
             if not line.startswith("Genome"):
                 total_genomes += 1
                 fields = line.strip().split("\t")
-                reps.add(fields[13])
-                study_list.add(fields[16])
+                species_rep = fields[13]
+                genome_acc = fields[0]
+                study = fields[16]
+                ftp_link = fields[19]
+                reps.add(species_rep)
+                study_list.add(study)
                 if not version:
-                    subfields = fields[19].strip().split("/")
+                    subfields = ftp_link.strip().split("/")
                     catalog_name = subfields[7]
                     version = subfields[8]
                 # count representatives that are archaea
-                if "d__Archaea" in line and fields[13] == fields[0]:
+                if "d__Archaea" in line and species_rep == genome_acc:
                     archaea += 1
     total_genomes = "{:,}".format(total_genomes)
     num_reps = "{:,}".format(len(reps))
