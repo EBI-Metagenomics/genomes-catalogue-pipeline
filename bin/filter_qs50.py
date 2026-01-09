@@ -127,3 +127,4 @@ if __name__ == '__main__':
         print('Please specify --filter OR --remove')
         sys.exit(1)
     main(args.input_folder, args.checkm, args.output, args.output_csv, args.details_csv, args.remove, args.filter)
+    
