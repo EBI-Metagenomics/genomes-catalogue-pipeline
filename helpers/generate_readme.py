@@ -7,6 +7,7 @@ import pandas as pd
 
 TREE_TOOL_TRANSITION_COUNT = 1999  # we used fasttree to generate trees for large genome sets (2000+), otherwise iqtree
 
+
 def main(
     metadata_table,
     outfile_name,
