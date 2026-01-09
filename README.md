@@ -151,7 +151,7 @@ The quality score improvement is used to decide:
 - if the species representative genome should be re-assigned.
 
 For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.  
-If threshold > 100, the decision process changes to prioritise genome contiguity. The species represenative is replaced if there is a genome that satisfies the following conditions:
+If threshold > 100, the decision process changes to prioritise genome contiguity. The species representative is replaced if there is a genome that satisfies the following conditions:
 - QS and completeness is same or higher than the existing rep
 - Contamination is the same or less than the existing rep
 - N50 is at least 10% AND 10,000bp higher than that of the existing species rep (to account for small increases to an already low N50 - only a significant increase should justify a replacement)
