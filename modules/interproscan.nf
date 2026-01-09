@@ -4,7 +4,7 @@
 
 process IPS {
 
-    container 'quay.io/microbiome-informatics/interproscan:5.73-104.0'
+    container 'quay.io/microbiome-informatics/interproscan:5.76-107.0'
     containerOptions '--bind data:/opt/interproscan/data'
     
     label 'retry_twice'
@@ -12,11 +12,11 @@ process IPS {
     label 'ips'
 
     input:
-    file faa_fasta
+    tuple val(id), path(faa_fasta)
     path interproscan_db
 
     output:
-    path '*.IPS.tsv', emit: ips_annotations
+    tuple val(id), path('*.IPS.tsv'), emit: ips_annotations
 
     script:
     """

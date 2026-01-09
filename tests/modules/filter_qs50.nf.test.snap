@@ -3,7 +3,7 @@
         "content": [
             {
                 "failed_genomes": [
-                    "QC_failed_genomes.txt:md5,b21bcb89c78cea90b53e1c9bd33ba419"
+                    "QS50_failed_genomes.txt:md5,b21bcb89c78cea90b53e1c9bd33ba419"
                 ],
                 "filtered_genomes": [
                     [

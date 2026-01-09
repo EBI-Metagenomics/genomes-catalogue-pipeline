@@ -3,21 +3,6 @@
 */
 process DREP {
 
-    publishDir(
-        path: "${params.outdir}",
-        saveAs: {
-            filename -> {
-                def result_file = file(filename);
-                if ( result_file.name == "drep_data_tables.tar.gz" ) {
-                    return "additional_data/intermediate_files/drep_data_tables.tar.gz";
-                }
-                return null;
-            }
-        },
-        mode: 'copy',
-        failOnError: true
-    )
-
     container 'quay.io/biocontainers/drep:3.2.2--pyhdfd78af_0'
     
     label 'retry_twice'
@@ -26,6 +11,7 @@ process DREP {
     path genomes_directory
     path checkm_csv
     path extra_weights_table
+    val drep_params
 
     output:
     path "drep_output/data_tables/Cdb.csv", emit: cdb_csv
@@ -37,12 +23,7 @@ process DREP {
     """
     dRep dereplicate -g ${genomes_directory}/*.fa \
     -p ${task.cpus} \
-    -pa 0.9 \
-    -sa 0.95 \
-    -nc 0.30 \
-    -cm larger \
-    -comp 50 \
-    -con 5 \
+    ${drep_params} \
     -extraW ${extra_weights_table} \
     --genomeInfo ${checkm_csv} \
     drep_output

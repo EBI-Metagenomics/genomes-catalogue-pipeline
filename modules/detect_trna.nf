@@ -3,7 +3,7 @@
 */
 process DETECT_TRNA {
 
-    tag "${fasta.baseName}"
+    tag "${genome_name}"
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3.2'
     
@@ -15,7 +15,7 @@ process DETECT_TRNA {
                     return null;
                 }
                 def output_file = file(filename);
-                def genome_id = fasta.baseName;
+                def genome_id = fasta.baseName.replace("_sm", "");
                 if ( output_file.name.contains("_tRNA_20aa") ) {
                     return "additional_data/rRNA_outs/${genome_id}/${output_file.name}";
                 }
@@ -30,31 +30,42 @@ process DETECT_TRNA {
     tuple val(genome_name), path(fasta), val(detected_kingdom)
 
     output:
-    tuple val(fasta.baseName), path('*_trna.out'), emit: trna_out
-    tuple val(fasta.baseName), path('*_stats.out'), emit: trna_stats
-    tuple val(fasta.baseName), path('*_tRNA_20aa.out'), emit: trna_count
-    tuple val(fasta.baseName), path('*_trna.gff'), emit: trna_gff
+    tuple val(genome_name), path('*_trna.out'), emit: trna_out
+    tuple val(genome_name), path('*_stats.out'), emit: trna_stats
+    tuple val(genome_name), path('*_tRNA_20aa.out'), emit: trna_count
+    tuple val(genome_name), path('*_trna.gff'), emit: trna_gff
 
     script:
     """
+    # TODO: We should migrate to https://github.com/nf-core/modules/blob/master/modules/nf-core/trnascanse/main.nf
+
     shopt -s extglob
 
     # tRNAscan-SE needs a tmp folder otherwise it will use the base TMPDIR (with no subfolder)
     # and that causes issues as other detect_trna process will crash when the files are cleaned
-    PROCESSTMP="\$(mktemp -d)"
+    export PROCESSTMP="\$(mktemp -d)"
     export TMPDIR="\${PROCESSTMP}"
-    # bash trap to clean the tmp directory
-    trap 'rm -r -- "\${PROCESSTMP}"' EXIT
+   
+    # Cleanup on exit, but ignore .nfs* files
+    trap '
+        if [ -d "\${PROCESSTMP}" ]; then
+           # Remove everything except .nfs* files
+           find "\${PROCESSTMP}" -mindepth 1 ! -name ".nfs*" -exec rm -rf {} +
+           # Try removing the directory (will fail if .nfs files remain, which is fine)
+           rmdir "\${PROCESSTMP}" 2>/dev/null || true
+        fi
+    ' EXIT
 
     echo "[ Detecting tRNAs ]"
     kingdom=\$(echo ${detected_kingdom} | cut -c1)
-    tRNAscan-SE -\${kingdom} -Q \
-    -m ${fasta.baseName}_stats.out \
-    -o ${fasta.baseName}_trna.out \
-    --gff ${fasta.baseName}_trna.gff \
-    ${fasta}
+    tRNAscan-SE -\${kingdom} -Q \\
+      -m ${genome_name}_stats.out \\
+      -o ${genome_name}_trna.out \\
+      --gff ${genome_name}_trna.gff \\
+      --thread ${task.cpus} \\
+      ${fasta}
 
-    parse_tRNA.py -i ${fasta.baseName}_stats.out -o ${fasta.baseName}_tRNA_20aa.out
+    parse_tRNA.py -i ${genome_name}_stats.out -o ${genome_name}_tRNA_20aa.out
 
     echo "Completed"
 

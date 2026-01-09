@@ -1,11 +1,5 @@
 process GENERATE_EXTRA_WEIGHT {
 
-    publishDir(
-        path: "${params.outdir}/additional_data/intermediate_files/",
-        saveAs: { filename -> "extra_weight_table.txt" },
-        mode: 'copy'
-    )
-
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
     label 'process_light'

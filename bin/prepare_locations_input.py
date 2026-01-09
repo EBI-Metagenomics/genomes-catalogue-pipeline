@@ -21,6 +21,9 @@ import argparse
 
 
 def read_failed_accessions(filepath):
+    if filepath == "EMPTY":
+        # When we don't run GUNC, the GUNC output is a placeholder (used for euks)
+        return set()
     with open(filepath, 'r') as f:
         return set(line.strip() for line in f if line.strip())
 

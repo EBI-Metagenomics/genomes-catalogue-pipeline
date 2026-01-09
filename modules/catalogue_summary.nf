@@ -15,10 +15,12 @@ process CATALOGUE_SUMMARY {
 
     script:
     """
-    wc -l ${mmseqs_tsv} > protein_count.txt
+    wc -l ${mmseqs_tsv} | cut -d ' ' -f1 > protein_count.txt
+    cut -f1 ${mmseqs_tsv} | sort -u | wc -l > cluster90_count.txt
     
     generate_catalogue_summary_json.py \
     -p protein_count.txt \
+    -c cluster90_count.txt \
     -m ${metadata_tsv} \
     -o catalogue_summary.json
     """

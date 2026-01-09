@@ -1,15 +1,15 @@
 process FILTER_QS50 {
 
     publishDir(
-        path: "${params.outdir}",
-        pattern: "QC_failed_genomes.txt",
-        saveAs: { "additional_data/intermediate_files/QC_failed_genomes.txt" },
+        path: "${params.outdir}/additional_data/intermediate_files",
+        pattern: "QS50_failed_genomes.txt",
+        saveAs: { "QS50_failed_genomes.txt" },
         mode: "copy"
     )
     publishDir(
-        path: "${params.outdir}",
+        path: "${params.outdir}/additional_data/intermediate_files",
         pattern: "filtered_genomes.csv",
-        saveAs: { "additional_data/intermediate_files/filtered_genomes.csv" },
+        saveAs: { "filtered_new_genomes.csv" },
         mode: "copy"
     )
 
@@ -22,7 +22,7 @@ process FILTER_QS50 {
     path checkm_csv
 
     output:
-    path "QC_failed_genomes.txt", emit: failed_genomes
+    path "QS50_failed_genomes.txt", emit: failed_genomes
     path "${genomes.baseName}_filtered", emit: filtered_genomes
     path "filtered_genomes.csv", emit: filtered_csv
 
