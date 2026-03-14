@@ -123,7 +123,7 @@ def process_sample(sample, genome_list, num_threads):
 
 def fetch_genome_data(genome):
     """Fetch genome data with the appropriate API endpoint."""
-    if genome.startswith("GCA_"):
+    if genome.startswith(("GCA_", "ERZ")):
         endpoint = "xml"
     else:
         endpoint = "text"
