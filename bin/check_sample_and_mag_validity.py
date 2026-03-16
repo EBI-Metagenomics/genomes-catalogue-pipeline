@@ -17,16 +17,93 @@
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import csv
+import io
 import logging
 import os
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 
 import requests
 from retry import retry
 
 logging.basicConfig(level=logging.INFO)
 
+# -----------------------------
+# Networking setup
+# -----------------------------
+
+session = requests.Session()
+
+last_request_time = 0
+MIN_INTERVAL = 0.5
+
+PORTAL_BATCH_SIZE = 250
+
+
+@retry(tries=3, delay=10, backoff=2)
+def run_full_url_request(full_url):
+
+    global last_request_time
+
+    elapsed = time.time() - last_request_time
+    if elapsed < MIN_INTERVAL:
+        time.sleep(MIN_INTERVAL - elapsed)
+    last_request_time = time.time()
+
+    r = session.get(full_url)
+
+    # Handle too many requests
+    if r.status_code == 429:
+        retry_after = r.headers.get("Retry-After")
+        wait = int(retry_after) if retry_after else 60
+        logging.warning(f"Rate limited. Sleeping {wait}s")
+        time.sleep(wait)
+        raise Exception("Retry after rate limit")
+
+    r.raise_for_status()
+    return r
+
+
+# -----------------------------
+# Utility helpers
+# -----------------------------
+
+def chunk_list(data, size):
+    for i in range(0, len(data), size):
+        yield data[i:i + size]
+        
+
+# -----------------------------
+# Portal API batch checks
+# -----------------------------
+
+def check_accessions_portal(accessions, result_field, result_table):
+    missing = []
+
+    for batch in chunk_list(accessions, PORTAL_BATCH_SIZE):
+        accession_list = ",".join(f'"{x}"' for x in batch)
+        url = (
+            "https://www.ebi.ac.uk/ena/portal/api/search?"
+            f"result={result_table}"
+            f"&fields={result_field}"
+            "&format=tsv"
+            f"&query={result_field} IN ({accession_list})"
+        )
+        r = run_full_url_request(url)
+        reader = csv.DictReader(io.StringIO(r.text), delimiter="\t")
+        returned = {row[result_field].strip() for row in reader if row.get(result_field)}
+
+        for acc in batch:
+            if acc not in returned:
+                missing.append(acc)
+
+    return missing
+
+
+# -----------------------------
+# Main workflow
+# -----------------------------
 
 def main(input_folder, remove_list_file, outfile, num_threads):
     if not outfile:
@@ -41,94 +118,61 @@ def main(input_folder, remove_list_file, outfile, num_threads):
         remove_list = list()
     sample_mag_dictionary = load_metadata_table(metadata_table_file, remove_list)  # key=sample;val=list of mgygs
 
-    missing_samples = []
-    missing_genomes = []
+    all_samples = []
+    erz_genomes = []
+    gca_genomes = []
+    wgs_set_genomes = []
 
-    # Multithreading for processing samples
-    with ThreadPoolExecutor(max_workers=num_threads) as sample_executor:
-        sample_futures = {
-            sample_executor.submit(process_sample, sample, genome_list, num_threads): sample
-            for sample, genome_list in sample_mag_dictionary.items() if sample != 'NA'
-        }
-        for future in as_completed(sample_futures):
-            try:
-                sample_result = future.result()
-                missing_samples.extend(sample_result['missing_samples'])
-                missing_genomes.extend(sample_result['missing_genomes'])
-            except Exception as e:
-                logging.error("Error processing sample: {}".format(e))
+    for sample, genomes in sample_mag_dictionary.items():
 
-    if len(missing_samples) > 0 or len(missing_genomes) > 0:
+        if sample != "NA":
+            all_samples.append(sample)
+
+        for g in genomes:
+            if not g.startswith("GUT_"):
+                if g.startswith("ERZ"):
+                    erz_genomes.append(g)
+                elif g.startswith("GCA"):
+                    gca_genomes.append(g)
+                else:
+                    wgs_set_genomes.append(g)
+                    
+    logging.info(f"Checking {len(all_samples)} samples")
+    logging.info(f"Checking {len(erz_genomes) + len(gca_genomes) + len(wgs_set_genomes)} genomes")
+
+    portal_checks = [
+        (all_samples, "sample_accession", "sample"),
+        (erz_genomes, "accession", "analysis"),
+        (gca_genomes, "accession", "assembly"),
+        (wgs_set_genomes, "wgs_set", "wgs_set"),
+    ]
+
+    # Run portal checks
+    missing_lists = [check_accessions_portal(acc_list, field, table) for acc_list, field, table in portal_checks]
+    
+    # Split missing accessions into samples and genomes
+    missing_samples = missing_lists[0]
+    missing_genomes = sum(missing_lists[1:], [])  # combine ERZ + GCA + WGS
+    
+    if missing_samples or missing_genomes:
         logging.info("Found genomes and/or samples from the previous catalogue version that are no longer in ENA")
         with open(outfile, "w") as file_out:
             for sample in missing_samples:
-                file_out.write("{}\tsample\n".format(sample))
+                file_out.write(f"{sample}\tsample\n")
             for genome in missing_genomes:
-                file_out.write("{}\tgenome\n".format(genome))
-        logging.error("Missing genomes and samples are saved to {}. Check that these are indeed missing in ENA, "
+                file_out.write(f"{genome}\tgenome\n")
+        # Todo: if a sample is missing, report the associated genomes as genomes associated with missing sample
+
+        logging.error(f"Missing genomes and samples are saved to {outfile}. Check that these are indeed missing in ENA, "
                       "add them to the file containing a list of genomes to remove and restart the pipeline. If a "
                       "sample is missing, all of the associated genomes have been added to the file and should be "
                       "removed from the catalogue. If the sample is found in ENA but some of the genomes are missing, "
-                      "only the missing genomes will be saved to this file to be removed.".
-                      format(outfile))
+                      "only the missing genomes will be saved to this file to be removed.")
+
     else:
         logging.info("No missing genomes or samples found in the previous version of the catalogue")
-        with open("GENOME_CHECK_ALL_GENOMES_OK", "w") as file_out:
+        with open("GENOME_CHECK_ALL_GENOMES_OK", "w"):
             pass
-
-
-@retry(tries=3, delay=10, backoff=1.5)
-def run_full_url_request(full_url):
-    r = requests.get(url=full_url)
-    r.raise_for_status()
-    return r
-
-
-def process_sample(sample, genome_list, num_threads):
-    """
-    Process a single sample and its genomes.
-    Returns a dictionary with missing samples and genomes.
-    """
-    missing_samples = []
-    missing_genomes = []
-
-    # Check if the sample exists
-    try:
-        run_full_url_request(f"https://www.ebi.ac.uk/ena/browser/api/xml/{sample}")
-        keep_genomes = True
-    except requests.exceptions.RequestException as e:
-        logging.info("Sample {} not found in ENA. Error: {}".format(sample, e))
-        missing_samples.append(sample)
-        keep_genomes = False
-
-    # Multithreading for processing genomes within the sample
-    if keep_genomes:
-        with ThreadPoolExecutor(max_workers=num_threads) as genome_executor:
-            genome_futures = {
-                genome_executor.submit(fetch_genome_data, genome): genome
-                for genome in genome_list if not genome.startswith("GUT_")
-            }
-            for future in as_completed(genome_futures):
-                genome = genome_futures[future]
-                try:
-                    future.result()
-                except Exception as e:
-                    logging.info("Genome {} not found in ENA. Error: {}".format(genome, e))
-                    missing_genomes.append(genome)
-    else:
-        missing_genomes.extend(genome_list)
-
-    return {'missing_samples': missing_samples, 'missing_genomes': missing_genomes}
-
-
-def fetch_genome_data(genome):
-    """Fetch genome data with the appropriate API endpoint."""
-    if genome.startswith(("GCA_", "ERZ")):
-        endpoint = "xml"
-    else:
-        endpoint = "text"
-    url = f"https://www.ebi.ac.uk/ena/browser/api/{endpoint}/{genome}"
-    run_full_url_request(url)
 
 
 def load_remove_list(remove_list_file, metadata_table_file):
