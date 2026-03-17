@@ -179,8 +179,13 @@ process COMBINE_GENOME_FOLDERS {
     script:
     """
     mkdir -p combined_genomes
-    cp -r ${folder_one}/* combined_genomes/ || true
-    cp -r ${folder_two}/* combined_genomes/ || true
+    if [[ -n "$folder_one" && -d "$folder_one" ]]; then
+        cp -r "${folder_one}"/* combined_genomes/
+    fi
+    
+    if [[ -n "$folder_two" && -d "$folder_two" ]]; then
+        cp -r "${folder_two}"/* combined_genomes/
+    fi
     
     # change extension of all genomes to .fa
     for f in combined_genomes/*; do
