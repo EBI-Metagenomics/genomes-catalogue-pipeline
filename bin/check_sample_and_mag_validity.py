@@ -38,7 +38,8 @@ session = requests.Session()
 last_request_time = 0
 MIN_INTERVAL = 0.5
 
-PORTAL_BATCH_SIZE = 100
+PORTAL_BATCH_SIZE_MAGS = 250
+PORTAL_BATCH_SIZE_SAMPLES = 50
 
 
 @retry(tries=3, delay=10, backoff=2)
@@ -81,7 +82,8 @@ def chunk_list(data, size):
 def check_accessions_portal(accessions, result_field, result_table):
     missing = []
 
-    for batch in chunk_list(accessions, PORTAL_BATCH_SIZE):
+    portal_batch_size = PORTAL_BATCH_SIZE_SAMPLES if result_table == "sample" else PORTAL_BATCH_SIZE_MAGS
+    for batch in chunk_list(accessions, portal_batch_size):
         # Decide which fields to use - samples can appear in two different fields in ENA
         if result_table == "sample" and result_field == "sample_accession":
             query_fields = ["sample_accession", "secondary_sample_accession"]
