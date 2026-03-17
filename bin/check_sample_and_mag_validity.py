@@ -38,7 +38,7 @@ session = requests.Session()
 last_request_time = 0
 MIN_INTERVAL = 0.5
 
-PORTAL_BATCH_SIZE = 250
+PORTAL_BATCH_SIZE = 100
 
 
 @retry(tries=3, delay=10, backoff=2)
@@ -82,17 +82,40 @@ def check_accessions_portal(accessions, result_field, result_table):
     missing = []
 
     for batch in chunk_list(accessions, PORTAL_BATCH_SIZE):
-        accession_list = ",".join(f'"{x}"' for x in batch)
+        # Decide which fields to use - samples can appear in two different fields in ENA
+        if result_table == "sample" and result_field == "sample_accession":
+            query_fields = ["sample_accession", "secondary_sample_accession"]
+        else:
+            query_fields = [result_field]
+
+        # Build query
+        if len(query_fields) == 1:
+            # The query is not a sample
+            accession_list = ",".join(f'"{x}"' for x in batch)
+            query = f"{query_fields[0]} IN ({accession_list})"
+        else:
+            # The query is a sample: expand each accession
+            query_parts = []
+            for acc in batch:
+                sub_parts = [f'{field}="{acc}"' for field in query_fields]
+                query_parts.append(f"({' OR '.join(sub_parts)})")
+            query = " OR ".join(query_parts)
+
+        fields_param = ",".join(query_fields)
         url = (
             "https://www.ebi.ac.uk/ena/portal/api/search?"
             f"result={result_table}"
-            f"&fields={result_field}"
+            f"&fields={fields_param}"
             "&format=tsv"
-            f"&query={result_field} IN ({accession_list})"
+            f"&query={query}"
         )
         r = run_full_url_request(url)
         reader = csv.DictReader(io.StringIO(r.text), delimiter="\t")
-        returned = {row[result_field].strip() for row in reader if row.get(result_field)}
+        returned = set()
+        for row in reader:
+            for field in query_fields:
+                if row.get(field):
+                    returned.add(row[field].strip())
 
         for acc in batch:
             if acc not in returned:
