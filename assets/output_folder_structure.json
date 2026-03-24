@@ -11,7 +11,8 @@
     {
       "intermediate_files": [
           "extra_weight_table.txt", 
-          "renamed_genomes_name_mapping.tsv"
+          "renamed_genomes_name_mapping.tsv",
+          "clusters_split.txt"
       ]
     }
   ]
