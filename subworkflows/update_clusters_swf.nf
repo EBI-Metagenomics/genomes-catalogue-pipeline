@@ -88,7 +88,8 @@ workflow UPDATE_CLUSTERS {
             SPLIT_DREP_NEW_SPECIES.out.text_split
         )
        
-       // gather old and new genomes into one folder
+       // gather old and new genomes into one folder (using new_genomes and not new_genomes_present intentionally -
+       // this module needs to always run, even if we are not adding any genomes)
        combined_genomes = COMBINE_GENOME_FOLDERS(
             "${previous_catalogue_location}/additional_data/mgyg_genomes/",
             new_genomes
