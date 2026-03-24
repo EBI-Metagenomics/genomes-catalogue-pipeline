@@ -27,7 +27,7 @@ workflow UPDATE_CLUSTERS {
         drep_args
     main:
     
-        // We only want to run modules on new genomes if new genomes are being added; make are queue channel for this
+        // We only want to run modules on new genomes if new genomes are being added; make a queue channel for this
         new_genomes_present = new_genomes.filter { items ->
         items instanceof List ? !items.isEmpty() : true
         }
@@ -83,9 +83,9 @@ workflow UPDATE_CLUSTERS {
             new_genome_stats,
             extra_weight_table_new_genomes,
             genomes_name_mapping,
-            PARSE_MASH_FOR_UPDATE.out.new_strains_file,
-            PARSE_MASH_FOR_UPDATE.out.repeat_strains_file,
-            SPLIT_DREP_NEW_SPECIES.out.text_split
+            PARSE_MASH_FOR_UPDATE.out.new_strains_file.ifEmpty([]),
+            PARSE_MASH_FOR_UPDATE.out.repeat_strains_file.ifEmpty([]),
+            SPLIT_DREP_NEW_SPECIES.out.text_split.ifEmpty([])
         )
        
        // gather old and new genomes into one folder (using new_genomes and not new_genomes_present intentionally -
