@@ -52,9 +52,15 @@ class Quality:
     
 def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, checkm_file, remove_list_file, 
          new_species_split_file=None, new_strain_file=None, repeat_strain_file=None):
-    
-    new_strain_placement = load_strain_placement(new_strain_file, same_strain=False)  # strain_acc → Placement
-    repeat_strain_placement = load_strain_placement(repeat_strain_file, same_strain=True)  # strain_acc → Placement
+    new_strain_placement = (
+        load_strain_placement(new_strain_file, same_strain=False)  # strain_acc → Placement
+        if new_strain_file else {}
+    )
+
+    repeat_strain_placement = (
+        load_strain_placement(repeat_strain_file, same_strain=True)  # strain_acc → Placement
+        if repeat_strain_file else {}
+    )
     remove_list = load_first_column_to_list(remove_list_file)
     
     logging.info(f"Loaded data: {len(new_strain_placement)} new strains, {len(repeat_strain_placement)} repeat strains "
