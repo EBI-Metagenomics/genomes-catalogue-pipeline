@@ -50,8 +50,8 @@ class Quality:
     n_contigs: int
     
     
-def main(cluster_split_file, new_strain_file, repeat_strain_file, output_prefix, assembly_stats_file, 
-         isolates_file, checkm_file, remove_list_file, new_species_split_file=None):
+def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, checkm_file, remove_list_file, 
+         new_species_split_file=None, new_strain_file=None, repeat_strain_file=None):
     
     new_strain_placement = load_strain_placement(new_strain_file, same_strain=False)  # strain_acc → Placement
     repeat_strain_placement = load_strain_placement(repeat_strain_file, same_strain=True)  # strain_acc → Placement
@@ -600,11 +600,25 @@ def parse_args():
                         help='Path to the tab-delimited file containing a list of genomes (MGYG) to remove in column 1')
     parser.add_argument('--new-species-split-file', required=False,
                         help='Path to the cluster split file for new species')
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    # Validation
+    optional_arguments = [
+        args.new_species_split_file,
+        args.new_strain_list,
+        args.repeat_strain_list
+    ]
+
+    if any(optional_arguments) and not all(optional_arguments):
+        parser.error(
+            "Arguments --new-species-split-file, --new-strain-list, and --repeat-strain-list must be provided together"
+        )
+
+    return args
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.cluster_split_file, args.new_strain_list, args.repeat_strain_list, args.output_prefix, 
-         args.assembly_stats, args.isolates, args.checkm, args.remove_list, args.new_species_split_file)
+    main(args.cluster_split_file, args.output_prefix, args.assembly_stats, args.isolates, args.checkm, 
+         args.remove_list, args.new_species_split_file, args.new_strain_list, args.repeat_strain_list)
     

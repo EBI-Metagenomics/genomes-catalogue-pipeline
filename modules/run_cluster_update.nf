@@ -44,17 +44,33 @@ process RUN_CLUSTER_UPDATE {
     --outfile-extra-weight extra_weight_table_all_genomes.tsv \
     --outfile-checkm checkm_all_genomes.csv
     
-    # place all new genomes into clusters and replace species reps as needed
+    # Place all new genomes into clusters and replace species reps as needed
+    # Build optional arguments based on file existence
+    NEW_STRAIN_ARG=""
+    if [[ ! "${new_strains_file}" =~ ^NO_FILE ]]; then
+        NEW_STRAIN_ARG="--new-strain-list ${new_strains_file}"
+    fi
+    
+    REPEAT_STRAIN_ARG=""
+   if [[ ! "${repeat_strains_file}" =~ ^NO_FILE ]]; then
+        REPEAT_STRAIN_ARG="--repeat-strain-list ${repeat_strains_file}"
+    fi
+    
+    NEW_SPECIES_ARG=""
+    if [ -f "${new_species_split_file}" ] && [ -s "${new_species_split_file}" ]; then
+        NEW_SPECIES_ARG="--new-species-split-file new_species_cluster_split.txt"
+    fi
+    
     replace_species_representative.py \
     --cluster-split-file clusters_split_filtered.txt \
-    --new-strain-list ${new_strains_file} \
-    --repeat-strain-list ${repeat_strains_file} \
     --output-prefix update \
     --assembly-stats assembly_stats_all_genomes.tsv \
     --isolates extra_weight_table_all_genomes.tsv \
     --checkm checkm_all_genomes.csv \
     --remove-list ${remove_genomes} \
-    --new-species-split-file new_species_cluster_split.txt
+    \$NEW_STRAIN_ARG \
+    \$REPEAT_STRAIN_ARG \
+    \$NEW_SPECIES_ARG
     
     # combine name mapping files
     if [ -s ${new_genomes_name_mapping} ]; then
