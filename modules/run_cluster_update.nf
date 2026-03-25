@@ -17,9 +17,9 @@ process RUN_CLUSTER_UPDATE {
     
     output:
     path "assembly_stats_all_genomes.tsv", emit: assembly_stats_all_genomes
-    path "extra_weight_table_all_genomes.tsv", emit: extra_weight_table_all_genomes
+    path "extra_weight_table_all_genomes_filtered.tsv", emit: extra_weight_table_all_genomes
     path "update_clusters_split.txt", emit: updated_text_split
-    path "update_renamed_genomes_name_mapping.tsv", emit: updated_genomes_name_mapping
+    path "update_renamed_genomes_name_mapping_filtered.tsv", emit: updated_genomes_name_mapping
     path "checkm_all_genomes.csv", emit: checkm_all_genomes
     path "update_cluster_rep_changes_report.tsv", emit: species_rep_replacement_report
         
@@ -81,5 +81,17 @@ process RUN_CLUSTER_UPDATE {
         cp ${previous_catalogue_location}/additional_data/intermediate_files/renamed_genomes_name_mapping.tsv \
         update_renamed_genomes_name_mapping.tsv
     fi
+    
+    # filter accessions from the remove list from outputs (note: if we use versioned MGYG accessions in the future, this 
+    # code needs to be changed because it removes mentions of an accession in a line so if we are removing 
+    # MGYG00001 but adding MGYG00001.1, it will get filtered out)
+    
+    # Filter extra_weight_table_all_genomes.tsv
+    grep -vFf <(cut -f1 ${remove_genomes}) extra_weight_table_all_genomes.tsv \
+    > extra_weight_table_all_genomes_filtered.tsv
+
+    # Filter update_renamed_genomes_name_mapping.tsv
+    grep -vFf <(cut -f1 ${remove_genomes}) update_renamed_genomes_name_mapping.tsv \
+    > update_renamed_genomes_name_mapping_filtered.tsv
     """
 }
