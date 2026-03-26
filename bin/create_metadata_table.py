@@ -78,8 +78,34 @@ def main(
     logging.info("Added locations")
     df = add_ftp(df, genome_list, ftp_name, ftp_version, reps)
     df.set_index("Genome", inplace=True)
+    assert_no_empty_fields(df)  # Check that all fields in the table are filled
     df.to_csv(outfile, sep="\t")
 
+
+def assert_no_empty_fields(df):
+    # Treat empty strings as NaN
+    df_check = df.replace("", pd.NA)
+
+    # Find rows with any missing values
+    missing_mask = df_check.isna().any(axis=1)
+
+    if missing_mask.any():
+        bad_rows = df.loc[missing_mask]
+
+        # Count total missing cells
+        total_missing = df_check.isna().sum().sum()
+
+        # Find which columns are affected
+        cols_with_missing = df_check.columns[df_check.isna().any()].tolist()
+
+        raise ValueError(
+            f"Final metadata table contains empty fields.\n"
+            f"- Rows affected: {len(bad_rows)}\n"
+            f"- Total empty cells: {total_missing}\n"
+            f"- Columns affected: {cols_with_missing}\n"
+            f"- Example genomes: {bad_rows['Genome'].head(10).tolist()}"
+        )
+    
 
 def add_busco(df, busco_output):
     if not os.path.isfile(busco_output):
