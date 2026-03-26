@@ -424,7 +424,7 @@ def remove_genomes_from_clusters(current_clusters, remove_list):
     
     
 def output_existing_drep_tables(cluster_split_file, output_prefix):
-    updated_cluster_split_file = f"{output_prefix}_{os.path.basename(cluster_split_file)}"
+    updated_cluster_split_file = f"{output_prefix}_clusters_split.txt"
     shutil.copy(cluster_split_file, updated_cluster_split_file)
     logging.info("No changes made to the clusters. Original file contents are written to output.")
 
