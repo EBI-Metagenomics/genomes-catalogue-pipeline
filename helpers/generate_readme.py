@@ -317,6 +317,12 @@ def load_rep_changes(additional_data_path):
     # Read TSV
     df = pd.read_csv(report_path, sep="\t")
 
+    expected_cols = {"old_rep", "new_rep", "reason"}
+
+    # If it's not a proper TSV report, return empty results (will happen when no rep replacements were made)
+    if not expected_cols.issubset(df.columns):
+        return {}, []
+
     species_rep_replacements = {}
     removals = []
 
