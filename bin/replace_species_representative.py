@@ -72,7 +72,8 @@ def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, 
     # everything - this is not an update, just a reannotation
     if not (new_strain_placement or remove_list or repeat_strain_placement or new_species_split_file):
         logging.info("No genomes are added or removed, printing old catalogue results and existing.")
-        output_existing_drep_tables(cluster_split_file, clusters_output_file, report_output_file)
+        output_existing_drep_tables(cluster_split_file, clusters_output_file)
+        write_report_tsv(dict(), report_output_file) 
         return
     
     logging.info("Evaluating changes...")
@@ -424,10 +425,8 @@ def remove_genomes_from_clusters(current_clusters, remove_list):
     return current_clusters_minus_removed, remove_log
     
     
-def output_existing_drep_tables(cluster_split_file, clusters_output_file, report_output_file):
+def output_existing_drep_tables(cluster_split_file, clusters_output_file):
     shutil.copy(cluster_split_file, clusters_output_file)
-    with open(report_output_file, "w") as report_out:
-        report_out.write("No genomes removed or added, no changes to the clusters were made.")
     logging.info("No changes made to the clusters. Original file contents are written to output.")
 
 
