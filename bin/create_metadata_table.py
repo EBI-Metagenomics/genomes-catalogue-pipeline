@@ -77,8 +77,8 @@ def main(
     df = add_sample_project_loc(df, location_file, previous_version_data)
     logging.info("Added locations")
     df = add_ftp(df, genome_list, ftp_name, ftp_version, reps)
-    df.set_index("Genome", inplace=True)
     assert_no_empty_fields(df)  # Check that all fields in the table are filled
+    df.set_index("Genome", inplace=True)
     df.to_csv(outfile, sep="\t")
 
 
