@@ -14,9 +14,7 @@ process KEGG_COMPLETENESS {
         failOnError: true
     )
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/kegg-pathways-completeness:1.3.0--pyhdfd78af_0':
-        'biocontainers/kegg-pathways-completeness:1.3.0--pyhdfd78af_0' }"
+    container 'biocontainers/kegg-pathways-completeness:1.4.0--pyhdfd78af_0'
 
     input:
     tuple val(cluster), file(eggnog_annotation_tsvs)
