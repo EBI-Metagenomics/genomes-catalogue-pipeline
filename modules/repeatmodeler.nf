@@ -10,8 +10,8 @@ process REPEAT_MODELER {
     tuple val(cluster), path(genome), path(proteins)
 
     output:
-    tuple val(genome.baseName), path("*families.fa"), emit: repeat_families
-    tuple val(genome.baseName), path("*families.stk"), emit: repeat_aligment
+    tuple val(genome.baseName), path("*families.fa"), emit: repeat_families, optional: true
+    tuple val(genome.baseName), path("*families.stk"), emit: repeat_aligment, optional: true
     tuple val(genome.baseName), path("*rmod.log"), emit: logile
 
     script:
