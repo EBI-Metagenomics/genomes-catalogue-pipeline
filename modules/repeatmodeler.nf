@@ -12,7 +12,7 @@ process REPEAT_MODELER {
     output:
     tuple val(genome.baseName), path("*families.fa"), emit: repeat_families, optional: true
     tuple val(genome.baseName), path("*families.stk"), emit: repeat_aligment, optional: true
-    tuple val(genome.baseName), path("*rmod.log"), emit: logile
+    tuple val(genome.baseName), path("*rmod.log"), emit: logile, optional: true
 
     script:
     """
