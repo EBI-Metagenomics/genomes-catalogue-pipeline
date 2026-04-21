@@ -14,7 +14,7 @@ process KEGG_COMPLETENESS {
         failOnError: true
     )
 
-    container 'quay.io/biocontainers/kegg-pathways-completeness:1.4.0--pyhdfd78af_0'
+    container 'quay.io/biocontainers/kegg-pathways-completeness:1.4.3--pyhdfd78af_0'
 
     input:
     tuple val(cluster), file(eggnog_annotation_tsvs)
