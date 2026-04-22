@@ -27,7 +27,6 @@ process GTDBTK_QC {
     --pplacer_cpus ${task.cpus} \
     --genome_dir genomes_dir \
     --extension ${extension} \
-    --place_species \
     --out_dir gtdbtk_results
     
     process_gtdb_unknowns.py -i gtdbtk_results -p processed
