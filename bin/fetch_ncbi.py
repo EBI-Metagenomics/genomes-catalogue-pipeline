@@ -113,7 +113,7 @@ def load_locations(accessions):
                 else:
                     acc = line.split()[0].split('.')[0]
                     if acc in accessions:
-                        path = line.split('\t')[19]
+                        path = line.split('\t')[19].rstrip('/')
                         file_name = '{}_genomic.fna.gz'.format(path.split('/')[-1])
                         full_url = '/'.join([path, file_name])
                         accessions[acc] = full_url
