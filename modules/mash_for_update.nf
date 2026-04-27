@@ -17,11 +17,21 @@ process MASH_FOR_UPDATE {
     
     script:
     """
+    echo "Generate list"
+    find ${new_genomes}/ -name "*.fa" > list.txt
+    
+    echo "mash sketch new genomes"
+    mash sketch \
+    -p ${task.cpus} \
+    -l list.txt \
+    -o new_genomes.msh
+    
+    echo "mash dist"
     mash dist \
     -p ${task.cpus} \
     -d 0.2 \
     ${previous_catalogue_location}/ftp/all_genomes.msh \
-    ${new_genomes} \
+    new_genomes.msh \
     > mash_new_genomes_against_catalogue.out
     """
 
