@@ -17,13 +17,9 @@ process MASH_FOR_UPDATE {
     
     script:
     """
-    # create a list of genomes
-    find ${new_genomes}/ -name "*.fa" > list.txt
-    
     mash dist \
     -p ${task.cpus} \
     -d 0.2 \
-    -l list.txt \
     ${previous_catalogue_location}/ftp/all_genomes.msh \
     ${new_genomes} \
     > mash_new_genomes_against_catalogue.out
