@@ -18,7 +18,7 @@ process MASH_FOR_UPDATE {
     script:
     """
     # create a list of genomes
-    find ${new_genomes} -type f -maxdepth 1 -name "*.fa" > list.txt
+    find ${new_genomes}/ -name "*.fa" > list.txt
     
     mash dist \
     -p ${task.cpus} \
