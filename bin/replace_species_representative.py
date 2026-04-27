@@ -72,7 +72,7 @@ def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, 
                         f"{[g for g in remove_list_raw if remove_list_raw.count(g) > 1]}")
 
     logging.info(f"Loaded data: {len(new_strain_placement)} new strains, {len(repeat_strain_placement)} repeat strains "
-             f"before evaluation, {len(remove_list)} genomes to remove.")
+                 f"before evaluation, {len(remove_list)} genomes to remove.")
     
     # If we are not adding or removing genomes, we don't need to do anything, just output old files for 
     # everything - this is not an update, just a reannotation
