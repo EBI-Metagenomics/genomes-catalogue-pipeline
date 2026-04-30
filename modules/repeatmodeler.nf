@@ -2,8 +2,8 @@ process REPEAT_MODELER {
     tag "${genome.baseName}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://dfam/tetools:latest' :
-        'dfam/tettools:latest' }"
+        'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.7--pl5321hdfd78af_0':
+        'quay.io/biocontainers/repeatmodeler:2.0.7--pl5321hdfd78af_0' }"
 
 
     input:

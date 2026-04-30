@@ -48,9 +48,11 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | samtools                                                                                         | 1.15             | FASTA indexing                                                                                                         |
 | EukCC                                                                                            | 2.1.3            | Completeness and contamination of eukaryotic genomes                                                                   |
 | BUSCO                                                                                            | 5.8.0            | Eukaryotic genome quality                                                                                              |
-| RepeatModeler                                                                                    | 2.0.6            | Identification of repeat elements in eukaryotic genomes                                                                |
-| RepeatMasker                                                                                     | 4.1.7            | Repeat masking in eukaryotic genomes                                                                                   |
+| RepeatModeler                                                                                    | 2.0.7            | Identification of repeat elements in eukaryotic genomes                                                                |
+| RepeatMasker                                                                                     | 4.2.3            | Repeat masking in eukaryotic genomes                                                                                   |
 | Braker                                                                                           | 3.0.8            | Gene calling in eukaryotic genomes                                                                                     |
+| Datascout                                                                                        | 1.1.0            | Query and fetch protein evidence for eukaryotic gene prediction                                                        |
+
 
 ## Setup
 
@@ -133,7 +135,7 @@ performs the following:
 
 While a regular pipeline execution uses dRep to cluster genomes, **the clustering during the update process is different in the following ways**:
 
-- existing clustering from the previous catalogue version is preserved 
+- existing clustering from the previous catalogue version is preserved
 - the genomes that are flagged for removal (by the user or the pipeline) are removed without disrupting the existing clusters
 - if new genomes are being added, their placement is determined using [Mash](https://github.com/marbl/Mash) and the following rules:
   1. if the smallest Mash distance between the new genome and any of the existing catalogue genomes is less than 0.001, the new genome is classified as a repeat strain
@@ -143,14 +145,14 @@ While a regular pipeline execution uses dRep to cluster genomes, **the clusterin
   5. new strains and new species are always added to the catalogue, as long as they pass the general quality control checks used for new genomes
 
 ### Quality comparisons for new genomes
-During the catalogue cluster update process, the quality scores for all genomes are calculated as:  
-`QS = % completeness – 5 * % contamination + 0.5 * log(N50)`  
-A 10% quality improvement is computed as `threshold = QS * 1.1`.  
+During the catalogue cluster update process, the quality scores for all genomes are calculated as:
+`QS = % completeness – 5 * % contamination + 0.5 * log(N50)`
+A 10% quality improvement is computed as `threshold = QS * 1.1`.
 The quality score improvement is used to decide:
 - if a repeat strain should be added to the catalogue
 - if the species representative genome should be re-assigned.
 
-For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.  
+For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.
 If threshold > 100, the decision process changes to prioritise genome contiguity. The species representative is replaced if there is a genome that satisfies the following conditions:
 - QS and completeness is same or higher than the existing rep
 - Contamination is the same or less than the existing rep
