@@ -4,24 +4,11 @@
 process DETECT_TRNA {
 
     tag "${genome_name}"
-
     container 'quay.io/microbiome-informatics/genomes-pipeline.detect_rrna:v3.2'
-    
+
     publishDir(
-        path: "${params.outdir}",
-        saveAs: {
-            filename -> {
-                if ( !filename.endsWith(".out") ) {
-                    return null;
-                }
-                def output_file = file(filename);
-                def genome_id = fasta.baseName.replace("_sm", "");
-                if ( output_file.name.contains("_tRNA_20aa") ) {
-                    return "additional_data/rRNA_outs/${genome_id}/${output_file.name}";
-                }
-                return null;
-            }
-        },
+        path: "${params.outdir}/additional_data/rRNA_outs/${genome_name}",
+        pattern: '*_tRNA_20aa.out',
         mode: 'copy',
         failOnError: true
     )
@@ -45,7 +32,7 @@ process DETECT_TRNA {
     # and that causes issues as other detect_trna process will crash when the files are cleaned
     export PROCESSTMP="\$(mktemp -d)"
     export TMPDIR="\${PROCESSTMP}"
-   
+
     # Cleanup on exit, but ignore .nfs* files
     trap '
         if [ -d "\${PROCESSTMP}" ]; then
@@ -68,6 +55,5 @@ process DETECT_TRNA {
     parse_tRNA.py -i ${genome_name}_stats.out -o ${genome_name}_tRNA_20aa.out
 
     echo "Completed"
-
     """
 }
