@@ -51,7 +51,6 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | RepeatModeler                                                                                    | 2.0.7            | Identification of repeat elements in eukaryotic genomes                                                                |
 | RepeatMasker                                                                                     | 4.2.3            | Repeat masking in eukaryotic genomes                                                                                   |
 | Braker                                                                                           | 3.0.8            | Gene calling in eukaryotic genomes                                                                                     |
-| Datascout                                                                                        | 1.1.0            | Query and fetch protein evidence for eukaryotic gene prediction                                                        |
 
 
 ## Setup
