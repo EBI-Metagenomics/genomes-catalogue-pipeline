@@ -2,8 +2,8 @@ process BRAKER {
     tag "${genome_name}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://teambraker/braker3:latest' :
-        'teambraker/braker3:latest' }"
+        'https://depot.galaxyproject.org/singularity/braker3:3.0.8--hdfd78af_0' :
+        'quay.io/biocontainers/braker3:3.0.8--hdfd78af_0' }"
 
 
     input:
