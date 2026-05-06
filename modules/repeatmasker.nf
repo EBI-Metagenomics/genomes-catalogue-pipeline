@@ -1,5 +1,5 @@
 process REPEAT_MASKER {
-    tag "${genome_name}"
+    tag "${genome.baseName}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/repeatmasker:4.2.3--pl5321hdfd78af_0' :
@@ -7,11 +7,11 @@ process REPEAT_MASKER {
 
 
     input:
-    tuple val(genome_name), path(genome, stageAs: "${genome_name}_before_masking.fa"), path(proteins)
+    tuple val(genome_name), path(genome, stageAs: "input/*"), path(proteins)
     tuple val(genome_name), path(library)
 
     output:
-    tuple val(genome_name), path("${genome_name}.fa"), emit: masked_genome
+    tuple val(genome_name), path("${genome.baseName}.fa"), emit: masked_genome
 
     script:
     """
@@ -21,8 +21,8 @@ process REPEAT_MASKER {
     export HOME="\$PWD/.home"
     mkdir -p "\$HOME"
 
-    RepeatMasker -lib ${library} -xsmall ${genome_name}_before_masking.fa -pa ${task.cpus}
+    RepeatMasker -lib ${library} -xsmall ${genome} -pa ${task.cpus}
 
-    mv *.masked "${genome_name}.fa"
+    mv "${genome}.masked" "${genome.baseName}.fa"
     """
 }
