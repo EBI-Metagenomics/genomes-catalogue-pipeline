@@ -4,8 +4,16 @@ process BRAKER_POSTPROCESSING {
 
     publishDir(
         path: "${params.outdir}/species_catalogue/${cluster_prefix}/${cluster_name}/genome",
-        pattern: "*.{faa,fna}",
+        pattern: "*.faa",
         saveAs: { filename -> is_rep ? filename : null },
+        mode: 'copy',
+        failOnError: true
+    )
+
+    publishDir(
+        path: "${params.outdir}/species_catalogue/${cluster_prefix}/${cluster_name}/genome",
+        pattern: "${masked_genome.name}",
+        saveAs: { filename -> is_rep ? "${masked_genome.baseName}.fna" : null },
         mode: 'copy',
         failOnError: true
     )
@@ -27,7 +35,7 @@ process BRAKER_POSTPROCESSING {
 
     publishDir(
         path: "${params.outdir}/additional_data/mgyg_genomes",
-        pattern: "*.fna",
+        pattern: "${masked_genome.name}",
         saveAs: { filename -> "${masked_genome.baseName}.fna" },
         mode: 'copy',
         failOnError: true
@@ -46,6 +54,7 @@ process BRAKER_POSTPROCESSING {
     tuple val(genome_name), path(ffn)
 
     output:
+    tuple val(genome_name), path(masked_genome), emit: input_genome
     tuple val(genome_name), path("*.gff"), emit: renamed_gff3
     tuple val(genome_name), path("*.faa"), emit: renamed_proteins
     tuple val(genome_name), path("*.ffn"), emit: renamed_ffn
