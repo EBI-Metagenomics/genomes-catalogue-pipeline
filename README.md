@@ -51,7 +51,8 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | RepeatModeler                                                                                    | 2.0.7            | Identification of repeat elements in eukaryotic genomes                                                                |
 | RepeatMasker                                                                                     | 4.2.3            | Repeat masking in eukaryotic genomes                                                                                   |
 | Braker                                                                                           | 3.0.8            | Gene calling in eukaryotic genomes                                                                                     |
-
+| CAT_pack                                                                                         | 5.2.3            | Taxonomic classification of eukaryotic genomes                                                                         |
+| CAT_pack DB                                                                                      | 2021-01-07       | DIAMOND database made from NCBI nr and NCBI taxdump used by CAT_pack                                                   |
 
 ## Setup
 
