@@ -1,0 +1,4 @@
+genome,proteins
+GCA_963974035.fa,/path/to/datascout_output/GCA_963974035_orthodb_dir/92860_sequences/combined_orthodb_92860.faa
+GCA_963976495.fa,/path/to/datascout_output/GCA_963976495_orthodb_dir/5178_sequences/combined_orthodb_5178.faa
+GCA_963979565.fa,/path/to/datascout_output/GCA_963979565_orthodb_dir/13792_sequences/combined_orthodb_13792.faa

@@ -101,6 +101,18 @@ cd containers && bash build.sh
  - catalogue biome (for example, root:Host-associated:Human:Digestive system:Large intestine:Fecal)
  - min and max accession number to be assigned to the genomes (only MGnify specific). Max - Min = #total number of genomes (NCBI+ENA)
 
+### Eukaryotic genomes: protein evidence for gene prediction
+
+If you are running the pipeline with `--kingdom eukaryotes`, you need to collect protein evidence before running the pipeline. This evidence is used by [Braker](https://github.com/Gaius-Augustus/BRAKER) for gene prediction.
+
+Use [datascout](https://github.com/EBI-Metagenomics/datascout) pipeline to collect the required protein data from OrthoDB:
+
+```bash
+nextflow run datascout/main.nf --samplesheet <datascout_input>.csv --download_rna_fastq false
+```
+
+The samplesheet with protein evidence should be supplied with `--protein_evidence` parameter. The expected format is a CSV file with two columns — `genome` and `proteins` — mapping each genome filename to its corresponding protein FASTA file. See [assets/datascout_samplesheet.csv](assets/datascout_samplesheet.csv) for an example.
+
 ## Execution
 
 The pipeline is built in [Nextflow](https://www.nextflow.io), and utilized containers to run the software (we don't support conda ATM).
