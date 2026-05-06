@@ -19,8 +19,8 @@
 import argparse
 import logging
 import os
-import shutil
 import re
+import shutil
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,7 +31,9 @@ def read_map_file(map_file):
         for line in file_in:
             line = line.strip().split("\t")
             mapping[line[0]] = line[1]
-    assert len(list(mapping.values())) == len(set(mapping.values())), "Repeat names in file {}".format(map_file)
+    assert len(list(mapping.values())) == len(
+        set(mapping.values())
+    ), "Repeat names in file {}".format(map_file)
     return mapping
 
 
@@ -88,7 +90,12 @@ def main(
                 )
             else:
                 rename_fasta(
-                    file, new_name, fasta_file_directory, rename_deflines, accession, spades_style=spades_style
+                    file,
+                    new_name,
+                    fasta_file_directory,
+                    rename_deflines,
+                    accession,
+                    spades_style=spades_style,
                 )
                 try:
                     os.remove(os.path.join(fasta_file_directory, file))
@@ -121,9 +128,7 @@ def write_fasta(old_path, new_path, accession, spades_style=False):
                     ">{}_{}-length-{}-cov-{}\n".format(accession, n, length, coverage)
                 )
             else:
-                file_out.write(
-                    ">{}_{}\n".format(accession, n)
-                )
+                file_out.write(">{}_{}\n".format(accession, n))
         else:
             file_out.write(line)
     file_in.close()
@@ -138,7 +143,9 @@ def rename_to_outdir(file, new_name, accession, input_dir, output_dir, spades_st
     write_fasta(old_path, new_path, accession, spades_style)
 
 
-def rename_fasta(file, new_name, fasta_file_directory, rename_deflines, accession, spades_style):
+def rename_fasta(
+    file, new_name, fasta_file_directory, rename_deflines, accession, spades_style
+):
     new_path = os.path.join(fasta_file_directory, new_name)
     old_path = os.path.join(fasta_file_directory, file)
     if not rename_deflines:
@@ -181,8 +188,9 @@ def rename_csv(names, csv_file, busco):
         with open(busco, "r") as busco_in, open(busco_renamed, "w") as busco_out:
             for line in busco_in:
                 items = line.strip().split("\t")
-                genome = names[items[0]] if items[0] in names else items[0]
-                busco_out.write("\t".join([genome] + items[1:2]) + "\n")
+                if items[0] not in names:
+                    continue
+                busco_out.write("\t".join([names[items[0]]] + items[1:2]) + "\n")
 
 
 def parse_args():
@@ -253,9 +261,10 @@ def parse_args():
         "--spades-style",
         action="store_true",
         help=(
-            "If this flag is on, deflines within the FASTA file will be named in the format that spades uses: "
-            "{contig_name}-length-{num}-cov-{num}, for example, MGYG00001_1--length--112345--cov--4.7. Without this "
-            "flag, the names will be kept to the contig accession only, for example, MGYG00001_1."
+            "If this flag is on, deflines within the FASTA file will be named in the format "
+            "that spades uses: {contig_name}-length-{num}-cov-{num}, for example, "
+            "MGYG00001_1--length--112345--cov--4.7. Without this flag, the names will be "
+            "kept to the contig accession only, for example, MGYG00001_1."
         ),
     )
     parser.add_argument(
@@ -263,17 +272,17 @@ def parse_args():
         dest="outputdir",
         required=False,
         help="Output directory for renamed FASTA files (use in CWL). "
-             "If specifying outputdir, the deflines in FASTA will also be renamed. "
-             "If outdir is not specified, files will be renamed inside their "
-             "original folder and deflines only renamed if flag --rename-deflines "
-             "is used.",
+        "If specifying outputdir, the deflines in FASTA will also be renamed. "
+        "If outdir is not specified, files will be renamed inside their "
+        "original folder and deflines only renamed if flag --rename-deflines "
+        "is used.",
     )
     parser.add_argument(
         "--csv",
         dest="csv",
         required=False,
         help="CSV file with completeness and contamination. If provided, the genomes inside the file "
-             "will be renamed using their new filenames and saved into a new file.",
+        "will be renamed using their new filenames and saved into a new file.",
     )
 
     parser.add_argument(
@@ -282,7 +291,7 @@ def parse_args():
         required=False,
         default=None,
         help="TSV file with busco scores. If provided, the genomes inside the file "
-             "will be renamed using their new filenames and saved into a new file.",
+        "will be renamed using their new filenames and saved into a new file.",
     )
 
     parser.add_argument(
