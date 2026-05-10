@@ -5,7 +5,6 @@ process REPEAT_MODELER {
         'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.7--pl5321hdfd78af_0':
         'quay.io/biocontainers/repeatmodeler:2.0.7--pl5321hdfd78af_0' }"
 
-
     input:
     tuple val(cluster), path(genome), path(proteins)
 
@@ -16,8 +15,20 @@ process REPEAT_MODELER {
 
     script:
     """
+
     BuildDatabase -name ${genome.baseName} ${genome}
 
     RepeatModeler -database ${genome.baseName} -threads ${task.cpus} -LTRStruct
+    status=\$?
+
+    if [[ \$status -ne 0 ]]; then
+        if grep -Fq "Refining 0 families..." .command.log && \
+            grep -Fq "cat: can't open" .command.log   && \
+            grep -Fq "refined-cons.fa" .command.log; then
+            echo "RepeatModeler hit known empty-refinement failure; treating as non-fatal."
+            exit 0
+        fi
+        exit \$status
+    fi
     """
 }
