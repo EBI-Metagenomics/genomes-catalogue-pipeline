@@ -15,7 +15,7 @@ process REPEAT_MODELER {
 
     script:
     """
-
+    set +e
     BuildDatabase -name ${genome.baseName} ${genome}
 
     RepeatModeler -database ${genome.baseName} -threads ${task.cpus} -LTRStruct

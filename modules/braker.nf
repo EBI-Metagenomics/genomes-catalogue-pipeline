@@ -1,10 +1,7 @@
 process BRAKER {
     tag "${genome_name}"
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/braker3:3.0.8--hdfd78af_0' :
-        'quay.io/biocontainers/braker3:3.0.8--hdfd78af_0' }"
-
+    container "docker.io/teambraker/braker3:v3.0.8"
 
     input:
     tuple val(genome_name), path(masked_genome) // genome fasta with softmasked repeat
