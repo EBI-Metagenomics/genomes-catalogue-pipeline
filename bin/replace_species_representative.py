@@ -63,8 +63,14 @@ def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, 
         load_strain_placement(repeat_strain_file, same_strain=True)  # strain_acc → Placement
         if repeat_strain_file else {}
     )
-    remove_list = load_first_column_to_list(remove_list_file)
-    
+
+    remove_list_raw = load_first_column_to_list(remove_list_file)
+    remove_list = list(dict.fromkeys(remove_list_raw))  # deduplicate, preserve order 
+
+    if len(remove_list) != len(remove_list_raw):
+        logging.warning(f"Duplicate entries found in remove list and ignored: "
+                        f"{[g for g in remove_list_raw if remove_list_raw.count(g) > 1]}")
+
     logging.info(f"Loaded data: {len(new_strain_placement)} new strains, {len(repeat_strain_placement)} repeat strains "
                  f"before evaluation, {len(remove_list)} genomes to remove.")
     
