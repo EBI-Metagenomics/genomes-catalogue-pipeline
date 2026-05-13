@@ -28,12 +28,12 @@ process BUILD_MATRIX {
         'quay.io/biocontainers/pandas:2.2.1' }"
 
     input:
-    tuple val(meta), path(cluster_tsv), path(rep_seq_fasta), path(gff_files)
+    tuple val(cluster_name), path(cluster_tsv), path(rep_seq_fasta), path(gff_files)
 
     output:
-    tuple val(meta), path("gene_presence_absence.Rtab"), emit: rtab
-    tuple val(meta), path("gene_presence_absence.csv"),  emit: csv
-    tuple val(meta), path("*pan-genome.fna"),            emit: fna
+    tuple val(cluster_name), path("gene_presence_absence.Rtab"), emit: rtab
+    tuple val(cluster_name), path("gene_presence_absence.csv"),  emit: csv
+    tuple val(cluster_name), path("*pan-genome.fna"),            emit: fna
 
     script:
     def prefix = task.ext.prefix ?: "${cluster_name}"

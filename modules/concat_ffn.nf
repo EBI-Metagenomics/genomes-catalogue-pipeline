@@ -3,10 +3,10 @@ process CONCAT_FFN {
     label 'process_single'
 
     input:
-    tuple val(meta), path(ffn_files)
+    tuple val(cluster_name), path(ffn_files)
 
     output:
-    tuple val(meta), path("*.concat.ffn"), emit: ffn
+    tuple val(cluster_name), path("*.concat.ffn"), emit: ffn
 
     script:
     def prefix = task.ext.prefix ?: "${cluster_name}"

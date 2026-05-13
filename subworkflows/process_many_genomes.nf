@@ -6,7 +6,7 @@ include { PANAROO             } from '../modules/panaroo'
 include { CORE_GENES          } from '../modules/core_genes'
 include { PROKKA              } from '../modules/prokka'
 include { CONCAT_FFN          } from '../modules/concat_ffn'
-include { MMSEQS2_EASYCLUSTER } from '../modules/mmseqs_easycluster'
+include { MMSEQS_EASYCLUSTER  } from '../modules/mmseqs_easycluster'
 include { BUILD_MATRIX        } from '../modules/build_matrix'
 
 
@@ -41,20 +41,23 @@ workflow PROCESS_MANY_GENOMES {
         large_cluster_ffn = PROKKA.out.ffn
             | groupTuple()
             | filter { cluster_name, ffn_files -> ffn_files.size() >= params.mmseqs2_pangenome_switch }
-            | map    { cluster_name, ffn_files -> [ [id: cluster_name], ffn_files ] }
+            | map    { cluster_name, ffn_files -> [ cluster_name, ffn_files ] }
 
         large_cluster_gff_meta = large_cluster_gff
-            .map { cluster_name, gff_files -> [ [id: cluster_name], gff_files ] }
+            .map { cluster_name, gff_files -> [ cluster_name, gff_files ] }
 
         CONCAT_FFN( large_cluster_ffn )
 
-        MMSEQS2_EASYCLUSTER( CONCAT_FFN.out.ffn )
+        MMSEQS_EASYCLUSTER( CONCAT_FFN.out.ffn )
 
         BUILD_MATRIX(
-            MMSEQS2_EASYCLUSTER.out.tsv
-                .join( MMSEQS2_EASYCLUSTER.out.representatives )
+            MMSEQS_EASYCLUSTER.out.tsv
+                .join( MMSEQS_EASYCLUSTER.out.representatives )
                 .join( large_cluster_gff_meta )
         )
+
+        mmseqs_pangenome_fna = BUILD_MATRIX.out.fna.map { cluster_name, fna -> [cluster_name, fna] }
+        mmseqs_rtab          = BUILD_MATRIX.out.rtab.map { cluster_name, fna -> [cluster_name, fna] }
 
         // --- CORE_GENES runs on both paths ---
         // Panaroo and mmseqs2 Rtab channels are mixed before calling CORE_GENES.
@@ -63,9 +66,7 @@ workflow PROCESS_MANY_GENOMES {
         CORE_GENES(
             ( PANAROO.out.panaroo_gene_presence_absence | groupTuple() )
                 .mix(
-                    BUILD_MATRIX.out.rtab
-                        .map { meta, rtab -> [ meta.id, rtab ] }
-                        | groupTuple()
+                    BUILD_MATRIX.out.rtab | groupTuple()
                 )
         )
 
@@ -80,8 +81,8 @@ workflow PROCESS_MANY_GENOMES {
         non_rep_prokka_fna = PROKKA.out.fna.filter { !it[1].name.contains(it[0]) }
 
     emit:
-        pangenome_fna         = PANAROO.out.panaroo_pangenome_fna.mix( BUILD_MATRIX.out.fna )
-        pangenome_rtab        = PANAROO.out.panaroo_gene_presence_absence.mix( BUILD_MATRIX.out.rtab )    // we need this for celebrimbor
+        pangenome_fna         = PANAROO.out.panaroo_pangenome_fna.mix( mmseqs_pangenome_fna )
+        pangenome_rtab        = PANAROO.out.panaroo_gene_presence_absence.mix( mmseqs_rtab )    // we need this for celebrimbor
         prokka_faas           = PROKKA.out.faa
         prokka_fnas           = PROKKA.out.fna
         prokka_gffs           = PROKKA.out.gff

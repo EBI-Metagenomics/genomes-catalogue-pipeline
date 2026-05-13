@@ -10,9 +10,9 @@ process MMSEQS_EASYCLUSTER {
     tuple val(cluster_name), path(sequence)
 
     output:
-    tuple val(meta), path("*rep_seq.fasta") , emit: representatives
-    tuple val(meta), path("*all_seqs.fasta"), emit: fasta
-    tuple val(meta), path("*.tsv")          , emit: tsv
+    tuple val(cluster_name), path("*rep_seq.fasta") , emit: representatives
+    tuple val(cluster_name), path("*all_seqs.fasta"), emit: fasta
+    tuple val(cluster_name), path("*.tsv")          , emit: tsv
 
     when:
     task.ext.when == null || task.ext.when
@@ -33,7 +33,7 @@ process MMSEQS_EASYCLUSTER {
 
     stub:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${cluster_name}"
     """
     echo ${args}
 
