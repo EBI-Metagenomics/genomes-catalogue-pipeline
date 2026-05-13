@@ -80,6 +80,10 @@
             "type": "integer",
             "default": 25000
         },
+        "mmseqs2_pangenome_switch": {
+            "type": "integer",
+            "default": 1000
+        },
         "genomes_information": {
             "type": "string"
         },
