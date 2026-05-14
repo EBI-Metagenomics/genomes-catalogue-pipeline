@@ -24,9 +24,9 @@ process RUN_CLUSTER_UPDATE {
     path "update_cluster_rep_changes_report.tsv", emit: species_rep_replacement_report
         
     script:
-    def new_strain_arg      = new_strains_file.name.startsWith       != 'NO_FILE' ? "--new-strain-list ${new_strains_file}"              : ''
-    def repeat_strain_arg   = repeat_strains_file.name.startsWith    != 'NO_FILE' ? "--repeat-strain-list ${repeat_strains_file}"        : ''
-    def new_species_arg     = new_species_split_file.name.startsWith != 'NO_FILE' ? "--new-species-split-file ${new_species_split_file}" : ''
+    def new_strain_arg      = new_strains_file.name.startsWith('NO_FILE')        ? '' : "--new-strain-list ${new_strains_file}" 
+    def repeat_strain_arg   = repeat_strains_file.name.startsWith('NO_FILE')     ? '' : "--repeat-strain-list ${repeat_strains_file}"
+    def new_species_arg     = new_species_split_file.name.startsWith('NO_FILE')  ? '' : "--new-species-split-file ${new_species_split_file}"
     def checkm2_arg         = params.rerun_checkm2                   ? '--checkm2_switch' : ''
 
     """
