@@ -59,14 +59,16 @@ workflow PROCESS_MANY_GENOMES {
         )
 
         mmseqs_pangenome_fna = BUILD_MATRIX.out.fna.map { cluster_name, fna -> [cluster_name, fna] }
-        mmseqs_rtab          = BUILD_MATRIX.out.rtab.map { cluster_name, fna -> [cluster_name, fna] }
+        mmseqs_rtab          = BUILD_MATRIX.out.rtab.map { cluster_name, tab -> [cluster_name, tab] }
 
 
         // --- Correcting pangenome using cgt ---
         pangenome_rtab = PANAROO.out.panaroo_gene_presence_absence.mix( mmseqs_rtab )
+
         CGT(
-            genomes_checkm.first(),
             pangenome_rtab
+                .combine(genomes_checkm.first())
+                .map { cluster_name, rtab, checkm2 -> [cluster_name, checkm2, rtab] }
         )
 
         // --- CORE_GENES runs on both paths ---
