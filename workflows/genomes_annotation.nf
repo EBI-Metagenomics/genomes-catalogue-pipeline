@@ -252,7 +252,8 @@ workflow GAP {
             
     PROCESS_MANY_GENOMES(
         dereplicated_genomes.out.many_genomes_fna_tuples,
-        accessions_with_domains_ch
+        accessions_with_domains_ch,
+        checkm_all_genomes
     )
 
     PROCESS_SINGLETON_GENOMES(

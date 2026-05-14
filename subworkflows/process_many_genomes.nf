@@ -8,12 +8,13 @@ include { PROKKA              } from '../modules/prokka'
 include { CONCAT_FFN          } from '../modules/concat_ffn'
 include { MMSEQS_EASYCLUSTER  } from '../modules/mmseqs_easycluster'
 include { BUILD_MATRIX        } from '../modules/build_matrix'
-
+include { CGT                 } from '../modules/cgt'
 
 workflow PROCESS_MANY_GENOMES {
     take:
         many_genomes_clusters          // list<tuple(cluster_name, genome_fna)>
         accessions_with_domains_tuples // tuple( mgyg_accession, domain ) - the domain is either "Bacteria", "Archaea" or "Undefined"
+        genomes_checkm                 // 
 
     main:
 
@@ -60,6 +61,14 @@ workflow PROCESS_MANY_GENOMES {
         mmseqs_pangenome_fna = BUILD_MATRIX.out.fna.map { cluster_name, fna -> [cluster_name, fna] }
         mmseqs_rtab          = BUILD_MATRIX.out.rtab.map { cluster_name, fna -> [cluster_name, fna] }
 
+
+        // --- Correcting pangenome using cgt ---
+        pangenome_rtab = PANAROO.out.panaroo_gene_presence_absence.mix( mmseqs_rtab )
+        CGT(
+            genomes_checkm.first(),
+            pangenome_rtab
+        )
+
         // --- CORE_GENES runs on both paths ---
         // Panaroo and mmseqs2 Rtab channels are mixed before calling CORE_GENES.
         // The mmseqs2 channel maps meta.id (= cluster_name) back to the plain
@@ -94,7 +103,6 @@ workflow PROCESS_MANY_GENOMES {
 
     emit:
         pangenome_fna         = PANAROO.out.panaroo_pangenome_fna.mix( mmseqs_pangenome_fna )
-        pangenome_rtab        = PANAROO.out.panaroo_gene_presence_absence.mix( mmseqs_rtab )    // we need this for celebrimbor
         prokka_faas           = PROKKA.out.faa
         prokka_fnas           = PROKKA.out.fna
         prokka_gffs           = PROKKA.out.gff
