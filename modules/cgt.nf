@@ -18,7 +18,7 @@ process CGT {
 
     container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
         ? 'https://depot.galaxyproject.org/singularity/cgt:1.0.0--h4349ce8_0'
-        : 'biocontainers/cgt:1.0.0--h4349ce8_0'}"
+        : 'quay.io/biocontainers/cgt:1.0.0--h4349ce8_0'}"
 
     input:
     tuple val(cluster_name), path(checkm2), path(rtab)
@@ -33,11 +33,13 @@ process CGT {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${cluster_name}"
     """
+    sed 's|[.][a-zA-Z]*,|,|' ${checkm2} > checkm2_clean.csv
+
     cgt_bacpop \\
         ${args} \\
         --completeness-column 2 \\
         --output-file ${prefix}_cgt.txt \\
-        ${checkm2} \\
+        checkm2_clean.csv \\
         ${rtab}
     """
 

@@ -20,6 +20,7 @@ nextflow_workflow {
                     tuple("CAJLGA01", file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJLGA01.fa")),
                 ])
                 input[1] = channel.from([ tuple("CAJLGA01", "Bacteria") ])
+                input[2] = channel.value(file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/checkm.csv"))
                 """
             }
         }
@@ -28,7 +29,6 @@ nextflow_workflow {
             assert workflow.success
             assert snapshot(
                 workflow.out.pangenome_fna,
-                workflow.out.pangenome_rtab,
                 workflow.out.prokka_faas,
                 workflow.out.prokka_fnas,
                 workflow.out.prokka_gffs,
@@ -60,6 +60,7 @@ nextflow_workflow {
                     tuple("CAJLGA01", file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJLGA01.fa")),
                 ])
                 input[1] = channel.from([ tuple("CAJLGA01", "Bacteria") ])
+                input[2] = channel.value(file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/checkm.csv"))
                 """
             }
         }
@@ -68,7 +69,6 @@ nextflow_workflow {
             assert workflow.success
             assert snapshot(
                 workflow.out.pangenome_fna,
-                workflow.out.pangenome_rtab,
                 workflow.out.prokka_faas,
                 workflow.out.prokka_fnas,
                 workflow.out.prokka_gffs,
