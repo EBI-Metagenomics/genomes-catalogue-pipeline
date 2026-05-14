@@ -24,6 +24,11 @@ process RUN_CLUSTER_UPDATE {
     path "update_cluster_rep_changes_report.tsv", emit: species_rep_replacement_report
         
     script:
+    def new_strain_arg      = new_strains_file.name.startsWith       != 'NO_FILE' ? "--new-strain-list ${new_strains_file}"              : ''
+    def repeat_strain_arg   = repeat_strains_file.name.startsWith    != 'NO_FILE' ? "--repeat-strain-list ${repeat_strains_file}"        : ''
+    def new_species_arg     = new_species_split_file.name.startsWith != 'NO_FILE' ? "--new-species-split-file ${new_species_split_file}" : ''
+    def checkm2_arg         = params.rerun_checkm2                   ? '--checkm2_switch' : ''
+
     """
     # filter out singletons from the previous version's cluster split file if they weren't
     # in the metadata table (meaning they were filtered out by GUNC)
@@ -45,21 +50,7 @@ process RUN_CLUSTER_UPDATE {
     --outfile-checkm checkm_all_genomes.csv
     
     # Place all new genomes into clusters and replace species reps as needed
-    # Build optional arguments based on file existence
-    NEW_STRAIN_ARG=""
-    if [[ ! "${new_strains_file}" =~ ^NO_FILE ]]; then
-        NEW_STRAIN_ARG="--new-strain-list ${new_strains_file}"
-    fi
-    
-    REPEAT_STRAIN_ARG=""
-   if [[ ! "${repeat_strains_file}" =~ ^NO_FILE ]]; then
-        REPEAT_STRAIN_ARG="--repeat-strain-list ${repeat_strains_file}"
-    fi
-    
-    NEW_SPECIES_ARG=""
-    if [ -f "${new_species_split_file}" ] && [ -s "${new_species_split_file}" ]; then
-        NEW_SPECIES_ARG="--new-species-split-file new_species_cluster_split.txt"
-    fi
+    # Optional arguments based on file existence are defined above
     
     replace_species_representative.py \
     --cluster-split-file clusters_split_filtered.txt \
@@ -68,9 +59,10 @@ process RUN_CLUSTER_UPDATE {
     --isolates extra_weight_table_all_genomes.tsv \
     --checkm checkm_all_genomes.csv \
     --remove-list ${remove_genomes} \
-    \$NEW_STRAIN_ARG \
-    \$REPEAT_STRAIN_ARG \
-    \$NEW_SPECIES_ARG
+    ${new_strain_arg} \
+    ${repeat_strain_arg} \
+    ${new_species_arg} \
+    ${checkm2_arg}
     
     # combine name mapping files
     if [ -s ${new_genomes_name_mapping} ]; then
