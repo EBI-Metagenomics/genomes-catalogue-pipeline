@@ -3,7 +3,7 @@ process CONCAT_FFN {
     label 'process_single'
 
     input:
-    tuple val(cluster_name), path(ffn_files)
+    tuple val(cluster_name), path(ffn_files, stageAs: 'input/*')
 
     output:
     tuple val(cluster_name), path("*.concat.ffn"), emit: ffn
@@ -11,7 +11,7 @@ process CONCAT_FFN {
     script:
     def prefix = task.ext.prefix ?: "${cluster_name}"
     """
-    cat ${ffn_files.join(' ')} > ${prefix}.concat.ffn
+    concat_ffn.py --input-dir input/ --output ${prefix}.concat.ffn
     """
 }
 
