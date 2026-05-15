@@ -3,8 +3,8 @@ process MMSEQS_EASYCLUSTER {
     label 'process_medium'
 
     container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/fe/fe49c17754753d6cd9a31e5894117edaf1c81e3d6053a12bf6dc8f3af1dffe23/data'
-        : 'community.wave.seqera.io/library/mmseqs2:18.8cc5c--af05c9a98d9f6139'}"
+        ? 'https://depot.galaxyproject.org/singularity/mmseqs2:18.8cc5c--hd6d6fdc_0'
+        : 'quay.io/biocontainers/mmseqs2:18.8cc5c--hd6d6fdc_0'}"
 
     input:
     tuple val(cluster_name), path(sequence)
