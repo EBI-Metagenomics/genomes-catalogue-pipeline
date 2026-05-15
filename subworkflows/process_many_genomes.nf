@@ -27,12 +27,12 @@ workflow PROCESS_MANY_GENOMES {
         pangenome_prokka_gff_tuple = PROKKA.out.gff | groupTuple()
 
         // Route by cluster size: below threshold → Panaroo, at/above → mmseqs2
-        // params.mmseqs2_pangenome_switch controls the cutoff (default: 1000)
+        // params.pangenome_panaroo_limit_threshold controls the cutoff (default: 1000)
         small_cluster_gff = pangenome_prokka_gff_tuple
-            .filter { cluster_name, gff_files -> gff_files.size() < params.mmseqs2_pangenome_switch }
+            .filter { cluster_name, gff_files -> gff_files.size() < params.pangenome_panaroo_limit_threshold }
 
         large_cluster_gff = pangenome_prokka_gff_tuple
-            .filter { cluster_name, gff_files -> gff_files.size() >= params.mmseqs2_pangenome_switch }
+            .filter { cluster_name, gff_files -> gff_files.size() >= params.pangenome_panaroo_limit_threshold }
 
         // --- Small clusters → Panaroo ---
         PANAROO( small_cluster_gff )
@@ -40,7 +40,7 @@ workflow PROCESS_MANY_GENOMES {
         // --- Large clusters → mmseqs2 ---
         large_cluster_ffn = PROKKA.out.ffn
             | groupTuple()
-            | filter { cluster_name, ffn_files -> ffn_files.size() >= params.mmseqs2_pangenome_switch }
+            | filter { cluster_name, ffn_files -> ffn_files.size() >= params.pangenome_panaroo_limit_threshold }
             | map    { cluster_name, ffn_files -> [ cluster_name, ffn_files ] }
 
         large_cluster_gff_meta = large_cluster_gff

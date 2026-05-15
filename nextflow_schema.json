@@ -80,7 +80,7 @@
             "type": "integer",
             "default": 25000
         },
-        "mmseqs2_pangenome_switch": {
+        "pangenome_panaroo_limit_threshold": {
             "type": "integer",
             "default": 1000
         },

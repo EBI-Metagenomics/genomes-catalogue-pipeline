@@ -10,7 +10,7 @@ nextflow_workflow {
 
         when {
             params {
-                mmseqs2_pangenome_switch = 1000
+                pangenome_panaroo_limit_threshold = 1000
             }
             workflow {
                 """
@@ -50,7 +50,7 @@ nextflow_workflow {
 
         when {
             params {
-                mmseqs2_pangenome_switch = 2
+                pangenome_panaroo_limit_threshold = 2
             }
             workflow {
                 """
