@@ -33,13 +33,13 @@ process CGT {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${cluster_name}"
     """
-    sed 's|[.][a-zA-Z]*,|,|' ${checkm2} > checkm2_clean.csv
+    sed 's|[.][a-zA-Z]*,|,|' ${checkm2} | tr ',' '\t' > checkm2_clean.tsv
 
     cgt_bacpop \\
         ${args} \\
         --completeness-column 2 \\
         --output-file ${prefix}_cgt.txt \\
-        checkm2_clean.csv \\
+        checkm2_clean.tsv \\
         ${rtab}
     """
 

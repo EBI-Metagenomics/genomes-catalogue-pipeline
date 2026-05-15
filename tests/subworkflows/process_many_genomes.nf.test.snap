@@ -4,13 +4,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.pan-genome.fna:md5,7ae4eadc402000e3cce3926f46bf6435"
-                ]
-            ],
-            [
-                [
-                    "CAJLGA01",
-                    "gene_presence_absence.Rtab:md5,a83da7456154f77b0fbf73e6787b325c"
+                    "CAJLGA01.pan-genome.fna:md5,ab20b56f86deda0d76acf6a5135cdf94"
                 ]
             ],
             [
@@ -108,7 +102,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.core_genes.txt:md5,0d284276594f4e190335368bbb147b7b"
+                    "CAJLGA01.core_genes.txt:md5,f6a9ab60a0b7aeeaf62e3a4ed7cb12ab"
                 ]
             ]
         ],
@@ -116,20 +110,14 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
         },
-        "timestamp": "2026-05-14T10:16:50.006067"
+        "timestamp": "2026-05-14T19:37:16.725082"
     },
     "Should run mmseqs2 path for large clusters": {
         "content": [
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.pan-genome.fna:md5,67f5090145208a3d5b7b85643657b068"
-                ]
-            ],
-            [
-                [
-                    "CAJLGA01",
-                    "gene_presence_absence.Rtab:md5,b3dc0e9856ab0eeaebb4533c1086fd2e"
+                    "CAJLGA01.pan-genome.fna:md5,c3400bc3391e259d468990331da8a8f9"
                 ]
             ],
             [
@@ -227,7 +215,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.core_genes.txt:md5,45c69b1f4e0fc677414cae723eb4dace"
+                    "CAJLGA01.core_genes.txt:md5,73aa65aed2d0eeee13ea5865fa336940"
                 ]
             ]
         ],
@@ -235,6 +223,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
         },
-        "timestamp": "2026-05-14T10:35:23.648416"
+        "timestamp": "2026-05-14T15:05:51.254217"
     }
 }
