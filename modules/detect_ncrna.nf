@@ -13,7 +13,7 @@ process DETECT_NCRNA {
     )
 
     publishDir(
-        path: "${params.outdir}/species_catalogue/${cluster_rep_prefix}/${genome_accession}/genome",
+        path: "${params.outdir}/species_catalogue/${cluster_rep_prefix}/${cluster_name}/genome",
         pattern: '*_rRNAs.fasta',
         saveAs: { filename ->
             is_rep ? filename : null
