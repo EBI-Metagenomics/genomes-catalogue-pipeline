@@ -28,11 +28,14 @@ workflow PROCESS_MANY_GENOMES {
 
         // Route by cluster size: below threshold → Panaroo, at/above → mmseqs2
         // params.pangenome_panaroo_limit_threshold controls the cutoff (default: 1000)
-        small_cluster_gff = pangenome_prokka_gff_tuple
-            .filter { cluster_name, gff_files -> gff_files.size() < params.pangenome_panaroo_limit_threshold }
+        pangenome_prokka_gff_tuple.branch {
+            cluster_name, gff_files ->
+                small: gff_files.size() < params.pangenome_panaroo_limit_threshold
+                large: true
+        }.set { cluster_gff }
 
-        large_cluster_gff = pangenome_prokka_gff_tuple
-            .filter { cluster_name, gff_files -> gff_files.size() >= params.pangenome_panaroo_limit_threshold }
+        small_cluster_gff = cluster_gff.small
+        large_cluster_gff = cluster_gff.large
 
         // --- Small clusters → Panaroo ---
         PANAROO( small_cluster_gff )
@@ -71,14 +74,25 @@ workflow PROCESS_MANY_GENOMES {
         )
 
         // --- Representative / non-representative genome filters ---
-        rep_prokka_gff = PROKKA.out.gff.filter { it[1].name.contains(it[0]) }
+        PROKKA.out.gff.branch {
+            cluster_name, gff ->
+                rep:     gff.name.contains(cluster_name)
+                non_rep: true
+        }.set { prokka_gff }
+        rep_prokka_gff     = prokka_gff.rep
+        non_rep_prokka_gff = prokka_gff.non_rep
+
+        PROKKA.out.fna.branch {
+            cluster_name, fna ->
+                rep:     fna.name.contains(cluster_name)
+                non_rep: true
+        }.set { prokka_fna }
+        rep_prokka_fna     = prokka_fna.rep
+        non_rep_prokka_fna = prokka_fna.non_rep
+
         rep_prokka_faa = PROKKA.out.faa.filter { it[1].name.contains(it[0]) }
-        rep_prokka_fna = PROKKA.out.fna.filter { it[1].name.contains(it[0]) }
         rep_prokka_gbk = PROKKA.out.gbk.filter { it[1].name.contains(it[0]) }
         rep_prokka_ffn = PROKKA.out.ffn.filter { it[1].name.contains(it[0]) }
-
-        non_rep_prokka_gff = PROKKA.out.gff.filter { !it[1].name.contains(it[0]) }
-        non_rep_prokka_fna = PROKKA.out.fna.filter { !it[1].name.contains(it[0]) }
 
     emit:
         pangenome_fna         = PANAROO.out.panaroo_pangenome_fna.mix( mmseqs_pangenome_fna )
