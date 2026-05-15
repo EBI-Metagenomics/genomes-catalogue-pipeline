@@ -24,18 +24,17 @@ process IPS {
     }
 
     input:
-    tuple val(meta), path(faa_fasta)
+    tuple val(id), path(faa_fasta)
     path interproscan_db
 
     output:
-    tuple val(meta), path('*.IPS.tsv'), emit: ips_annotations
+    tuple val(id), path('*.IPS.tsv'), emit: ips_annotations
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     # Set the max memory for the JVM
     export JAVA_OPTS="-Xmx${task.memory.toGiga()}G"
@@ -47,12 +46,11 @@ process IPS {
         ${args} \\
         -f TSV \\
         --input ${faa_fasta} \\
-        -o ${prefix}.IPS.tsv
+        -o ${faa_fasta.baseName}.IPS.tsv
 
     """
     stub:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     echo ${args}
 
