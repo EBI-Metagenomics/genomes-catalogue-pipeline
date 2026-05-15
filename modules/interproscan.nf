@@ -54,7 +54,7 @@ process IPS {
     """
     echo ${args}
 
-    touch ${prefix}.IPS.tsv
+    touch ${faa_fasta.baseName}.IPS.tsv
     """
 
 }
