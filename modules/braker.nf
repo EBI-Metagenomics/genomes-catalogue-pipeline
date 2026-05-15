@@ -21,6 +21,10 @@ process BRAKER {
         args += "--prot_seq ${protein_evidence} "
     }
     """
+    # Make HOME unique for this task; AUGUSTUS will then use \$HOME/.augustus
+    export HOME="\$PWD/.home"
+    mkdir -p "\$HOME"
+
     braker.pl \\
         $args \\
         --genome ${masked_genome} \\
