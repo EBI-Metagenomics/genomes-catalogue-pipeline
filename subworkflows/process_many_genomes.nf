@@ -44,10 +44,8 @@ workflow PROCESS_MANY_GENOMES {
         large_cluster_ffn = PROKKA.out.ffn
             | groupTuple()
             | filter { cluster_name, ffn_files -> ffn_files.size() >= params.pangenome_panaroo_limit_threshold }
-            | map    { cluster_name, ffn_files -> [ cluster_name, ffn_files ] }
 
         large_cluster_gff_meta = large_cluster_gff
-            .map { cluster_name, gff_files -> [ cluster_name, gff_files ] }
 
         CONCAT_FFN( large_cluster_ffn )
 
