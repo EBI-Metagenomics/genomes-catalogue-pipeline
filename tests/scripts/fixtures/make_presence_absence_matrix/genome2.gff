@@ -1,0 +1,8 @@
+##gff-version 3
+##sequence-region G2 1 900
+G2	Prokka	CDS	1	300	.	+	0	ID=G2_00001;gene=recA;product=Recombinase A
+G2	Prokka	CDS	301	600	.	+	0	ID=G2_00002;gene=dnaA;product=Chromosomal replication initiator protein DnaA
+G2	Prokka	CDS	601	900	.	+	0	ID=G2_00004;product=some other protein
+##FASTA
+>G2
+ATCGATCGATCGATCGATCG
