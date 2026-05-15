@@ -5,13 +5,13 @@ process IPS {
     label 'retry_twice'
     label 'ips'
 
-    container 'quay.io/microbiome-informatics/interproscan:5.76-107.0_patch1'
+    container 'quay.io/microbiome-informatics/interproscan:5.77-108.0'
 
     containerOptions {
         def containerArgs = []
         def mountArg = (workflow.containerEngine == 'singularity') ? "--bind" : "--volume"
 
-        containerArgs << "${mountArg} ${task.workDir}/${interproscan_db}/:/opt/interproscan/"
+        containerArgs << "${mountArg} ${task.workDir}/${interproscan_db}/data:/opt/interproscan/data"
 
         if ( params.interpro_licensed_software ) {
             def licensedSoftwarePath = "${task.workDir}/${interproscan_db}/licensed"
