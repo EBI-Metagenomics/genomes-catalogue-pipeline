@@ -35,7 +35,13 @@ process IPS {
 
     script:
     def args = task.ext.args ?: ''
+    def is_compressed = faa_fasta.extension == "gz"
+    def fasta_file_name = faa_fasta.name - ~/\.gz$/
     """
+    if [ "$is_compressed" == "true" ]; then
+        gzip -c -d ${faa_fasta} > ${fasta_file_name}
+    fi
+
     # Set the max memory for the JVM
     export JAVA_OPTS="-Xmx${task.memory.toGiga()}G"
 
@@ -45,7 +51,7 @@ process IPS {
         -dp \\
         ${args} \\
         -f TSV \\
-        --input ${faa_fasta} \\
+        --input ${fasta_file_name} \\
         -o ${faa_fasta.baseName}.IPS.tsv
 
     """
