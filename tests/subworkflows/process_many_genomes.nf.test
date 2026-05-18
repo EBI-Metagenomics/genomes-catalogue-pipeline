@@ -4,26 +4,22 @@ nextflow_workflow {
     script "subworkflows/process_many_genomes.nf"
     workflow "PROCESS_MANY_GENOMES"
 
-    test("Should run without failures") {
+    test("Should run Panaroo path for small clusters") {
+
+        tag "pangenome_panaroo"
 
         when {
-
+            params {
+                pangenome_panaroo_limit_threshold = 1000
+            }
             workflow {
                 """
                 input[0] = channel.from([
-                    tuple(
-                        "CAJLGA01",
-                        file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJJTO01.fa")
-                    ),
-                    tuple(
-                        "CAJLGA01",
-                        file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJKGB01.fa")
-                    ),
-                    tuple(
-                        "CAJLGA01",
-                        file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJLGA01.fa")
-                    ),
+                    tuple("CAJLGA01", file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJJTO01.fa")),
+                    tuple("CAJLGA01", file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJKGB01.fa")),
+                    tuple("CAJLGA01", file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJLGA01.fa")),
                 ])
+                input[1] = channel.from([ tuple("CAJLGA01", "Bacteria") ])
                 """
             }
         }
@@ -31,6 +27,48 @@ nextflow_workflow {
         then {
             assert workflow.success
             assert snapshot(
+                workflow.out.pangenome_fna,
+                workflow.out.pangenome_rtab,
+                workflow.out.prokka_faas,
+                workflow.out.prokka_fnas,
+                workflow.out.prokka_gffs,
+                workflow.out.rep_prokka_fna,
+                workflow.out.rep_prokka_gff,
+                workflow.out.rep_prokka_faa,
+                workflow.out.rep_prokka_gbk,
+                workflow.out.rep_prokka_ffn,
+                workflow.out.non_rep_prokka_fna,
+                workflow.out.non_rep_prokka_gff,
+                workflow.out.core_genes
+            ).match()
+        }
+    }
+
+    test("Should run mmseqs2 path for large clusters") {
+
+        tag "pangenome_mmseqs2"
+
+        when {
+            params {
+                pangenome_panaroo_limit_threshold = 2
+            }
+            workflow {
+                """
+                input[0] = channel.from([
+                    tuple("CAJLGA01", file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJJTO01.fa")),
+                    tuple("CAJLGA01", file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJKGB01.fa")),
+                    tuple("CAJLGA01", file("$baseDir/tests/subworkflows/fixtures/process_many_genomes/cluster_CAJLGA01/CAJLGA01/CAJLGA01.fa")),
+                ])
+                input[1] = channel.from([ tuple("CAJLGA01", "Bacteria") ])
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(
+                workflow.out.pangenome_fna,
+                workflow.out.pangenome_rtab,
                 workflow.out.prokka_faas,
                 workflow.out.prokka_fnas,
                 workflow.out.prokka_gffs,

@@ -533,7 +533,7 @@ workflow GAP {
     ).join(
         cluster_reps_faas
     ).join(
-        PROCESS_MANY_GENOMES.out.panaroo_pangenome_fna, remainder: true
+        PROCESS_MANY_GENOMES.out.pangenome_fna, remainder: true
     ).join(
         PROCESS_MANY_GENOMES.out.core_genes, remainder: true
     )

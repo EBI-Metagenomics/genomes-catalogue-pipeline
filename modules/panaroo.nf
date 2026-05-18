@@ -32,7 +32,6 @@ process PANAROO {
     tuple val(cluster_name), path(gff_files)
 
     output:
-    tuple val(cluster_name), path("${cluster_name}_panaroo.tar.gz"), emit: panaroo_tarball_output
     tuple val(cluster_name), file("${cluster_name}_panaroo/gene_presence_absence.Rtab"), emit: panaroo_gene_presence_absence
     tuple val(cluster_name), file("${cluster_name}_panaroo/gene_presence_absence.csv"), emit: panaroo_gene_presence_absence_csv
     tuple val(cluster_name), file("${cluster_name}_panaroo/${cluster_name}.pan-genome.fna"), emit: panaroo_pangenome_fna
@@ -51,8 +50,6 @@ process PANAROO {
     --no_clean_edges
 
     mv ${cluster_name}_panaroo/pan_genome_reference.fa ${cluster_name}_panaroo/${cluster_name}.pan-genome.fna
-
-    tar -czf ${cluster_name}_panaroo.tar.gz ${cluster_name}_panaroo
     """
 
     // stub:
