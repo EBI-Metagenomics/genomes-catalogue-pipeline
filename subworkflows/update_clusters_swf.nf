@@ -85,7 +85,7 @@ workflow UPDATE_CLUSTERS {
             genomes_name_mapping,
             PARSE_MASH_FOR_UPDATE.out.new_strains_file.ifEmpty(file("NO_FILE_new_strains")),
             PARSE_MASH_FOR_UPDATE.out.repeat_strains_file.ifEmpty(file("NO_FILE_repeat_strains")),
-            SPLIT_DREP_NEW_SPECIES.out.text_split.ifEmpty(file("NO_FILE_repeat_strains"))
+            SPLIT_DREP_NEW_SPECIES.out.text_split.ifEmpty(file("NO_FILE_new_cluster_split"))
         )
        
        // gather old and new genomes into one folder (using new_genomes and not new_genomes_present intentionally -
