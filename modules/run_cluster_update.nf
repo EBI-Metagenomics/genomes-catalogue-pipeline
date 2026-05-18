@@ -13,7 +13,7 @@ process RUN_CLUSTER_UPDATE {
     path new_genomes_name_mapping
     path new_strains_file
     path repeat_strains_file
-    path new_species_split_file, stageAs: "new_species_cluster_split.txt"      
+    path new_species_split_file      
     
     output:
     path "assembly_stats_all_genomes.tsv", emit: assembly_stats_all_genomes
