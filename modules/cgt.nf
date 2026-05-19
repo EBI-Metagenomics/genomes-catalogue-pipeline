@@ -9,7 +9,7 @@ process CGT {
             def extension = output_file.getExtension();
             String cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2);
             if ( output_file.name == "${cluster_name}_cgt.txt" ) {
-                return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/pangenome_correction.txt";
+                return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/gene_prevalence_corrected.txt";
             }
         },
         mode: 'copy',
@@ -33,6 +33,7 @@ process CGT {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${cluster_name}"
     """
+    \\ Refornating for CGT. Remove extension from genome names, convert CSV to TSV
     sed 's|[.][a-zA-Z]*,|,|' ${checkm2} | tr ',' '\t' > checkm2_clean.tsv
 
     cgt_bacpop \\
