@@ -3,7 +3,6 @@
 */
 
 include { PANAROO             } from '../modules/panaroo'
-include { CORE_GENES          } from '../modules/core_genes'
 include { PROKKA              } from '../modules/prokka'
 include { CONCAT_FFN          } from '../modules/concat_ffn'
 include { MMSEQS_EASYCLUSTER  } from '../modules/mmseqs_easycluster'
@@ -71,17 +70,6 @@ workflow PROCESS_MANY_GENOMES {
                 .map { cluster_name, rtab, checkm2 -> [cluster_name, checkm2, rtab] }
         )
 
-        // --- CORE_GENES runs on both paths ---
-        // Panaroo and mmseqs2 Rtab channels are mixed before calling CORE_GENES.
-        // The mmseqs2 channel maps meta.id (= cluster_name) back to the plain
-        // cluster_name key so both sides have the same tuple structure.
-        CORE_GENES(
-            ( PANAROO.out.panaroo_gene_presence_absence | groupTuple() )
-                .mix(
-                    BUILD_MATRIX.out.rtab | groupTuple()
-                )
-        )
-
         // --- Representative / non-representative genome filters ---
         PROKKA.out.gff.branch {
             cluster_name, gff ->
@@ -115,5 +103,4 @@ workflow PROCESS_MANY_GENOMES {
         rep_prokka_ffn        = rep_prokka_ffn
         non_rep_prokka_fna    = non_rep_prokka_fna
         non_rep_prokka_gff    = non_rep_prokka_gff
-        core_genes            = CORE_GENES.out.core_genes
 }

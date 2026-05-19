@@ -39,7 +39,6 @@ nextflow_workflow {
                 workflow.out.rep_prokka_ffn,
                 workflow.out.non_rep_prokka_fna,
                 workflow.out.non_rep_prokka_gff,
-                workflow.out.core_genes
             ).match()
         }
     }
@@ -79,7 +78,6 @@ nextflow_workflow {
                 workflow.out.rep_prokka_ffn,
                 workflow.out.non_rep_prokka_fna,
                 workflow.out.non_rep_prokka_gff,
-                workflow.out.core_genes
             ).match()
         }
     }

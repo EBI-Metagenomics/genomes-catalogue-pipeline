@@ -477,12 +477,11 @@ Website URL: {url}
 ## For species where there is more than one conspecific genome, pan-genomes can be found in:
        
 - pan-genome/
-    * core_genes.txt : List of core genes for the pan-genome (genes found in >=90% of the genomes).
     * pan-genome.fna : Nucleotide sequence FASTA file of the pan-genome.
-    * gene_presence_absence.csv: A list of genes in the pan-genome with their annotation and MGYG accessions.
+    * gene_presence_absence.csv : A list of genes in the pan-genome with their annotation and MGYG accessions.
     * gene_presence_absence.Rtab : Presence/absence binary matrix of the pan-genome across all conspecific genomes.
+    * gene_prevalence_corrected.txt : Summary file detailing the observed frequency and adjusted frequency compartment of each gene in the pangenome.
     * mashtree.nwk : Tree generated from the pairwise Mash distances of conspecific genomes.
-
 
 ## Additional files available in the parent directory:
 
