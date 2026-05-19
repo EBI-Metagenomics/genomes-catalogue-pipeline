@@ -4,7 +4,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.pan-genome.fna:md5,ab20b56f86deda0d76acf6a5135cdf94"
+                    "CAJLGA01.pan-genome.fna:md5,e9ba22fd50ec9204ed45670b37aa0d70"
                 ]
             ],
             [
@@ -70,7 +70,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.gbk:md5,d28928cd5eb8d5eb9a06ddc228893449"
+                    "CAJLGA01.gbk:md5,3a6a9b809e54a8e91cdef9067b8c7961"
                 ]
             ],
             [
@@ -98,26 +98,20 @@
                     "CAJLGA01",
                     "CAJKGB01.gff:md5,9f19a2e8a038bf79350294b7def1570e"
                 ]
-            ],
-            [
-                [
-                    "CAJLGA01",
-                    "CAJLGA01.core_genes.txt:md5,f6a9ab60a0b7aeeaf62e3a4ed7cb12ab"
-                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
         },
-        "timestamp": "2026-05-14T19:37:16.725082"
+        "timestamp": "2026-05-19T13:54:04.109478"
     },
     "Should run mmseqs2 path for large clusters": {
         "content": [
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.pan-genome.fna:md5,c3400bc3391e259d468990331da8a8f9"
+                    "CAJLGA01.pan-genome.fna:md5,40afce4bcd26cad1b30c512034a5ee06"
                 ]
             ],
             [
@@ -183,7 +177,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.gbk:md5,d28928cd5eb8d5eb9a06ddc228893449"
+                    "CAJLGA01.gbk:md5,3a6a9b809e54a8e91cdef9067b8c7961"
                 ]
             ],
             [
@@ -211,18 +205,12 @@
                     "CAJLGA01",
                     "CAJKGB01.gff:md5,9f19a2e8a038bf79350294b7def1570e"
                 ]
-            ],
-            [
-                [
-                    "CAJLGA01",
-                    "CAJLGA01.core_genes.txt:md5,73aa65aed2d0eeee13ea5865fa336940"
-                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
         },
-        "timestamp": "2026-05-14T15:05:51.254217"
+        "timestamp": "2026-05-19T14:09:49.155453"
     }
 }
