@@ -1,0 +1,62 @@
+nextflow_process {
+
+    name "Test Process IPS"
+    script "modules/interproscan.nf"
+    process "IPS"
+
+    tag "modules"
+    tag "interproscan"
+
+    test("IPS runs without SignalP") {
+
+        when {
+            params {
+                interpro_licensed_software = false
+            }
+            process {
+                """
+                input[0] = channel.from([
+                    tuple(
+                        "test",
+                        file("$baseDir/tests/modules/fixtures/interproscan/test.fasta.gz")
+                    )
+                ])
+                input[1] = file("$baseDir/tests/modules/fixtures/interproscan/interproscan_db", type: 'dir', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.ips_annotations.size() == 1
+            assert process.out.ips_annotations[0][1] =~ /.*\.IPS\.tsv/
+        }
+    }
+
+    test("IPS stub includes SignalP in args when flag is true") {
+
+        options "-stub"
+
+        when {
+            params {
+                interpro_licensed_software = true
+            }
+            process {
+                """
+                input[0] = channel.from([
+                    tuple(
+                        "test",
+                        file("$baseDir/tests/modules/fixtures/interproscan/test.fasta.gz")
+                    )
+                ])
+                input[1] = file("$baseDir/tests/modules/fixtures/interproscan/interproscan_db", type: 'dir', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.ips_annotations.size() == 1
+        }
+    }
+}
