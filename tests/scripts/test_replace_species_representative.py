@@ -89,16 +89,15 @@ class TestGenomePipeline(unittest.TestCase):
 
     def test_select_replacement_simple(self):
         qs_values = {
-            "old": Quality(completeness=90, contamination=2, n50=100000, qs=90, length=5000000, n_contigs=10),
-            "g1": Quality(completeness=92, contamination=1.5, n50=120000, qs=100, length=5100000, n_contigs=10),
-            # >= 90*1.1=99
-            "g2": Quality(completeness=91, contamination=2, n50=110000, qs=91, length=5050000, n_contigs=10)
+            "old": Quality(completeness=90, contamination=2, n50=100000, qs=82.5, length=5000000, n_contigs=10),
+            "g1": Quality(completeness=100, contamination=0, n50=120000, qs=100, length=5100000, n_contigs=10),
+            "g2": Quality(completeness=91, contamination=2, n50=110000, qs=83.52, length=5050000, n_contigs=10)
         }
         replacement_results = {
             "old": {"new_rep": "", "genome_list": ["g1", "g2"]}
         }
         isolates = set()
-        new_rep = select_replacement(replacement_results, "old", ["g1", "g2"], qs_values, isolates)
+        new_rep = select_replacement("old", replacement_results["genome_list"], qs_values, isolates)
         self.assertEqual(new_rep, "g1")  # highest QS
 
 
