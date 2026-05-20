@@ -9,8 +9,8 @@ from bin.replace_species_representative import (
     evaluate_quality_increase,
     calc_qs,
     load_first_column_to_list,
-    Placement,
     Quality,
+    replacement_decision,
 )
 
 
@@ -26,7 +26,7 @@ def make_qs():
         )
 
     return {
-        "old": q(90, 2, 100000),
+        "g0": q(90, 2, 100000),
         "g1": q(100, 0, 120000),
         "g2": q(91, 2, 110000),
     }
@@ -113,6 +113,50 @@ class TestGenomePipeline(unittest.TestCase):
         isolates = set()
         new_rep = select_replacement("old", replacement_results["old"]["genome_list"], qs_values, isolates)
         self.assertEqual(new_rep, "g1")  # highest QS
+
+    def test_replacement_best_qs(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g0": {"new_rep": "", "genome_list": []}
+        }
+
+        added_genomes = {"g0": ["g1", "g2"]}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates=set(),
+            checkm2_switch=False
+        )
+
+        self.assertEqual(new_results["g0"]["new_rep"], "g1")
+    
+    def test_replacement_checkm2_switch_no_new_genomes(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g1": {"new_rep": "g1", "genome_list": ["g0", "g2"]}
+        }
+
+        added_genomes = {}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates=set(),
+            checkm2_switch=False
+        )
+        # The original species rep is the highest quality genome and no change is needed
+        self.assertEqual(new_results["g1"]["new_rep"], "g1")
 
 
 if __name__ == "__main__":
