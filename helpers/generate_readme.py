@@ -480,7 +480,7 @@ Website URL: {url}
     * pan-genome.fna : Nucleotide sequence FASTA file of the pan-genome.
     * gene_presence_absence.csv : A list of genes in the pan-genome with their annotation and MGYG accessions.
     * gene_presence_absence.Rtab : Presence/absence binary matrix of the pan-genome across all conspecific genomes.
-    * gene_prevalence_corrected.txt : Summary file detailing the observed frequency and adjusted frequency compartment of each gene in the pangenome.
+    * gene_prevalence_corrected.txt : Summary file reporting the observed count of each gene in the pan-genome, along with core/middle/rare classifications based on completeness-adjusted frequency. Cut-offs of 95% (core) and 5% (rare) are provided to CELEBRIMBOR prior to adjustment. Note: these classifications may be unreliable for small genome clusters due to limited sample size.
     * mashtree.nwk : Tree generated from the pairwise Mash distances of conspecific genomes.
 
 ## Additional files available in the parent directory:
