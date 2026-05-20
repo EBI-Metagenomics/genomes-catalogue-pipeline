@@ -209,7 +209,7 @@ class TestGenomePipeline(unittest.TestCase):
             "g0": {"new_rep": "g0", "genome_list": ["g2"]}
         }
 
-        added_genomes = {}
+        added_genomes = {"g0": ["g1"]}
 
         new_results, _, _ = replacement_decision(
             replacement_results,
@@ -228,7 +228,7 @@ class TestGenomePipeline(unittest.TestCase):
         qs = make_qs()
 
         replacement_results = {
-            "g0": {"new_rep": "g0", "genome_list": ["g2"]}
+            "g0": {"new_rep": "g0", "genome_list": ["g1"]}
         }
 
         added_genomes = {}
@@ -244,7 +244,7 @@ class TestGenomePipeline(unittest.TestCase):
             checkm2_switch=True
         )
         # After CheckM2, a different genome is the best one
-        self.assertEqual(new_results, {"g0": {"new_rep": "g2", "genome_list": ["g0"]}})
+        self.assertEqual(new_results, {"g0": {"new_rep": "g1", "genome_list": ["g0"]}})
 
 
 if __name__ == "__main__":
