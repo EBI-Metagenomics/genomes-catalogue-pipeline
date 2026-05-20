@@ -14,6 +14,24 @@ from bin.replace_species_representative import (
 )
 
 
+def make_qs():
+    def q(comp, cont, n50):
+        return Quality(
+            completeness=comp,
+            contamination=cont,
+            n50=n50,
+            qs=calc_qs(comp, cont, n50),
+            length=5000000,
+            n_contigs=10
+        )
+
+    return {
+        "old": q(90, 2, 100000),
+        "g1": q(100, 0, 120000),
+        "g2": q(91, 2, 110000),
+    }
+
+
 class TestGenomePipeline(unittest.TestCase):
 
     def test_remove_genomes_from_clusters(self):
@@ -88,11 +106,7 @@ class TestGenomePipeline(unittest.TestCase):
         self.assertEqual(result["G1"].actual_match, "hit1")
 
     def test_select_replacement_simple(self):
-        qs_values = {
-            "old": Quality(completeness=90, contamination=2, n50=100000, qs=82.5, length=5000000, n_contigs=10),
-            "g1": Quality(completeness=100, contamination=0, n50=120000, qs=100, length=5100000, n_contigs=10),
-            "g2": Quality(completeness=91, contamination=2, n50=110000, qs=83.52, length=5050000, n_contigs=10)
-        }
+        qs_values = make_qs()
         replacement_results = {
             "old": {"new_rep": "", "genome_list": ["g1", "g2"]}
         }
