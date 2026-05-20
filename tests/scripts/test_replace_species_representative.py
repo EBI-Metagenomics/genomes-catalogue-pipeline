@@ -108,10 +108,10 @@ class TestGenomePipeline(unittest.TestCase):
     def test_select_replacement_simple(self):
         qs_values = make_qs()
         replacement_results = {
-            "old": {"new_rep": "", "genome_list": ["g1", "g2"]}
+            "g0": {"new_rep": "", "genome_list": ["g1", "g2"]}
         }
         isolates = set()
-        new_rep = select_replacement("old", replacement_results["old"]["genome_list"], qs_values, isolates)
+        new_rep = select_replacement("g0", replacement_results["g0"]["genome_list"], qs_values, isolates)
         self.assertEqual(new_rep, "g1")  # highest QS
 
     def test_replacement_best_qs(self):
