@@ -41,8 +41,8 @@ class TestGenomePipeline(unittest.TestCase):
         }
         remove_list = ["g2", "rep2"]
         expected_clusters = {
-            "rep1": {"new_rep": "rep1", "genomes": ["g1"]},
-            "rep2": {"new_rep": "", "genomes": ["g3"]}
+            "rep1": {"new_rep": "rep1", "genome_list": ["g1"]},
+            "rep2": {"new_rep": "", "genome_list": ["g3"]}
         }
         updated_clusters, remove_log = remove_genomes_from_clusters(clusters, remove_list)
         self.assertEqual(updated_clusters, expected_clusters)
@@ -65,10 +65,10 @@ class TestGenomePipeline(unittest.TestCase):
 
     def test_add_to_clusters(self):
         clusters = {
-            "rep1": {"new_rep": "rep1", "genomes": []}
+            "rep1": {"new_rep": "rep1", "genome_list": []}
         }
         result = add_to_clusters("g1", "rep1", clusters)
-        self.assertIn("g1", result["rep1"]["genomes"])
+        self.assertIn("g1", result["rep1"]["genome_list"])
 
     def test_new_genome_more_contiguous(self):
         old = Quality(completeness=95, contamination=2, n50=100000, qs=90, length=5000000, n_contigs=10)
@@ -108,17 +108,17 @@ class TestGenomePipeline(unittest.TestCase):
     def test_select_replacement_simple(self):
         qs_values = make_qs()
         replacement_results = {
-            "g0": {"new_rep": "", "genomes": ["g1", "g2"]}
+            "g0": {"new_rep": "", "genome_list": ["g1", "g2"]}
         }
         isolates = set()
-        new_rep = select_replacement("g0", replacement_results["g0"]["genomes"], qs_values, isolates)
+        new_rep = select_replacement("g0", replacement_results["g0"]["genome_list"], qs_values, isolates)
         self.assertEqual(new_rep, "g1")  # highest QS
 
     def test_replacement_best_qs(self):
         qs = make_qs()
 
         replacement_results = {
-            "g0": {"new_rep": "", "genomes": []}
+            "g0": {"new_rep": "", "genome_list": []}
         }
 
         added_genomes = {"g0": ["g1", "g2"]}
@@ -140,7 +140,7 @@ class TestGenomePipeline(unittest.TestCase):
         qs = make_qs()
 
         replacement_results = {
-            "g1": {"new_rep": "g1", "genomes": ["g0", "g2"]}
+            "g1": {"new_rep": "g1", "genome_list": ["g0", "g2"]}
         }
 
         added_genomes = {}
