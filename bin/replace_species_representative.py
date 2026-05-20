@@ -249,7 +249,7 @@ def replacement_decision(replacement_results, added_genomes_dict, qs_values, rem
         # If in this catalogue we switched from CheckM1 to CheckM2 or if old rep was removed, we need to consider all 
         # genomes in the cluster for a possible new rep; in other cases, only consider clusters with new genomes added
         if checkm2_switch or must_replace:
-            genome_list_to_evaluate = (replacement_results[old_rep]["genomes"] + added_genomes_dict.get(old_rep, []))
+            genome_list_to_evaluate = (replacement_results[old_rep]["genome_list"] + added_genomes_dict.get(old_rep, []))
         else: 
             genome_list_to_evaluate = added_genomes_dict.get(old_rep, [])
         if genome_list_to_evaluate:
