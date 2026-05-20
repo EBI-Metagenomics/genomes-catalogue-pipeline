@@ -556,7 +556,7 @@ def sanity_check(replacement_results, remove_list, current_clusters, new_strain_
     # Step 4: Check that replacement_count equals at least the original count minus the number of removed genomes
     if replacement_count != total_expected:
         logging.error(f"Replacement results ({replacement_count}) do not match the expected number of genomes "
-              f"({total_expected})")
+                      f"({total_expected})")
         results_ok = False
 
     # Step 5: Ensure all genomes from new_strain_placement are in seen_genomes
