@@ -51,7 +51,7 @@ class Quality:
     
     
 def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, checkm_file, remove_list_file, 
-         new_species_split_file=None, new_strain_file=None, repeat_strain_file=None):
+         checkm2_switch, new_species_split_file=None, new_strain_file=None, repeat_strain_file=None):
     report_output_file = f"{output_prefix}_cluster_rep_changes_report.tsv"
     clusters_output_file = f"{output_prefix}_clusters_split.txt"
     new_strain_placement = (
@@ -74,9 +74,9 @@ def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, 
     logging.info(f"Loaded data: {len(new_strain_placement)} new strains, {len(repeat_strain_placement)} repeat strains "
                  f"before evaluation, {len(remove_list)} genomes to remove.")
     
-    # If we are not adding or removing genomes, we don't need to do anything, just output old files for 
-    # everything - this is not an update, just a reannotation
-    if not (new_strain_placement or remove_list or repeat_strain_placement or new_species_split_file):
+    # If we are not adding or removing genomes, and we didn't switch from CheckM1 to CheckM2, we don't need to do 
+    # anything, just output old files for everything - this is not an update, just a reannotation
+    if not (new_strain_placement or remove_list or repeat_strain_placement or new_species_split_file or checkm2_switch):
         logging.info("No genomes are added or removed, printing old catalogue results and existing.")
         output_existing_drep_tables(cluster_split_file, clusters_output_file)
         write_report_tsv(dict(), report_output_file) 
@@ -93,7 +93,7 @@ def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, 
                                                                               current_clusters_minus_removed, 
                                                                               new_strain_placement, 
                                                                               repeat_strain_placement, rep_lookup_dict, 
-                                                                              remove_list)
+                                                                              remove_list, checkm2_switch)
 
     sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, stats_to_print)
     write_report_tsv(report_to_print, report_output_file)
@@ -153,13 +153,14 @@ def write_report_tsv(report_dict, outfile):
         
         
 def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
-                       repeat_strain_placement, rep_lookup_dict, remove_list):
+                       repeat_strain_placement, rep_lookup_dict, remove_list, checkm2_switch):
     replacement_results = copy.deepcopy(current_clusters_minus_removed)
     added_genomes = dict()  # cluster_rep → [list of added genomes]
     stats_to_print = dict()  # numbers of added strains and species
     report_to_print = dict()  # reasons for rep replacements
     repeat_strains_added = 0
     new_strains_added = 0
+    
     # Step 1: add in repeat strains
     # We will only consider adding a repeat strain in the following cases:
     # 1. if it's an isolate and existing strain is not (always add)
@@ -185,12 +186,12 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
         replacement_results = add_to_clusters(genome, placement.closest_rep, replacement_results)
         added_genomes.setdefault(placement.closest_rep, []).append(genome)
         new_strains_added += 1
+    
     # Step 3: decide on rep replacement
-    # TODO: add replacement for cases where no genomes were added or removed, but rep changed because of the 
-    #  CheckM -> CheckM2 switch
     replacement_results, stats_to_print, report_to_print = replacement_decision(replacement_results, added_genomes, 
                                                                                 qs_values, remove_list, stats_to_print, 
-                                                                                report_to_print, isolates)
+                                                                                report_to_print, isolates, 
+                                                                                checkm2_switch)
     
     stats_to_print["new_strains_added"] = new_strains_added
     stats_to_print["repeat_strains_added"] = repeat_strains_added
@@ -213,8 +214,8 @@ def add_to_clusters(genome, rep, replacement_results):
     return replacement_results
 
 
-def replacement_decision(replacement_results, added_genomes_dict, qs_values, remove_list, stats_to_print, report_to_print,
-                         isolates):
+def replacement_decision(replacement_results, added_genomes_dict, qs_values, remove_list, stats_to_print, 
+                         report_to_print, isolates, checkm2_switch):
     # ------------------------------------------------------------------
     # Helper: Build report entry for a replacement
     # ------------------------------------------------------------------
@@ -242,26 +243,23 @@ def replacement_decision(replacement_results, added_genomes_dict, qs_values, rem
             "quality_improvement": qs_values[new_rep].qs/qs_values[old_rep].qs
         }
         
-    for old_rep, new_genome_list in added_genomes_dict.items():
-        # Check if there is no rep at all because it was removed - in that case we must select new rep
-        must_replace = not replacement_results[old_rep]["new_rep"]
-        new_rep = select_replacement(replacement_results, old_rep, new_genome_list, qs_values, isolates, 
-                                     replacement_required=must_replace)   
-
-        if new_rep:
-            replacement_results[old_rep]["new_rep"] = new_rep
-            add_report_entry(old_rep, new_rep)
-    
-    # Go through clusters that lost species rep due to genome removal but had no new genomes added.
-    # In such cases the old genome will not be in the list of keys of added_genomes_dict.
     for old_rep in replacement_results:
-        if old_rep not in added_genomes_dict and not replacement_results[old_rep]["new_rep"]:
-            new_rep = select_replacement(replacement_results, old_rep, [], qs_values, isolates, 
-                                         replacement_required=True)
+        # Check if there is no rep at all because it was removed - in that case we must select a new rep
+        must_replace = not replacement_results[old_rep]["new_rep"]
+        # If in this catalogue we switched from CheckM1 to CheckM2 or if old rep was removed, we need to consider all 
+        # genomes in the cluster for a possible new rep; in other cases, only consider clusters with new genomes added
+        if checkm2_switch or must_replace:
+            genome_list_to_evaluate = (replacement_results[old_rep]["genomes"] + added_genomes_dict.get(old_rep, []))
+        else: 
+            genome_list_to_evaluate = added_genomes_dict.get(old_rep, [])
+        if genome_list_to_evaluate:
+            new_rep = select_replacement(old_rep, genome_list_to_evaluate, qs_values, isolates,
+                                         replacement_required=must_replace)
+
             if new_rep:
                 replacement_results[old_rep]["new_rep"] = new_rep
                 add_report_entry(old_rep, new_rep)
-    # remove new_rep from genome lists, add in old_reps
+            
     replacement_results = clean_up_result(replacement_results, remove_list)
     return replacement_results, stats_to_print, report_to_print
         
@@ -289,19 +287,17 @@ def clean_up_result(replacement_results, remove_list):
     return replacement_results
 
 
-def select_replacement(replacement_results, old_rep, new_genome_list, qs_values, isolates, replacement_required=False):
+def select_replacement(old_rep, genome_list_to_evaluate, qs_values, isolates, replacement_required=False):
     """
     Choose a replacement genome for old_rep.
 
     If replacement_required = True:
-        - Look at replacement_results[old_rep]["genome_list"]
         - Choose genome with highest QS
         - Break ties using highest N50
         - If replacement_results[old_rep]["genome_list"] contains isolates, only choose among isolates
 
     If replacement_required = False:
-        - Look at new_genome_list
-        - If current rep is an isolate or there are any isolates in new_genome_list, only consider isolates as a
+        - If current rep is an isolate or there are any isolates in genome_list_to_evaluate, only consider isolates as a
          replacement
         - Use evaluate_quality_increase() to see if any genome is sufficiently better
         - Among genomes that pass, choose the one with:
@@ -310,25 +306,13 @@ def select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
         - If none pass, return "" (no replacement)
     """
     old_quality = qs_values[old_rep]
-
-    # ---------------------------------------------------------
-    # STEP 1: Determine candidate genome pool to select a replacement species rep from (before isolate filtering)
-    # ---------------------------------------------------------
-    base_replacement_pool = (
-        replacement_results[old_rep]["genome_list"]
-        if replacement_required else
-        new_genome_list
-    )
-    
-    if not base_replacement_pool:
-        return ""
     
     # ---------------------------------------------------------
-    # STEP 2: Isolate-based filtering
+    # STEP 1: Isolate-based filtering
     # ---------------------------------------------------------
 
     # Identify which members of the base pool are isolates
-    replacement_pool_isolates = [g for g in base_replacement_pool if g in isolates]
+    replacement_pool_isolates = [g for g in genome_list_to_evaluate if g in isolates]
     
     # If an isolate has been added and the old rep is not an isolate, replacement is required
     if replacement_pool_isolates and old_rep not in isolates:
@@ -336,10 +320,7 @@ def select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
     
     if replacement_required:
         # If any isolates are present in the pool → only consider isolates
-        if replacement_pool_isolates:
-            candidate_pool = replacement_pool_isolates
-        else:
-            candidate_pool = base_replacement_pool
+        candidate_pool = replacement_pool_isolates or genome_list_to_evaluate
 
     else:
         # Replacement not required:
@@ -347,13 +328,13 @@ def select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
         if (old_rep in isolates) or replacement_pool_isolates:
             candidate_pool = replacement_pool_isolates
         else:
-            candidate_pool = base_replacement_pool
+            candidate_pool = genome_list_to_evaluate
 
     if not candidate_pool:
         return ""
 
     # ---------------------------------------------------------
-    # STEP 3a: replacement required → pick best by QS, then N50
+    # STEP 2a: replacement required → pick best by QS, then N50
     # ---------------------------------------------------------
     if replacement_required:
         return max(
@@ -362,7 +343,7 @@ def select_replacement(replacement_results, old_rep, new_genome_list, qs_values,
         )
 
     # ---------------------------------------------------------
-    # STEP 3b: replacement_required=False → replacement only if there is a better genome → filter by quality 
+    # STEP 2b: replacement_required=False → replacement only if there is a better genome → filter by quality 
     # improvement first
     # ---------------------------------------------------------
     passing = [
@@ -613,6 +594,10 @@ def parse_args():
                         help='Path to the tab-delimited file containing a list of genomes (MGYG) to remove in column 1')
     parser.add_argument('--new-species-split-file', required=False,
                         help='Path to the cluster split file for new species')
+    parser.add_argument('--checkm2_switch', action='store_true',
+                        help='Use this flag if the completeness/contamination in the old catalogue were recomputed with'
+                             ' CheckM2 during the update process. All clusters will be reassessed to check if the '
+                             'species representative genome should change.')
     args = parser.parse_args()
 
     # Validation
@@ -633,5 +618,6 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     main(args.cluster_split_file, args.output_prefix, args.assembly_stats, args.isolates, args.checkm, 
-         args.remove_list, args.new_species_split_file, args.new_strain_list, args.repeat_strain_list)
+         args.remove_list, args.checkm2_switch, args.new_species_split_file, args.new_strain_list, 
+         args.repeat_strain_list)
     
