@@ -375,13 +375,20 @@ def new_genome_more_contiguous(new, old):
     # do not make completeness and contamination worse
     # n50 should increase not only in percentage but also in absolute value (to avoid minor increases of low n50s)
     # tolerate some total length loss
+    # qs increase should be at least x1.001 to avoid tiny overall improvements (this looks small but at very high
+    # quality values the qs change is small, for example:
+    # old: comp=99.99, cont=0.08, n50=231,146, length=2,719,680, qs=102.2719
+    # new: comp=100.00, cont=0.08, n50=414,451, length=2,724,065, qs=102.408
+    # qs fold increase is only 1.0013 but n50 in the new genome is nearly double compared to the old genome)
+    # These parameters do mean that at higher qs values we will be switching species rep more often
     return (
         new.qs >= old.qs and
         new.completeness >= old.completeness and
         new.contamination <= old.contamination and
         new.n50 >= old.n50 + 10000 and
         new.n50 >= old.n50 * 1.1 and
-        new.length >= old.length * 0.90
+        new.length >= old.length * 0.90 and
+        new.qs/old.qs >= 1.001
     )
     
 
