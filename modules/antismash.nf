@@ -3,7 +3,6 @@ process ANTISMASH {
     tag "${cluster_name}"
 
     container 'quay.io/nf-core/antismash:8.0.1--pyhdfd78af_0'
-    containerOptions = '--env PYTHONNOUSERSITE=1'
     
     label 'retry_twice'
 
@@ -16,6 +15,9 @@ process ANTISMASH {
 
     script:
     """
+    export PYTHONNOUSERSITE=1
+    unset PYTHONPATH
+    
     antismash \\
     -t bacteria \\
     -c ${task.cpus} \\
