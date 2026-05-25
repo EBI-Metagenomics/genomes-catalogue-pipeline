@@ -28,6 +28,12 @@ process ANTISMASH_MAKE_GFF {
 
     script:
     """
+    # temporary fix
+    export PYTHONNOUSERSITE=1
+    pip install --quiet --no-deps --target /tmp/fixpd "pandas==2.2.3"
+    export PYTHONPATH=/tmp/fixpd:\${PYTHONPATH:-}
+    # temporary fix end
+    
     antismash_gff_builder -i ${antismash_json} -o ${cluster}_antismash.gff --cds_tag locus_tag
     """
 
