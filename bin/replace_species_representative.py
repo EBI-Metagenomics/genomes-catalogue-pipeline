@@ -27,6 +27,7 @@ import shutil
 import sys
 
 from dataclasses import dataclass
+from typing import Optional
 
 from parse_domain import load_clusters
 
@@ -50,8 +51,37 @@ class Quality:
     n_contigs: int
     
     
-def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, checkm_file, remove_list_file, 
-         checkm2_switch, new_species_split_file=None, new_strain_file=None, repeat_strain_file=None):
+def main(
+    cluster_split_file: str,
+    output_prefix: str,
+    assembly_stats_file: str,
+    isolates_file: str,
+    checkm_file: str,
+    remove_list_file: str,
+    checkm2_switch: bool,
+    new_species_split_file: Optional[str] = None,
+    new_strain_file: Optional[str] = None,
+    repeat_strain_file: Optional[str] = None,
+) -> None:
+    """
+    Main entry point for updating species cluster representatives.
+
+    Loads all input data, evaluates which genomes should be added or removed,
+    recomputes cluster memberships and representative assignments, runs a sanity
+    check, and writes the updated cluster split file and a report TSV.
+
+    Args:
+        cluster_split_file: Path to the cluster split file from the previous catalogue version.
+        output_prefix: Prefix used for all output file names.
+        assembly_stats_file: Path to the TSV file containing N50, length, %GC, N_contigs.
+        isolates_file: Path to the isolates weight file (genome + weight columns).
+        checkm_file: Path to the CheckM2 CSV file with completeness and contamination values.
+        remove_list_file: Path to a tab-delimited file listing genomes to remove (column 1).
+        checkm2_switch: If True, all clusters are reassessed because CheckM version changed.
+        new_species_split_file: Path to the cluster split file for newly discovered species (optional).
+        new_strain_file: Path to the file listing new strains and their closest species rep (optional).
+        repeat_strain_file: Path to the file listing repeat strains and their catalogue match (optional).
+    """
     report_output_file = f"{output_prefix}_cluster_rep_changes_report.tsv"
     clusters_output_file = f"{output_prefix}_clusters_split.txt"
     new_strain_placement = (
@@ -100,7 +130,27 @@ def main(cluster_split_file, output_prefix, assembly_stats_file, isolates_file, 
     write_cluster_split_file(replacement_results, clusters_output_file, new_species_split_file)
 
 
-def write_cluster_split_file(replacement_results, output_file, new_species_split_file):
+def write_cluster_split_file(
+    replacement_results: dict[str, dict],
+    output_file: str,
+    new_species_split_file: Optional[str],
+) -> None:
+    """
+    Write the updated cluster split file, prepending new-species entries if present.
+
+    Each line follows the format:
+        <cluster_size>:<counter>_0:<rep>.fa,<member1>.fa,...
+
+    If a new-species split file is provided, its lines are written first and the
+    counter is initialised from the last cluster number found there.
+
+    Args:
+        replacement_results: Mapping of old representative genome ID to a dict with
+            keys ``new_rep`` (str) and ``genome_list`` (list[str]).
+        output_file: Destination path for the cluster split file.
+        new_species_split_file: Optional path to an existing split file for new species
+            whose lines should be prepended.
+    """
     counter = 0
     with open(output_file, "w") as f_out:
         # If there's an existing split file, copy it and get the last cluster number
@@ -123,10 +173,17 @@ def write_cluster_split_file(replacement_results, output_file, new_species_split
                 f_out.write(line_to_print)
                 
 
-def write_report_tsv(report_dict, outfile):
+def write_report_tsv(report_dict: dict[str, dict], outfile: str) -> None:
     """
-    Writes the report_to_print dictionary to a TSV.
-    Only prints fields that exist in each entry (missing fields become blank).
+    Write the replacement report to a TSV file.
+
+    Only fields that exist in each entry are written; missing fields are left blank.
+    The column order is fixed regardless of which fields are present in any given row.
+
+    Args:
+        report_dict: Mapping of genome ID to a dict of report fields such as
+            ``new_rep``, ``reason``, quality metrics, and ``quality_improvement``.
+        outfile: Destination path for the TSV report file.
     """
 
     # Define full set of expected keys in the desired order
@@ -152,8 +209,42 @@ def write_report_tsv(report_dict, outfile):
             writer.writerow(row)
         
         
-def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_strain_placement, 
-                       repeat_strain_placement, rep_lookup_dict, remove_list, checkm2_switch):
+def recompute_clusters(
+    qs_values: dict[str, Quality],
+    isolates: set[str],
+    current_clusters_minus_removed: dict[str, dict],
+    new_strain_placement: dict[str, Placement],
+    repeat_strain_placement: dict[str, Placement],
+    rep_lookup_dict: dict[str, str],
+    remove_list: list[str],
+    checkm2_switch: bool,
+) -> tuple[dict[str, dict], dict[str, int], dict[str, dict]]:
+    """
+    Add new and repeat strains to clusters and decide on representative replacements.
+
+    Proceeds in four steps:
+        1. Conditionally add repeat strains (isolate priority or quality improvement).
+        2. Unconditionally add all new strains.
+        3. Run representative-replacement logic across all affected clusters.
+        4. Record species that have been completely removed.
+
+    Args:
+        qs_values: Mapping of genome ID to its Quality metrics.
+        isolates: Set of genome IDs that are isolates.
+        current_clusters_minus_removed: Clusters after genomes on the remove list have
+            been stripped out; maps old rep → ``{new_rep, genome_list}``.
+        new_strain_placement: Mapping of new-strain genome ID to its Placement.
+        repeat_strain_placement: Mapping of repeat-strain genome ID to its Placement.
+        rep_lookup_dict: Mapping of any catalogue genome ID to its species representative.
+        remove_list: List of genome IDs to be removed from the catalogue.
+        checkm2_switch: If True, all clusters are re-evaluated for representative change.
+
+    Returns:
+        A tuple of:
+            - replacement_results: Updated cluster dict (old rep → ``{new_rep, genome_list}``).
+            - stats_to_print: Counts of added new and repeat strains.
+            - report_to_print: Per-representative report entries for the TSV output.
+    """
     replacement_results = copy.deepcopy(current_clusters_minus_removed)
     added_genomes = dict()  # cluster_rep → [list of added genomes]
     stats_to_print = dict()  # numbers of added strains and species
@@ -202,24 +293,87 @@ def recompute_clusters(qs_values, isolates, current_clusters_minus_removed, new_
     return replacement_results, stats_to_print, report_to_print
 
 
-def add_removed_species(report_to_print, replacement_results):
+def add_removed_species(
+    report_to_print: dict[str, dict],
+    replacement_results: dict[str, dict],
+) -> dict[str, dict]:
+    """
+    Record species that have been entirely removed from the catalogue.
+
+    A species is considered fully removed when its entry in ``replacement_results``
+    has no new representative and an empty genome list.
+
+    Args:
+        report_to_print: Existing report dict that will be updated in place.
+        replacement_results: Current cluster state mapping old rep → ``{new_rep, genome_list}``.
+
+    Returns:
+        The updated ``report_to_print`` dict with fully-removed species appended.
+    """
     for old_rep, replacement_data in replacement_results.items():
         if not replacement_results[old_rep]["new_rep"] and len(replacement_results[old_rep]["genome_list"]) == 0:
             report_to_print[old_rep] = {"reason": "Species removed from catalogue"}    
     return report_to_print
 
 
-def add_to_clusters(genome, rep, replacement_results):
+def add_to_clusters(
+    genome: str,
+    rep: str,
+    replacement_results: dict[str, dict],
+) -> dict[str, dict]:
+    """
+    Append a genome to the member list of an existing cluster.
+
+    Args:
+        genome: Genome ID to add as a cluster member.
+        rep: Species representative genome ID identifying the target cluster.
+        replacement_results: Current cluster state mapping old rep → ``{new_rep, genome_list}``.
+
+    Returns:
+        The updated ``replacement_results`` dict with ``genome`` added to the
+        ``genome_list`` of the cluster keyed by ``rep``.
+    """
     replacement_results[rep]["genome_list"].append(genome)
     return replacement_results
 
 
-def replacement_decision(replacement_results, added_genomes_dict, qs_values, remove_list, stats_to_print, 
-                         report_to_print, isolates, checkm2_switch):
+def replacement_decision(
+    replacement_results: dict[str, dict],
+    added_genomes_dict: dict[str, list[str]],
+    qs_values: dict[str, Quality],
+    remove_list: list[str],
+    stats_to_print: dict[str, int],
+    report_to_print: dict[str, dict],
+    isolates: set[str],
+    checkm2_switch: bool,
+) -> tuple[dict[str, dict], dict[str, int], dict[str, dict]]:
+    """
+    Decide whether each cluster's representative genome should be replaced.
+
+    For each cluster, determines the pool of candidates to evaluate and calls
+    ``select_replacement``. If a replacement is chosen, updates ``replacement_results``
+    and appends an entry to ``report_to_print``. Finishes by calling
+    ``clean_up_result`` to move old representatives into member lists.
+
+    Args:
+        replacement_results: Current cluster state mapping old rep → ``{new_rep, genome_list}``.
+        added_genomes_dict: Mapping of species rep → list of genomes newly added to that cluster.
+        qs_values: Mapping of genome ID to its Quality metrics.
+        remove_list: List of genome IDs to be removed from the catalogue.
+        stats_to_print: Running stats dict (updated in place but returned for clarity).
+        report_to_print: Running report dict (updated in place).
+        isolates: Set of genome IDs that are isolates.
+        checkm2_switch: If True, all cluster members are considered as replacement candidates.
+
+    Returns:
+        A tuple of the (possibly mutated) ``replacement_results``, ``stats_to_print``,
+        and ``report_to_print``.
+    """
+
     # ------------------------------------------------------------------
     # Helper: Build report entry for a replacement
     # ------------------------------------------------------------------
-    def add_report_entry(old_rep, new_rep):
+    def add_report_entry(old_rep: str, new_rep: str) -> None:
         if old_rep in remove_list:
             reason = "Previous species representative genome has been removed from the catalogue"
         elif old_rep not in isolates and new_rep in isolates:
@@ -240,7 +394,7 @@ def replacement_decision(replacement_results, added_genomes_dict, qs_values, rem
             "new_qs": qs_values[new_rep].qs,
             "new_n50": qs_values[new_rep].n50,
             "new_length": qs_values[new_rep].length,
-            "quality_improvement": qs_values[new_rep].qs/qs_values[old_rep].qs
+            "quality_improvement": qs_values[new_rep].qs / qs_values[old_rep].qs
         }
         
     for old_rep in replacement_results:
@@ -249,7 +403,8 @@ def replacement_decision(replacement_results, added_genomes_dict, qs_values, rem
         # If in this catalogue we switched from CheckM1 to CheckM2 or if old rep was removed, we need to consider all 
         # genomes in the cluster for a possible new rep; in other cases, only consider clusters with new genomes added
         if checkm2_switch or must_replace:
-            genome_list_to_evaluate = (replacement_results[old_rep]["genome_list"] + added_genomes_dict.get(old_rep, []))
+            genome_list_to_evaluate = (
+                    replacement_results[old_rep]["genome_list"] + added_genomes_dict.get(old_rep, []))
         else: 
             genome_list_to_evaluate = added_genomes_dict.get(old_rep, [])
         if genome_list_to_evaluate:
@@ -264,7 +419,25 @@ def replacement_decision(replacement_results, added_genomes_dict, qs_values, rem
     return replacement_results, stats_to_print, report_to_print
         
 
-def clean_up_result(replacement_results, remove_list):
+def clean_up_result(
+    replacement_results: dict[str, dict],
+    remove_list: list[str],
+) -> dict[str, dict]:
+    """
+    Finalise cluster membership after representative assignments have been made.
+
+    For each cluster:
+    - Exits with an error if a non-empty genome list has no assigned representative.
+    - Removes the new representative from the member list (it should not appear there).
+    - Moves the old representative into the member list unless it is on the remove list.
+
+    Args:
+        replacement_results: Current cluster state mapping old rep → ``{new_rep, genome_list}``.
+        remove_list: List of genome IDs to be excluded from the catalogue entirely.
+
+    Returns:
+        The cleaned-up ``replacement_results`` dict.
+    """
     for old_rep in replacement_results:
         new_rep = replacement_results[old_rep]["new_rep"]
         genome_list = replacement_results[old_rep]["genome_list"]
@@ -287,16 +460,22 @@ def clean_up_result(replacement_results, remove_list):
     return replacement_results
 
 
-def select_replacement(old_rep, genome_list_to_evaluate, qs_values, isolates, replacement_required=False):
+def select_replacement(
+    old_rep: str,
+    genome_list_to_evaluate: list[str],
+    qs_values: dict[str, Quality],
+    isolates: set[str],
+    replacement_required: bool = False,
+) -> str:
     """
-    Choose a replacement genome for old_rep.
+    Choose the best replacement representative from a list of candidate genomes.
 
-    If replacement_required = True:
+    If replacement_required is True:
         - Choose genome with highest QS
         - Break ties using highest N50
         - If replacement_results[old_rep]["genome_list"] contains isolates, only choose among isolates
 
-    If replacement_required = False:
+    If replacement_required is False:
         - If current rep is an isolate or there are any isolates in genome_list_to_evaluate, only consider isolates as a
          replacement
         - Use evaluate_quality_increase() to see if any genome is sufficiently better
@@ -304,6 +483,18 @@ def select_replacement(old_rep, genome_list_to_evaluate, qs_values, isolates, re
               1. highest QS
               2. break ties with highest N50
         - If none pass, return "" (no replacement)
+
+    Args:
+        old_rep: Genome ID of the current species representative.
+        genome_list_to_evaluate: Candidate genome IDs to consider as replacements.
+        qs_values: Mapping of genome ID to its Quality metrics.
+        isolates: Set of genome IDs that are isolates.
+        replacement_required: If True, a replacement must be chosen even if no candidate
+            is strictly better quality than the current representative.
+
+    Returns:
+        The genome ID of the chosen replacement, or ``""`` if no suitable replacement
+        was found.
     """
     old_quality = qs_values[old_rep]
     
@@ -362,7 +553,21 @@ def select_replacement(old_rep, genome_list_to_evaluate, qs_values, isolates, re
     )
 
 
-def evaluate_quality_increase(quality_new_genome, quality_catalogue_genome):
+def evaluate_quality_increase(quality_new_genome: Quality, quality_catalogue_genome: Quality) -> bool:
+    """
+    Determine whether a new genome is sufficiently better than the catalogue genome.
+
+    Uses a 10 % QS improvement threshold. When the threshold would exceed 100 (i.e.
+    the catalogue genome already has a very high QS), falls back to the stricter
+    contiguity-based check in ``new_genome_more_contiguous``.
+
+    Args:
+        quality_new_genome: Quality metrics for the candidate genome.
+        quality_catalogue_genome: Quality metrics for the current catalogue genome.
+
+    Returns:
+        True if the new genome meets the improvement threshold, False otherwise.
+    """
     threshold = quality_catalogue_genome.qs * 1.1
     if threshold <= 100.0:
         return quality_new_genome.qs >= threshold
@@ -370,7 +575,13 @@ def evaluate_quality_increase(quality_new_genome, quality_catalogue_genome):
         return new_genome_more_contiguous(quality_new_genome, quality_catalogue_genome)
 
 
-def new_genome_more_contiguous(new, old):
+def new_genome_more_contiguous(new: Quality, old: Quality) -> bool:
+    """
+    Check whether a new genome is strictly more contiguous than an existing one.
+
+    Used as a fallback when both genomes already have very high QS scores (>100),
+    where percentage-based QS improvement would be hard to achieve.
+
     # The logic is:
     # do not make completeness and contamination worse
     # n50 should increase not only in percentage but also in absolute value (to avoid minor increases of low n50s)
@@ -381,6 +592,14 @@ def new_genome_more_contiguous(new, old):
     # new: comp=100.00, cont=0.08, n50=414,451, length=2,724,065, qs=102.408
     # qs fold increase is only 1.0013 but n50 in the new genome is nearly double compared to the old genome)
     # These parameters do mean that at higher qs values we will be switching species rep more often
+
+    Args:
+        new: Quality metrics for the candidate genome.
+        old: Quality metrics for the current catalogue genome.
+
+    Returns:
+        True if the new genome passes all contiguity and quality criteria, False otherwise.
+    """
     return (
         new.qs >= old.qs and
         new.completeness >= old.completeness and
@@ -388,22 +607,54 @@ def new_genome_more_contiguous(new, old):
         new.n50 >= old.n50 + 10000 and
         new.n50 >= old.n50 * 1.1 and
         new.length >= old.length * 0.90 and
-        new.qs/old.qs >= 1.001
+        new.qs / old.qs >= 1.001
     )
     
 
-def invert_clusters(clusters):
+def invert_clusters(clusters: dict[str, list[str]]) -> dict[str, str]:
+    """
+    Build a reverse lookup mapping every catalogue genome to its species representative.
+
+    The representative itself is also included in the returned dict, mapped to itself.
+
+    Args:
+        clusters: Mapping of species representative genome ID → list of member genome IDs.
+
+    Returns:
+        A flat dict mapping every genome ID (rep or member) to its species representative.
+    """
     rep_lookup_dict = dict()
     for rep, genome_list in clusters.items():
         rep_lookup_dict[rep] = rep
         for genome in genome_list:
             rep_lookup_dict[genome] = rep
     return rep_lookup_dict
-    
 
-def remove_genomes_from_clusters(current_clusters, remove_list):
+
+def remove_genomes_from_clusters(
+    current_clusters: dict[str, list[str]],
+    remove_list: list[str],
+) -> tuple[dict[str, dict], dict[str, list[str]]]:
+    """
+    Strip genomes on the remove list from all clusters.
+
+    Produces an updated cluster dict where removed representatives are recorded
+    with an empty ``new_rep`` string (signalling that a replacement must be found)
+    and removed members are simply excluded from the ``genome_list``.
+
+    Args:
+        current_clusters: Mapping of species representative genome ID → list of member genome IDs.
+        remove_list: List of genome IDs to be removed from the catalogue.
+
+    Returns:
+        A tuple of:
+            - current_clusters_minus_removed: Updated clusters mapping old rep →
+              ``{new_rep, genome_list}`` with removed genomes excluded.
+            - remove_log: Dict with keys ``"reps"`` and ``"members"`` listing which
+              representatives and members were removed respectively.
+    """
     current_clusters_minus_removed = dict()
-    remove_log = {"reps": [], "members": []} 
+    remove_log = {"reps": [], "members": []}
     for rep, genome_list in current_clusters.items():
         filtered_genomes = [g for g in genome_list if g not in remove_list]
         removed_genomes = [g for g in genome_list if g in remove_list]
@@ -419,12 +670,34 @@ def remove_genomes_from_clusters(current_clusters, remove_list):
     return current_clusters_minus_removed, remove_log
     
     
-def output_existing_drep_tables(cluster_split_file, clusters_output_file):
+def output_existing_drep_tables(cluster_split_file: str, clusters_output_file: str) -> None:
+    """
+    Copy the existing cluster split file to the output path without modification.
+
+    Used when no genomes are being added or removed and no CheckM version switch
+    occurred, so the catalogue content is unchanged (reannotation only).
+
+    Args:
+        cluster_split_file: Path to the source cluster split file.
+        clusters_output_file: Destination path where the file should be copied.
+    """
     shutil.copy(cluster_split_file, clusters_output_file)
     logging.info("No changes made to the clusters. Original file contents are written to output.")
 
 
-def load_first_column_to_list(file_path):
+def load_first_column_to_list(file_path: str) -> list[str]:
+    """
+    Read the first column of a tab-delimited file into a list of strings.
+
+    Common genome file extensions (``.fa``, ``.fna``, ``.fasta``) are stripped from
+    each value before it is added to the list.
+
+    Args:
+        file_path: Path to the input file.
+
+    Returns:
+        A list of values from the first column, in file order, with extensions removed.
+    """
     first_column_values = []
     with open(file_path, 'r') as file_in:
         for line in file_in:
@@ -445,7 +718,29 @@ def load_first_column_to_list(file_path):
     return first_column_values
 
 
-def load_strain_placement(file_path, same_strain=False):
+def load_strain_placement(file_path: str, same_strain: bool = False) -> dict[str, Placement]:
+    """
+    Parse a strain placement TSV into a dict mapping genome ID to Placement.
+
+    The column names used for the representative and distance score differ depending
+    on whether the file describes repeat strains (same strain) or new strains:
+    - same_strain=True  → uses ``Hit_rep`` and ``Score_to_hit_rep``
+    - same_strain=False → uses ``Closest_rep`` and ``Score_to_closest_rep``
+
+    # If we are loading repeat genomes from the same strain, we put them in the same cluster as their match
+    # regardless of how well they matched to the species rep of that cluster
+    # If it's a new strain, we load it into the closest species rep even if the distance to that rep is > 0.05
+
+    Args:
+        file_path: Path to the placement TSV file.
+        same_strain: If True, load as repeat-strain placements; otherwise as new-strain.
+
+    Returns:
+        A dict mapping each accession string to its corresponding Placement dataclass.
+
+    Raises:
+        ValueError: If required header columns are missing from the file.
+    """
     strain_placement: dict[str, Placement] = {}
     # If we are loading repeat genomes from the same strain, we put them in the same cluster as their match
     # regardless of how well they matched to the species rep of that cluster
@@ -474,7 +769,20 @@ def load_strain_placement(file_path, same_strain=False):
     return strain_placement
 
 
-def load_isolates(isolates_file):
+def load_isolates(isolates_file: str) -> set[str]:
+    """
+    Load the set of isolate genome IDs from the isolates weight file.
+
+    Each line is expected to contain at least two whitespace-separated fields:
+    a genome ID and an integer score. Genomes with a score greater than 0 are
+    considered isolates.
+
+    Args:
+        isolates_file: Path to the isolates weight file.
+
+    Returns:
+        A set of genome IDs that are classified as isolates (score > 0).
+    """
     isolates = set()
     with open(isolates_file, 'r') as isolates_in:
         for line in isolates_in:
@@ -484,7 +792,23 @@ def load_isolates(isolates_file):
     return isolates
 
 
-def load_qs(stats_file, checkm_file):
+def load_qs(stats_file: str, checkm_file: str) -> dict[str, Quality]:
+    """
+    Build a Quality metrics dict for all genomes from assembly stats and CheckM output.
+
+    Reads completeness and contamination from the CheckM CSV, then enriches each
+    entry with N50, total length, and contig count from the assembly stats TSV.
+    Finally, computes the QS score for every genome.
+
+    Args:
+        stats_file: Path to the assembly stats TSV with columns:
+            ``Genome``, ``N50``, ``Length``, ``GC_content``, ``N_contigs``.
+        checkm_file: Path to the CheckM CSV with columns:
+            ``genome``, ``completeness``, ``contamination``.
+
+    Returns:
+        A dict mapping genome ID (extension stripped) to its fully populated Quality dataclass.
+    """
     # Load CheckM values
     genome_stats: dict[str, Quality] = {}
     with open(checkm_file, "r") as f:
@@ -522,12 +846,51 @@ def load_qs(stats_file, checkm_file):
     return genome_stats
 
 
-def calc_qs(completeness, contamination, n50):
+def calc_qs(completeness: float, contamination: float, n50: int) -> float:
+    """
+    Calculate the Quality Score (QS) for a genome assembly.
+
+    The formula is:
+        QS = completeness - (contamination × 5) + 0.5 × log10(N50)
+
+    Args:
+        completeness: Genome completeness percentage (0–100).
+        contamination: Genome contamination percentage (0–100).
+        n50: N50 contig length in base pairs.
+
+    Returns:
+        The computed QS as a float.
+    """
     qs = float(completeness) - float(contamination) * 5 + 0.5 * math.log10(float(n50))
     return qs
 
 
-def sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, report_to_print):
+def sanity_check(
+    replacement_results: dict[str, dict],
+    remove_list: list[str],
+    current_clusters: dict[str, list[str]],
+    new_strain_placement: dict[str, Placement],
+    report_to_print: dict,
+) -> None:
+    """
+    Validate that replacement_results is internally consistent.
+
+    Performs the following checks:
+        1. Counts genomes in the old catalogue.
+        2. Computes the expected total after removals and additions.
+        3. Counts unique genomes in replacement_results and flags duplicates.
+        4. Confirms the count matches the expectation.
+        5. Ensures every genome from new_strain_placement appears in the results.
+        6. Exits with an error if any check fails.
+
+    Args:
+        replacement_results: Updated cluster dict (old rep → ``{new_rep, genome_list}``).
+        remove_list: List of genome IDs removed from the catalogue.
+        current_clusters: Original cluster state before any changes.
+        new_strain_placement: Mapping of new-strain genome ID to its Placement.
+        report_to_print: Stats dict containing ``new_strains_added`` and
+            ``repeat_strains_added`` counts.
+    """
     results_ok = True
     
     # Step 1: Count genomes in current_clusters (this is how many genomes we had in the old catalogue)
