@@ -252,7 +252,8 @@ workflow GAP {
             
     PROCESS_MANY_GENOMES(
         dereplicated_genomes.out.many_genomes_fna_tuples,
-        accessions_with_domains_ch
+        accessions_with_domains_ch,
+        checkm_all_genomes
     )
 
     PROCESS_SINGLETON_GENOMES(
@@ -525,7 +526,6 @@ workflow GAP {
         file(coverage_summary),
         file(cluster_faa),
         file(pangenome_fasta), // only for many_genomes clusters otherwise empty
-        file(core_genes)       // only for many_genomes clusters otherwise empty
     )
     */
     files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
@@ -534,8 +534,6 @@ workflow GAP {
         cluster_reps_faas
     ).join(
         PROCESS_MANY_GENOMES.out.pangenome_fna, remainder: true
-    ).join(
-        PROCESS_MANY_GENOMES.out.core_genes, remainder: true
     )
 
     GENOME_SUMMARY_JSON(

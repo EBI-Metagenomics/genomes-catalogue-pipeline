@@ -1,15 +1,27 @@
 /*
  * Interproscan
 */
-
 process IPS {
+    label 'retry_twice'
+    label 'ips'
 
     container 'quay.io/microbiome-informatics/interproscan:5.77-108.0'
-    containerOptions '--bind data:/opt/interproscan/data'
-    
-    label 'retry_twice'
 
-    label 'ips'
+    containerOptions {
+        def containerArgs = []
+        def mountArg = (workflow.containerEngine == 'singularity') ? "--bind" : "--volume"
+
+        containerArgs << "${mountArg} ${task.workDir}/${interproscan_db}/data:/opt/interproscan/data"
+
+        if ( params.interpro_licensed_software ) {
+            def licensedSoftwarePath = "${task.workDir}/${interproscan_db}/licensed"
+            containerArgs << "${mountArg} ${licensedSoftwarePath}:/opt/interproscan/licensed"
+            // This override is needed otherwise it fails because this path seems to be hardcoded in the container
+            containerArgs << "${mountArg} ${licensedSoftwarePath}/signalp:/usr/opt/www/pub/CBS/services/SignalP-4.1/signalp-4.1"
+        }
+
+        return containerArgs.join(' ')
+    }
 
     input:
     tuple val(id), path(faa_fasta)
@@ -18,27 +30,37 @@ process IPS {
     output:
     tuple val(id), path('*.IPS.tsv'), emit: ips_annotations
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
+    def args = task.ext.args ?: ''
+    def is_compressed = faa_fasta.extension == "gz"
+    def fasta_file_name = faa_fasta.name - ~/\.gz$/
     """
-    interproscan.sh \
-    -cpu ${task.cpus} \
-    -dp \
-    --goterms \
-    -pa \
-    -f TSV \
-    --input ${faa_fasta} \
-    -o ${faa_fasta.baseName}.IPS.tsv
+    if [ "$is_compressed" == "true" ]; then
+        gzip -c -d ${faa_fasta} > ${fasta_file_name}
+    fi
+
+    # Set the max memory for the JVM
+    export JAVA_OPTS="-Xmx${task.memory.toGiga()}G"
+
+    # -dp (disable precalculation) is on so no online dependency
+    interproscan.sh \\
+        -cpu $task.cpus \\
+        -dp \\
+        ${args} \\
+        -f TSV \\
+        --input ${fasta_file_name} \\
+        -o ${faa_fasta.baseName}.IPS.tsv
+
+    """
+    stub:
+    def args = task.ext.args ?: ''
+    """
+    echo ${args}
+
+    touch ${faa_fasta.baseName}.IPS.tsv
     """
 
-    // TODO: this of a more clever way to create the stubs for this.
-    // stub:
-    // """
-    // touch ${faa_fasta.baseName}.IPS.tsv
-
-    // echo "MGYG000000001_00001	5eaf2535c6c9d2be7320ae5758a73dca	357	PANTHER	PTHR43297	OLIGOPEPTIDE TRANSPORT ATP-BINDING PROTEIN APPD	27	348	2.8E-151	T	08-01-2023	-	-" >> ${faa_fasta.baseName}.IPS.tsv
-
-    // echo "MGYG000000012_00001	63c30759534673d1ee49fcfca8f37f08	352	PANTHER	PTHR33055	TRANSPOSASE FOR INSERTION SEQUENCE ELEMENT IS1111A	1	337	6.0E-55	T	08-01-2023	-	-" >> ${faa_fasta.baseName}.IPS.tsv
-
-    // echo "MGYG000000020_00001	959328d9189f2b7998e0f9849f07b960	237	PANTHER	PTHR42703	NADH DEHYDROGENASE	1	225	6.5E-49	T	08-01-2023	-	-" >> ${faa_fasta.baseName}.IPS.tsv
-    // """
 }

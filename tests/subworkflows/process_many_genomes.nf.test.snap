@@ -4,13 +4,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.pan-genome.fna:md5,7ae4eadc402000e3cce3926f46bf6435"
-                ]
-            ],
-            [
-                [
-                    "CAJLGA01",
-                    "gene_presence_absence.Rtab:md5,a83da7456154f77b0fbf73e6787b325c"
+                    "CAJLGA01.pan-genome.fna:md5,e9ba22fd50ec9204ed45670b37aa0d70"
                 ]
             ],
             [
@@ -76,7 +70,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.gbk:md5,d28928cd5eb8d5eb9a06ddc228893449"
+                    "CAJLGA01.gbk:md5,3a6a9b809e54a8e91cdef9067b8c7961"
                 ]
             ],
             [
@@ -104,32 +98,20 @@
                     "CAJLGA01",
                     "CAJKGB01.gff:md5,9f19a2e8a038bf79350294b7def1570e"
                 ]
-            ],
-            [
-                [
-                    "CAJLGA01",
-                    "CAJLGA01.core_genes.txt:md5,0d284276594f4e190335368bbb147b7b"
-                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
         },
-        "timestamp": "2026-05-14T10:16:50.006067"
+        "timestamp": "2026-05-19T13:54:04.109478"
     },
     "Should run mmseqs2 path for large clusters": {
         "content": [
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.pan-genome.fna:md5,67f5090145208a3d5b7b85643657b068"
-                ]
-            ],
-            [
-                [
-                    "CAJLGA01",
-                    "gene_presence_absence.Rtab:md5,b3dc0e9856ab0eeaebb4533c1086fd2e"
+                    "CAJLGA01.pan-genome.fna:md5,40afce4bcd26cad1b30c512034a5ee06"
                 ]
             ],
             [
@@ -195,7 +177,7 @@
             [
                 [
                     "CAJLGA01",
-                    "CAJLGA01.gbk:md5,d28928cd5eb8d5eb9a06ddc228893449"
+                    "CAJLGA01.gbk:md5,3a6a9b809e54a8e91cdef9067b8c7961"
                 ]
             ],
             [
@@ -223,18 +205,12 @@
                     "CAJLGA01",
                     "CAJKGB01.gff:md5,9f19a2e8a038bf79350294b7def1570e"
                 ]
-            ],
-            [
-                [
-                    "CAJLGA01",
-                    "CAJLGA01.core_genes.txt:md5,45c69b1f4e0fc677414cae723eb4dace"
-                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
         },
-        "timestamp": "2026-05-14T10:35:23.648416"
+        "timestamp": "2026-05-19T14:09:49.155453"
     }
 }
