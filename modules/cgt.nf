@@ -37,16 +37,21 @@ process CGT {
     head -1 ${rtab} | tr '\t' '\n' | tail -n +2 > rtab_genomes.txt
     sed 's|[.][a-zA-Z]*,|,|' ${checkm2} | tr ',' '\t' | awk 'FNR==NR {g[\$1]=1; next} FNR==1 || \$1 in g' rtab_genomes.txt - > checkm2_filtered.tsv
 
-    cgt_bacpop \\
-        ${args} \\
-        --completeness-column 2 \\
-        --output-file ${prefix}_cgt.txt \\
-        checkm2_filtered.tsv \\
-        ${rtab} > cgt.log 2>&1
-
-    # Prepend core and rare threshold lines as comments to the output file
-    { grep -E "^(Core|Rare) threshold:" cgt.log | sed 's/^/# /'; cat ${prefix}_cgt.txt; } > ${prefix}_cgt.tmp
-    mv ${prefix}_cgt.tmp ${prefix}_cgt.txt
+    # Check the number of genomes in the cluster
+    n_genomes=$(wc -l < rtab_genomes.txt)
+    
+    if [ "$n_genomes" -gt 4 ]; then
+        cgt_bacpop \\
+            ${args} \\
+            --completeness-column 2 \\
+            --output-file ${prefix}_cgt.txt \\
+            checkm2_filtered.tsv \\
+            ${rtab} > cgt.log 2>&1
+    
+        # Prepend core and rare threshold lines as comments to the output file
+        { grep -E "^(Core|Rare) threshold:" cgt.log | sed 's/^/# /'; cat ${prefix}_cgt.txt; } > ${prefix}_cgt.tmp
+        mv ${prefix}_cgt.tmp ${prefix}_cgt.txt
+    fi
     """
 
     stub:
