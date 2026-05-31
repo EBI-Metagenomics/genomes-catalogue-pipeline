@@ -38,9 +38,9 @@ process CGT {
     sed 's|[.][a-zA-Z]*,|,|' ${checkm2} | tr ',' '\t' | awk 'FNR==NR {g[\$1]=1; next} FNR==1 || \$1 in g' rtab_genomes.txt - > checkm2_filtered.tsv
 
     # Check the number of genomes in the cluster
-    n_genomes=$(wc -l < rtab_genomes.txt)
+    n_genomes=\$(wc -l < rtab_genomes.txt)
     
-    if [ "$n_genomes" -gt 4 ]; then
+    if [ "\$n_genomes" -gt 4 ]; then
         cgt_bacpop \\
             ${args} \\
             --completeness-column 2 \\
