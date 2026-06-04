@@ -17,8 +17,8 @@ process ANTISMASH_MAKE_GFF {
     label 'process_light'
 
     container "${ workflow.containerEngine in ['singularity', 'apptainer'] ?
-        'https://depot.galaxyproject.org/singularity/mgnify-pipelines-toolkit:1.5.1--pyhdfd78af_0' :
-        'biocontainers/mgnify-pipelines-toolkit:1.5.1--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/mgnify-pipelines-toolkit:1.5.1--pyhdfd78af_1' :
+        'biocontainers/mgnify-pipelines-toolkit:1.5.1--pyhdfd78af_1' }"
 
     input:
     tuple val(cluster), file(antismash_json)
@@ -28,12 +28,6 @@ process ANTISMASH_MAKE_GFF {
 
     script:
     """
-    # temporary fix
-    export PYTHONNOUSERSITE=1
-    pip install --quiet --no-deps --target /tmp/fixpd "pandas==2.2.3"
-    export PYTHONPATH=/tmp/fixpd:\${PYTHONPATH:-}
-    # temporary fix end
-    
     antismash_gff_builder -i ${antismash_json} -o ${cluster}_antismash.gff --cds_tag locus_tag
     """
 
