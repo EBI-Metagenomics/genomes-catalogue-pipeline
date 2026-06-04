@@ -255,21 +255,25 @@ def recompute_clusters(
     # Step 1: add in repeat strains
     # We will only consider adding a repeat strain in the following cases:
     # 1. if it's an isolate and existing strain is not (always add)
-    # 2. if new genome is better quality (according to our threshold)
+    # 2. If the genome that was matched has been removed from the catalogue (always add)
+    # 3. if new genome is better quality (according to our threshold)
     for genome, placement in repeat_strain_placement.items():
+        matched_cluster = rep_lookup_dict[placement.actual_match]
         genome_is_isolate = genome in isolates
+        matched_genome_was_removed = genome in remove_list
         catalogue_match_is_isolate = placement.actual_match in isolates
-        if genome_is_isolate and not catalogue_match_is_isolate:
+        if (genome_is_isolate and not catalogue_match_is_isolate) or matched_genome_was_removed:
             # Case 1: genome is an isolate, catalogue match is not → add
-            replacement_results = add_to_clusters(genome, rep_lookup_dict[placement.actual_match], replacement_results)
-            added_genomes.setdefault(rep_lookup_dict[placement.actual_match], []).append(genome)
+            # Case 2: the matched genome has been removed from the catalogue → add
+            replacement_results = add_to_clusters(genome, matched_cluster, replacement_results)
+            added_genomes.setdefault(matched_cluster, []).append(genome)
             repeat_strains_added += 1
         else:
-            # Case 2: add if quality is sufficiently higher
+            # Case 3: add if quality is sufficiently higher
             if evaluate_quality_increase(qs_values[genome], qs_values[placement.actual_match]):
-                replacement_results = add_to_clusters(genome, rep_lookup_dict[placement.actual_match], 
+                replacement_results = add_to_clusters(genome, matched_cluster, 
                                                       replacement_results)
-                added_genomes.setdefault(rep_lookup_dict[placement.actual_match], []).append(genome)
+                added_genomes.setdefault(matched_cluster, []).append(genome)
                 repeat_strains_added += 1
             
     # Step 2: add all new strains into the clusters
