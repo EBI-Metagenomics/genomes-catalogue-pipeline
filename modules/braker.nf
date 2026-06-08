@@ -4,8 +4,7 @@ process BRAKER {
     container "docker.io/teambraker/braker3:v3.0.8"
 
     input:
-    tuple val(genome_name), path(masked_genome) // genome fasta with softmasked repeat
-    tuple val(genome_name), path(protein_evidence) // tuple with original genome fasta (for naming) and protein evidence
+    tuple val(genome_name), path(masked_genome), path(protein_evidence) // softmasked genome + protein evidence
 
     output:
     tuple val(genome_name), path("${genome_name}_braker/*.gtf"), emit: gtf

@@ -12,6 +12,7 @@ workflow PROCESS_MANY_GENOMES_EUKS {
         many_genomes_clusters // list<tuple(cluster_name, genome_fna)>
         mapping_file // genome name mapping
         protein_evidence // file of fasta files and protein evidence
+        taxonomy_map // eukaryotic_taxonomy_reformatted.tsv (REFORMAT_BAT.out.taxonomy)
 
     main:
 
@@ -21,36 +22,36 @@ workflow PROCESS_MANY_GENOMES_EUKS {
             protein_evidence
         )
 
-        EUK_GENE_CALLING(GROUP_GENOME_PROTEINS.out.tuple_with_proteins)
+        EUK_GENE_CALLING(GROUP_GENOME_PROTEINS.out.tuple_with_proteins, taxonomy_map)
 
-        rep_braker_gff = EUK_GENE_CALLING.out.gffs.filter {
+        rep_gene_caller_gff = EUK_GENE_CALLING.out.gffs.filter {
             it[1].name.contains(it[0])
         }
-        rep_braker_faa = EUK_GENE_CALLING.out.proteins.filter {
+        rep_gene_caller_faa = EUK_GENE_CALLING.out.proteins.filter {
             it[1].name.contains(it[0])
         }
-        rep_braker_fna = EUK_GENE_CALLING.out.softmasked_genomes.filter {
+        rep_gene_caller_fna = EUK_GENE_CALLING.out.softmasked_genomes.filter {
             it[1].name.contains(it[0])
         }
-        rep_braker_ffn = EUK_GENE_CALLING.out.ffns.filter {
+        rep_gene_caller_ffn = EUK_GENE_CALLING.out.ffns.filter {
             it[1].name.contains(it[0])
         }
 
-        non_rep_braker_gff = EUK_GENE_CALLING.out.gffs.filter {
+        non_rep_gene_caller_gff = EUK_GENE_CALLING.out.gffs.filter {
             !it[1].name.contains(it[0])
         }
-        non_rep_braker_fna = EUK_GENE_CALLING.out.softmasked_genomes.filter {
+        non_rep_gene_caller_fna = EUK_GENE_CALLING.out.softmasked_genomes.filter {
             !it[1].name.contains(it[0])
         }
 
     emit:
-        braker_faas = EUK_GENE_CALLING.out.proteins
-        braker_fnas = EUK_GENE_CALLING.out.softmasked_genomes
-        braker_gffs = EUK_GENE_CALLING.out.gffs
-        rep_braker_fna = rep_braker_fna
-        rep_braker_gff = rep_braker_gff
-        rep_braker_faa = rep_braker_faa
-        rep_braker_ffn = rep_braker_ffn
-        non_rep_braker_fna = non_rep_braker_fna
-        non_rep_braker_gff = non_rep_braker_gff
+        gene_caller_faas = EUK_GENE_CALLING.out.proteins
+        gene_caller_fnas = EUK_GENE_CALLING.out.softmasked_genomes
+        gene_caller_gffs = EUK_GENE_CALLING.out.gffs
+        rep_gene_caller_fna = rep_gene_caller_fna
+        rep_gene_caller_gff = rep_gene_caller_gff
+        rep_gene_caller_faa = rep_gene_caller_faa
+        rep_gene_caller_ffn = rep_gene_caller_ffn
+        non_rep_gene_caller_fna = non_rep_gene_caller_fna
+        non_rep_gene_caller_gff = non_rep_gene_caller_gff
 }

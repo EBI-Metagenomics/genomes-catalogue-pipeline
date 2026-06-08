@@ -215,13 +215,15 @@ workflow GAP_EUKS {
     PROCESS_MANY_GENOMES_EUKS(
         dereplicated_genomes.out.many_genomes_fna_tuples,
         genomes_name_mapping,
-        ch_protein_evidence
+        ch_protein_evidence,
+        reformatted_tax
     )
 
     PROCESS_SINGLETON_GENOMES_EUKS(
         dereplicated_genomes.out.single_genomes_fna_tuples,
         genomes_name_mapping,
-        ch_protein_evidence
+        ch_protein_evidence,
+        reformatted_tax
     )
 
     gunc_failed = Channel.value(file("EMPTY_GUNC_FILE"))
@@ -232,34 +234,34 @@ workflow GAP_EUKS {
     )
 
     MMSEQ_SWF(
-        PROCESS_MANY_GENOMES_EUKS.out.braker_faas.map({ it[1] }).collectFile(name: "pangenome_braker.faa"),
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa.map({ it[1] }).collectFile(name: "singleton_braker.faa"),
+        PROCESS_MANY_GENOMES_EUKS.out.gene_caller_faas.map({ it[1] }).collectFile(name: "pangenome_gene_caller.faa"),
+        PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_faa.map({ it[1] }).collectFile(name: "singleton_gene_caller.faa"),
         genomes_name_mapping.first(),
         ch_mmseq_coverage_threshold
     )
 
-    cluster_reps_faas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_faa.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_faa
+    cluster_reps_faas = PROCESS_MANY_GENOMES_EUKS.out.rep_gene_caller_faa.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_faa
     )
 
-    cluster_reps_fnas = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_fna.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna
+    cluster_reps_fnas = PROCESS_MANY_GENOMES_EUKS.out.rep_gene_caller_fna.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna
     )
     
-    cluster_reps_gffs = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_gff.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_gff
+    cluster_reps_gffs = PROCESS_MANY_GENOMES_EUKS.out.rep_gene_caller_gff.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_gff
     )
 
-    cluster_reps_ffn = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_ffn.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.braker_ffn
+    cluster_reps_ffn = PROCESS_MANY_GENOMES_EUKS.out.rep_gene_caller_ffn.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_ffn
     )
 
-    all_braker_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.mix(
-        PROCESS_MANY_GENOMES_EUKS.out.braker_fnas
+    all_gene_caller_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna.mix(
+        PROCESS_MANY_GENOMES_EUKS.out.gene_caller_fnas
     )
 
-    species_reps_names_list = PROCESS_MANY_GENOMES_EUKS.out.rep_braker_fna.map({ it[0] }) \
-        .mix(PROCESS_SINGLETON_GENOMES_EUKS.out.braker_fna.map({ it[0] })) \
+    species_reps_names_list = PROCESS_MANY_GENOMES_EUKS.out.rep_gene_caller_fna.map({ it[0] }) \
+        .mix(PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna.map({ it[0] })) \
         .collectFile(name: "species_reps_names_list.txt", newLine: true)
 
 
@@ -323,7 +325,7 @@ workflow GAP_EUKS {
        )
     
     DETECT_RNA(
-        all_braker_fna,
+        all_gene_caller_fna,
         accessions_with_domains_ch,
         ch_rfam_ncrna_models,
         params.kingdom
@@ -331,7 +333,7 @@ workflow GAP_EUKS {
     
     METADATA_AND_PHYLOTREE(
         cluster_reps_fnas.map({ it[1]}).collect(),
-        all_braker_fna.map({ it[1] }).collect(),
+        all_gene_caller_fna.map({ it[1] }).collect(),
         extra_weight_table_all_genomes,
         checkm_all_genomes,
         DETECT_RNA.out.rrna_outs.flatMap {it -> it[1..-1]}.collect(),
@@ -359,7 +361,7 @@ workflow GAP_EUKS {
     )
 
     INDEX_FNA(
-        all_braker_fna
+        all_gene_caller_fna
     )
 
     // Select the only the reps //
@@ -444,6 +446,6 @@ workflow GAP_EUKS {
     )
 
     MASH_SKETCH(
-        all_braker_fna.map({ it[1] }).collect()
+        all_gene_caller_fna.map({ it[1] }).collect()
     )
 }

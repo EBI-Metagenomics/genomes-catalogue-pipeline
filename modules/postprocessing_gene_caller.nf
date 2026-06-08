@@ -1,4 +1,4 @@
-process BRAKER_POSTPROCESSING {
+process POSTPROCESSING_GENE_CALLER {
 
     tag "${genome_name}"
 
@@ -48,30 +48,27 @@ process BRAKER_POSTPROCESSING {
     label 'process_light'
 
     input:
-    tuple val(cluster_name), val(genome_name), path(masked_genome)
-    tuple val(genome_name), path(gff3)
-    tuple val(genome_name), path(proteins)
-    tuple val(genome_name), path(ffn)
+    tuple val(genome_name), val(cluster_name), path(gff), path(faa), path(ffn), path(masked_genome)
 
     output:
-    tuple val(genome_name), path(masked_genome), emit: input_genome
-    tuple val(genome_name), path("*.gff"), emit: renamed_gff3
-    tuple val(genome_name), path("*.faa"), emit: renamed_proteins
-    tuple val(genome_name), path("*.ffn"), emit: renamed_ffn
+    tuple val(genome_name), path("${genome_name}.gff"), emit: gff
+    tuple val(genome_name), path("${genome_name}.faa"), emit: faa
+    tuple val(genome_name), path("${genome_name}.ffn"), emit: ffn
 
     script:
     cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2)
     is_rep = (genome_name == cluster_name)
     """
-    rename_and_process_braker_outputs.py \
-    --gff ${gff3} \
-    --ffn ${ffn} \
-    --faa ${proteins} \
-    --genome-fasta ${masked_genome} \
-    -p renamed
+    rename_and_process_gene_callers_outputs.py \\
+        --gff ${gff} \\
+        --ffn ${ffn} \\
+        --faa ${faa} \\
+        --genome-fasta ${masked_genome} \\
+        -p ${genome_name}
+    """
 
-    mv renamed*.gff3 ${genome_name}.gff
-    mv renamed*.aa ${genome_name}.faa
-    mv renamed*.codingseq ${genome_name}.ffn
+    stub:
+    """
+    touch ${genome_name}.gff ${genome_name}.faa ${genome_name}.ffn
     """
 }

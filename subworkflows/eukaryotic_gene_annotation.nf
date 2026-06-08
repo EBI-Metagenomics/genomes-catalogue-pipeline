@@ -1,18 +1,25 @@
  /*
-  Subworkflow to annotate eukaryotic genes
+  Subworkflow to annotate eukaryotic genes.
 */
 
 include { REPEAT_MODELER } from '../modules/repeatmodeler.nf'
 include { REPEAT_MASKER } from '../modules/repeatmasker.nf'
 include { BRAKER } from '../modules/braker.nf'
-include { BRAKER_POSTPROCESSING } from '../modules/braker_postprocessing.nf'
+include { DEDUP_GFF } from '../modules/agat_dedup.nf'
+include { EXTRACT_SEQUENCES as EXTRACT_DEDUP_BRAKER_FAA } from '../modules/agat_extract_sequences.nf'
+include { EXTRACT_SEQUENCES as EXTRACT_DEDUP_BRAKER_FFN } from '../modules/agat_extract_sequences.nf'
+include { EXTRACT_SEQUENCES as EXTRACT_METAEUK_FFN } from '../modules/agat_extract_sequences.nf'
+include { METAEUK } from '../modules/metaeuk.nf'
+include { MERGE_GENE_PREDICTIONS } from '../modules/merge_gene_predictions.nf'
+include { POSTPROCESSING_GENE_CALLER } from '../modules/postprocessing_gene_caller.nf'
+include { PSAURON } from '../modules/psauron.nf'
 
 
 workflow EUK_GENE_CALLING {
     take:
-        tuple_genome_proteins
+        tuple_genome_proteins // tuple(cluster_name, genome_fna, protein_evidence)
+        taxonomy_map          // eukaryotic_taxonomy_reformatted.tsv (REFORMAT_BAT.out.taxonomy)
     main:
-
         REPEAT_MODELER(
             tuple_genome_proteins
         )
@@ -34,63 +41,118 @@ workflow EUK_GENE_CALLING {
                     return tuple(genome_name, genome)
             }
 
-        // Process genomes with repeats through REPEAT_MASKER
-        ch_repeat_masker_input = genomes_after_repeatmodeler.with_repeats
-            .multiMap { genome_name, genome, prot_evidence, repeat_families ->
-                genome_proteins: tuple(genome_name, genome, prot_evidence)
-                repeat_families: tuple(genome_name, repeat_families)
-            }
-
-        REPEAT_MASKER(
-            ch_repeat_masker_input.genome_proteins,
-            ch_repeat_masker_input.repeat_families
-        )
+        REPEAT_MASKER(genomes_after_repeatmodeler.with_repeats)
 
         // Combine masked genomes with unmasked genomes
-        def all_genomes_for_braker = REPEAT_MASKER.out.masked_genome
+        def masked_unmasked_genomes = REPEAT_MASKER.out.masked_genome
             .mix(genomes_after_repeatmodeler.without_repeats)
 
-        // Prepare channels for BRAKER
+        // Prepare channel for BRAKER
         ch_braker_input = tuple_genome_proteins_nocluster
-            .map { genome_name, _genome, prot_evidence ->
-                tuple(genome_name, prot_evidence)
-            }
-            .join(all_genomes_for_braker)
-            .multiMap { genome_name, prot_evidence, genome ->
-                masked_genome: tuple(genome_name, genome)
-                genome_proteins: tuple(genome_name, prot_evidence)
-            }
+            .map { genome_name, _genome, prot_evidence -> tuple(genome_name, prot_evidence) }
+            .join(masked_unmasked_genomes)
+            .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
 
-        BRAKER(
-            ch_braker_input.masked_genome,
-            ch_braker_input.genome_proteins
+        BRAKER(ch_braker_input)
+        DEDUP_GFF(
+            BRAKER.out.gff3
         )
 
-        ch_braker = cluster_name_ch
-            .join( tuple_genome_proteins_nocluster )
-            .join( BRAKER.out.gff3 )
-            .join( BRAKER.out.proteins )
-            .join( BRAKER.out.ffn )
-            .join( all_genomes_for_braker )
-            .multiMap { genome_name, cluster, _genome, _prot_evidence, gff, faa, ffn, masked_genome ->
-                genome: [cluster, genome_name, masked_genome]
-                gff: [genome_name, gff]
-                faa: [genome_name, faa]
-                ffn: [genome_name, ffn]
+        dedup_gff_with_genome = DEDUP_GFF.out.dedup_gff.join(masked_unmasked_genomes)
+        EXTRACT_DEDUP_BRAKER_FAA(
+            dedup_gff_with_genome.map { genome_name, gff, genome -> tuple(genome_name, gff, genome, "protein") }
+        )
+        EXTRACT_DEDUP_BRAKER_FFN(
+            dedup_gff_with_genome.map { genome_name, gff, genome -> tuple(genome_name, gff, genome, "nucleotide") }
+        )
+
+        braker_out = DEDUP_GFF.out.dedup_gff
+            .join(EXTRACT_DEDUP_BRAKER_FAA.out.protein)
+            .join(EXTRACT_DEDUP_BRAKER_FFN.out.nucleotide)
+
+        // Prepare channel for MetaEuk, which requires protein evidence
+        genomes_with_proteins = tuple_genome_proteins_nocluster
+            .map { genome_name, _genome, prot_evidence -> tuple(genome_name, prot_evidence) }
+            .filter { _genome_name, prot_evidence -> prot_evidence.name != "NO_PROTEINS.faa" }
+
+        ch_metaeuk_input = genomes_with_proteins
+            .join(masked_unmasked_genomes)
+            .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
+
+        METAEUK(ch_metaeuk_input)
+
+        metaeuk_gff_with_genome = METAEUK.out.gff.join(masked_unmasked_genomes)
+        EXTRACT_METAEUK_FFN(
+            metaeuk_gff_with_genome.map { genome_name, gff, genome -> tuple(genome_name, gff, genome, "nucleotide") }
+        )
+
+        metaeuk_out = METAEUK.out.gff
+            .join(METAEUK.out.proteins)
+            .join(EXTRACT_METAEUK_FFN.out.nucleotide)
+
+        MERGE_GENE_PREDICTIONS(
+            braker_out.join(metaeuk_out)
+        )
+
+        merged_gene_sets = MERGE_GENE_PREDICTIONS.out.gff
+            .join(MERGE_GENE_PREDICTIONS.out.faa)
+            .join(MERGE_GENE_PREDICTIONS.out.ffn)
+
+        braker_only_gene_sets = braker_out
+            .join(metaeuk_out, remainder: true)
+            .filter { it -> it[4] == null } // no MetaEuk GFF for this genome
+            .map { genome_name, b_gff, b_faa, b_ffn, _m_gff, _m_faa, _m_ffn ->
+                tuple(genome_name, b_gff, b_faa, b_ffn)
             }
 
-        BRAKER_POSTPROCESSING(
-            ch_braker.genome,
-            ch_braker.gff,
-            ch_braker.faa,
-            ch_braker.ffn
-        )
+        // Finalise the gene set (merged or BRAKER-only) for every genome
+        gene_caller_output = merged_gene_sets
+            .mix(braker_only_gene_sets)
+            .join(cluster_name_ch)
+            .join(masked_unmasked_genomes)
+            .map { genome_name, gff, faa, ffn, cluster, genome ->
+                tuple(genome_name, cluster, gff, faa, ffn, genome)
+            }
+
+        POSTPROCESSING_GENE_CALLER(gene_caller_output)
+
+        // In the first momment, PSAURON will run only on Fungi phyla
+        def target_phyla = ["p__Ascomycota", "p__Basidiomycota"]
+        psauron_target_genomes = taxonomy_map
+            .first()
+            .splitCsv(sep: "\t", header: true)
+            .map { row ->
+                def phylum = ""
+                (row.classification ?: "").split(";").each { rank ->
+                    if (rank.trim().startsWith("p__")) {
+                        phylum = rank.trim()
+                    }
+                }
+                tuple(row.user_genome, phylum)
+            }
+            .filter { _genome_name, phylum -> target_phyla.contains(phylum) }
+            .map { genome_name, _phylum -> genome_name }
+
+        psauron_input = POSTPROCESSING_GENE_CALLER.out.faa
+            .join(POSTPROCESSING_GENE_CALLER.out.gff)
+            .join(psauron_target_genomes.map { genome_name -> tuple(genome_name, true) })
+            .map { genome_name, faa, gff, _is_fungi -> tuple(genome_name, faa, gff) }
+
+        PSAURON(psauron_input)
+        psauron_gff = PSAURON.out.psauron.map { genome_name, _csv, gff -> tuple(genome_name, gff) }
+
+        // Final GFF is the PSAURON-scored GFF where available, otherwise the postprocessed BRAKER/Merge GFF
+        final_gff = POSTPROCESSING_GENE_CALLER.out.gff
+            .join(psauron_gff, remainder: true)
+            .map { genome_name, postprocessed_gff, psauron_scored_gff ->
+                tuple(genome_name, psauron_scored_gff ?: postprocessed_gff)
+            }
 
         output_ch = cluster_name_ch
-            .join( BRAKER_POSTPROCESSING.out.renamed_gff3 )
-            .join( BRAKER_POSTPROCESSING.out.renamed_proteins )
-            .join( BRAKER_POSTPROCESSING.out.renamed_ffn )
-            .join( all_genomes_for_braker )
+            .join( final_gff )
+            .join( POSTPROCESSING_GENE_CALLER.out.faa )
+            .join( POSTPROCESSING_GENE_CALLER.out.ffn )
+            .join( masked_unmasked_genomes )
             .multiMap { _genome_name, cluster_name, gff, faa, ffn, masked_genome ->
                 masked_genome: [cluster_name, masked_genome]
                 gff: [cluster_name, gff]
