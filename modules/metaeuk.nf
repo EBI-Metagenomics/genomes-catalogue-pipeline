@@ -12,6 +12,7 @@ process METAEUK {
     output:
     tuple val(genome_name), path("*.metaeuk.gff"), emit: gff
     tuple val(genome_name), path("*.metaeuk.faa"), emit: proteins
+    tuple val(genome_name), path("*.metaeuk.ffn"), emit: nucleotide
 
     script:
     """
@@ -22,10 +23,11 @@ process METAEUK {
         tmp_${genome_name}
 
     mv ${genome_name}.metaeuk.fas ${genome_name}.metaeuk.faa
+    mv ${genome_name}.metaeuk.codon.fas ${genome_name}.metaeuk.ffn
     """
 
     stub:
     """
-    touch ${genome_name}.metaeuk.gff ${genome_name}.metaeuk.faa
+    touch ${genome_name}.metaeuk.gff ${genome_name}.metaeuk.faa ${genome_name}.metaeuk.ffn
     """
 }

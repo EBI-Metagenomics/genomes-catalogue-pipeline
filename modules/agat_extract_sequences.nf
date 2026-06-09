@@ -12,12 +12,12 @@ process EXTRACT_SEQUENCES {
     tuple val(genome_name), path(gff), path(genome_fasta), val(mol_type)
 
     output:
-    tuple val(genome_name), path("*.dedup.faa"), emit: protein, optional: true
-    tuple val(genome_name), path("*.dedup.ffn"), emit: nucleotide, optional: true
+    tuple val(genome_name), path("*.faa"), emit: protein, optional: true
+    tuple val(genome_name), path("*.ffn"), emit: nucleotide, optional: true
 
     script:
     def protein_flag = mol_type == "protein" ? "-p" : ""
-    def extension = mol_type == "protein" ? "dedup.faa" : "dedup.ffn"
+    def extension = mol_type == "protein" ? "faa" : "ffn"
     """
     agat_sp_extract_sequences.pl \\
         -g ${gff} \\
@@ -28,7 +28,7 @@ process EXTRACT_SEQUENCES {
     """
 
     stub:
-    def extension = mol_type == "protein" ? "dedup.faa" : "dedup.ffn"
+    def extension = mol_type == "protein" ? "faa" : "ffn"
     """
     touch ${genome_name}.${extension}
     """

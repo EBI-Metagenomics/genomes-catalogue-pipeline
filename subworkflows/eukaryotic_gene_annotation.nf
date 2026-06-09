@@ -8,7 +8,6 @@ include { BRAKER } from '../modules/braker.nf'
 include { DEDUP_GFF } from '../modules/agat_dedup.nf'
 include { EXTRACT_SEQUENCES as EXTRACT_DEDUP_BRAKER_FAA } from '../modules/agat_extract_sequences.nf'
 include { EXTRACT_SEQUENCES as EXTRACT_DEDUP_BRAKER_FFN } from '../modules/agat_extract_sequences.nf'
-include { EXTRACT_SEQUENCES as EXTRACT_METAEUK_FFN } from '../modules/agat_extract_sequences.nf'
 include { METAEUK } from '../modules/metaeuk.nf'
 include { MERGE_GENE_PREDICTIONS } from '../modules/merge_gene_predictions.nf'
 include { POSTPROCESSING_GENE_CALLER } from '../modules/postprocessing_gene_caller.nf'
@@ -76,22 +75,18 @@ workflow EUK_GENE_CALLING {
             .filter { _genome_name, prot_evidence -> prot_evidence.name != "NO_PROTEINS.faa" }
 
         ch_metaeuk_input = genomes_with_proteins
-            .join(masked_unmasked_genomes)
+            .join(masked_unmasked_genomes, remainder: true)
+            .filter { _genome_name, prot_evidence, genome -> prot_evidence != null && genome != null }
             .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
 
         METAEUK(ch_metaeuk_input)
 
-        metaeuk_gff_with_genome = METAEUK.out.gff.join(masked_unmasked_genomes)
-        EXTRACT_METAEUK_FFN(
-            metaeuk_gff_with_genome.map { genome_name, gff, genome -> tuple(genome_name, gff, genome, "nucleotide") }
-        )
-
         metaeuk_out = METAEUK.out.gff
             .join(METAEUK.out.proteins)
-            .join(EXTRACT_METAEUK_FFN.out.nucleotide)
+            .join(METAEUK.out.nucleotide)
 
         MERGE_GENE_PREDICTIONS(
-            braker_out.join(metaeuk_out)
+            braker_out.join(metaeuk_out, remainder: true).filter { it -> it[1] != null && it[4] != null }
         )
 
         merged_gene_sets = MERGE_GENE_PREDICTIONS.out.gff
@@ -116,7 +111,7 @@ workflow EUK_GENE_CALLING {
 
         POSTPROCESSING_GENE_CALLER(gene_caller_output)
 
-        // In the first momment, PSAURON will run only on Fungi phyla
+        // For now PSAURON will run only on Fungi phyla
         def target_phyla = ["p__Ascomycota", "p__Basidiomycota"]
         psauron_target_genomes = taxonomy_map
             .first()
@@ -135,8 +130,9 @@ workflow EUK_GENE_CALLING {
 
         psauron_input = POSTPROCESSING_GENE_CALLER.out.faa
             .join(POSTPROCESSING_GENE_CALLER.out.gff)
-            .join(psauron_target_genomes.map { genome_name -> tuple(genome_name, true) })
-            .map { genome_name, faa, gff, _is_fungi -> tuple(genome_name, faa, gff) }
+            .join(psauron_target_genomes.map { genome_name -> tuple(genome_name, true) }, remainder: true)
+            .filter { _genome_name, faa, gff, is_target -> is_target != null && faa != null && gff != null }
+            .map { genome_name, faa, gff, _is_target -> tuple(genome_name, faa, gff) }
 
         PSAURON(psauron_input)
         psauron_gff = PSAURON.out.psauron.map { genome_name, _csv, gff -> tuple(genome_name, gff) }
