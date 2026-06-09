@@ -127,12 +127,13 @@ workflow EUK_GENE_CALLING {
             }
             .filter { _genome_name, phylum -> target_phyla.contains(phylum) }
             .map { genome_name, _phylum -> genome_name }
+            .collect()
 
         psauron_input = POSTPROCESSING_GENE_CALLER.out.faa
             .join(POSTPROCESSING_GENE_CALLER.out.gff)
-            .join(psauron_target_genomes.map { genome_name -> tuple(genome_name, true) }, remainder: true)
-            .filter { _genome_name, faa, gff, is_target -> is_target != null && faa != null && gff != null }
-            .map { genome_name, faa, gff, _is_target -> tuple(genome_name, faa, gff) }
+            .combine(psauron_target_genomes)
+            .filter { genome_name, _faa, _gff, target_list -> target_list.contains(genome_name) }
+            .map { genome_name, faa, gff, _target_list -> tuple(genome_name, faa, gff) }
 
         PSAURON(psauron_input)
         psauron_gff = PSAURON.out.psauron.map { genome_name, _csv, gff -> tuple(genome_name, gff) }

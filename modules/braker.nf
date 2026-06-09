@@ -1,6 +1,13 @@
 process BRAKER {
     tag "${genome_name}"
 
+    publishDir(
+        path: "${params.outdir}/additional_data/intermediate_files/braker/",
+        saveAs: { filename -> file(filename).name },
+        mode: 'copy',
+        failOnError: true
+    )
+
     container "docker.io/teambraker/braker3:v3.0.8"
 
     input:
