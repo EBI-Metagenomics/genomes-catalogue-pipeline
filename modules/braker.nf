@@ -3,7 +3,7 @@ process BRAKER {
 
     publishDir(
         path: "${params.outdir}/additional_data/intermediate_files/braker/",
-        saveAs: { filename -> file(filename).name },
+        saveAs: { filename -> "${genome_name}/${file(filename).name}" },
         mode: 'copy',
         failOnError: true
     )

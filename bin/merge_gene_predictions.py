@@ -162,11 +162,9 @@ def read_cds(gff_file: str, is_metaeuk: bool) -> Dict[str, Transcript]:
 
 def exon_overlap(
     transcript1: Transcript, transcript2: Transcript, threshold: float
-) -> bool:
+) -> Tuple[bool, float]:
     """
     Reciprocal CDS overlap test between two transcripts.
-    Calculate the total overlapping bases between the two exon sets and return True
-    when the overlap covers >= threshold of *both* transcripts' total CDS length.
     """
     exons1, exons2 = transcript1.exons, transcript2.exons
     total1, total2 = transcript1.length, transcript2.length
@@ -185,26 +183,31 @@ def exon_overlap(
 
     cov1 = overlap / total1 if total1 > 0 else 0
     cov2 = overlap / total2 if total2 > 0 else 0
-    return cov1 >= threshold and cov2 >= threshold
+    return (cov1 >= threshold and cov2 >= threshold), cov1
 
 
 def matched_secondary_transcripts(
     primary: Dict[str, Transcript], secondary: Dict[str, Transcript], threshold: float
-) -> Set[str]:
-    """Return the set of tool2 transcript keys that overlap a tool1 transcript."""
+) -> Tuple[Set[str], Dict[str, float]]:
+    """Return the set of tool2 transcript keys that overlap a tool1 transcript, plus a map of
+    tool1 transcript key -> cov1 (overlapped fraction) for each overlapped tool1 transcript.
+    """
     primary_by_contig = defaultdict(list)
-    for transcript in primary.values():
-        primary_by_contig[transcript.contig].append(transcript)
+    for key1, transcript in primary.items():
+        primary_by_contig[transcript.contig].append((key1, transcript))
 
     matched = set()
+    overlapped_fraction: Dict[str, float] = {}
     for key2, transcript2 in secondary.items():
-        for transcript1 in primary_by_contig.get(transcript2.contig, []):
+        for key1, transcript1 in primary_by_contig.get(transcript2.contig, []):
             if transcript1.strand != transcript2.strand:
                 continue
-            if exon_overlap(transcript1, transcript2, threshold):
+            is_match, cov1 = exon_overlap(transcript1, transcript2, threshold)
+            if is_match:
                 matched.add(key2)
+                overlapped_fraction[key1] = cov1
                 break
-    return matched
+    return matched, overlapped_fraction
 
 
 def parse_braker_genes(gff_file: str) -> Tuple[Dict[int, BrakerGene], List[str]]:
@@ -277,7 +280,7 @@ def build_metaeuk_gff_lines(
         ),
     ]
     # Use the CDS phase exactly as reported by MetaEuk in its GFF; if absent, keep '.'.
-    for coord in exons:
+    for cds_number, coord in enumerate(exons, start=1):
         lines.append(
             "\t".join(
                 [
@@ -289,7 +292,7 @@ def build_metaeuk_gff_lines(
                     ".",
                     strand,
                     transcript.phases.get(coord, "."),
-                    f"Parent={transcript_id}",
+                    f"ID={transcript_id}.CDS{cds_number};Parent={transcript_id}",
                 ]
             )
         )
@@ -378,9 +381,13 @@ def remap_braker_ids(col9: str, braker_id_map: Dict[str, str]) -> str:
 
 
 def render_braker_gff_lines(
-    gene: BrakerGene, old_number: int, braker_id_map: Dict[str, str]
+    gene: BrakerGene,
+    old_number: int,
+    braker_id_map: Dict[str, str],
+    overlapped_fraction: Dict[str, float],
 ) -> List[str]:
-    """Rewrite a BRAKER gene's GFF lines: remap IDs, set source to predictor, add original_gene_id."""
+    """Rewrite a BRAKER gene's GFF lines: remap IDs, set source to predictor, add original_gene_id,
+    and add overlapped_fraction to transcripts that overlap a MetaEuk transcript."""
     original_gene_id = f"g{old_number}"
     predictor = braker_gene_predictor(gene.lines)
 
@@ -389,6 +396,16 @@ def render_braker_gff_lines(
         col9 = remap_braker_ids(feature.attributes, braker_id_map)
         if feature.feature_type == "gene":
             col9 = append_attribute(col9, "original_gene_id", original_gene_id)
+        if feature.feature_type == "mRNA":
+            transcript_match = re.search(r"ID=(g\d+\.t\d+)", feature.attributes)
+            transcript_key = transcript_match.group(1) if transcript_match else None
+            if transcript_key in overlapped_fraction:
+                col9 = append_attribute(col9, "predictor_count", "2")
+                col9 = append_attribute(
+                    col9,
+                    "overlapped_fraction",
+                    f"{overlapped_fraction[transcript_key]:.4f}",
+                )
         lines.append(feature.render(source=predictor, attributes=col9))
     return lines
 
@@ -400,13 +417,16 @@ def write_merged_gff(
     metaeuk_cds: Dict[str, Transcript],
     braker_id_map: Dict[str, str],
     metaeuk_new_ids: Dict[str, str],
+    overlapped_fraction: Dict[str, float],
 ) -> None:
     """Write the position-sorted merged GFF (BRAKER lines remapped, MetaEuk-unique reconstructed)."""
     with open(output_path, "w") as gff_out:
         gff_out.write("##gff-version 3\n")
         for is_braker, ref in ordered_genes:
             if is_braker:
-                lines = render_braker_gff_lines(braker_genes[ref], ref, braker_id_map)
+                lines = render_braker_gff_lines(
+                    braker_genes[ref], ref, braker_id_map, overlapped_fraction
+                )
             else:
                 lines = build_metaeuk_gff_lines(
                     metaeuk_cds[ref], metaeuk_new_ids[ref], "MetaEuk", ref
@@ -446,7 +466,9 @@ def write_merged_fasta(
 def main(args: argparse.Namespace) -> None:
     braker_cds = read_cds(args.gff1, is_metaeuk=False)
     metaeuk_cds = read_cds(args.gff2, is_metaeuk=True)
-    matched = matched_secondary_transcripts(braker_cds, metaeuk_cds, args.threshold)
+    matched, overlapped_fraction = matched_secondary_transcripts(
+        braker_cds, metaeuk_cds, args.threshold
+    )
     unique_metaeuk = [key for key in metaeuk_cds if key not in matched]
 
     braker_genes, braker_contig_order = parse_braker_genes(args.gff1)
@@ -461,6 +483,7 @@ def main(args: argparse.Namespace) -> None:
         metaeuk_cds,
         braker_id_map,
         metaeuk_new_ids,
+        overlapped_fraction,
     )
 
     braker_faa = load_fasta_braker(args.faa1)

@@ -30,21 +30,31 @@ def load_psauron_scores(psauron_csv: str) -> Dict[str, float]:
     """Parse the PSAURON per-protein CSV into a {sequence_id: score} dict."""
     scores = {}
     with open(psauron_csv, "r", newline="") as psauron_file:
-        reader = csv.DictReader(psauron_file)
-        if (
-            not reader.fieldnames
-            or ID_COLUMN not in reader.fieldnames
-            or SCORE_COLUMN not in reader.fieldnames
-        ):
-            raise ValueError(
-                f"PSAURON CSV must contain the '{ID_COLUMN}' and '{SCORE_COLUMN}' columns; "
-                f"got {reader.fieldnames}"
-            )
-        for row in reader:
-            sequence_id = (row.get(ID_COLUMN) or "").split()
-            score = float(row.get(SCORE_COLUMN).strip())
-            if sequence_id and score is not None:
-                scores[sequence_id[0]] = score
+        lines = psauron_file.readlines()
+
+    header_index = next(
+        (
+            i
+            for i, line in enumerate(lines)
+            if {ID_COLUMN, SCORE_COLUMN}.issubset(next(csv.reader([line])))
+        ),
+        None,
+    )
+    if header_index is None:
+        raise ValueError(
+            f"PSAURON CSV must contain a header row with the '{ID_COLUMN}' and "
+            f"'{SCORE_COLUMN}' columns; none found in {psauron_csv}"
+        )
+
+    for row in csv.DictReader(lines[header_index:]):
+        sequence_id = (row.get(ID_COLUMN) or "").split()
+        score_str = (row.get(SCORE_COLUMN) or "").strip()
+        if not sequence_id or not score_str:
+            continue
+        try:
+            scores[sequence_id[0]] = float(score_str)
+        except ValueError:
+            continue
     return scores
 
 
