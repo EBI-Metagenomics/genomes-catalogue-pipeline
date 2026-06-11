@@ -15,7 +15,6 @@ def chunk_list(data, chunk_size):
     """Yield successive chunk_size-sized chunks from data."""
     for i in range(0, len(data), chunk_size):
         yield data[i:i + chunk_size]
-        
 
 def main():
     parser = argparse.ArgumentParser(description='Generate a CSV samplesheet for VIRify using the output of genome '
@@ -47,7 +46,7 @@ def main():
                 if os.path.isdir(genome_path):
                     fna_file = glob(os.path.join(genome_path, '*.fna'))[0]
                     faa_file = glob(os.path.join(genome_path, '*.faa'))[0]
-                    gff_file = glob(os.path.join(genome_path, '*.gff'))[0]
+                    gff_file = glob(os.path.join(genome_path, '*_annotated.gff'))[0]
 
                     if fna_file:
                         row = [
