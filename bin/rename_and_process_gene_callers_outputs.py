@@ -25,7 +25,7 @@ from Bio import SeqIO
 
 
 def main(gff, ffn, faa, genome_fasta, output_prefix) -> None:
-    mgyg_accession = str(os.path.basename(genome_fasta)).split("_")[0]
+    mgyg_accession = str(os.path.basename(genome_fasta)).split("_")[0].split(".")[0]
     gene_map = build_gene_map(faa, mgyg_accession)
 
     # Rename proteins in the protein FASTA file and remove any asterisks from the sequence

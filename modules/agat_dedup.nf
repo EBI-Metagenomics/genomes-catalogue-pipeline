@@ -18,7 +18,10 @@ process DEDUP_GFF {
     """
     agat_sp_fix_features_locations_duplicated.pl \\
         --gff ${gff} \\
-        -o ${genome_name}.dedup.gff
+        -o ${genome_name}.agat.gff
+
+    # AGAT includes 'prime_utr' row lines in the output GFF, which can break downstream processes.
+    awk -F'\\t' '\$2 != "AGAT"' ${genome_name}.agat.gff > ${genome_name}.dedup.gff
     """
 
     stub:

@@ -386,25 +386,36 @@ def render_braker_gff_lines(
     braker_id_map: Dict[str, str],
     overlapped_fraction: Dict[str, float],
 ) -> List[str]:
-    """Rewrite a BRAKER gene's GFF lines: remap IDs, set source to predictor, add original_gene_id,
-    and add overlapped_fraction to transcripts that overlap a MetaEuk transcript."""
+    """
+    Rewrite a BRAKER gene's GFF lines: remap IDs, set source to predictor, add original_gene_id,
+    and add prediction_support/prediction_tools/prediction_overlap to genes that overlap a MetaEuk
+    transcript.
+    """
     original_gene_id = f"g{old_number}"
     predictor = braker_gene_predictor(gene.lines)
+
+    gene_overlap_fractions = []
+    for feature in gene.lines:
+        if feature.feature_type != "mRNA":
+            continue
+        transcript_match = re.search(r"ID=(g\d+\.t\d+)", feature.attributes)
+        if transcript_match and transcript_match.group(1) in overlapped_fraction:
+            gene_overlap_fractions.append(
+                overlapped_fraction[transcript_match.group(1)]
+            )
 
     lines = []
     for feature in gene.lines:
         col9 = remap_braker_ids(feature.attributes, braker_id_map)
         if feature.feature_type == "gene":
             col9 = append_attribute(col9, "original_gene_id", original_gene_id)
-        if feature.feature_type == "mRNA":
-            transcript_match = re.search(r"ID=(g\d+\.t\d+)", feature.attributes)
-            transcript_key = transcript_match.group(1) if transcript_match else None
-            if transcript_key in overlapped_fraction:
-                col9 = append_attribute(col9, "predictor_count", "2")
+            if gene_overlap_fractions:
+                col9 = append_attribute(col9, "prediction_support", "2")
+                col9 = append_attribute(col9, "prediction_tools", "BRAKER3,MetaEuk")
                 col9 = append_attribute(
                     col9,
-                    "overlapped_fraction",
-                    f"{overlapped_fraction[transcript_key]:.4f}",
+                    "prediction_overlap",
+                    f"{max(gene_overlap_fractions):.4f}",
                 )
         lines.append(feature.render(source=predictor, attributes=col9))
     return lines
