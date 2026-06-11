@@ -21,6 +21,7 @@ def main():
     parser.add_argument('--virify-folder', required=True,
                         help='Path to the completed VIRify output folder')
     parser.add_argument('--outfile', required=True, help='Output CSV filename')
+    parser.add_argument('--annotation_manifest', '-m', required=True, help='Annotation manifest filename')
     args = parser.parse_args()
     
     count_virify_gff = 0
@@ -36,13 +37,19 @@ def main():
         if os.path.isdir(os.path.join(args.virify_folder, name)) and name.startswith("MGYG")
     ]
 
-    header = ['sample', 'assembly', 'user_proteins_gff', 'virify_gff', 'skip_amrfinder_plus']
+    header = ['sample', 'assembly', 'proteins_gff', 'proteins_faa', 'virify_gff']
+    annotation_manifest_header = ['sample', 'amrfinder_tsv', 'antismash_gff', 'gecco_gff', 'sanntis_gff']
     
-    with open(args.outfile, "w", newline='') as f_out:
-        writer = csv.writer(f_out)
-        writer.writerow(header)
+    with open(args.outfile, "w", newline='') as ss_out, open(args.annotation_manifest, 'w', newline='') as am_out:
+        samplesheet_writer = csv.writer(ss_out)
+        samplesheet_writer.writerow(header)
+
+        am_writer = csv.writer(am_out)
+        am_writer.writerow(annotation_manifest_header)
         for accession in tqdm(sorted(mgyg_folders)):
             genome_folder_path = os.path.join(args.species_catalogue_folder, accession[:-2], accession, "genome")
+
+            # standard samplesheet
             assembly = os.path.abspath(glob(os.path.join(genome_folder_path, '*.fna'))[0])
             user_proteins_gff = os.path.abspath(glob(os.path.join(genome_folder_path, '*_annotated.gff'))[0])
             virify_gff_path = os.path.abspath(os.path.join(args.virify_folder, accession, "08-final", "gff", 
@@ -51,7 +58,13 @@ def main():
             if virify_gff_record:
                 count_virify_gff += 1
             row = [accession, assembly, user_proteins_gff, virify_gff_record, 'true']
-            writer.writerow(row)
+            samplesheet_writer.writerow(row)
+
+            # annotation manifest
+            armfinderplus_tsv = os.path.abspath(glob(os.path.join(genome_folder_path, '*_amrfinderplus.tsv'))[0])
+            antismash_gff = os.path.abspath(glob(os.path.join(genome_folder_path, '*_antismash.gff'))[0])
+            gecco_gff = os.path.abspath(glob(os.path.join(genome_folder_path, '*_gecco.gff'))[0])
+            sanntis_gff = os.path.abspath(glob(os.path.join(genome_folder_path, '*_sanntis.gff'))[0])
     
     logging.info(f"Finished writing {len(mgyg_folders)} records. {count_virify_gff} records have a VIRify GFF.")
 
