@@ -71,6 +71,7 @@ include { BAT } from '../modules/bat'
 include { REFORMAT_BAT } from '../modules/reformat_bat_taxonomy'
 include { PARSE_DOMAIN } from '../modules/parse_domain'
 include { BUSCO } from '../modules/busco'
+include { BUSCO as BUSCO_PROT } from '../modules/busco'
 include { BUSCO_PHYLOGENOMICS } from '../modules/busco_phylogenomics'
 include { INDEX_FNA } from '../modules/index_fna'
 include { MASH_TO_NWK } from '../modules/mash2nwk'
@@ -258,6 +259,16 @@ workflow GAP_EUKS {
 
     all_gene_caller_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna.mix(
         PROCESS_MANY_GENOMES_EUKS.out.gene_caller_fnas
+    )
+
+    all_gene_caller_faa = PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_faa.mix(
+        PROCESS_MANY_GENOMES_EUKS.out.gene_caller_faas
+    )
+    BUSCO_PROT( all_gene_caller_faa.map { it[1] }, ch_busco_db, 'prot' )
+    BUSCO_PROT.out.busco_summary.collectFile(
+        keepHeader: false,
+        name: "busco_prot.csv",
+        storeDir: "${params.outdir}/additional_data/busco/"
     )
 
     species_reps_names_list = PROCESS_MANY_GENOMES_EUKS.out.rep_gene_caller_fna.map({ it[0] }) \
