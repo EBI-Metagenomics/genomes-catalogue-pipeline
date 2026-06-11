@@ -63,6 +63,8 @@ def remake_gff(gff_header, genome_fasta_contents, gene_map, gff, output_prefix) 
         # Iterate through GFF lines, rename features and add product
         with open(gff, "r") as gff_in:
             for line in gff_in:
+                if line.startswith("#"):
+                    continue
                 fields = line.strip().split("\t")
                 if len(fields) == 9:
                     col9 = fields[8]

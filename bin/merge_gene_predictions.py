@@ -244,7 +244,7 @@ def braker_gene_predictor(lines: List[GffFeature]) -> str:
 def build_metaeuk_gff_lines(
     transcript: Transcript, gene_id: str, tool_name: str, original_gene_id: str
 ) -> List[str]:
-    """Reconstruct standard gene/mRNA/CDS lines for a MetaEuk gene with a BRAKER-style ID."""
+    """Reconstruct standard gene/mRNA/exon/CDS lines for a MetaEuk gene with a BRAKER-style ID."""
     contig = transcript.contig
     strand = transcript.strand
     exons = transcript.exons
@@ -279,7 +279,22 @@ def build_metaeuk_gff_lines(
             ]
         ),
     ]
-    # Use the CDS phase exactly as reported by MetaEuk in its GFF; if absent, keep '.'.
+    for exon_number, coord in enumerate(exons, start=1):
+        lines.append(
+            "\t".join(
+                [
+                    contig,
+                    tool_name,
+                    "exon",
+                    str(coord[0]),
+                    str(coord[1]),
+                    ".",
+                    strand,
+                    ".",
+                    f"ID={transcript_id}.exon{exon_number};Parent={transcript_id}",
+                ]
+            )
+        )
     for cds_number, coord in enumerate(exons, start=1):
         lines.append(
             "\t".join(
