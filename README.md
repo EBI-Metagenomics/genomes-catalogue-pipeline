@@ -50,7 +50,10 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | BUSCO                                                                                            | 5.8.0            | Eukaryotic genome quality                                                                                              |
 | RepeatModeler                                                                                    | 2.0.7            | Identification of repeat elements in eukaryotic genomes                                                                |
 | RepeatMasker                                                                                     | 4.2.3            | Repeat masking in eukaryotic genomes                                                                                   |
-| Braker                                                                                           | 3.0.8            | Gene calling in eukaryotic genomes                                                                                     |
+| BRAKER3                                                                                           | 3.0.8            | Primary source of gene calling in eukaryotic genomes                                                                                     |
+| MetaEuk                                                                                          | 7-bba0d80        | Secondary source of gene calling in eukaryotic genomes                                                                                     | 
+| AGAT                                                                                             | 1.7.0            | Deduplication of BRAKER3 predictions |
+| PSAURON                                                                                          | 1.1.0            | Assessment of protein coding gene annotation in fungi genomes |
 | CAT_pack                                                                                         | 5.2.3            | Taxonomic classification of eukaryotic genomes                                                                         |
 | CAT_pack DB                                                                                      | 2021-01-07       | DIAMOND database made from NCBI nr and NCBI taxdump used by CAT_pack                                                   |
 
@@ -61,11 +64,11 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 The pipeline is implemented in [Nextflow](https://www.nextflow.io/).
 
 Requirements:
-- [singulairty](https://sylabs.io/docs/) or [docker](https://www.docker.com/)
+- [singularity](https://sylabs.io/docs/) or [docker](https://www.docker.com/)
 
 #### Reference databases
 
-The pipeline needs the following reference databases and configuration files (roughtly ~150G):
+The pipeline needs the following reference databases and configuration files (roughly ~150G):
 
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db_5.0.2.tgz
@@ -78,9 +81,9 @@ The pipeline needs the following reference databases and configuration files (ro
 
 ### Containers
 
-This pipeline requires [singularity](https://sylabs.io/docs/) or [docker](https://www.docker.com/) as the container engine to run pipeline.
+This pipeline requires [singularity](https://sylabs.io/docs/) or [docker](https://www.docker.com/) as the container engine to run the pipeline.
 
-The containers are hosted in [biocontainers](https://biocontainers.pro/) and [quay.io/microbiome-informatics](https://quay.io/organization/microbiome-informatics) repository.
+The containers are hosted in [biocontainers](https://biocontainers.pro/) and [quay.io/microbiome-informatics](https://quay.io/organization/microbiome-informatics) repositories.
 
 It's possible to build the containers from scratch using the following script:
 
@@ -116,8 +119,8 @@ The samplesheet with protein evidence should be supplied with `--protein_evidenc
 
 ## Execution
 
-The pipeline is built in [Nextflow](https://www.nextflow.io), and utilized containers to run the software (we don't support conda ATM).
-In order to run the pipeline it's required that the user creates a profile that suits their needs, there is an `ebi` profile in `nexflow.config` that can be used as template.
+The pipeline is built in [Nextflow](https://www.nextflow.io), and utilizes containers to run the software (we don't support conda ATM).
+In order to run the pipeline it's required that the user creates a profile that suits their needs, there is an `ebi` profile in `nextflow.config` that can be used as a template.
 
 After downloading the databases and adjusting the config file:
 
@@ -185,13 +188,13 @@ pre-commit install
 
 #### Code style
 
-Use Black, this tool is configured if you install the pre-commit tools as above.
+Use Black; this tool is configured if you install the pre-commit tools as above.
 
 To manually run them: black .
 
 ### Testing
 
-This repo has 2 set of tests, python unit tests for some of the most critical python scripts and [nf-test](https://github.com/askimed/nf-test) scripts for the nextflow code.
+This repo has 2 sets of tests: Python unit tests for some of the most critical Python scripts and [nf-test](https://github.com/askimed/nf-test) scripts for the Nextflow code.
 
 To run the python tests
 
@@ -200,7 +203,7 @@ pip install -r requirements-test.txt
 pytest
 ```
 
-To run the nextflow ones the databases have to downloaded manually, we are working to improve this.
+To run the Nextflow ones, the databases have to be downloaded manually; we are working to improve this.
 
 ```bash
 nf-test test tests/*

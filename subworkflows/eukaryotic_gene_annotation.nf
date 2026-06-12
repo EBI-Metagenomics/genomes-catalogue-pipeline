@@ -93,12 +93,11 @@ workflow EUK_GENE_CALLING {
             .join(MERGE_GENE_PREDICTIONS.out.faa)
             .join(MERGE_GENE_PREDICTIONS.out.ffn)
 
+        // Genomes without protein evidence skip MetaEuk and use the BRAKER output directly.
         braker_only_gene_sets = braker_out
-            .join(metaeuk_out, remainder: true)
-            .filter { it -> it[4] == null } // no MetaEuk GFF for this genome
-            .map { genome_name, b_gff, b_faa, b_ffn, _m_gff, _m_faa, _m_ffn ->
-                tuple(genome_name, b_gff, b_faa, b_ffn)
-            }
+            .join(genomes_with_proteins, remainder: true)
+            .filter { it -> it[4] == null } // not in genomes_with_proteins
+            .map { it -> tuple(it[0], it[1], it[2], it[3]) }
 
         // Finalise the gene set (merged or BRAKER-only) for every genome
         gene_caller_output = merged_gene_sets
@@ -128,6 +127,7 @@ workflow EUK_GENE_CALLING {
             .filter { _genome_name, phylum -> target_phyla.contains(phylum) }
             .map { genome_name, _phylum -> genome_name }
             .collect()
+            .map { target_list -> [target_list] }
 
         psauron_input = POSTPROCESSING_GENE_CALLER.out.faa
             .join(POSTPROCESSING_GENE_CALLER.out.gff)
