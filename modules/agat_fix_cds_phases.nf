@@ -12,7 +12,7 @@ process FIX_METAEUK_CDS_PHASES {
     tuple val(genome_name), path(metaeuk_gff), path(genome_fasta)
 
     output:
-    tuple val(genome_name), path("*.metaeuk.phased.gff"), emit: gff
+    tuple val(genome_name), path("*.agat_phases.gff"), emit: gff
 
     script:
     """
@@ -20,16 +20,10 @@ process FIX_METAEUK_CDS_PHASES {
         --gff ${metaeuk_gff} \\
         -f ${genome_fasta} \\
         -o ${genome_name}.agat_phases.gff
-
-    # AGAT duplicates MetaEuk feature lines including AGAT-annotated lines
-    fix_metaeuk_cds_phases.py \\
-        --metaeuk-gff ${metaeuk_gff} \\
-        --agat-gff ${genome_name}.agat_phases.gff \\
-        -o ${genome_name}.metaeuk.phased.gff
     """
 
     stub:
     """
-    touch ${genome_name}.metaeuk.phased.gff
+    touch ${genome_name}.agat_phases.gff
     """
 }
