@@ -9,6 +9,7 @@ include { DEDUP_GFF } from '../modules/agat_dedup.nf'
 include { EXTRACT_SEQUENCES as EXTRACT_DEDUP_BRAKER_FAA } from '../modules/agat_extract_sequences.nf'
 include { EXTRACT_SEQUENCES as EXTRACT_DEDUP_BRAKER_FFN } from '../modules/agat_extract_sequences.nf'
 include { METAEUK } from '../modules/metaeuk.nf'
+include { FIX_METAEUK_CDS_PHASES } from '../modules/agat_fix_cds_phases.nf'
 include { MERGE_GENE_PREDICTIONS } from '../modules/merge_gene_predictions.nf'
 include { POSTPROCESSING_GENE_CALLER } from '../modules/postprocessing_gene_caller.nf'
 include { PSAURON } from '../modules/psauron.nf'
@@ -81,7 +82,11 @@ workflow EUK_GENE_CALLING {
 
         METAEUK(ch_metaeuk_input)
 
-        metaeuk_out = METAEUK.out.gff
+        // Correct the CDS phases on the MetaEuk GFF (which contains invalid '.' values)
+        metaeuk_genomes = ch_metaeuk_input.map { genome_name, genome, _prot -> tuple(genome_name, genome) }
+        FIX_METAEUK_CDS_PHASES(METAEUK.out.gff.join(metaeuk_genomes))
+
+        metaeuk_out = FIX_METAEUK_CDS_PHASES.out.gff
             .join(METAEUK.out.proteins)
             .join(METAEUK.out.nucleotide)
 
