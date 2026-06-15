@@ -48,7 +48,7 @@ process POSTPROCESSING_GENE_CALLER {
     label 'process_light'
 
     input:
-    tuple val(genome_name), val(cluster_name), path(gff), path(faa), path(ffn), path(masked_genome)
+    tuple val(genome_name), val(cluster_name), path(gff), path(faa, stageAs: "input/*"), path(ffn, stageAs: "input/*"), path(masked_genome)
 
     output:
     tuple val(genome_name), path("${genome_name}.gff"), emit: gff

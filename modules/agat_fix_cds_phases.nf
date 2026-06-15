@@ -18,7 +18,7 @@ process FIX_METAEUK_CDS_PHASES {
     """
     agat_sp_fix_cds_phases.pl \\
         --gff ${metaeuk_gff} \\
-        -f ${genome_fasta} \\
+        --fa ${genome_fasta} \\
         -o ${genome_name}.agat_phases.gff
     """
 
