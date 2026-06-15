@@ -177,6 +177,55 @@ If threshold > 100, the decision process changes to prioritise genome contiguity
 An isolate genome is always prioritised over a MAG. That means, if the current representative is an isolate, it can only be replaced with a better quality isolate. If the current species rep is a MAG and an isolate has been added to the cluster, a species representative replacement will be made even if the new genome has lower quality.
 
 
+## Eukaryotic gene calling
+
+When the pipeline runs with `--kingdom eukaryotes`, protein-coding genes are called by combining two gene callers — **BRAKER3** (primary) and **MetaEuk** (secondary) — and, for fungal genomes, the resulting proteins are scored with **PSAURON**. This is done per genome inside the `EUK_GENE_CALLING` subworkflow.
+
+![Eukaryotic gene calling overview](assets/euk_gene_prediction.png)
+
+### Repeat masking
+
+Each genome is run through **RepeatModeler** to build a repeat library. Genomes **with** repeat families are then soft-masked by **RepeatMasker**; genomes with **no** repeat families bypass RepeatMasker and stay unmasked.
+
+### BRAKER3 — primary caller
+
+BRAKER3 runs on **every** genome (soft-masked or not). The per-genome role of the protein evidence supplied via `--protein_evidence` (see [Eukaryotic genomes: protein evidence for gene prediction](#eukaryotic-genomes-protein-evidence-for-gene-prediction)) is:
+
+- if a genome **has** protein evidence, BRAKER3 uses it as hints (`--prot_seq`);
+- if a genome has **no** protein evidence (the `NO_PROTEINS.faa` sentinel), BRAKER3 runs ab initio.
+
+BRAKER3 predictions are then deduplicated with **AGAT** (`agat_sp_fix_features_locations_duplicated`), and the protein (`.faa`) and CDS (`.ffn`) sequences are extracted from the deduplicated set.
+
+### MetaEuk — secondary caller
+
+**MetaEuk only runs for genomes that have protein evidence** — it is a protein-to-genome aligner and needs the evidence to predict genes. Genomes without protein evidence skip MetaEuk and use BRAKER3 alone. The CDS phases of the MetaEuk GFF (MetaEuk emits `.`) are recomputed with AGAT (`agat_sp_fix_cds_phases`) and reconciled back onto the original MetaEuk structure.
+
+### Merging the two callers
+
+- **Genomes with protein evidence** → BRAKER3 and MetaEuk are merged into a single consensus set (`merge_gene_predictions.py`): every BRAKER3 gene is kept, MetaEuk genes that do **not** overlap (10% reciprocal overlap) a BRAKER3 gene are added, and BRAKER3 genes that **are** supported by an overlapping MetaEuk gene are flagged (see attributes below).
+- **Genomes without protein evidence** → the BRAKER3-only gene set is used directly.
+
+Either way, the gene set is post-processed (`rename_and_process_gene_callers_outputs.py`): gene IDs are renamed to MGYG accessions, a `product=hypothetical protein` is added to CDS that lack one, and the genome FASTA is appended to the GFF (`##FASTA`).
+
+### PSAURON — fungal protein scoring
+
+**PSAURON only runs for Fungi** — genomes whose CAT_pack/BAT taxonomy phylum is `p__Ascomycota` or `p__Basidiomycota`. It scores each predicted protein and writes the score back onto the GFF. Non-fungal genomes skip PSAURON and keep the post-processed GFF unchanged.
+
+### Gene-caller GFF attributes
+
+The merge and PSAURON steps add the following attributes (GFF column 9):
+
+| Attribute | Feature | Added by | Meaning |
+|---|---|---|---|
+| `original_gene_id` | gene | merge / postprocessing | the gene caller's original ID (e.g. `g42`) before the MGYG renaming |
+| `prediction_support` | gene | merge | number of callers supporting the gene (`2` when BRAKER3 and MetaEuk agree) |
+| `prediction_tools` | gene | merge | the callers supporting the gene (`BRAKER3,MetaEuk`) |
+| `prediction_overlap` | gene | merge | fraction (0–1) of the BRAKER3 transcript covered by the supporting MetaEuk transcript |
+| `psauron_score` | mRNA | PSAURON | PSAURON in-frame score of the transcript's protein (fungal genomes only) |
+
+The feature `source` (column 2) reflects the predictor: `AUGUSTUS` / `GeneMark.hmm3` for BRAKER3 genes and `MetaEuk` for MetaEuk-unique genes. `prediction_support` / `prediction_tools` / `prediction_overlap` appear only on BRAKER3 genes that have MetaEuk support; MetaEuk-unique and BRAKER3-only genes carry just `original_gene_id`.
+
+
 ### Development
 
 Install development tools (including pre-commit hooks to run Black code formatting).
