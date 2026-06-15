@@ -16,7 +16,6 @@
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
 
-import glob
 import os
 import shutil
 import argparse
@@ -28,8 +27,7 @@ NAME_ONE_GENOME = "one_genome"
 
 
 def classify_split_folders(input_folder):
-    if not os.path.exists(NAME_MASH):
-        os.makedirs(NAME_MASH)
+    os.makedirs(NAME_MASH, exist_ok=True)
 
     drep_clusters = input_folder
     clusters = os.listdir(drep_clusters)
@@ -41,8 +39,7 @@ def classify_split_folders(input_folder):
         path_cluster_one = os.path.join(NAME_ONE_GENOME, cluster)
 
         if number_of_genomes > 1:
-            if not os.path.exists(path_cluster_many):
-                os.makedirs(path_cluster_many)
+            os.makedirs(path_cluster_many, exist_ok=True)
             for genome in genomes:
                 old_path = os.path.join(drep_clusters, cluster, genome)
                 new_path = os.path.join(path_cluster_many, genome)
@@ -55,15 +52,23 @@ def classify_split_folders(input_folder):
                     os.path.join(NAME_MASH, mash),
                 )
         if number_of_genomes == 1:
-            if not os.path.exists(path_cluster_one):
-                os.makedirs(path_cluster_one)
+            os.makedirs(path_cluster_one, exist_ok=True)
             for genome in genomes:
                 old_path = os.path.join(drep_clusters, cluster, genome)
                 new_path = os.path.join(path_cluster_one, genome)
                 shutil.copy(old_path, new_path)
 
 
+def index_genomes(genomes_folder):
+    index = {}
+    for f in os.listdir(genomes_folder):
+        base, _ = os.path.splitext(f)
+        index[base] = f
+    return index
+
+
 def classify_by_file(split_text, genomes_folder):
+    genome_index = index_genomes(genomes_folder)
     with open(split_text, "r") as file_in:
         for line in file_in:
             main_folder, cluster, genomes_str = line.strip().split(":")
@@ -74,11 +79,9 @@ def classify_by_file(split_text, genomes_folder):
                 os.mkdir(path_cluster)
             for genome in genomes:
                 base_name, _ = os.path.splitext(genome)  # remove extension from genome filename in cluster split file
-                pattern = os.path.join(genomes_folder, base_name + ".*")  # match any extension
-                matches = glob.glob(pattern)
-                if matches:
-                    old_path = matches[0]  # take the first matching file
-                    new_path = os.path.join(path_cluster, os.path.basename(old_path))
+                if base_name in genome_index:
+                    old_path = os.path.join(genomes_folder, genome_index[base_name])
+                    new_path = os.path.join(path_cluster, genome_index[base_name])
                     shutil.copy(old_path, new_path)
                 else:
                     sys.exit("Cannot find expected genome {}".format(genome))
@@ -114,10 +117,8 @@ if __name__ == "__main__":
             print("No necessary arguments specified")
             exit(1)
 
-        if not os.path.exists(NAME_MANY_GENOMES):
-            os.makedirs(NAME_MANY_GENOMES)
-        if not os.path.exists(NAME_ONE_GENOME):
-            os.makedirs(NAME_ONE_GENOME)
+        os.makedirs(NAME_MANY_GENOMES, exist_ok=True)
+        os.makedirs(NAME_ONE_GENOME, exist_ok=True)
 
         if args.input_folder:
             print("Classify split folders")

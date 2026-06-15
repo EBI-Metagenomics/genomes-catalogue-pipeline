@@ -1,0 +1,6 @@
+##gff-version 3
+##sequence-region G3 1 300
+G3	Prokka	CDS	1	300	.	+	0	ID=G3_00001;gene=recA;product=Recombinase A
+##FASTA
+>G3
+ATCGATCGATCGATCGATCG

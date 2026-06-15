@@ -2,7 +2,7 @@ process ANTISMASH {
 
     tag "${cluster_name}"
 
-    container 'quay.io/microbiome-informatics/antismash:7.1.0.1_2'
+    container 'quay.io/nf-core/antismash:8.0.1--pyhdfd78af_0'
     
     label 'retry_twice'
 

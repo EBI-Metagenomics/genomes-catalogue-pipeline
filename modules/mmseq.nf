@@ -21,7 +21,7 @@ process MMSEQ {
         failOnError: true
     )
 
-    container 'quay.io/biocontainers/mmseqs2:13.45111--h2d02072_0'
+    container 'quay.io/biocontainers/mmseqs2:18.8cc5c--hd6d6fdc_0'
     
     label 'retry_three_times'
 

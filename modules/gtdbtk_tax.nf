@@ -1,6 +1,6 @@
 process GTDBTK_TAX {
 
-    container 'quay.io/biocontainers/gtdbtk:2.4.1--pyhdfd78af_1'
+    container 'quay.io/biocontainers/gtdbtk:2.7.1--pyhdfd78af_0'
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
     
     label 'retry_twice'
@@ -55,7 +55,6 @@ process GTDBTK_TAX {
         --pplacer_cpus ${task.cpus} \
         --genome_dir genomes_dir \
         --extension ${extension} \
-        --skip_ani_screen \
         --out_dir gtdbtk_results
         
         process_gtdb_unknowns.py -i gtdbtk_results -p processed

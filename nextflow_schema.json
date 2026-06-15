@@ -80,6 +80,10 @@
             "type": "integer",
             "default": 25000
         },
+        "pangenome_panaroo_limit_threshold": {
+            "type": "integer",
+            "default": 1000
+        },
         "genomes_information": {
             "type": "string"
         },
@@ -182,7 +186,6 @@
         "catalogue_name",
         "ftp_name",
         "ftp_version",
-        "biome",
-        "genomes_information"
+        "biome"
     ]
 }
