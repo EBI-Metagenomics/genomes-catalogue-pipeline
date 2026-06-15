@@ -17,8 +17,8 @@ process CGT {
     )
 
     container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-        ? 'https://depot.galaxyproject.org/singularity/cgt:1.0.0--h4349ce8_0'
-        : 'quay.io/biocontainers/cgt:1.0.0--h4349ce8_0'}"
+        ? 'https://depot.galaxyproject.org/singularity/cgt:0.1.1--hab7d0fd_0'
+        : 'quay.io/biocontainers/cgt:0.1.1--hab7d0fd_0'}"
 
     input:
     tuple val(cluster_name), path(checkm2), path(rtab)
@@ -36,22 +36,17 @@ process CGT {
     # Reformat checkm2 and filter to genomes present in the Rtab in one step
     head -1 ${rtab} | tr '\t' '\n' | tail -n +2 > rtab_genomes.txt
     sed 's|[.][a-zA-Z]*,|,|' ${checkm2} | tr ',' '\t' | awk 'FNR==NR {g[\$1]=1; next} FNR==1 || \$1 in g' rtab_genomes.txt - > checkm2_filtered.tsv
+    
+    cgt_bacpop \\
+        ${args} \\
+        --completeness-column 2 \\
+        --output-file ${prefix}_cgt.txt \\
+        checkm2_filtered.tsv \\
+        ${rtab} > cgt.log 2>&1
 
-    # Check the number of genomes in the cluster
-    n_genomes=\$(wc -l < rtab_genomes.txt)
-    
-    if [ "\$n_genomes" -gt 4 ]; then
-        cgt_bacpop \\
-            ${args} \\
-            --completeness-column 2 \\
-            --output-file ${prefix}_cgt.txt \\
-            checkm2_filtered.tsv \\
-            ${rtab} > cgt.log 2>&1
-    
-        # Prepend core and rare threshold lines as comments to the output file
-        { grep -E "^(Core|Rare) threshold:" cgt.log | sed 's/^/# /'; cat ${prefix}_cgt.txt; } > ${prefix}_cgt.tmp
-        mv ${prefix}_cgt.tmp ${prefix}_cgt.txt
-    fi
+    # Prepend core and rare threshold lines as comments to the output file
+    { grep -E "^(Core|Rare) threshold:" cgt.log | sed 's/^/# /'; cat ${prefix}_cgt.txt; } > ${prefix}_cgt.tmp
+    mv ${prefix}_cgt.tmp ${prefix}_cgt.txt
     """
 
     stub:
