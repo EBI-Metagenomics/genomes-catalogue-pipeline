@@ -260,7 +260,7 @@ def recompute_clusters(
     for genome, placement in repeat_strain_placement.items():
         matched_cluster = rep_lookup_dict[placement.actual_match]
         genome_is_isolate = genome in isolates
-        matched_genome_was_removed = genome in remove_list
+        matched_genome_was_removed = placement.actual_match in remove_list
         catalogue_match_is_isolate = placement.actual_match in isolates
         if (genome_is_isolate and not catalogue_match_is_isolate) or matched_genome_was_removed:
             # Case 1: genome is an isolate, catalogue match is not → add
@@ -791,6 +791,10 @@ def load_isolates(isolates_file: str) -> set[str]:
     with open(isolates_file, 'r') as isolates_in:
         for line in isolates_in:
             genome, score = line.strip().split()[0:2:1]
+            for ext in (".fa", ".fna", ".fasta"):
+                if genome.endswith(ext):
+                    genome = genome[:-len(ext)]
+                    break
             if int(score) > 0:
                 isolates.add(genome)
     return isolates
