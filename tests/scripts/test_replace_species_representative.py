@@ -152,7 +152,7 @@ class TestGenomePipeline(unittest.TestCase):
             remove_list=[],
             stats_to_print={},
             report_to_print={},
-            isolates=set("g0"),
+            isolates={"g0"},
             checkm2_switch=False
         )
         # No replacement is made because the old rep is an isolate and the new genomes are not
