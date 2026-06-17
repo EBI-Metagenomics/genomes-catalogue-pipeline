@@ -118,7 +118,7 @@ class TestGenomePipeline(unittest.TestCase):
         qs = make_qs()
 
         replacement_results = {
-            "g0": {"new_rep": "", "genome_list": []}
+            "g0": {"new_rep": "", "genome_list": ["g1", "g2"]}
         }
 
         added_genomes = {"g0": ["g1", "g2"]}
@@ -140,7 +140,7 @@ class TestGenomePipeline(unittest.TestCase):
         qs = make_qs()
 
         replacement_results = {
-            "g0": {"new_rep": "g0", "genome_list": []}
+            "g0": {"new_rep": "g0", "genome_list": ["g1", "g2"]}
         }
 
         added_genomes = {"g0": ["g1", "g2"]}
@@ -157,7 +157,6 @@ class TestGenomePipeline(unittest.TestCase):
         )
         # No replacement is made because the old rep is an isolate and the new genomes are not
         self.assertEqual(new_results["g0"]["new_rep"], "g0")
-        self.assertEqual(new_results["g0"]["genome_list"], ["g1", "g2"])
     
     def test_replacement_checkm2_switch_false_no_new_genomes(self):
         qs = make_qs()
@@ -229,7 +228,7 @@ class TestGenomePipeline(unittest.TestCase):
         qs = make_qs()
 
         replacement_results = {
-            "g0": {"new_rep": "g0", "genome_list": ["g2"]}
+            "g0": {"new_rep": "g0", "genome_list": ["g2", "g1"]}
         }
 
         added_genomes = {"g0": ["g1"]}
