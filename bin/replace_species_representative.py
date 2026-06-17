@@ -119,16 +119,21 @@ def main(
     current_clusters_minus_removed, remove_log = remove_genomes_from_clusters(current_clusters, remove_list)
     rep_lookup_dict = invert_clusters(current_clusters)  # any_catalogue_genome → its_species_rep
     
-    replacement_results, stats_to_print, report_to_print = recompute_clusters(qs_values, isolates, 
-                                                                              current_clusters_minus_removed, 
-                                                                              new_strain_placement, 
-                                                                              repeat_strain_placement, rep_lookup_dict, 
-                                                                              remove_list, checkm2_switch)
+    replacement_results, stats_to_print, report_to_print, repeat_strains_discarded = recompute_clusters(
+        qs_values, isolates, current_clusters_minus_removed, new_strain_placement, repeat_strain_placement, 
+        rep_lookup_dict, remove_list, checkm2_switch)
 
     sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, stats_to_print)
     write_report_tsv(report_to_print, report_output_file)
     write_cluster_split_file(replacement_results, clusters_output_file, new_species_split_file)
+    write_discarded_strains(repeat_strains_discarded, "discarded_repeat_strains.txt")
 
+
+def write_discarded_strains(repeat_strains_discarded, outfile):
+    with open(outfile, "w") as f_out:
+        for strain in repeat_strains_discarded:
+            f_out.write(strain + "\n")
+            
 
 def write_cluster_split_file(
     replacement_results: dict[str, dict],
@@ -251,6 +256,7 @@ def recompute_clusters(
     report_to_print = dict()  # reasons for rep replacements
     repeat_strains_added = 0
     new_strains_added = 0
+    repeat_strains_discarded = list()
     
     # Step 1: add in repeat strains
     # We will only consider adding a repeat strain in the following cases:
@@ -275,6 +281,8 @@ def recompute_clusters(
                                                       replacement_results)
                 added_genomes.setdefault(matched_cluster, []).append(genome)
                 repeat_strains_added += 1
+            else:
+                repeat_strains_discarded.append(genome)
             
     # Step 2: add all new strains into the clusters
     for genome, placement in new_strain_placement.items():
@@ -294,7 +302,7 @@ def recompute_clusters(
     # Step 4: record species that have been completely removed
     report_to_print = add_removed_species(report_to_print, replacement_results)
     
-    return replacement_results, stats_to_print, report_to_print
+    return replacement_results, stats_to_print, report_to_print, repeat_strains_discarded
 
 
 def add_removed_species(
