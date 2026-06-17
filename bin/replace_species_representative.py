@@ -129,6 +129,56 @@ def main(
     write_discarded_strains(repeat_strains_discarded, "discarded_repeat_strains.txt")
 
 
+def filter_repeat_strains(
+    repeat_strain_placement: dict[str, Placement],
+    qs_values: dict[str, Quality],
+    isolates: set[str],
+) -> tuple[dict[str, Placement], list[str]]:
+    """
+    When multiple repeat strains match the same nearest hit, keep only the best one.
+
+    Isolates take priority over MAGs. Among equal isolate/MAG status, the genome
+    with the highest QS wins. N50 breaks ties.
+
+    Args:
+        repeat_strain_placement: Mapping of genome ID to Placement (as loaded from file).
+        qs_values: Mapping of genome ID to its Quality metrics.
+        isolates: Set of genome IDs that are isolates.
+
+    Returns:
+        Filtered dict with at most one genome per unique Nearest_hit value.
+        A list of discarded genome IDs. 
+    """
+    # Group genomes by their nearest hit
+    by_nearest_hit: dict[str, list[str]] = {}
+    for genome, placement in repeat_strain_placement.items():
+        by_nearest_hit.setdefault(placement.actual_match, []).append(genome)
+
+    filtered: dict[str, Placement] = {}
+    discarded_list = list()
+    for nearest_hit, genomes in by_nearest_hit.items():
+        if len(genomes) == 1:
+            genome = genomes[0]
+        else:
+            genome = max(
+                genomes,
+                key=lambda g: (
+                    g in isolates,  # True > False, so isolates sort higher
+                    qs_values[g].qs,
+                    qs_values[g].n50,
+                )
+            )
+            discarded = [g for g in genomes if g != genome]
+            discarded_list.extend(discarded)
+            logging.info(
+                f"Multiple repeat strains match nearest hit {nearest_hit!r}. "
+                f"Keeping {genome!r}, discarding {discarded}."
+            )
+        filtered[genome] = repeat_strain_placement[genome]
+
+    return filtered, discarded_list
+
+
 def write_discarded_strains(repeat_strains_discarded, outfile):
     with open(outfile, "w") as f_out:
         for strain in repeat_strains_discarded:
@@ -256,13 +306,16 @@ def recompute_clusters(
     report_to_print = dict()  # reasons for rep replacements
     repeat_strains_added = 0
     new_strains_added = 0
-    repeat_strains_discarded = list()
     
     # Step 1: add in repeat strains
+    # We first pre-filter repeat strains to consider only the best one if multiple repeat strains exist for a single
+    # catalogue genome.
     # We will only consider adding a repeat strain in the following cases:
     # 1. if it's an isolate and existing strain is not (always add)
     # 2. If the genome that was matched has been removed from the catalogue (always add)
     # 3. if new genome is better quality (according to our threshold)
+    repeat_strain_placement, repeat_strains_discarded = filter_repeat_strains(repeat_strain_placement, qs_values, 
+                                                                              isolates)
     for genome, placement in repeat_strain_placement.items():
         matched_cluster = rep_lookup_dict[placement.actual_match]
         genome_is_isolate = genome in isolates
