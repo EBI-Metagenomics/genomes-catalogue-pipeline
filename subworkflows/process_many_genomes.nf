@@ -19,9 +19,7 @@ workflow PROCESS_MANY_GENOMES {
 
         PROKKA(
             many_genomes_clusters
-                .join(accessions_with_domains_tuples)
-                .map { cluster_name, member_fna_path, domain -> [cluster_name, member_fna_path, domain] }
-                .view { "FINAL: $it" }
+                .combine(accessions_with_domains_tuples, by: 0)
         )
 
         // Group by cluster
