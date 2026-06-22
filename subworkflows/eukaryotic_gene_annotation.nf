@@ -94,7 +94,9 @@ workflow EUK_GENE_CALLING {
         MERGE_GENE_PREDICTIONS(
             braker_out
                 .join(metaeuk_out, remainder: true)
-                .filter { _genome_name, braker_gff, _braker_faa, _braker_ffn, metaeuk_gff, _metaeuk_faa, _metaeuk_ffn ->
+                .filter { joined_prediction ->
+                    def braker_gff = joined_prediction[1]
+                    def metaeuk_gff = joined_prediction[4]
                     braker_gff != null && metaeuk_gff != null
                 }
         )
