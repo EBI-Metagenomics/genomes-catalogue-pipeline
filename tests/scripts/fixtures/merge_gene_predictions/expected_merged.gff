@@ -1,0 +1,19 @@
+##gff-version 3
+contig_1	AUGUSTUS	gene	101	403	.	+	.	ID=g1;original_gene_id=g1;prediction_support=2;prediction_tools=BRAKER3,MetaEuk;prediction_overlap=1.0000
+contig_1	AUGUSTUS	mRNA	101	403	0.9	+	.	ID=g1.t1;Parent=g1
+contig_1	AUGUSTUS	exon	101	403	.	+	.	ID=g1.t1.exon1;Parent=g1.t1
+contig_1	AUGUSTUS	CDS	101	403	0.9	+	0	ID=g1.t1.CDS1;Parent=g1.t1
+contig_1	AUGUSTUS	start_codon	101	103	.	+	0	ID=g1.t1.start1;Parent=g1.t1
+contig_1	AUGUSTUS	stop_codon	401	403	.	+	0	ID=g1.t1.stop1;Parent=g1.t1
+contig_1	GeneMark.hmm3	gene	1001	1503	.	-	.	ID=g2;original_gene_id=g2
+contig_1	GeneMark.hmm3	mRNA	1001	1503	0.8	-	.	ID=g2.t1;Parent=g2
+contig_1	GeneMark.hmm3	exon	1001	1503	.	-	.	ID=g2.t1.exon1;Parent=g2.t1
+contig_1	GeneMark.hmm3	CDS	1001	1503	0.8	-	0	ID=g2.t1.CDS1;Parent=g2.t1
+contig_1	GeneMark.hmm3	start_codon	1501	1503	.	-	0	ID=g2.t1.start1;Parent=g2.t1
+contig_1	GeneMark.hmm3	stop_codon	1001	1003	.	-	0	ID=g2.t1.stop1;Parent=g2.t1
+contig_2	MetaEuk	gene	201	900	.	+	.	ID=g3;original_gene_id=acc_uniq|contig_2
+contig_2	MetaEuk	mRNA	201	900	.	+	.	ID=g3.t1;Parent=g3
+contig_2	MetaEuk	exon	201	500	.	+	.	ID=g3.t1.exon1;Parent=g3.t1
+contig_2	MetaEuk	exon	601	900	.	+	.	ID=g3.t1.exon2;Parent=g3.t1
+contig_2	MetaEuk	CDS	201	500	.	+	0	ID=g3.t1.CDS1;Parent=g3.t1
+contig_2	MetaEuk	CDS	601	900	.	+	1	ID=g3.t1.CDS2;Parent=g3.t1
