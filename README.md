@@ -81,8 +81,6 @@ The pipeline needs the following reference databases and configuration files (ro
 
 ### Containers
 
-This pipeline requires [singularity](https://sylabs.io/docs/) or [docker](https://www.docker.com/) as the container engine to run the pipeline.
-
 The containers are hosted in [biocontainers](https://biocontainers.pro/) and [quay.io/microbiome-informatics](https://quay.io/organization/microbiome-informatics) repositories.
 
 It's possible to build the containers from scratch using the following script:
@@ -179,13 +177,13 @@ An isolate genome is always prioritised over a MAG. That means, if the current r
 
 ## Eukaryotic gene calling
 
-When the pipeline runs with `--kingdom eukaryotes`, protein-coding genes are called by combining two gene callers — **BRAKER3** (primary) and **MetaEuk** (secondary) — and, for fungal genomes, the resulting proteins are scored with **PSAURON**. This is done per genome inside the `EUK_GENE_CALLING` subworkflow.
+When the pipeline runs with `--kingdom eukaryotes`, protein-coding genes are called per genome by combining two gene callers — [BRAKER3](https://github.com/Gaius-Augustus/BRAKER) (primary) and [MetaEuk](https://github.com/soedinglab/metaeuk) (secondary) — and, for fungal genomes, the resulting proteins are scored with [PSAURON](https://github.com/salzberg-lab/PSAURON).
 
 ![Eukaryotic gene calling overview](assets/euk_gene_prediction.png)
 
 ### Repeat masking
 
-Each genome is run through **RepeatModeler** to build a repeat library. Genomes **with** repeat families are then soft-masked by **RepeatMasker**; genomes with **no** repeat families bypass RepeatMasker and stay unmasked.
+Each genome is run through [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) to build a repeat library. Genomes **with** repeat families are then soft-masked by [RepeatMasker](https://github.com/Dfam-consortium/RepeatMasker); genomes with **no** repeat families bypass RepeatMasker and stay unmasked.
 
 ### BRAKER3 — primary caller
 
@@ -194,18 +192,18 @@ BRAKER3 runs on **every** genome (soft-masked or not). The per-genome role of th
 - if a genome **has** protein evidence, BRAKER3 uses it as hints (`--prot_seq`);
 - if a genome has **no** protein evidence (the `NO_PROTEINS.faa` sentinel), BRAKER3 runs ab initio.
 
-BRAKER3 predictions are then deduplicated with **AGAT** (`agat_sp_fix_features_locations_duplicated`), and the protein (`.faa`) and CDS (`.ffn`) sequences are extracted from the deduplicated set.
+BRAKER3 predictions are then deduplicated with [AGAT](https://github.com/NBISweden/AGAT), and the protein (`.faa`) and CDS (`.ffn`) sequences are extracted from the deduplicated set.
 
 ### MetaEuk — secondary caller
 
-**MetaEuk only runs for genomes that have protein evidence** — it is a protein-to-genome aligner and needs the evidence to predict genes. Genomes without protein evidence skip MetaEuk and use BRAKER3 alone. The CDS phases of the MetaEuk GFF (MetaEuk emits `.`) are recomputed with AGAT (`agat_sp_fix_cds_phases`) and reconciled back onto the original MetaEuk structure.
+**MetaEuk only runs for genomes that have protein evidence** — it is a protein-to-genome aligner and needs the evidence to predict genes. Genomes without protein evidence skip MetaEuk and use BRAKER3 alone. The CDS phases of the MetaEuk GFF (MetaEuk emits `.`) are recomputed with AGAT and reconciled back onto the original MetaEuk structure.
 
 ### Merging the two callers
 
-- **Genomes with protein evidence** → BRAKER3 and MetaEuk are merged into a single consensus set (`merge_gene_predictions.py`): every BRAKER3 gene is kept, MetaEuk genes that do **not** overlap (10% reciprocal overlap) a BRAKER3 gene are added, and BRAKER3 genes that **are** supported by an overlapping MetaEuk gene are flagged (see attributes below).
+- **Genomes with protein evidence** → BRAKER3 and MetaEuk are merged into a single consensus set (see [merge_gene_predictions.py](bin/merge_gene_predictions.py)): every BRAKER3 gene is kept, MetaEuk genes that do **not** overlap (10% reciprocal overlap) a BRAKER3 gene are added, and BRAKER3 genes that **are** supported by an overlapping MetaEuk gene are flagged (see attributes below).
 - **Genomes without protein evidence** → the BRAKER3-only gene set is used directly.
 
-Either way, the gene set is post-processed (`rename_and_process_gene_callers_outputs.py`): gene IDs are renamed to MGYG accessions, a `product=hypothetical protein` is added to CDS that lack one, and the genome FASTA is appended to the GFF (`##FASTA`).
+Either way, the gene set is post-processed (see [rename_and_process_gene_callers_outputs.py](bin/rename_and_process_gene_callers_outputs.py)): gene IDs are renamed to MGYG accessions, a `product=hypothetical protein` is added to CDS that lack one, and the genome FASTA is appended to the GFF (`##FASTA`).
 
 ### PSAURON — fungal protein scoring
 

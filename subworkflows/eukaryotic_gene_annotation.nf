@@ -45,13 +45,13 @@ workflow EUK_GENE_CALLING {
         REPEAT_MASKER(genomes_after_repeatmodeler.with_repeats)
 
         // Combine masked genomes with unmasked genomes
-        def masked_unmasked_genomes = REPEAT_MASKER.out.masked_genome
+        def all_genomes_for_gene_calling = REPEAT_MASKER.out.masked_genome
             .mix(genomes_after_repeatmodeler.without_repeats)
 
         // Prepare channel for BRAKER
         ch_braker_input = tuple_genome_proteins_nocluster
             .map { genome_name, _genome, prot_evidence -> tuple(genome_name, prot_evidence) }
-            .join(masked_unmasked_genomes)
+            .join(all_genomes_for_gene_calling)
             .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
 
         BRAKER(ch_braker_input)
@@ -59,7 +59,7 @@ workflow EUK_GENE_CALLING {
             BRAKER.out.gff3
         )
 
-        dedup_gff_with_genome = DEDUP_GFF.out.dedup_gff.join(masked_unmasked_genomes)
+        dedup_gff_with_genome = DEDUP_GFF.out.dedup_gff.join(all_genomes_for_gene_calling)
         EXTRACT_DEDUP_BRAKER_FAA(
             dedup_gff_with_genome.map { genome_name, gff, genome -> tuple(genome_name, gff, genome, "protein") }
         )
@@ -77,7 +77,7 @@ workflow EUK_GENE_CALLING {
             .filter { _genome_name, prot_evidence -> prot_evidence.name != "NO_PROTEINS.faa" }
 
         ch_metaeuk_input = genomes_with_proteins
-            .join(masked_unmasked_genomes, remainder: true)
+            .join(all_genomes_for_gene_calling, remainder: true)
             .filter { _genome_name, prot_evidence, genome -> prot_evidence != null && genome != null }
             .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
 
@@ -92,7 +92,11 @@ workflow EUK_GENE_CALLING {
             .join(METAEUK.out.nucleotide)
 
         MERGE_GENE_PREDICTIONS(
-            braker_out.join(metaeuk_out, remainder: true).filter { it -> it[1] != null && it[4] != null }
+            braker_out
+                .join(metaeuk_out, remainder: true)
+                .filter { _genome_name, braker_gff, _braker_faa, _braker_ffn, metaeuk_gff, _metaeuk_faa, _metaeuk_ffn ->
+                    braker_gff != null && metaeuk_gff != null
+                }
         )
 
         merged_gene_sets = MERGE_GENE_PREDICTIONS.out.gff
@@ -102,22 +106,20 @@ workflow EUK_GENE_CALLING {
         // Genomes without protein evidence skip MetaEuk and use the BRAKER output directly.
         braker_only_gene_sets = braker_out
             .join(genomes_with_proteins, remainder: true)
-            .filter { it -> it[4] == null } // not in genomes_with_proteins
-            .map { it -> tuple(it[0], it[1], it[2], it[3]) }
+            .filter { _genome_name, _gff, _faa, _ffn, prot_evidence -> prot_evidence == null }
+            .map { genome_name, gff, faa, ffn, _prot_evidence -> tuple(genome_name, gff, faa, ffn) }
 
         // Finalise the gene set (merged or BRAKER-only) for every genome
         gene_caller_output = merged_gene_sets
             .mix(braker_only_gene_sets)
             .join(cluster_name_ch)
-            .join(masked_unmasked_genomes)
+            .join(all_genomes_for_gene_calling)
             .map { genome_name, gff, faa, ffn, cluster, genome ->
                 tuple(genome_name, cluster, gff, faa, ffn, genome)
             }
 
         POSTPROCESSING_GENE_CALLER(gene_caller_output)
 
-        // For now PSAURON will run only on Fungi phyla
-        def target_phyla = ["p__Ascomycota", "p__Basidiomycota"]
         psauron_target_genomes = taxonomy_map
             .first()
             .splitCsv(sep: "\t", header: true)
@@ -130,7 +132,7 @@ workflow EUK_GENE_CALLING {
                 }
                 tuple(row.user_genome, phylum)
             }
-            .filter { _genome_name, phylum -> target_phyla.contains(phylum) }
+            .filter { _genome_name, phylum -> params.psauron_target_phyla.contains(phylum) }
             .map { genome_name, _phylum -> genome_name }
             .collect()
             .map { target_list -> [target_list] }
@@ -155,7 +157,7 @@ workflow EUK_GENE_CALLING {
             .join( final_gff )
             .join( POSTPROCESSING_GENE_CALLER.out.faa )
             .join( POSTPROCESSING_GENE_CALLER.out.ffn )
-            .join( masked_unmasked_genomes )
+            .join( all_genomes_for_gene_calling )
             .multiMap { _genome_name, cluster_name, gff, faa, ffn, masked_genome ->
                 masked_genome: [cluster_name, masked_genome]
                 gff: [cluster_name, gff]

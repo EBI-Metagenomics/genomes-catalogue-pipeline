@@ -490,14 +490,14 @@ def write_merged_fasta(
 
 
 def main(args: argparse.Namespace) -> None:
-    braker_cds = read_cds(args.gff1, is_metaeuk=False)
-    metaeuk_cds = read_cds(args.gff2, is_metaeuk=True)
+    braker_cds = read_cds(args.gff_braker, is_metaeuk=False)
+    metaeuk_cds = read_cds(args.gff_metaeuk, is_metaeuk=True)
     matched, overlapped_fraction = matched_secondary_transcripts(
         braker_cds, metaeuk_cds, args.threshold
     )
     unique_metaeuk = [key for key in metaeuk_cds if key not in matched]
 
-    braker_genes, braker_contig_order = parse_braker_genes(args.gff1)
+    braker_genes, braker_contig_order = parse_braker_genes(args.gff_braker)
     ordered_genes, braker_id_map, metaeuk_new_ids = order_genes_by_position(
         braker_genes, braker_contig_order, metaeuk_cds, unique_metaeuk
     )
@@ -512,10 +512,10 @@ def main(args: argparse.Namespace) -> None:
         overlapped_fraction,
     )
 
-    braker_faa = load_fasta_braker(args.faa1)
-    braker_ffn = load_fasta_braker(args.ffn1)
-    metaeuk_faa = load_fasta_metaeuk(args.faa2)
-    metaeuk_ffn = load_fasta_metaeuk(args.ffn2)
+    braker_faa = load_fasta_braker(args.faa_braker)
+    braker_ffn = load_fasta_braker(args.ffn_braker)
+    metaeuk_faa = load_fasta_metaeuk(args.faa_metaeuk)
+    metaeuk_ffn = load_fasta_metaeuk(args.ffn_metaeuk)
 
     write_merged_fasta(
         f"{args.output_prefix}.faa",
@@ -542,12 +542,18 @@ def parse_args():
             "non-redundant gene set (GFF/FAA/FFN) with BRAKER-style placeholder IDs."
         )
     )
-    parser.add_argument("--gff1", required=True, help="BRAKER GFF (kept on overlaps).")
-    parser.add_argument("--faa1", required=True, help="BRAKER protein FASTA.")
-    parser.add_argument("--ffn1", required=True, help="BRAKER CDS (nucleotide) FASTA.")
-    parser.add_argument("--gff2", required=True, help="MetaEuk GFF.")
-    parser.add_argument("--faa2", required=True, help="MetaEuk protein FASTA.")
-    parser.add_argument("--ffn2", required=True, help="MetaEuk CDS (nucleotide) FASTA.")
+    parser.add_argument(
+        "--gff-braker", required=True, help="BRAKER GFF (kept on overlaps)."
+    )
+    parser.add_argument("--faa-braker", required=True, help="BRAKER protein FASTA.")
+    parser.add_argument(
+        "--ffn-braker", required=True, help="BRAKER CDS (nucleotide) FASTA."
+    )
+    parser.add_argument("--gff-metaeuk", required=True, help="MetaEuk GFF.")
+    parser.add_argument("--faa-metaeuk", required=True, help="MetaEuk protein FASTA.")
+    parser.add_argument(
+        "--ffn-metaeuk", required=True, help="MetaEuk CDS (nucleotide) FASTA."
+    )
     parser.add_argument(
         "--threshold", type=float, default=0.1, help="Reciprocal CDS overlap threshold."
     )
