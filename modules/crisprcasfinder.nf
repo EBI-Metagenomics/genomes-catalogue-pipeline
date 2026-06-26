@@ -20,6 +20,8 @@ process CRISPRCAS_FINDER {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.crisprcasfinder:4.3.2'
 
+    stageInMode 'copy'
+
     input:
     tuple val(cluster), path(fasta)
 
