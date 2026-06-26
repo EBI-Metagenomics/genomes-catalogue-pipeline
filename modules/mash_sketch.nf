@@ -2,7 +2,7 @@ process MASH_SKETCH {
 
     publishDir "${params.outdir}/", mode: 'copy', failOnError: true
 
-    container 'quay.io/biocontainers/mash:2.3--hb105d93_10 '
+    container 'quay.io/biocontainers/mash:2.3--hb105d93_10'
 
     input:
     path genomes_fasta
@@ -12,6 +12,7 @@ process MASH_SKETCH {
 
     script:
     """
-    mash sketch -o all_genomes.msh ${genomes_fasta.join( ' ' )}
+    find . -name "MGYG*.fna" > list.txt
+    mash sketch -o all_genomes.msh -l list.txt
     """
 }
