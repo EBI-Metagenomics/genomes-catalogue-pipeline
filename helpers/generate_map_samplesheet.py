@@ -52,13 +52,14 @@ def main():
 
         # standard samplesheet
         assembly = os.path.abspath(glob(os.path.join(genome_folder_path, '*.fna'))[0])
-        user_proteins_gff = os.path.abspath(glob(os.path.join(genome_folder_path, '*_annotated.gff'))[0])
+        proteins_gff = os.path.abspath(glob(os.path.join(genome_folder_path, '*_annotated.gff'))[0])
+        proteins_faa = os.path.abspath(glob(os.path.join(genome_folder_path, '*.faa'))[0])
         virify_gff_path = os.path.abspath(os.path.join(args.virify_folder, accession, "08-final", "gff", 
                                                     f"{accession}_virify.gff"))
         virify_gff_record = virify_gff_path if os.path.exists(virify_gff_path) else ""
         if virify_gff_record:
             count_virify_gff += 1
-        row = [accession, assembly, user_proteins_gff, virify_gff_record, 'true']
+        row = [accession, assembly, proteins_gff, proteins_faa, virify_gff_record]
         samplesheet_rows.append(row)
         # samplesheet_writer.writerow(row)
 
