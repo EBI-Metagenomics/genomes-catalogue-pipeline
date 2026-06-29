@@ -43,7 +43,7 @@ def main():
         if os.path.isdir(os.path.join(args.virify_folder, name)) and name.startswith("MGYG")
     ]
 
-    header = ['sample', 'assembly', 'proteins_gff', 'proteins_faa', 'virify_gff']
+    header = ['sample', 'assembly', 'proteins_gff', 'proteins_faa', 'virify_gff', 'interproscan_tsv']
     annotation_manifest_header = ['sample', 'amrfinder_tsv', 'antismash_gff', 'gecco_gff', 'sanntis_gff']
     samplesheet_rows, manifest_rows = [], []
 
@@ -54,12 +54,13 @@ def main():
         assembly = os.path.abspath(glob(os.path.join(genome_folder_path, '*.fna'))[0])
         proteins_gff = os.path.abspath(glob(os.path.join(genome_folder_path, '*_annotated.gff'))[0])
         proteins_faa = os.path.abspath(glob(os.path.join(genome_folder_path, '*.faa'))[0])
-        virify_gff_path = os.path.abspath(os.path.join(args.virify_folder, accession, "08-final", "gff", 
-                                                    f"{accession}_virify.gff"))
+        virify_gff_path = os.path.abspath(os.path.join(args.virify_folder, accession, "08-final", "gff",
+                                                    f"{accession}_virify.gff.gz"))
         virify_gff_record = virify_gff_path if os.path.exists(virify_gff_path) else ""
         if virify_gff_record:
             count_virify_gff += 1
-        row = [accession, assembly, proteins_gff, proteins_faa, virify_gff_record]
+        interproscan_tsv = os.path.abspath(glob(os.path.join(genome_folder_path, '*_InterProScan.tsv'))[0])
+        row = [accession, assembly, proteins_gff, proteins_faa, virify_gff_record, interproscan_tsv]
         samplesheet_rows.append(row)
         # samplesheet_writer.writerow(row)
 
