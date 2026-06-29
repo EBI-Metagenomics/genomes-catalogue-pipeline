@@ -23,7 +23,7 @@ process MMSEQ {
 
     container 'quay.io/biocontainers/mmseqs2:18.8cc5c--hd6d6fdc_0'
     
-    label 'retry_three_times'
+    label 'retry_twice'
 
     input:
     file faa_file
