@@ -62,7 +62,6 @@ def main():
         interproscan_tsv = os.path.abspath(glob(os.path.join(genome_folder_path, '*_InterProScan.tsv'))[0])
         row = [accession, assembly, proteins_gff, proteins_faa, virify_gff_record, interproscan_tsv]
         samplesheet_rows.append(row)
-        # samplesheet_writer.writerow(row)
 
         # annotation manifest
         armfinderplus_tsv = os.path.abspath(glob(os.path.join(genome_folder_path, '*_amrfinderplus.tsv'))[0])
