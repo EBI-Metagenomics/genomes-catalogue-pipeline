@@ -139,11 +139,13 @@ workflow EUK_GENE_CALLING {
             .collect()
             .map { target_list -> [target_list] }
 
+        // BAT/taxonomy only covers representatives, so redundant members inherit the rep's taxonomy.
         psauron_input = POSTPROCESSING_GENE_CALLER.out.faa
             .join(POSTPROCESSING_GENE_CALLER.out.gff)
+            .join(cluster_name_ch)
             .combine(psauron_target_genomes)
-            .filter { genome_name, _faa, _gff, target_list -> target_list.contains(genome_name) }
-            .map { genome_name, faa, gff, _target_list -> tuple(genome_name, faa, gff) }
+            .filter { _genome_name, _faa, _gff, cluster, target_list -> target_list.contains(cluster) }
+            .map { genome_name, faa, gff, _cluster, _target_list -> tuple(genome_name, faa, gff) }
 
         PSAURON(psauron_input)
         psauron_gff = PSAURON.out.psauron.map { genome_name, _csv, gff -> tuple(genome_name, gff) }
