@@ -16,7 +16,7 @@ process CATALOGUE_SUMMARY {
     script:
     """
     wc -l ${mmseqs_tsv} | cut -d ' ' -f1 > protein_count.txt
-    awk '!seen[$1]++ {count++} END {print count}' ${mmseqs_tsv} > cluster90_count.txt
+    awk '!seen[\$1]++ {count++} END {print count}' ${mmseqs_tsv} > cluster90_count.txt
     
     generate_catalogue_summary_json.py \
     -p protein_count.txt \
