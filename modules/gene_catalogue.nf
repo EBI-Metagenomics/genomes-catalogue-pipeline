@@ -15,7 +15,7 @@ process GENE_CATALOGUE {
 
     script:
     """
-    cut -f1 ${mmseqs_100_cluster_tsv} | sort -u > rep_list.txt
+    cut -f1 ${mmseqs_100_cluster_tsv} | uniq > rep_list.txt
 
     mkdir gene_catalogue
 
