@@ -7,7 +7,7 @@ process GENE_CATALOGUE {
     label 'retry_twice'
 
     input:
-    path cluster_reps_ffn
+    path all_genomes_ffn
     path mmseqs_100_cluster_tsv
 
     output:
@@ -23,7 +23,7 @@ process GENE_CATALOGUE {
 
     # Make the catalogue #
     seqtk subseq \
-    ${cluster_reps_ffn} \
+    ${all_genomes_ffn} \
     rep_list.txt > gene_catalogue/gene_catalogue-100.ffn
     """
 }

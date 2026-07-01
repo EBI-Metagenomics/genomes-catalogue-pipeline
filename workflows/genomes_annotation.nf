@@ -548,12 +548,12 @@ workflow GAP {
         cluster_reps_fnas.map({ it[1] })
     )
 
-    cluster_rep_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
-        PROCESS_MANY_GENOMES.out.rep_prokka_ffn
+    all_genomes_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
+        PROCESS_MANY_GENOMES.out.prokka_ffn
     )
 
     GENE_CATALOGUE(
-        cluster_rep_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
+        all_genomes_ffn.map({ it[1] }).collectFile(name: "all_genomes.ffn", newLine: true),
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 
