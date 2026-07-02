@@ -53,7 +53,7 @@ def main(mash, genomes_file, outfolder, infolder, metadata_table):
             if line == "\n":
                 break
             catalogue_genome, query_genome_path, score, _, _ = line.strip().split()
-            catalogue_genome = remove_extension(catalogue_genome)
+            catalogue_genome = remove_extension(os.path.basename(catalogue_genome))
             query_genome_no_ext = remove_extension(os.path.basename(query_genome_path))
             # save file name with extension for copying
             filename_dict[query_genome_no_ext] = os.path.basename(query_genome_path)
