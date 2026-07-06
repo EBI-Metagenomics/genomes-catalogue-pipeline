@@ -233,12 +233,12 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
     # ---- Write new strain table ----
     with open(new_strains_file, 'w') as out_ns:
         out_ns.write(header_line)
-        out_ns.write("\n".join(build_rows(new_strains)) + "\n")
+        out_ns.write("\n".join(build_rows(sorted(new_strains))) + "\n")
 
     # ---- Write repeat strain table ----
     with open(repeat_strains_file, 'w') as out_rs:
         out_rs.write(header_line)
-        out_rs.write("\n".join(build_rows(repeat_strains)) + "\n")
+        out_rs.write("\n".join(build_rows(sorted(repeat_strains))) + "\n")
         
     
 def parse_args():
