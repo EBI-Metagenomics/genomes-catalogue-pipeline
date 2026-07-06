@@ -47,6 +47,7 @@ workflow PROCESS_MANY_GENOMES_EUKS {
     emit:
         gene_caller_faas = EUK_GENE_CALLING.out.proteins
         gene_caller_fnas = EUK_GENE_CALLING.out.softmasked_genomes
+        gene_caller_ffns = EUK_GENE_CALLING.out.ffns
         gene_caller_gffs = EUK_GENE_CALLING.out.gffs
         rep_gene_caller_fna = rep_gene_caller_fna
         rep_gene_caller_gff = rep_gene_caller_gff

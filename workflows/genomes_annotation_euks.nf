@@ -253,12 +253,12 @@ workflow GAP_EUKS {
         PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_gff
     )
 
-    cluster_reps_ffn = PROCESS_MANY_GENOMES_EUKS.out.rep_gene_caller_ffn.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_ffn
-    )
-
     all_gene_caller_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna.mix(
         PROCESS_MANY_GENOMES_EUKS.out.gene_caller_fnas
+    )
+
+    all_gene_caller_ffn = PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_ffn.mix(
+        PROCESS_MANY_GENOMES_EUKS.out.gene_caller_ffns
     )
 
     all_gene_caller_faa = PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_faa.mix(
@@ -452,7 +452,7 @@ workflow GAP_EUKS {
     )
 
     GENE_CATALOGUE(
-        cluster_reps_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
+        all_gene_caller_ffn.map({ it[1] }).collectFile(name: "all_genomes.ffn", newLine: true),
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 
