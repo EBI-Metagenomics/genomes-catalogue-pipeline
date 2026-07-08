@@ -2,13 +2,6 @@ process METAEUK {
 
     tag "${genome_name}"
 
-    publishDir(
-        path: "${params.outdir}/additional_data/intermediate_files/metaeuk/",
-        saveAs: { filename -> file(filename).name },
-        mode: 'copy',
-        failOnError: true
-    )
-
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/metaeuk:7.bba0d80--pl5321h6a68c12_0' :
         'quay.io/biocontainers/metaeuk:7.bba0d80--pl5321h6a68c12_0' }"
