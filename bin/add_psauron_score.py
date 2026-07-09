@@ -18,6 +18,7 @@
 
 import argparse
 import csv
+import logging
 import re
 from typing import Dict
 
@@ -25,10 +26,17 @@ from typing import Dict
 ID_COLUMN = "description"
 SCORE_COLUMN = "in-frame_score"
 
+logger = logging.getLogger(__name__)
+
 
 def load_psauron_scores(psauron_csv: str) -> Dict[str, float]:
-    """Parse the PSAURON per-protein CSV into a {sequence_id: score} dict."""
-    scores = {}
+    """Parse the PSAURON per-protein CSV into a {sequence_id: score} dict.
+
+    PSAURON writes a couple of preamble lines (the invoked command and the overall
+    score) before the actual CSV header, so locate the header row first and read
+    the records from there.
+    """
+    scores: Dict[str, float] = {}
     with open(psauron_csv, "r", newline="") as psauron_file:
         lines = psauron_file.readlines()
 
@@ -50,18 +58,27 @@ def load_psauron_scores(psauron_csv: str) -> Dict[str, float]:
         sequence_id = (row.get(ID_COLUMN) or "").split()
         score_str = (row.get(SCORE_COLUMN) or "").strip()
         if not sequence_id or not score_str:
+            logger.warning("Skipping PSAURON row with missing id or score: %s", row)
             continue
         try:
             scores[sequence_id[0]] = float(score_str)
         except ValueError:
+            logger.warning(
+                "Skipping PSAURON row for %s: non-numeric %s=%r",
+                sequence_id[0],
+                SCORE_COLUMN,
+                score_str,
+            )
             continue
+    logger.info("Loaded %d PSAURON scores from %s", len(scores), psauron_csv)
     return scores
 
 
 def annotate_gff(input_gff: str, scores: Dict[str, float], output_gff: str) -> None:
     """Add psauron_score to the mRNA feature of each scored transcript."""
-    id_re = re.compile(r"ID=([^;]+)")
+    id_re = re.compile(r"(?:^|;)\s*ID=([^;]+)")
 
+    annotated = 0
     with open(input_gff, "r") as gff_in, open(output_gff, "w") as gff_out:
         for line in gff_in:
             fields = line.rstrip("\n").split("\t")
@@ -78,8 +95,10 @@ def annotate_gff(input_gff: str, scores: Dict[str, float], output_gff: str) -> N
                     col9 += ";"
                 fields[8] = f"{col9}psauron_score={scores[transcript_id]:.4f}"
                 gff_out.write("\t".join(fields) + "\n")
+                annotated += 1
             else:
                 gff_out.write(line)
+    logger.info("Added psauron_score to %d mRNA features in %s", annotated, output_gff)
 
 
 def parse_args():
@@ -93,6 +112,10 @@ def parse_args():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
     args = parse_args()
     psauron_scores = load_psauron_scores(args.psauron_csv)
     annotate_gff(args.input_gff, psauron_scores, args.output_gff)
