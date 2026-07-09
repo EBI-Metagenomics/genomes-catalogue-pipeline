@@ -13,6 +13,6 @@ process MASH_SKETCH {
     script:
     """
     find . -name "MGYG*.fna" | sed 's|^\./||' > list.txt
-    mash sketch -o all_genomes.msh -l list.txt
+    mash sketch -o all_genomes.msh -l list.txt  -p ${task.cpus}
     """
 }
