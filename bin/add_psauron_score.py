@@ -58,19 +58,16 @@ def load_psauron_scores(psauron_csv: str) -> Dict[str, float]:
         sequence_id = (row.get(ID_COLUMN) or "").split()
         score_str = (row.get(SCORE_COLUMN) or "").strip()
         if not sequence_id or not score_str:
-            logger.warning("Skipping PSAURON row with missing id or score: %s", row)
+            logger.warning(f"Skipping PSAURON row with missing id or score: {row}")
             continue
         try:
             scores[sequence_id[0]] = float(score_str)
         except ValueError:
             logger.warning(
-                "Skipping PSAURON row for %s: non-numeric %s=%r",
-                sequence_id[0],
-                SCORE_COLUMN,
-                score_str,
+                f"Skipping PSAURON row for {sequence_id[0]}: non-numeric {SCORE_COLUMN}={score_str!r}"
             )
             continue
-    logger.info("Loaded %d PSAURON scores from %s", len(scores), psauron_csv)
+    logger.info(f"Loaded {len(scores)} PSAURON scores from {psauron_csv}")
     return scores
 
 
@@ -98,7 +95,7 @@ def annotate_gff(input_gff: str, scores: Dict[str, float], output_gff: str) -> N
                 annotated += 1
             else:
                 gff_out.write(line)
-    logger.info("Added psauron_score to %d mRNA features in %s", annotated, output_gff)
+    logger.info(f"Added psauron_score to {annotated} mRNA features in {output_gff}")
 
 
 def parse_args():
