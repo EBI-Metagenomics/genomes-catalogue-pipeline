@@ -2,13 +2,6 @@ process PSAURON {
 
     tag "${genome_name}"
 
-    publishDir(
-        path: "${params.outdir}/additional_data/intermediate_files/psauron",
-        pattern: "*.psauron.csv",
-        mode: 'copy',
-        failOnError: true
-    )
-
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/psauron:1.1.0--pyhdfd78af_0' :
         'quay.io/biocontainers/psauron:1.1.0--pyhdfd78af_0' }"
