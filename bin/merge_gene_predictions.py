@@ -17,12 +17,15 @@
 # along with MGnify genome analysis pipeline. If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import logging
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, TextIO, Tuple
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -143,10 +146,19 @@ def read_cds(gff_file: str, is_metaeuk: bool) -> Dict[str, Transcript]:
             if line.startswith("#"):
                 continue
             feature = GffFeature.parse(line)
-            if feature is None or feature.feature_type != "CDS":
+            if feature is None:
+                if line.strip():
+                    logger.debug(
+                        f"Skipping malformed (non 9-column) line: {line.rstrip()}"
+                    )
+                continue
+            if feature.feature_type != "CDS":
                 continue
             key = transcript_key(feature.attributes, is_metaeuk)
             if key is None:
+                logger.debug(
+                    f"Skipping CDS with no transcript key: {feature.attributes}"
+                )
                 continue
             transcript = transcripts.setdefault(
                 key, Transcript(contig=feature.seqid, strand=feature.strand)
@@ -157,6 +169,8 @@ def read_cds(gff_file: str, is_metaeuk: bool) -> Dict[str, Transcript]:
 
     for transcript in transcripts.values():
         transcript.exons.sort(key=lambda coord: coord[0])
+    caller = "MetaEuk" if is_metaeuk else "BRAKER"
+    logger.info(f"Read {len(transcripts)} {caller} CDS transcripts from {gff_file}")
     return transcripts
 
 
@@ -206,7 +220,12 @@ def matched_secondary_transcripts(
             if is_match:
                 matched.add(key2)
                 overlapped_fraction[key1] = cov1
+                logger.debug(f"MetaEuk {key2} overlaps BRAKER {key1} (cov1={cov1:.4f})")
                 break
+            if cov1 > 0:
+                logger.debug(
+                    f"MetaEuk {key2} not overlaps BRAKER {key1} (cov1={cov1:.4f})"
+                )
     return matched, overlapped_fraction
 
 
@@ -221,6 +240,10 @@ def parse_braker_genes(gff_file: str) -> Tuple[Dict[int, BrakerGene], List[str]]
                 continue
             feature = GffFeature.parse(line)
             if feature is None:
+                if line.strip():
+                    logger.debug(
+                        f"Skipping malformed (non 9-column) line: {line.rstrip()}"
+                    )
                 continue
             match = gene_re.search(feature.attributes)
             if match is None:
@@ -233,6 +256,9 @@ def parse_braker_genes(gff_file: str) -> Tuple[Dict[int, BrakerGene], List[str]]
             gene = genes.setdefault(old_number, BrakerGene(contig=contig, start=start))
             gene.start = min(gene.start, start)
             gene.lines.append(feature)
+    logger.info(
+        f"Parsed {len(genes)} BRAKER genes across {len(contig_order)} contigs from {gff_file}"
+    )
     return genes, contig_order
 
 
@@ -376,8 +402,10 @@ def order_genes_by_position(
     for new_number, (_, _, is_braker, ref) in enumerate(placed, start=1):
         if is_braker:
             braker_id_map[f"g{ref}"] = f"g{new_number}"
+            logger.debug(f"Assigned g{new_number} to BRAKER gene g{ref}")
         else:
             metaeuk_new_ids[ref] = f"g{new_number}"
+            logger.debug(f"Assigned g{new_number} to MetaEuk gene {ref}")
         ordered_genes.append((is_braker, ref))
     return ordered_genes, braker_id_map, metaeuk_new_ids
 
@@ -418,7 +446,6 @@ def render_braker_gff_lines(
             gene_overlap_fractions.append(
                 overlapped_fraction[transcript_match.group(1)]
             )
-
     lines = []
     for feature in gene.lines:
         col9 = remap_braker_ids(feature.attributes, braker_id_map)
@@ -458,6 +485,7 @@ def write_merged_gff(
                     metaeuk_cds[ref], metaeuk_new_ids[ref], "MetaEuk", ref
                 )
             gff_out.write("\n".join(lines) + "\n")
+    logger.info(f"Wrote merged GFF ({len(ordered_genes)} genes) to {output_path}")
 
 
 def write_renamed_record(record: SeqRecord, new_id: str, out_handle: TextIO) -> None:
@@ -476,17 +504,26 @@ def write_merged_fasta(
     metaeuk_new_ids: Dict[str, str],
 ) -> None:
     """Write one merged FASTA (FAA or FFN), IDs remapped, in the GFF gene order."""
+    written = 0
     with open(output_path, "w") as out_handle:
         for is_braker, ref in ordered_genes:
             if is_braker:
                 new_gene = braker_id_map[f"g{ref}"]
-                for record in braker_by_gene.get(f"g{ref}", []):
+                records = braker_by_gene.get(f"g{ref}", [])
+                if not records:
+                    logger.warning(
+                        f"BRAKER gene g{ref} has no FASTA records for {output_path}"
+                    )
+                for record in records:
                     _, _, transcript = record.id.partition(".")
                     new_id = f"{new_gene}.{transcript}" if transcript else new_gene
                     write_renamed_record(record, new_id, out_handle)
+                    written += 1
             else:
                 new_id = f"{metaeuk_new_ids[ref]}.t1"
                 write_renamed_record(metaeuk_by_key[ref], new_id, out_handle)
+                written += 1
+    logger.info(f"Wrote {written} records to {output_path}")
 
 
 def main(args: argparse.Namespace) -> None:
@@ -496,10 +533,18 @@ def main(args: argparse.Namespace) -> None:
         braker_cds, metaeuk_cds, args.threshold
     )
     unique_metaeuk = [key for key in metaeuk_cds if key not in matched]
+    logger.info(
+        f"{len(matched)} MetaEuk transcripts overlap BRAKER (threshold {args.threshold}); "
+        f"{len(unique_metaeuk)} unique MetaEuk transcripts kept"
+    )
 
     braker_genes, braker_contig_order = parse_braker_genes(args.gff_braker)
     ordered_genes, braker_id_map, metaeuk_new_ids = order_genes_by_position(
         braker_genes, braker_contig_order, metaeuk_cds, unique_metaeuk
+    )
+    logger.info(
+        f"Merged into {len(ordered_genes)} genes "
+        f"({len(braker_id_map)} BRAKER, {len(metaeuk_new_ids)} MetaEuk-unique)"
     )
 
     write_merged_gff(
@@ -562,8 +607,18 @@ def parse_args():
         required=True,
         help="Output prefix (writes .gff/.faa/.ffn).",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable verbose DEBUG logging (per-transcript matches and skips).",
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
-    main(parse_args())
+    args = parse_args()
+    logging.basicConfig(
+        level=logging.DEBUG if args.debug else logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
+    main(args)
