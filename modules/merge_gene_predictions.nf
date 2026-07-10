@@ -2,13 +2,6 @@ process MERGE_GENE_PREDICTIONS {
 
     tag "${genome_name}"
 
-    publishDir(
-        path: "${params.outdir}/additional_data/intermediate_files/merged_gene_predictions/",
-        saveAs: { filename -> file(filename).name },
-        mode: 'copy',
-        failOnError: true
-    )
-
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
     'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/61/6151add1e8ca2e3eaaa65584e3ff9c551eecbfad282dc61f26b5bcbf626b4c06/data' :
     'community.wave.seqera.io/library/pip_biopython:326a6be8fb21b301' }"
