@@ -9,7 +9,12 @@ process POSTPROCESSING_GENE_CALLER {
     label 'process_light'
 
     input:
-    tuple val(genome_name), val(cluster_name), path(gff), path(faa, stageAs: "input/*"), path(ffn, stageAs: "input/*"), path(input_genome, stageAs: "genome_input/*")
+    val genome_name
+    val cluster_name
+    path gff
+    path faa, stageAs: "input/*"
+    path ffn, stageAs: "input/*"
+    path genome, stageAs: "genome_input/*"
 
     output:
     tuple val(genome_name), path("${genome_name}.gff"), emit: gff
@@ -23,11 +28,11 @@ process POSTPROCESSING_GENE_CALLER {
         --gff ${gff} \\
         --ffn ${ffn} \\
         --faa ${faa} \\
-        --genome-fasta ${input_genome} \\
+        --genome-fasta ${genome} \\
         -p ${genome_name}
 
     # Necessary to publish genomes into additional_data/mgyg_genomes and species_catalogue folders
-    cp ${input_genome} ${genome_name}.fna
+    cp ${genome} ${genome_name}.fna
     """
 
     stub:

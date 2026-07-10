@@ -7,7 +7,10 @@ process REPEAT_MASKER {
 
 
     input:
-    tuple val(genome_name), path(genome, stageAs: "input/*"), path(proteins), path(library)
+    val genome_name
+    path genome, stageAs: "input/*"
+    path proteins
+    path library
 
     output:
     tuple val(genome_name), path("${genome.baseName}.fa"), emit: masked_genome

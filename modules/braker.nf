@@ -4,7 +4,9 @@ process BRAKER {
     container "docker.io/teambraker/braker3:v3.0.8"
 
     input:
-    tuple val(genome_name), path(masked_genome), path(protein_evidence) // softmasked genome + protein evidence
+    val genome_name
+    path genome
+    path protein_evidence
 
     output:
     tuple val(genome_name), path("${genome_name}_braker/*.gtf"), emit: gtf
@@ -26,7 +28,7 @@ process BRAKER {
 
     braker.pl \\
         $args \\
-        --genome ${masked_genome} \\
+        --genome ${genome} \\
         --species ${genome_name} \\
         --threads $task.cpus \\
         --workingdir "${genome_name}_braker" \\

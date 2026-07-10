@@ -8,9 +8,11 @@ process PSAURON {
 
     label 'process_light'
 
-    input:
     // merged_gff is staged in a subdir so the output GFF can reuse the same name (${genome_name}.gff)
-    tuple val(genome_name), path(merged_faa), path(merged_gff, stageAs: "input/*")
+    input:
+    val genome_name
+    path merged_faa
+    path merged_gff, stageAs: "input/*"
 
     output:
     tuple val(genome_name), path("*.psauron.csv"), path("*.gff"), emit: psauron

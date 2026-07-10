@@ -42,22 +42,35 @@ workflow EUK_GENE_CALLING {
                     return tuple(genome_name, genome)
             }
 
-        REPEAT_MASKER(genomes_after_repeatmodeler.with_repeats)
+        repeatmasker_input = genomes_after_repeatmodeler.with_repeats
+            .multiMap { genome_name, genome, proteins, library ->
+                genome_name: genome_name
+                genome: genome
+                proteins: proteins
+                library: library
+            }
+        REPEAT_MASKER(
+            repeatmasker_input.genome_name,
+            repeatmasker_input.genome,
+            repeatmasker_input.proteins,
+            repeatmasker_input.library
+        )
 
         // Combine masked genomes with unmasked genomes
         def all_genomes_for_gene_calling = REPEAT_MASKER.out.masked_genome
             .mix(genomes_after_repeatmodeler.without_repeats)
 
-        // Prepare channel for BRAKER
-        ch_braker_input = tuple_genome_proteins_nocluster
+        braker_input = tuple_genome_proteins_nocluster
             .map { genome_name, _genome, prot_evidence -> tuple(genome_name, prot_evidence) }
             .join(all_genomes_for_gene_calling)
-            .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
+            .multiMap { genome_name, prot_evidence, genome ->
+                genome_name: genome_name
+                genome: genome
+                proteins: prot_evidence
+            }
 
-        BRAKER(ch_braker_input)
-        DEDUP_GFF(
-            BRAKER.out.gff3
-        )
+        BRAKER(braker_input.genome_name, braker_input.genome, braker_input.proteins)
+        DEDUP_GFF(BRAKER.out.gff3)
 
         dedup_gff_with_genome = DEDUP_GFF.out.dedup_gff.join(all_genomes_for_gene_calling)
         EXTRACT_DEDUP_BRAKER_FAA(
@@ -81,7 +94,13 @@ workflow EUK_GENE_CALLING {
             .filter { _genome_name, prot_evidence, genome -> prot_evidence != null && genome != null }
             .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
 
-        METAEUK(ch_metaeuk_input)
+        metaeuk_input = ch_metaeuk_input
+            .multiMap { genome_name, genome, prot_evidence ->
+                genome_name: genome_name
+                genome: genome
+                proteins: prot_evidence
+            }
+        METAEUK(metaeuk_input.genome_name, metaeuk_input.genome, metaeuk_input.proteins)
 
         metaeuk_genomes = ch_metaeuk_input.map { genome_name, genome, _prot -> tuple(genome_name, genome) }
         FIX_METAEUK_CDS_PHASES(METAEUK.out.gff.join(metaeuk_genomes))
@@ -116,15 +135,27 @@ workflow EUK_GENE_CALLING {
             .map { genome_name, gff, faa, ffn, _prot_evidence -> tuple(genome_name, gff, faa, ffn) }
 
         // Finalise the gene set (merged or BRAKER-only) for every genome
-        gene_caller_output = merged_gene_sets
+        postprocessing_input = merged_gene_sets
             .mix(braker_only_gene_sets)
             .join(cluster_name_ch)
             .join(all_genomes_for_gene_calling)
-            .map { genome_name, gff, faa, ffn, cluster, genome ->
-                tuple(genome_name, cluster, gff, faa, ffn, genome)
+            .multiMap { genome_name, gff, faa, ffn, cluster, genome ->
+                genome_name: genome_name
+                cluster_name: cluster
+                gff: gff
+                faa: faa
+                ffn: ffn
+                genome: genome
             }
 
-        POSTPROCESSING_GENE_CALLER(gene_caller_output)
+        POSTPROCESSING_GENE_CALLER(
+            postprocessing_input.genome_name,
+            postprocessing_input.cluster_name,
+            postprocessing_input.gff,
+            postprocessing_input.faa,
+            postprocessing_input.ffn,
+            postprocessing_input.genome
+        )
 
         psauron_target_genomes = taxonomy_map
             .first()
@@ -149,9 +180,13 @@ workflow EUK_GENE_CALLING {
             .join(cluster_name_ch)
             .combine(psauron_target_genomes)
             .filter { _genome_name, _faa, _gff, cluster, target_list -> target_list.contains(cluster) }
-            .map { genome_name, faa, gff, _cluster, _target_list -> tuple(genome_name, faa, gff) }
+            .multiMap { genome_name, faa, gff, _cluster, _target_list ->
+                genome_name: genome_name
+                faa: faa
+                gff: gff
+            }
 
-        PSAURON(psauron_input)
+        PSAURON(psauron_input.genome_name, psauron_input.faa, psauron_input.gff)
         psauron_gff = PSAURON.out.psauron.map { genome_name, _csv, gff -> tuple(genome_name, gff) }
 
         // Final GFF is the PSAURON-scored GFF where available, otherwise the postprocessed BRAKER/Merge GFF

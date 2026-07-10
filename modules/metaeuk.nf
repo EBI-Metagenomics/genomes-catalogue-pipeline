@@ -7,7 +7,9 @@ process METAEUK {
         'quay.io/biocontainers/metaeuk:7.bba0d80--pl5321h6a68c12_0' }"
 
     input:
-    tuple val(genome_name), path(masked_genome), path(protein_evidence)
+    val genome_name
+    path genome
+    path protein_evidence
 
     output:
     tuple val(genome_name), path("*.metaeuk.gff"), emit: gff
@@ -17,7 +19,7 @@ process METAEUK {
     script:
     """
     metaeuk easy-predict \\
-        ${masked_genome} \\
+        ${genome} \\
         ${protein_evidence} \\
         ${genome_name}.metaeuk \\
         tmp_${genome_name}
