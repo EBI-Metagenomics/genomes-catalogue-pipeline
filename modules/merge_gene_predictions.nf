@@ -9,13 +9,9 @@ process MERGE_GENE_PREDICTIONS {
     label 'process_light'
 
     input:
-    tuple val(genome_name),
-        path(braker_gff),
-        path(braker_faa),
-        path(braker_ffn),
-        path(metaeuk_gff),
-        path(metaeuk_faa),
-        path(metaeuk_ffn)
+    val genome_name
+    tuple path(braker_gff), path(braker_faa), path(braker_ffn)
+    tuple path(metaeuk_gff), path(metaeuk_faa), path(metaeuk_ffn)
 
     output:
     tuple val(genome_name), path("*.merged.gff"), emit: gff

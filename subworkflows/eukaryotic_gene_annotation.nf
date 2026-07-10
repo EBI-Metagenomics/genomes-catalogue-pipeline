@@ -91,15 +91,19 @@ workflow EUK_GENE_CALLING {
             .join(METAEUK.out.proteins)
             .join(METAEUK.out.nucleotide)
 
-        MERGE_GENE_PREDICTIONS(
-            braker_out
-                .join(metaeuk_out, remainder: true)
-                .filter { joined_prediction ->
-                    def braker_gff = joined_prediction[1]
-                    def metaeuk_gff = joined_prediction[4]
-                    braker_gff != null && metaeuk_gff != null
-                }
-        )
+        merge_input = braker_out
+            .join(metaeuk_out, remainder: true)
+            .filter { joined_prediction ->
+                def braker_gff = joined_prediction[1]
+                def metaeuk_gff = joined_prediction[4]
+                braker_gff != null && metaeuk_gff != null
+            }
+            .multiMap { genome_name, braker_gff, braker_faa, braker_ffn, metaeuk_gff, metaeuk_faa, metaeuk_ffn ->
+                genome_name: genome_name
+                braker: tuple(braker_gff, braker_faa, braker_ffn)
+                metaeuk: tuple(metaeuk_gff, metaeuk_faa, metaeuk_ffn)
+            }
+        MERGE_GENE_PREDICTIONS(merge_input.genome_name, merge_input.braker, merge_input.metaeuk)
 
         merged_gene_sets = MERGE_GENE_PREDICTIONS.out.gff
             .join(MERGE_GENE_PREDICTIONS.out.faa)
