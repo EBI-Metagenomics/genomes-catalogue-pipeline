@@ -55,11 +55,22 @@ workflow PREPARE_UPDATE {
         )
         
         if ( rerun_checkm2 ) {
+            // Create a channel of individual genome files from the folder
+            ch_genomes = channel.fromPath("${previous_catalogue_location}/additional_data/mgyg_genomes/*")
+            // Buffer into chunks of N files
+            ch_genome_checkm2_chunks = ch_genomes
+                .buffer(size: params.checkm2_chunk_size, remainder: true)
             CHECKM2_CATALOGUE(
-                "${previous_catalogue_location}/additional_data/mgyg_genomes/",
+                ch_genome_checkm2_chunks,
                 ch_checkm2_db
             )
             previous_version_quality = CHECKM2_CATALOGUE.out.checkm_csv
+                .collectFile(
+                    name: 'checkm2_results_merged.csv',
+                    keepHeader: true,
+                    skip: 1
+                )
+                .first()
         }
         else {
             previous_version_quality = EXTRACT_METADATA_FROM_TABLE.out.quality_csv
