@@ -45,7 +45,7 @@ def main(input_file, geofile, disable_ncbi_lookup):
                 else:
                     continent = "not provided"
                     if country.lower() in ["not provided", "not collected", "not present", "na", "n/a", "missing",
-                                           "not applicable"]:
+                                           "not applicable", "not determined"]:
                         error_text += (f"Submitter did not provide a location for genome {original_acc}. "
                                        f"Submitted value: '{country}'. Recording country and continent as "
                                        f"'not provided'.")
