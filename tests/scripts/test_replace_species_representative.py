@@ -9,9 +9,27 @@ from bin.replace_species_representative import (
     evaluate_quality_increase,
     calc_qs,
     load_first_column_to_list,
-    Placement,
     Quality,
+    replacement_decision,
 )
+
+
+def make_qs():
+    def q(comp, cont, n50):
+        return Quality(
+            completeness=comp,
+            contamination=cont,
+            n50=n50,
+            qs=calc_qs(comp, cont, n50),
+            length=5000000,
+            n_contigs=10
+        )
+
+    return {
+        "g0": q(90, 2, 100000),
+        "g1": q(100, 0, 120000),
+        "g2": q(91, 2, 110000),
+    }
 
 
 class TestGenomePipeline(unittest.TestCase):
@@ -88,18 +106,145 @@ class TestGenomePipeline(unittest.TestCase):
         self.assertEqual(result["G1"].actual_match, "hit1")
 
     def test_select_replacement_simple(self):
-        qs_values = {
-            "old": Quality(completeness=90, contamination=2, n50=100000, qs=90, length=5000000, n_contigs=10),
-            "g1": Quality(completeness=92, contamination=1.5, n50=120000, qs=100, length=5100000, n_contigs=10),
-            # >= 90*1.1=99
-            "g2": Quality(completeness=91, contamination=2, n50=110000, qs=91, length=5050000, n_contigs=10)
-        }
+        qs_values = make_qs()
         replacement_results = {
-            "old": {"new_rep": "", "genome_list": ["g1", "g2"]}
+            "g0": {"new_rep": "", "genome_list": ["g1", "g2"]}
         }
         isolates = set()
-        new_rep = select_replacement(replacement_results, "old", ["g1", "g2"], qs_values, isolates)
+        new_rep = select_replacement("g0", replacement_results["g0"]["genome_list"], qs_values, isolates)
         self.assertEqual(new_rep, "g1")  # highest QS
+
+    def test_replacement_best_qs(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g0": {"new_rep": "", "genome_list": []}
+        }
+
+        added_genomes = {"g0": ["g1", "g2"]}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates=set(),
+            checkm2_switch=False
+        )
+
+        self.assertEqual(new_results["g0"]["new_rep"], "g1")
+    
+    def test_replacement_checkm2_switch_false_no_new_genomes(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g1": {"new_rep": "g1", "genome_list": ["g0", "g2"]}
+        }
+
+        added_genomes = {}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates=set(),
+            checkm2_switch=False
+        )
+        # The original species rep is the highest quality genome and no change is needed
+        self.assertEqual(new_results["g1"]["new_rep"], "g1")
+    
+    def test_replacement_checkm2_switch_true_no_new_genomes(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g1": {"new_rep": "g1", "genome_list": ["g0", "g2"]}
+        }
+
+        added_genomes = {}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates=set(),
+            checkm2_switch=True
+        )
+        # The original species rep is the highest quality genome and no change is needed
+        self.assertEqual(new_results["g1"]["new_rep"], "g1")
+    
+    def test_replacement_checkm2_switch_true_old_rep_removed(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g1": {"new_rep": "", "genome_list": ["g0", "g2"]}
+        }
+
+        added_genomes = {}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates=set(),
+            checkm2_switch=True
+        )
+        # Choose the best genome out of the remaining two since the rep is removed
+        self.assertEqual(new_results["g1"]["new_rep"], "g2")
+    
+    def test_replacement_checkm2_switch_true_new_genomes_added(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g0": {"new_rep": "g0", "genome_list": ["g2"]}
+        }
+
+        added_genomes = {"g0": ["g1"]}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates=set(),
+            checkm2_switch=True
+        )
+        # New added genome is better quality than existing rep
+        self.assertEqual(new_results["g0"]["new_rep"], "g1")
+    
+    def test_replacement_checkm2_switch_true_rep_changed(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g0": {"new_rep": "g0", "genome_list": ["g1"]}
+        }
+
+        added_genomes = {}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates=set(),
+            checkm2_switch=True
+        )
+        # After CheckM2, a different genome is the best one
+        self.assertEqual(new_results, {"g0": {"new_rep": "g1", "genome_list": ["g0"]}})
 
 
 if __name__ == "__main__":

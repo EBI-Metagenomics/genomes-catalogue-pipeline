@@ -1,0 +1,2 @@
+one_genome:1_0:MGYG000000013.fa
+many_genomes:2_0:MGYG000000014.fa,MGYG000000015.fa
