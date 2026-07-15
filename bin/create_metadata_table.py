@@ -29,7 +29,7 @@ from assembly_stats import run_assembly_stats
 
 logging.basicConfig(level=logging.INFO)
 
-UNINFORMATIVE = {"not collected", "not present", "na", "n/a", "missing", "not applicable"}
+UNINFORMATIVE = {"not collected", "not present", "na", "n/a", "missing", "not applicable", "not determined"}
 
 
 def main(
