@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright 2024 EMBL - European Bioinformatics Institute
+# Copyright 2024-2026 EMBL - European Bioinformatics Institute
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,21 +16,27 @@
 #
 
 import argparse
-import glob
+import fileinput
 import gzip
+import glob
 import os
 import re
+from pathlib import Path
 
 
 def main(results_folder):
     count_total = 0
     count_removed = 0
-    pattern = os.path.join(results_folder, "species_catalogue", '**', '*_mobilome.gff.gz')
-    all_matching_files = glob.glob(pattern, recursive=True)
-    # Matching files will include mobilome-only files (MGYG123_mobilome.gff.gz) and full annotation with mobilome
-    # (MGYG123_annotated_with_mobilome.gff.gz). Exclude the latter - filtered files should only have mobilome-only GFFs.
-    mobilome_regex = re.compile(r'[^/\\]+(?<!_annotated_with)_mobilome\.gff\.gz$')
-    filtered_files = [file for file in all_matching_files if mobilome_regex.search(os.path.basename(file))]
+    # Matching files that could be gzipped will include mobilome-only files (MGYG123_mobilome.gff(.gz)) and full annotation with mobilome
+    # (MGYG123_annotated_with_mobilome.gff(.gz)). Exclude the latter - filtered files should only have mobilome-only GFFs.
+    mobilome_regex = re.compile(
+        r'[^/\\]+(?<!_annotated_with)_mobilome\.gff(?:\.gz)?$'
+    )
+    filtered_files = [
+        str(f)
+        for f in Path(results_folder, "species_catalogue").rglob("*_mobilome.gff*")
+        if mobilome_regex.search(f.name)
+    ]
     for mobilome_file in filtered_files:
         count_total += 1
         file_has_contents = evaluate_file(mobilome_file)
@@ -42,19 +48,8 @@ def main(results_folder):
     print("Removed {} empty mobilome files out of {} total mobilome files".format(count_removed, count_total))
         
 
-def open_file(filename):
-    """
-    Open a file, handling both compressed (.gz) and uncompressed files.
-    Returns a file handle that can be used for reading.
-    """
-    if filename.endswith('.gz'):
-        return gzip.open(filename, 'rt')  # 'rt' for text mode
-    else:
-        return open(filename, 'r')
-
-
 def evaluate_file(mobilome_file):
-    with open_file(mobilome_file) as f:                
+    with fileinput.hook_compressed(mobilome_file, "r", encoding="utf-8") as f:
         for line in f:
             if line.startswith("##FASTA"):
                 return False
