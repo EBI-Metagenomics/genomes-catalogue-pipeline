@@ -8,6 +8,8 @@ process MMSEQ {
                 int threshold_rounded = id_threshold * 100;
                 if ( output_file.name == "mmseq_${threshold_rounded}_outdir.tar.gz" ) {
                     return "additional_data/protein_catalogue/mmseq_${threshold_rounded}_outdir.tar.gz";
+                } else if ( output_file.name == "all_proteins.faa.gz" ) {
+                    return "additional_data/all_proteins.faa.gz";
                 // For the .9 protein catalogue, we need to add the IPS and EGG annotations
                 // This is done by PROTEIN_CATALOGUE_STORE_ANNOTATIONS
                 } else if ( output_file.extension == "gz" && id_threshold != 0.90 ) {
@@ -35,9 +37,17 @@ process MMSEQ {
     path "protein_catalogue-*.tsv", emit: mmseq_cluster_tsv
     path "protein_catalogue-*.tar.gz", emit: mmseq_tarball
     path "*_outdir.tar.gz", emit: mmseq_outdir_tarball
+    path "all_proteins.faa.gz", optional: true, emit: all_proteins_gz
 
     script:
     int threshold_rounded = id_threshold * 100;
+    def gzip_all_proteins_cmd = ""
+    if ( id_threshold == 1.0 ) {
+        gzip_all_proteins_cmd = """
+        echo "\$(timestamp) [mmseqs script] Gzipping full protein set"
+        gzip -c ${faa_file} > all_proteins.faa.gz
+        """
+    }
     """
     timestamp() {
         date +"%H:%M:%S"
@@ -98,6 +108,10 @@ process MMSEQ {
 
     tar -cv protein_catalogue-${threshold_rounded}.faa \
     protein_catalogue-${threshold_rounded}.tsv | gzip > protein_catalogue-${threshold_rounded}.tar.gz
+    
+    # If this is the 100% identity mmseqs, also gzip the protein input to save it to outputs
+    # It doesn't matter if we do this for 100% or other level of identity, just needs to be done once
+    ${gzip_all_proteins_cmd}
     """
 
     // stub:
