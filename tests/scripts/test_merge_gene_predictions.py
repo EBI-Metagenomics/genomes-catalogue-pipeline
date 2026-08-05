@@ -170,7 +170,10 @@ class TestBuildMetaeukGffLines:
         )
         feature_types = [line.split("\t")[2] for line in lines]
         assert feature_types == ["gene", "mRNA", "exon", "exon", "CDS", "CDS"]
-        assert lines[0].endswith("ID=g3;original_gene_id=acc_uniq|contig_2")
+        assert lines[0].endswith(
+            "ID=g3;original_gene_id=acc_uniq|contig_2;"
+            "prediction_support=1;prediction_tools=MetaEuk"
+        )
         # CDS phases are preserved from the (reconciled) MetaEuk GFF.
         assert lines[4].split("\t")[7] == "0"
         assert lines[5].split("\t")[7] == "1"
