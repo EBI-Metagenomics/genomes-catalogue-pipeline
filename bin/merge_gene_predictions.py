@@ -288,7 +288,8 @@ def build_metaeuk_gff_lines(
                 ".",
                 strand,
                 ".",
-                f"ID={gene_id};original_gene_id={original_gene_id}",
+                f"ID={gene_id};original_gene_id={original_gene_id};"
+                f"prediction_support=1;prediction_tools=MetaEuk",
             ]
         ),
         "\t".join(
@@ -459,6 +460,9 @@ def render_braker_gff_lines(
                     "prediction_overlap",
                     f"{max(gene_overlap_fractions):.4f}",
                 )
+            else:
+                col9 = append_attribute(col9, "prediction_support", "1")
+                col9 = append_attribute(col9, "prediction_tools", "BRAKER3")
         lines.append(feature.render(source=predictor, attributes=col9))
     return lines
 
