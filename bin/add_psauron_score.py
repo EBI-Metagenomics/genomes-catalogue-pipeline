@@ -62,11 +62,10 @@ def load_psauron_scores(psauron_csv: str) -> Dict[str, float]:
             continue
         try:
             scores[sequence_id[0]] = float(score_str)
-        except ValueError:
-            logger.warning(
-                f"Skipping PSAURON row for {sequence_id[0]}: non-numeric {SCORE_COLUMN}={score_str!r}"
-            )
-            continue
+        except ValueError as error:
+            raise ValueError(
+                f"PSAURON row for {sequence_id[0]}: non-numeric {SCORE_COLUMN}={score_str!r}"
+            ) from error
     logger.info(f"Loaded {len(scores)} PSAURON scores from {psauron_csv}")
     return scores
 
