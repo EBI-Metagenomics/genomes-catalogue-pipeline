@@ -26,6 +26,12 @@ workflow UPDATE_CLUSTERS {
         genomes_name_mapping
         drep_args
     main:
+    
+        // We only want to run modules on new genomes if new genomes are being added; make a queue channel for this
+        new_genomes_present = new_genomes.filter { items ->
+        items instanceof List ? !items.isEmpty() : true
+        }
+        
         // check if any genomes from the previous version fail QS50
         QS50_FILTER_PREVIOUS_VERSION (
             previous_version_quality_file,
@@ -37,7 +43,7 @@ workflow UPDATE_CLUSTERS {
         // Run mash if there are new genomes being added (if not, new_genomes is and empty channel)
         MASH_FOR_UPDATE (
             previous_catalogue_location,
-            new_genomes
+            new_genomes_present
         )
         
         // Ensure mash_results exists even when process doesn't run (no genomes to add)
@@ -45,7 +51,7 @@ workflow UPDATE_CLUSTERS {
         
         /////// STEP 2: Use mash results to separate new genomes into new species, new strains and repeat strains
         PARSE_MASH_FOR_UPDATE (
-            new_genomes,
+            new_genomes_present,
             mash_results,
             previous_catalogue_location
         )
@@ -77,12 +83,13 @@ workflow UPDATE_CLUSTERS {
             new_genome_stats,
             extra_weight_table_new_genomes,
             genomes_name_mapping,
-            PARSE_MASH_FOR_UPDATE.out.new_strains_file,
-            PARSE_MASH_FOR_UPDATE.out.repeat_strains_file,
-            SPLIT_DREP_NEW_SPECIES.out.text_split
+            PARSE_MASH_FOR_UPDATE.out.new_strains_file.ifEmpty(file("NO_FILE_new_strains")),
+            PARSE_MASH_FOR_UPDATE.out.repeat_strains_file.ifEmpty(file("NO_FILE_repeat_strains")),
+            SPLIT_DREP_NEW_SPECIES.out.text_split.ifEmpty(file("NO_FILE_new_cluster_split"))
         )
        
-       // gather old and new genomes into one folder
+       // gather old and new genomes into one folder (using new_genomes and not new_genomes_present intentionally -
+       // this module needs to always run, even if we are not adding any genomes)
        combined_genomes = COMBINE_GENOME_FOLDERS(
             "${previous_catalogue_location}/additional_data/mgyg_genomes/",
             new_genomes

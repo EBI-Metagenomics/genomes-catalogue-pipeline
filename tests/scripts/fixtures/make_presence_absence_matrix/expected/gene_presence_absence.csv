@@ -1,0 +1,5 @@
+Gene,Non-unique Gene name,Annotation,G1,G2,G3
+recA,,Recombinase A,G1_00001,G2_00001,G3_00001
+dnaA,,Chromosomal replication initiator protein DnaA,G1_00002,G2_00002,
+group_1,,hypothetical protein,G1_00003,,
+group_2,,some other protein,,G2_00004,

@@ -168,7 +168,7 @@ workflow GAP {
         new_data_checkm = file("NO_FILE_NEW_GENOMES_CHECKM")
         new_genome_stats = file("NO_FILE_NEW_GENOMES_STATS")
         extra_weight_table_new_genomes = file("NO_FILE_NEW_GENOMES_EXTRA_WEIGHT")
-        new_genomes = channel.empty()
+        new_genomes = channel.of([])
         qs50_failed = file("NO_FILE_QS50_FAILED")
         genomes_name_mapping = file("NO_FILE_GENOMES_NAME_MAPPING")
     }
@@ -252,7 +252,8 @@ workflow GAP {
             
     PROCESS_MANY_GENOMES(
         dereplicated_genomes.out.many_genomes_fna_tuples,
-        accessions_with_domains_ch
+        accessions_with_domains_ch,
+        checkm_all_genomes
     )
 
     PROCESS_SINGLETON_GENOMES(
@@ -525,7 +526,6 @@ workflow GAP {
         file(coverage_summary),
         file(cluster_faa),
         file(pangenome_fasta), // only for many_genomes clusters otherwise empty
-        file(core_genes)       // only for many_genomes clusters otherwise empty
     )
     */
     files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
@@ -533,9 +533,7 @@ workflow GAP {
     ).join(
         cluster_reps_faas
     ).join(
-        PROCESS_MANY_GENOMES.out.panaroo_pangenome_fna, remainder: true
-    ).join(
-        PROCESS_MANY_GENOMES.out.core_genes, remainder: true
+        PROCESS_MANY_GENOMES.out.pangenome_fna, remainder: true
     )
 
     GENOME_SUMMARY_JSON(
@@ -550,12 +548,12 @@ workflow GAP {
         cluster_reps_fnas.map({ it[1] })
     )
 
-    cluster_rep_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
-        PROCESS_MANY_GENOMES.out.rep_prokka_ffn
+    all_genomes_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
+        PROCESS_MANY_GENOMES.out.prokka_ffns
     )
 
     GENE_CATALOGUE(
-        cluster_rep_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
+        all_genomes_ffn.map({ it[1] }).collectFile(name: "all_genomes.ffn", newLine: true),
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 
