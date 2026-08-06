@@ -50,10 +50,10 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | BUSCO                                                                                            | 5.8.0            | Eukaryotic genome quality                                                                                              |
 | RepeatModeler                                                                                    | 2.0.7            | Identification of repeat elements in eukaryotic genomes                                                                |
 | RepeatMasker                                                                                     | 4.2.3            | Repeat masking in eukaryotic genomes                                                                                   |
-| BRAKER3                                                                                           | 3.0.8            | Primary source of gene calling in eukaryotic genomes                                                                                     |
-| MetaEuk                                                                                          | 7-bba0d80        | Secondary source of gene calling in eukaryotic genomes                                                                                     | 
-| AGAT                                                                                             | 1.7.0            | Deduplication of BRAKER3 predictions |
-| PSAURON                                                                                          | 1.1.0            | Assessment of protein coding gene annotation in fungi genomes |
+| BRAKER3                                                                                           | 3.0.8            | Primary source of gene calling in eukaryotic genomes                                                                   |
+| MetaEuk                                                                                          | 7-bba0d80        | Secondary source of gene calling in eukaryotic genomes                                                                 | 
+| AGAT                                                                                             | 1.7.0            | Deduplication of BRAKER3 predictions                                                                                   |
+| PSAURON                                                                                          | 1.1.0            | Assessment of protein coding gene annotation in fungal genomes                                                         |
 | CAT_pack                                                                                         | 5.2.3            | Taxonomic classification of eukaryotic genomes                                                                         |
 | CAT_pack DB                                                                                      | 2021-01-07       | DIAMOND database made from NCBI nr and NCBI taxdump used by CAT_pack                                                   |
 
@@ -192,7 +192,7 @@ BRAKER3 runs on **every** genome (soft-masked or not). The per-genome role of th
 - if a genome **has** protein evidence, BRAKER3 uses it as hints (`--prot_seq`);
 - if a genome has **no** protein evidence (the `NO_PROTEINS.faa` sentinel), BRAKER3 runs ab initio.
 
-BRAKER3 predictions are then deduplicated with [AGAT](https://github.com/NBISweden/AGAT), and the protein (`.faa`) and CDS (`.ffn`) sequences are extracted from the deduplicated set.
+BRAKER3 predictions are then deduplicated with [AGAT](https://github.com/NBISweden/AGAT) to remove identical predictions, and the protein (`.faa`) and CDS (`.ffn`) sequences are extracted from the deduplicated set.
 
 ### MetaEuk — secondary caller
 
@@ -203,11 +203,11 @@ BRAKER3 predictions are then deduplicated with [AGAT](https://github.com/NBISwed
 - **Genomes with protein evidence** → BRAKER3 and MetaEuk are merged into a single consensus set (see [merge_gene_predictions.py](bin/merge_gene_predictions.py)): every BRAKER3 gene is kept, MetaEuk genes that do **not** overlap (10% reciprocal overlap) a BRAKER3 gene are added, and BRAKER3 genes that **are** supported by an overlapping MetaEuk gene are flagged (see attributes below).
 - **Genomes without protein evidence** → the BRAKER3-only gene set is used directly.
 
-Either way, the gene set is post-processed (see [rename_and_process_gene_callers_outputs.py](bin/rename_and_process_gene_callers_outputs.py)): gene IDs are renamed to MGYG accessions, a `product=hypothetical protein` is added to CDS that lack one, and the genome FASTA is appended to the GFF (`##FASTA`).
+In all cases the gene set is post-processed (see [rename_and_process_gene_callers_outputs.py](bin/rename_and_process_gene_callers_outputs.py)): gene IDs are renamed to MGYG accessions, a `product=hypothetical protein` is added to CDS that lack one, and the genome FASTA is appended to the GFF (`##FASTA`).
 
 ### PSAURON — fungal protein scoring
 
-**PSAURON only runs for Fungi** — genomes whose CAT_pack/BAT taxonomy phylum is `p__Ascomycota` or `p__Basidiomycota`. It scores each predicted protein and writes the score back onto the GFF. Non-fungal genomes skip PSAURON and keep the post-processed GFF unchanged.
+**PSAURON only runs for Fungi** — fungal genomes are identified based on their CAT_pack/BAT taxonomy phylum. PSAURON scores each predicted protein and writes the score back onto the GFF. Non-fungal genomes skip PSAURON and keep the post-processed GFF unchanged.
 
 ### Gene-caller GFF attributes
 
