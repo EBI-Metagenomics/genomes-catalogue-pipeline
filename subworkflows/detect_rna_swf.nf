@@ -16,7 +16,7 @@ workflow DETECT_RNA {
     main:
     DETECT_TRNA(
         fnas.map{ _cluster_name, genome_fasta -> [genome_fasta.baseName, genome_fasta] }
-            .join(accessions_with_domains)
+            .join(accessions_with_domains, remainder: true)
             .filter { _genome_name, genome_fasta, _domain -> // TODO: check if this filter is necessary
                 genome_fasta != null  // remove genomes that were filtered out during QC and don't have an fna
             }
