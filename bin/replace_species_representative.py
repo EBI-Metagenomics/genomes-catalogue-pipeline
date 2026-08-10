@@ -119,16 +119,71 @@ def main(
     current_clusters_minus_removed, remove_log = remove_genomes_from_clusters(current_clusters, remove_list)
     rep_lookup_dict = invert_clusters(current_clusters)  # any_catalogue_genome → its_species_rep
     
-    replacement_results, stats_to_print, report_to_print = recompute_clusters(qs_values, isolates, 
-                                                                              current_clusters_minus_removed, 
-                                                                              new_strain_placement, 
-                                                                              repeat_strain_placement, rep_lookup_dict, 
-                                                                              remove_list, checkm2_switch)
+    replacement_results, stats_to_print, report_to_print, repeat_strains_discarded = recompute_clusters(
+        qs_values, isolates, current_clusters_minus_removed, new_strain_placement, repeat_strain_placement, 
+        rep_lookup_dict, remove_list, checkm2_switch)
 
     sanity_check(replacement_results, remove_list, current_clusters, new_strain_placement, stats_to_print)
     write_report_tsv(report_to_print, report_output_file)
     write_cluster_split_file(replacement_results, clusters_output_file, new_species_split_file)
+    write_discarded_strains(repeat_strains_discarded, "discarded_repeat_strains.txt")
 
+
+def filter_repeat_strains(
+    repeat_strain_placement: dict[str, Placement],
+    qs_values: dict[str, Quality],
+    isolates: set[str],
+) -> tuple[dict[str, Placement], list[str]]:
+    """
+    When multiple repeat strains match the same nearest hit, keep only the best one.
+
+    Isolates take priority over MAGs. Among equal isolate/MAG status, the genome
+    with the highest QS wins. N50 breaks ties.
+
+    Args:
+        repeat_strain_placement: Mapping of genome ID to Placement (as loaded from file).
+        qs_values: Mapping of genome ID to its Quality metrics.
+        isolates: Set of genome IDs that are isolates.
+
+    Returns:
+        Filtered dict with at most one genome per unique Nearest_hit value.
+        A list of discarded genome IDs. 
+    """
+    # Group genomes by their nearest hit
+    by_nearest_hit: dict[str, list[str]] = {}
+    for genome, placement in repeat_strain_placement.items():
+        by_nearest_hit.setdefault(placement.actual_match, []).append(genome)
+
+    filtered: dict[str, Placement] = {}
+    discarded_list = list()
+    for nearest_hit, genomes in by_nearest_hit.items():
+        if len(genomes) == 1:
+            genome = genomes[0]
+        else:
+            genome = max(
+                genomes,
+                key=lambda g: (
+                    g in isolates,  # True > False, so isolates sort higher
+                    qs_values[g].qs,
+                    qs_values[g].n50,
+                )
+            )
+            discarded = [g for g in genomes if g != genome]
+            discarded_list.extend(discarded)
+            logging.info(
+                f"Multiple repeat strains match nearest hit {nearest_hit!r}. "
+                f"Keeping {genome!r}, discarding {discarded}."
+            )
+        filtered[genome] = repeat_strain_placement[genome]
+
+    return filtered, discarded_list
+
+
+def write_discarded_strains(repeat_strains_discarded, outfile):
+    with open(outfile, "w") as f_out:
+        for strain in repeat_strains_discarded:
+            f_out.write(strain + "\n")
+            
 
 def write_cluster_split_file(
     replacement_results: dict[str, dict],
@@ -253,14 +308,18 @@ def recompute_clusters(
     new_strains_added = 0
     
     # Step 1: add in repeat strains
+    # We first pre-filter repeat strains to consider only the best one if multiple repeat strains exist for a single
+    # catalogue genome.
     # We will only consider adding a repeat strain in the following cases:
     # 1. if it's an isolate and existing strain is not (always add)
     # 2. If the genome that was matched has been removed from the catalogue (always add)
     # 3. if new genome is better quality (according to our threshold)
+    repeat_strain_placement, repeat_strains_discarded = filter_repeat_strains(repeat_strain_placement, qs_values, 
+                                                                              isolates)
     for genome, placement in repeat_strain_placement.items():
         matched_cluster = rep_lookup_dict[placement.actual_match]
         genome_is_isolate = genome in isolates
-        matched_genome_was_removed = genome in remove_list
+        matched_genome_was_removed = placement.actual_match in remove_list
         catalogue_match_is_isolate = placement.actual_match in isolates
         if (genome_is_isolate and not catalogue_match_is_isolate) or matched_genome_was_removed:
             # Case 1: genome is an isolate, catalogue match is not → add
@@ -275,6 +334,8 @@ def recompute_clusters(
                                                       replacement_results)
                 added_genomes.setdefault(matched_cluster, []).append(genome)
                 repeat_strains_added += 1
+            else:
+                repeat_strains_discarded.append(genome)
             
     # Step 2: add all new strains into the clusters
     for genome, placement in new_strain_placement.items():
@@ -294,7 +355,7 @@ def recompute_clusters(
     # Step 4: record species that have been completely removed
     report_to_print = add_removed_species(report_to_print, replacement_results)
     
-    return replacement_results, stats_to_print, report_to_print
+    return replacement_results, stats_to_print, report_to_print, repeat_strains_discarded
 
 
 def add_removed_species(
@@ -791,6 +852,10 @@ def load_isolates(isolates_file: str) -> set[str]:
     with open(isolates_file, 'r') as isolates_in:
         for line in isolates_in:
             genome, score = line.strip().split()[0:2:1]
+            for ext in (".fa", ".fna", ".fasta"):
+                if genome.endswith(ext):
+                    genome = genome[:-len(ext)]
+                    break
             if int(score) > 0:
                 isolates.add(genome)
     return isolates

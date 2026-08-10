@@ -18,9 +18,8 @@ workflow PROCESS_MANY_GENOMES {
     main:
 
         PROKKA(
-            many_genomes_clusters.combine(accessions_with_domains_tuples)
-            .filter { genome_name_fa, fa_path, genome_name_domain, domain -> genome_name_fa == genome_name_domain }
-            .map { genome_name_fa, fa_path, genome_name_domain, domain -> [genome_name_fa, fa_path, domain] }
+            many_genomes_clusters
+                .combine(accessions_with_domains_tuples, by: 0)
         )
 
         // Group by cluster
@@ -95,6 +94,7 @@ workflow PROCESS_MANY_GENOMES {
         pangenome_fna         = PANAROO.out.panaroo_pangenome_fna.mix( mmseqs_pangenome_fna )
         prokka_faas           = PROKKA.out.faa
         prokka_fnas           = PROKKA.out.fna
+        prokka_ffns           = PROKKA.out.ffn
         prokka_gffs           = PROKKA.out.gff
         rep_prokka_fna        = rep_prokka_fna
         rep_prokka_gff        = rep_prokka_gff
