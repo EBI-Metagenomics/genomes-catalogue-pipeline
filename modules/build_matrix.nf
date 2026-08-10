@@ -1,6 +1,6 @@
 process BUILD_MATRIX {
     tag "${cluster_name}"
-    label 'process_single'
+    label 'retry_three_times'
 
     publishDir(
         path: "${params.outdir}",

@@ -1,14 +1,12 @@
 process BRAKER {
     tag "${genome_name}"
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://teambraker/braker3:latest' :
-        'teambraker/braker3:latest' }"
-
+    container "docker.io/teambraker/braker3:v3.0.8"
 
     input:
-    tuple val(genome_name), path(masked_genome) // genome fasta with softmasked repeat
-    tuple val(genome_name), path(protein_evidence) // tuple with original genome fasta (for naming) and protein evidence
+    val genome_name
+    path genome
+    path protein_evidence
 
     output:
     tuple val(genome_name), path("${genome_name}_braker/*.gtf"), emit: gtf
@@ -24,9 +22,13 @@ process BRAKER {
         args += "--prot_seq ${protein_evidence} "
     }
     """
+    # Make HOME unique for this task; AUGUSTUS will then use \$HOME/.augustus
+    export HOME="\$PWD/.home"
+    mkdir -p "\$HOME"
+
     braker.pl \\
         $args \\
-        --genome ${masked_genome} \\
+        --genome ${genome} \\
         --species ${genome_name} \\
         --threads $task.cpus \\
         --workingdir "${genome_name}_braker" \\

@@ -36,8 +36,7 @@ def main(protein_count_file, cluster90_count_file, metadata_table_file, outfile)
 
 def load_metadata(metadata_table_file):
     clusters = dict()
-    isolate_clusters = list()
-    num_singletons = 0
+    isolate_clusters = set()
     # Read in the information
     with open(metadata_table_file) as file_in:
         header = next(file_in)
@@ -51,15 +50,14 @@ def load_metadata(metadata_table_file):
             species_rep = fields[rep_index]
             genome_type = fields[genome_type_index]
             clusters.setdefault(species_rep, list()).append(genome)
-            # if any cluster member is an isolate, save the cluster rep into the isolate list
+            # if any cluster member is an isolate, save the cluster rep into the isolate set
             if genome_type == "Isolate":
-                if species_rep not in isolate_clusters:
-                    isolate_clusters.append(species_rep)
-    
-    # Count singletons
-    num_singletons = sum(1 for genome_list in clusters.values() if len(genome_list) > 1)
+                isolate_clusters.add(species_rep)
 
-    return len(isolate_clusters), num_singletons
+    # Count clusters with more than one genome (pan-genomes)
+    num_multigenome_clusters = sum(1 for genome_list in clusters.values() if len(genome_list) > 1)
+
+    return len(isolate_clusters), num_multigenome_clusters
             
     
 def load_proteins(file):

@@ -183,6 +183,10 @@
         "kingdom": {
             "type": "string",
             "default": "prokaryotes"
+        },
+        "psauron_target_phyla": {
+            "type": "array",
+            "default": ["p__Ascomycota", "p__Basidiomycota"]
         }
     },
     "required": [

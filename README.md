@@ -34,7 +34,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | mgnify-pipelines-toolkit                                                                         | 1.5.1            | Post-process antiSMASH results                                                                                         |
 | GECCO                                                                                            | 0.9.8            | Biosynthetic gene cluster annotation                                                                                   |
 | SanntiS                                                                                          | 0.9.3.2          | Biosynthetic gene cluster annotation                                                                                   |
-| DefenseFinder                                                                                    | 2.0.0            | Annotation of anti-phage and anti-defense systems                                                                      |
+| DefenseFinder                                                                                    | 2.0.1            | Annotation of anti-phage and anti-defense systems                                                                      |
 | DefenseFinder models                                                                             | 2.0.2            | Database for DefenseFinder                                                                                             |
 | CasFinder                                                                                        | 3.1.0            | Database for DefenseFinder                                                                                             |
 | run_dbCAN                                                                                        | 4.1.4            | Polysaccharide utilization loci prediction                                                                             |
@@ -43,16 +43,21 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | tRNAscan-SE                                                                                      | 2.0.9            | tRNA predictions                                                                                                       |
 | Rfam                                                                                             | 15.1             | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
 | Panaroo                                                                                          | 1.3.2            | Pan-genome computation for clusters smaller than 1000 genomes                                                          |
-| CGT (CELEBRIMBOR)                                                                                | 1.0.0            | Pan-genome gene frequency correction based on genome completeness                                                                      |
+| CGT (CELEBRIMBOR)                                                                                | 0.1.1            | Pan-genome gene frequency correction based on genome completeness                                                                      |
 | Seqtk                                                                                            | 1.3              | Generating a gene catalogue                                                                                            |
-| VIRify                                                                                           | 3.0.2            | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
-| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 3.0.1            | Mobilome annotation (executed as a separate step)                                                                      |
+| VIRify                                                                                           | 4.0.0            | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
+| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 5.0.0            | Mobilome annotation (executed as a separate step)                                                                      |
 | samtools                                                                                         | 1.15             | FASTA indexing                                                                                                         |
 | EukCC                                                                                            | 2.1.3            | Completeness and contamination of eukaryotic genomes                                                                   |
 | BUSCO                                                                                            | 5.8.0            | Eukaryotic genome quality                                                                                              |
-| RepeatModeler                                                                                    | 2.0.6            | Identification of repeat elements in eukaryotic genomes                                                                |
-| RepeatMasker                                                                                     | 4.1.7            | Repeat masking in eukaryotic genomes                                                                                   |
-| Braker                                                                                           | 3.0.8            | Gene calling in eukaryotic genomes                                                                                     |
+| RepeatModeler                                                                                    | 2.0.7            | Identification of repeat elements in eukaryotic genomes                                                                |
+| RepeatMasker                                                                                     | 4.2.3            | Repeat masking in eukaryotic genomes                                                                                   |
+| BRAKER3                                                                                           | 3.0.8            | Primary source of gene calling in eukaryotic genomes                                                                   |
+| MetaEuk                                                                                          | 7-bba0d80        | Secondary source of gene calling in eukaryotic genomes                                                                 | 
+| AGAT                                                                                             | 1.7.0            | Deduplication of BRAKER3 predictions                                                                                   |
+| PSAURON                                                                                          | 1.1.0            | Assessment of protein coding gene annotation in fungal genomes                                                         |
+| CAT_pack                                                                                         | 5.2.3            | Taxonomic classification of eukaryotic genomes                                                                         |
+| CAT_pack DB                                                                                      | 2021-01-07       | DIAMOND database made from NCBI nr and NCBI taxdump used by CAT_pack                                                   |
 
 ## Setup
 
@@ -61,11 +66,11 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 The pipeline is implemented in [Nextflow](https://www.nextflow.io/).
 
 Requirements:
-- [singulairty](https://sylabs.io/docs/) or [docker](https://www.docker.com/)
+- [singularity](https://sylabs.io/docs/) or [docker](https://www.docker.com/)
 
 #### Reference databases
 
-The pipeline needs the following reference databases and configuration files (roughtly ~150G):
+The pipeline needs the following reference databases and configuration files (roughly ~150G):
 
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db_5.0.2.tgz
@@ -78,9 +83,7 @@ The pipeline needs the following reference databases and configuration files (ro
 
 ### Containers
 
-This pipeline requires [singularity](https://sylabs.io/docs/) or [docker](https://www.docker.com/) as the container engine to run pipeline.
-
-The containers are hosted in [biocontainers](https://biocontainers.pro/) and [quay.io/microbiome-informatics](https://quay.io/organization/microbiome-informatics) repository.
+The containers are hosted in [biocontainers](https://biocontainers.pro/) and [quay.io/microbiome-informatics](https://quay.io/organization/microbiome-informatics) repositories.
 
 It's possible to build the containers from scratch using the following script:
 
@@ -102,10 +105,22 @@ cd containers && bash build.sh
  - catalogue biome (for example, root:Host-associated:Human:Digestive system:Large intestine:Fecal)
  - min and max accession number to be assigned to the genomes (only MGnify specific). Max - Min = #total number of genomes (NCBI+ENA)
 
+### Eukaryotic genomes: protein evidence for gene prediction
+
+If you are running the pipeline with `--kingdom eukaryotes`, you need to collect protein evidence before running the pipeline. This evidence is used by [Braker](https://github.com/Gaius-Augustus/BRAKER) for gene prediction.
+
+Use [datascout](https://github.com/EBI-Metagenomics/datascout) pipeline to collect the required protein data from OrthoDB:
+
+```bash
+nextflow run datascout/main.nf --samplesheet <datascout_input>.csv --download_rna_fastq false
+```
+
+The samplesheet with protein evidence should be supplied with `--protein_evidence` parameter. The expected format is a CSV file with two columns — `genome` and `proteins` — mapping each genome filename to its corresponding protein FASTA file. See [assets/datascout_samplesheet.csv](assets/datascout_samplesheet.csv) for an example.
+
 ## Execution
 
-The pipeline is built in [Nextflow](https://www.nextflow.io), and utilized containers to run the software (we don't support conda ATM).
-In order to run the pipeline it's required that the user creates a profile that suits their needs, there is an `ebi` profile in `nexflow.config` that can be used as template.
+The pipeline is built in [Nextflow](https://www.nextflow.io), and utilizes containers to run the software (we don't support conda ATM).
+In order to run the pipeline it's required that the user creates a profile that suits their needs, there is an `ebi` profile in `nextflow.config` that can be used as a template.
 
 After downloading the databases and adjusting the config file:
 
@@ -135,7 +150,7 @@ performs the following:
 
 While a regular pipeline execution uses dRep to cluster genomes, **the clustering during the update process is different in the following ways**:
 
-- existing clustering from the previous catalogue version is preserved 
+- existing clustering from the previous catalogue version is preserved
 - the genomes that are flagged for removal (by the user or the pipeline) are removed without disrupting the existing clusters
 - if new genomes are being added, their placement is determined using [Mash](https://github.com/marbl/Mash) and the following rules:
   1. if the smallest Mash distance between the new genome and any of the existing catalogue genomes is less than 0.001, the new genome is classified as a repeat strain
@@ -145,14 +160,14 @@ While a regular pipeline execution uses dRep to cluster genomes, **the clusterin
   5. new strains and new species are always added to the catalogue, as long as they pass the general quality control checks used for new genomes
 
 ### Quality comparisons for new genomes
-During the catalogue cluster update process, the quality scores for all genomes are calculated as:  
-`QS = % completeness – 5 * % contamination + 0.5 * log(N50)`  
-A 10% quality improvement is computed as `threshold = QS * 1.1`.  
+During the catalogue cluster update process, the quality scores for all genomes are calculated as:
+`QS = % completeness – 5 * % contamination + 0.5 * log(N50)`
+A 10% quality improvement is computed as `threshold = QS * 1.1`.
 The quality score improvement is used to decide:
 - if a repeat strain should be added to the catalogue
 - if the species representative genome should be re-assigned.
 
-For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.  
+For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.
 If threshold > 100, the decision process changes to prioritise genome contiguity. The species representative is replaced if there is a genome that satisfies the following conditions:
 - QS and completeness is same or higher than the existing rep
 - Contamination is the same or less than the existing rep
@@ -160,6 +175,55 @@ If threshold > 100, the decision process changes to prioritise genome contiguity
 - The length of the new representative should be at least 90% of the length of the old represenative
 
 An isolate genome is always prioritised over a MAG. That means, if the current representative is an isolate, it can only be replaced with a better quality isolate. If the current species rep is a MAG and an isolate has been added to the cluster, a species representative replacement will be made even if the new genome has lower quality.
+
+
+## Eukaryotic gene calling
+
+When the pipeline runs with `--kingdom eukaryotes`, protein-coding genes are called per genome by combining two gene callers — [BRAKER3](https://github.com/Gaius-Augustus/BRAKER) (primary) and [MetaEuk](https://github.com/soedinglab/metaeuk) (secondary) — and, for fungal genomes, the resulting proteins are scored with [PSAURON](https://github.com/salzberg-lab/PSAURON).
+
+![Eukaryotic gene calling overview](assets/euk_gene_prediction.png)
+
+### Repeat masking
+
+Each genome is run through [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) to build a repeat library. Genomes **with** repeat families are then soft-masked by [RepeatMasker](https://github.com/Dfam-consortium/RepeatMasker); genomes with **no** repeat families bypass RepeatMasker and stay unmasked.
+
+### BRAKER3 — primary caller
+
+BRAKER3 runs on **every** genome (soft-masked or not). The per-genome role of the protein evidence supplied via `--protein_evidence` (see [Eukaryotic genomes: protein evidence for gene prediction](#eukaryotic-genomes-protein-evidence-for-gene-prediction)) is:
+
+- if a genome **has** protein evidence, BRAKER3 uses it as hints (`--prot_seq`);
+- if a genome has **no** protein evidence (the `NO_PROTEINS.faa` sentinel), BRAKER3 runs ab initio.
+
+BRAKER3 predictions are then deduplicated with [AGAT](https://github.com/NBISweden/AGAT) to remove identical predictions, and the protein (`.faa`) and CDS (`.ffn`) sequences are extracted from the deduplicated set.
+
+### MetaEuk — secondary caller
+
+**MetaEuk only runs for genomes that have protein evidence** — it is a protein-to-genome aligner and needs the evidence to predict genes. Genomes without protein evidence skip MetaEuk and use BRAKER3 alone. The CDS phases of the MetaEuk GFF (MetaEuk emits `.`) are recomputed with AGAT and reconciled back onto the original MetaEuk structure.
+
+### Merging the two callers
+
+- **Genomes with protein evidence** → BRAKER3 and MetaEuk are merged into a single consensus set (see [merge_gene_predictions.py](bin/merge_gene_predictions.py)): every BRAKER3 gene is kept, MetaEuk genes that do **not** overlap (10% reciprocal overlap) a BRAKER3 gene are added, and BRAKER3 genes that **are** supported by an overlapping MetaEuk gene are flagged (see attributes below).
+- **Genomes without protein evidence** → the BRAKER3-only gene set is used directly.
+
+In all cases the gene set is post-processed (see [rename_and_process_gene_callers_outputs.py](bin/rename_and_process_gene_callers_outputs.py)): gene IDs are renamed to MGYG accessions, a `product=hypothetical protein` is added to CDS that lack one, and the genome FASTA is appended to the GFF (`##FASTA`).
+
+### PSAURON — fungal protein scoring
+
+**PSAURON only runs for Fungi** — fungal genomes are identified based on their CAT_pack/BAT taxonomy phylum. PSAURON scores each predicted protein and writes the score back onto the GFF. Non-fungal genomes skip PSAURON and keep the post-processed GFF unchanged.
+
+### Gene-caller GFF attributes
+
+The merge and PSAURON steps add the following attributes (GFF column 9):
+
+| Attribute | Feature | Added by | Meaning |
+|---|---|---|---|
+| `original_gene_id` | gene | merge / postprocessing | the gene caller's original ID (e.g. `g42`) before the MGYG renaming |
+| `prediction_support` | gene | merge | number of callers supporting the gene (`2` when BRAKER3 and MetaEuk agree) |
+| `prediction_tools` | gene | merge | the callers supporting the gene (`BRAKER3,MetaEuk`) |
+| `prediction_overlap` | gene | merge | fraction (0–1) of the BRAKER3 transcript covered by the supporting MetaEuk transcript |
+| `psauron_score` | mRNA | PSAURON | PSAURON in-frame score of the transcript's protein (fungal genomes only) |
+
+The feature `source` (column 2) reflects the predictor: `AUGUSTUS` / `GeneMark.hmm3` for BRAKER3 genes and `MetaEuk` for MetaEuk-unique genes. `prediction_support` / `prediction_tools` / `prediction_overlap` appear only on BRAKER3 genes that have MetaEuk support; MetaEuk-unique and BRAKER3-only genes carry just `original_gene_id`.
 
 
 ### Development
@@ -173,13 +237,13 @@ pre-commit install
 
 #### Code style
 
-Use Black, this tool is configured if you install the pre-commit tools as above.
+Use Black; this tool is configured if you install the pre-commit tools as above.
 
 To manually run them: black .
 
 ### Testing
 
-This repo has 2 set of tests, python unit tests for some of the most critical python scripts and [nf-test](https://github.com/askimed/nf-test) scripts for the nextflow code.
+This repo has 2 sets of tests: Python unit tests for some of the most critical Python scripts and [nf-test](https://github.com/askimed/nf-test) scripts for the Nextflow code.
 
 To run the python tests
 
@@ -188,7 +252,7 @@ pip install -r requirements-test.txt
 pytest
 ```
 
-To run the nextflow ones the databases have to downloaded manually, we are working to improve this.
+To run the Nextflow ones, the databases have to be downloaded manually; we are working to improve this.
 
 ```bash
 nf-test test tests/*

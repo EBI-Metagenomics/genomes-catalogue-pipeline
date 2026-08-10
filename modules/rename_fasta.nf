@@ -1,4 +1,10 @@
 process RENAME_FASTA {
+    // for some reason this directive does not work when defined in the config file
+    publishDir(
+        path: "${params.outdir}/additional_data/busco",
+        pattern: "renamed_*.summary",
+        mode: 'copy'
+    )
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
@@ -22,7 +28,7 @@ process RENAME_FASTA {
 
     script:
     genomes_prefix = prefix ? prefix : "MGYG"
-    
+
     def args = ""
     if (preassigned_accessions.name != "NO_FILE_PREASSIGNED_ACCS") {
         args += "--map-file ${preassigned_accessions} "

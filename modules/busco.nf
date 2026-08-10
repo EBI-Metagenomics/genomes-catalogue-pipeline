@@ -11,6 +11,7 @@ process BUSCO {
     input:
     path fasta
     path busco_db
+    val busco_mode
 
     output:
     path "short_summary.specific_${fasta.baseName}.txt", emit: busco_summary
@@ -24,7 +25,7 @@ process BUSCO {
 
     busco  --offline \
             -i ${fasta} \
-            -m 'genome' \
+            -m '${busco_mode}' \
             -o ${fasta.baseName} \
             --auto-lineage-euk \
             --download_path ${busco_db} \
