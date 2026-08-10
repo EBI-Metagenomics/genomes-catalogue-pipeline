@@ -12,7 +12,6 @@ workflow PROCESS_MANY_GENOMES_EUKS {
         many_genomes_clusters // list<tuple(cluster_name, genome_fna)>
         mapping_file // genome name mapping
         protein_evidence // file of fasta files and protein evidence
-        taxonomy_map // eukaryotic_taxonomy_reformatted.tsv (REFORMAT_BAT.out.taxonomy)
 
     main:
 
@@ -22,7 +21,7 @@ workflow PROCESS_MANY_GENOMES_EUKS {
             protein_evidence
         )
 
-        EUK_GENE_CALLING(GROUP_GENOME_PROTEINS.out.tuple_with_proteins, taxonomy_map)
+        EUK_GENE_CALLING(GROUP_GENOME_PROTEINS.out.tuple_with_proteins)
 
         rep_gene_caller_gff = EUK_GENE_CALLING.out.gffs.filter {
             it[1].name.contains(it[0])
@@ -55,4 +54,5 @@ workflow PROCESS_MANY_GENOMES_EUKS {
         rep_gene_caller_ffn = rep_gene_caller_ffn
         non_rep_gene_caller_fna = non_rep_gene_caller_fna
         non_rep_gene_caller_gff = non_rep_gene_caller_gff
+        gene_calls = EUK_GENE_CALLING.out.gene_calls
 }
