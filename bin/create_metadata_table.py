@@ -200,6 +200,9 @@ def add_taxonomy(df, taxonomy_file, genome_list, reps):
 
 
 def add_species_rep(df, clusters_file):
+    # File contents look like this:
+    # many_genomes: 4_1:MGYG000883449.fa, MGYG000878385.fa, MGYG000881739.fa
+    # one_genome: 5_0:MGYG000898853.fa
     reps = dict()
     with open(clusters_file, "r") as file_in:
         for line in file_in:
