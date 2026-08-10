@@ -18,7 +18,8 @@ def main(
     previous_readme,
     previous_version,
     previous_metadata_table,
-    additional_data_path
+    additional_data_path,
+    study_list_threshold
 ):
     # If this is a README for an updated catalogue, check that all arguments are provided
     if previous_readme or previous_version or previous_metadata_table:
@@ -39,8 +40,22 @@ def main(
     cat_url = "https://www.ebi.ac.uk/metagenomics/genome-catalogues/{}-{}".format(
         catalog_name, version.replace(".", "-")
     )
-    study_list_string = ", ".join(sorted(study_list))
-   
+
+    if len(study_list) > study_list_threshold:
+        study_list_file = Path(outfile_name).parent / "study_list.txt"
+        with open(study_list_file, "w") as f:
+            for study in sorted(study_list):
+                f.write(study + "\n")
+        study_list_string = (
+            f"* Genomes from {len(study_list)} studies were used to generate the catalogue. "
+            f"See the full list of studies in study_list.txt"
+        )
+    else:
+        study_list_string = (
+            "* Genomes from the following studies were used to generate the catalogue: "
+            + ", ".join(sorted(study_list))
+        )
+
     # If this is an update, generate a changelog from the previous version  
     if previous_readme:
         changelog = create_changelog(version, previous_version, metadata_table, previous_metadata_table, 
@@ -399,7 +414,7 @@ def print_file(
     num_genomes,
     num_species,
     ver_pipeline,
-    study_list,
+    study_list_string,
     biome,
     git_link,
     archaea,
@@ -443,7 +458,7 @@ combined together. In some cases, this can produce clusters where some of the co
 Website URL: {url}
 
 * A total of {num_genomes} prokaryotic genomes from the {biome} microbiome were clustered into {num_species} species representatives.
-* Genomes from the following studies were used to generate the catalogue: {study_list}
+{study_list_string}
 * The catalogue was generated using MGnify genomes pipeline v{ver_pipeline}: {git_link}. 
 * A protein catalogue was produced with all protein coding sequences clustered at 100%, 95%, 90% and 50% amino acid identity.
 * A gene catalogue is the collection of nucleotide sequences corresponding to the protein cluster representatives of the 100% identity clustering. {xlarge_note}
@@ -475,7 +490,7 @@ Website URL: {url}
 
 
 ## For species where there is more than one conspecific genome, pan-genomes can be found in:
-       
+
 - pan-genome/
     * pan-genome.fna : Nucleotide sequence FASTA file of the pan-genome.
     * gene_presence_absence.csv : A list of genes in the pan-genome with their annotation and MGYG accessions.
@@ -488,7 +503,7 @@ Website URL: {url}
 - all_genomes.msh : A Mash sketch of all {num_genomes} genomes.
 
 - all_genomes/ : Combined GFF/FASTA file (Prokka output) for each of the {num_genomes} genomes. For species representative genomes, the GFF contains additional annotations as described above.  
-       
+
 - gene_catalogue/: 
     * gene_catalogue-100.ffn.gz : Nucleotide sequences corresponding to the protein cluster representatives in the protein catalogue clustered at 100% amino acid identity.
     * clusters.tsv : A list of gene accession pairs where the first accession is that of a gene included in the gene catalogue as the representative and the second is a gene that is not included in the gene catalogue but belongs in the same cluster based on amino acid identity.
@@ -514,7 +529,7 @@ Website URL: {url}
         ver_pipeline=ver_pipeline,
         git_link=git_link,
         xlarge_note=xlarge_note,
-        study_list=study_list,
+        study_list_string=study_list_string,
         biome=biome,
         catalog_name=catalog_name,
         phylo_text=phylo_text
@@ -581,6 +596,14 @@ def parse_args():
         help="If this README is for an update, provide the path to the 'additional_data' folder "
              "(in the catalogue pipeline output).",
     )
+    parser.add_argument(
+        "--study-list-threshold",
+        type=int,
+        default=20,
+        help="If the number of studies used to generate the catalogue exceeds this value, "
+             "the full study list is written to a separate study_list.txt file (alongside "
+             "the README) instead of being listed inline. Default: 20.",
+    )
     return parser.parse_args()
 
 
@@ -596,5 +619,6 @@ if __name__ == "__main__":
         args.previous_readme,
         args.previous_version,
         args.previous_metadata_table,
-        args.additional_data_path
+        args.additional_data_path,
+        args.study_list_threshold
     )
