@@ -36,6 +36,7 @@ UNINFORMATIVE = {
     "missing",
     "not applicable",
     "not determined",
+    "not provided",
 }
 
 
