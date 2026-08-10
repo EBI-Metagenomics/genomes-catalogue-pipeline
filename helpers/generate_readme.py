@@ -28,7 +28,7 @@ def main(
                 "For updates, you must provide --previous-readme, "
                 "--previous-version, --additional-data-path, and --previous-metadata-table together."
             )
-        
+
     (
         num_genomes,
         num_species,
@@ -58,13 +58,13 @@ def main(
 
     # If this is an update, generate a changelog from the previous version  
     if previous_readme:
-        changelog = create_changelog(version, previous_version, metadata_table, previous_metadata_table, 
-                                     additional_data_path)
+        changelog = create_changelog(version, previous_version, metadata_table, previous_metadata_table,
+                                     additional_data_path, outfile_name)
         previous_changelog = extract_previous_changelogs(previous_readme)
     else:
         changelog = ""
         previous_changelog = ""
-        
+
     print_file(
         outfile_name,
         version,
@@ -111,15 +111,15 @@ def extract_previous_changelogs(previous_readme):
                 changelog_lines.append(line.rstrip("\n"))  # remove trailing newline
 
     return "\n".join(changelog_lines)
-    
-    
+
+
 def get_tree_tool(count):
     if count > TREE_TOOL_TRANSITION_COUNT:
         return "fasttree"
     else:
         return "iqtree"
-    
-    
+
+
 def process_metadata_table(metadata_table):
     total_genomes = 0
     reps = set()
@@ -150,39 +150,39 @@ def process_metadata_table(metadata_table):
     return total_genomes, num_reps, study_list, version, catalog_name, archaea
 
 
-def create_changelog(version, previous_version, metadata_table, previous_metadata_table, additional_data_path):
-    new_genome_dict = count_new_genomes(metadata_table, previous_metadata_table)
+def create_changelog(version, previous_version, metadata_table, previous_metadata_table,
+                     additional_data_path, outfile_name):
+    new_df = count_new_genomes(metadata_table, previous_metadata_table)
     species_rep_replacements, removals = load_rep_changes(additional_data_path)
     new_species_count, new_strains_count = count_new_species_and_strains(additional_data_path, metadata_table)
     changelog_header = f"## Changes in release {version} since {previous_version}\n"
-    
+
     # Initialize lines
     lines = [changelog_header]
-    
-    if new_genome_dict:
 
-        new_genome_line = summarise_new_genomes(new_genome_dict)
+    new_genome_line = summarise_new_genomes(new_df, outfile_name)
+    if new_genome_line:
         lines.append(new_genome_line)
-        
+
         # New species/strain line
         if new_species_count > 0 or new_strains_count > 0:
             new_species_line = f"This resulted in {new_species_count} new species and {new_strains_count} new strains."
             lines.append(new_species_line)
-    
+
     lines.append("* Due to version changes and updates to the pipeline, all annotations were regenerated.")
-    
+
     if species_rep_replacements:
         lines.append("\nThe following species representatives were replaced:")
         lines.append("Old rep\tNew rep\tReason for replacement")
         for old_rep in species_rep_replacements:
             lines.append(f"{old_rep}\t{species_rep_replacements[old_rep]['new_rep']}\t"
                          f"{species_rep_replacements[old_rep]['reason']}")
-        
+
     if removals:
         lines.append("\nThe following genomes were removed from the catalogue:")
         for genome in removals:
             lines.append(genome)
-            
+
     # Join all lines into a single block
     changelog_text = "\n".join(lines)
     return changelog_text
@@ -194,7 +194,7 @@ def count_new_species_and_strains(additional_data_path, metadata_table):
         / "update_execution_reports"
         / "clusters_split_new_species.txt"
     )
-    
+
     mash_new_strains_path = (
         Path(additional_data_path)
         / "update_execution_reports"
@@ -213,9 +213,9 @@ def count_new_species_and_strains(additional_data_path, metadata_table):
 
     df = pd.read_csv(metadata_table, sep="\t")
     catalogue_genomes = set(df["Genome"])
-    
+
     # it's ok if clusters split doesn't exist - it won't if there were no new species added
-    if clusters_split_path.exists():  
+    if clusters_split_path.exists():
         with open(clusters_split_path, "r") as file_in:
             for line in file_in:
                 line = line.strip()
@@ -254,51 +254,50 @@ def count_new_species_and_strains(additional_data_path, metadata_table):
     return new_species_count, new_strains_count
 
 
-def summarise_new_genomes(new_genomes):
+def summarise_new_genomes(new_genomes_df, outfile_name):
     """
-    Build a summary string of new genomes added per study.
+    Build a one-line summary of newly added genomes and write the full
+    per-genome list to added_genomes.tsv alongside the README.
 
     Parameters
     ----------
-    new_genomes : dict
-        Output from count_new_genomes(), e.g.
-        {
-            study_accession: {
-                'isolates': count,
-                'mags': count,
-                'new_species': count,
-                'new_strains': count
-            }
-        }
+    new_genomes_df : pd.DataFrame
+        Newly added genomes, with columns 'Genome', 'Genome_type', 'Study_accession'.
+    outfile_name : str
+        Path to the README output file; added_genomes.tsv is written into the
+        same directory.
 
     Returns
     -------
     str
-        Human-readable summary of new genomes added.
+        Summary sentence for the changelog, or an empty string if there are
+        no new genomes.
     """
+    if new_genomes_df.empty:
+        return ""
+
+    mag_count = int((new_genomes_df["Genome_type"] == "MAG").sum())
+    isolate_count = int((new_genomes_df["Genome_type"] == "Isolate").sum())
 
     parts = []
+    if mag_count > 0:
+        parts.append(f"{mag_count} MAGs")
+    if isolate_count > 0:
+        parts.append(f"{isolate_count} isolates")
 
-    for study, counts in new_genomes.items():
-        isolates = counts["isolates"]
-        mags = counts["mags"]
+    if not parts:
+        return ""
 
-        study_parts = []
-
-        if isolates > 0:
-            study_parts.append(f"{isolates} isolates")
-        if mags > 0:
-            study_parts.append(f"{mags} MAGs")
-
-        if study_parts:
-            parts.append(f"{' and '.join(study_parts)} from study {study}")
-
-    summary = (
-        "* The following genomes were added to the catalogue: "
-        + ", ".join(parts)
-        + "."
+    added_genomes_file = Path(outfile_name).parent / "added_genomes.tsv"
+    new_genomes_df[["Genome", "Genome_type", "Study_accession"]].to_csv(
+        added_genomes_file, sep="\t", index=False
     )
 
+    summary = (
+        "* "
+        + " and ".join(parts)
+        + " were added to the catalogue. See the full list and the source projects in added_genomes.tsv"
+    )
     return summary
 
 
@@ -351,10 +350,10 @@ def load_rep_changes(additional_data_path):
 
     return species_rep_replacements, removals
 
-    
+
 def count_new_genomes(metadata_table, previous_metadata_table):
     """
-    Count new genomes by study accession and genome type from tab-delimited files.
+    Identify genomes present in the current metadata table but not the previous one.
 
     Parameters
     ----------
@@ -367,13 +366,9 @@ def count_new_genomes(metadata_table, previous_metadata_table):
 
     Returns
     -------
-    dict
-        {
-            study_accession: {
-                'isolates': count,
-                'mags': count
-            }
-        }
+    pd.DataFrame
+        Subset of the current metadata table containing only the newly added
+        genomes, with columns 'Genome', 'Genome_type', 'Study_accession'.
     """
 
     # Read tab-delimited metadata tables
@@ -384,28 +379,12 @@ def count_new_genomes(metadata_table, previous_metadata_table):
     new_genomes_set = set(current_df["Genome"]) - set(previous_df["Genome"])
 
     # Filter current metadata to new genomes
-    new_df = current_df[current_df["Genome"].isin(new_genomes_set)]
+    new_df = current_df[current_df["Genome"].isin(new_genomes_set)][
+        ["Genome", "Genome_type", "Study_accession"]
+    ]
+    return new_df
 
-    # Summarise by study accession and genome type
-    new_genomes = {}
 
-    for _, row in new_df.iterrows():
-        study = row["Study_accession"]
-        genome_type = row["Genome_type"]
-
-        if study not in new_genomes:
-            new_genomes[study] = {
-                "isolates": 0,
-                "mags": 0,
-            }
-
-        if genome_type == "Isolate":
-            new_genomes[study]["isolates"] += 1
-        elif genome_type == "MAG":
-            new_genomes[study]["mags"] += 1
-    return new_genomes
-
-    
 def print_file(
     outfile_name,
     version,
@@ -450,7 +429,7 @@ combined together. In some cases, this can produce clusters where some of the co
 """
     else:
         xlarge_note = "\n"
-    
+
     readme_text = """
 {version} release
 ------------
@@ -540,7 +519,7 @@ Website URL: {url}
         readme_text += "\n\n" + changelog
     if previous_changelog:
         readme_text += "\n\n" + previous_changelog
-        
+
     with open(outfile_name, "w") as outfile:
         outfile.write(readme_text)
 
