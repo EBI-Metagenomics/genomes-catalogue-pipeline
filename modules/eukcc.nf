@@ -17,7 +17,7 @@ process EUKCC {
 	--out ${fasta.baseName}_eukcc_results \
 	--threads ${task.cpus} \
 	--db ${eukcc_db} \
- 	${fasta}
+ 	${fasta} || [ \$? -eq 201 ]
 
     result_file=\$(ls *eukcc_results/eukcc.tsv | head -n1)
 
@@ -25,7 +25,5 @@ process EUKCC {
     awk '{gsub(".*/", "", \$1); \$1=\$1; OFS=","; print}' \${result_file} |\
      cut -d',' -f1,2,3 |\
      sed '1s/.*/genome,completeness,contamination/' > ${fasta.baseName}_eukcc.csv 
-
     """
-       
 }
