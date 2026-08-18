@@ -57,9 +57,15 @@ def load_checkm(checkm, genome_list, output_csv, details_csv=None):
                 continue
             genome, completeness, contamination = line.split(",")
             if genome in genome_list:
-                if not qs50(float(contamination), float(completeness)): 
+                try:
+                    reason = "" if qs50(float(contamination), float(completeness)) else "Failed QS50"
+                except ValueError:
+                    # EukCC reports NA when they can't assess a genome
+                    logging.warning("Genome {} has no completeness/contamination value".format(genome))
+                    reason = "Missing completeness/contamination value"
+                if reason:
                     remove_list.add(genome)
-                    details.append(line)
+                    details.append("{},{}".format(line, reason))
                 else:
                     file_out.write(line + "\n")
             else:

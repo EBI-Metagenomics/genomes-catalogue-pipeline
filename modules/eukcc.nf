@@ -1,7 +1,7 @@
 process EUKCC {
 
 
-    container 'quay.io/microbiome-informatics/eukcc:2.1.3'
+    container 'community.wave.seqera.io/library/python_metaeuk_pplacer_epa-ng_pruned:0b7ea587ebcad440'
     tag "${fasta.baseName}"
     
     input:
@@ -19,7 +19,7 @@ process EUKCC {
 	--db ${eukcc_db} \
  	${fasta}
 
-    result_file=\$(ls *eukcc_results/eukcc.csv | head -n1)
+    result_file=\$(ls *eukcc_results/eukcc.tsv | head -n1)
 
     #comma separate, change header, remove tax lineage column
     awk '{gsub(".*/", "", \$1); \$1=\$1; OFS=","; print}' \${result_file} |\
