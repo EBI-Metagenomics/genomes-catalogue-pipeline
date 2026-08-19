@@ -1,0 +1,5 @@
+genome,completeness,contamination
+kept.fa,95.0,1.0
+no_values.fa,NA,NA
+contaminated.fa,95.0,7.0
+low_score.fa,60.0,3.0
