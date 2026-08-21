@@ -198,7 +198,7 @@ workflow GAP_EUKS {
     )
 
     rep_genomes_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples
-        .mix( dereplicated_genomes.out.many_genomes_fna_tuples.filter { it[1].name.contains(it[0]) } )
+        .mix( dereplicated_genomes.out.many_genomes_fna_tuples.filter { cluster, genome_fna -> genome_fna.name.contains(cluster) } )
 
     // BAT classifies the species representatives, using the proteins called for them
     bat_input = rep_genomes_fna_tuples
@@ -297,9 +297,7 @@ workflow GAP_EUKS {
         PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna
     )
     
-    cluster_reps_gffs = all_gffs.filter {
-        it[1].name.contains(it[0])
-    }
+    cluster_reps_gffs = all_gffs.filter { cluster, gff -> gff.name.contains(cluster) }
 
     all_gene_caller_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna.mix(
         PROCESS_MANY_GENOMES_EUKS.out.gene_caller_fnas

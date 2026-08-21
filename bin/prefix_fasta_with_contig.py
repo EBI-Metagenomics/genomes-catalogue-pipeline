@@ -31,6 +31,8 @@ def build_id_to_contig(gff_path: str) -> Dict[str, str]:
     id_to_contig: Dict[str, str] = {}
     with open(gff_path, "r") as gff_in:
         for line in gff_in:
+            if line.startswith("##FASTA"):
+                break
             if line.startswith("#") or not line.strip():
                 continue
             fields = line.rstrip("\n").split("\t")
@@ -56,7 +58,7 @@ def prefix_fasta(fasta: str, id_to_contig: Dict[str, str], output: str, separato
                 fasta_out.write(line)
                 continue
             header = line[1:].rstrip("\n")
-            record_id = header.split()[0] if header.split() else ""
+            record_id = header.split(maxsplit=1)[0]
             description = header[len(record_id) :]
             if record_id not in id_to_contig:
                 raise ValueError(f"ID {record_id!r} is present in {fasta} but missing from the GFF")

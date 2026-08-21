@@ -40,8 +40,6 @@ process BAT {
       -o ${bin.baseName}.BAT_run.bin2classification.names.txt \
       -t ${cat_taxonomy_db} \
       --only_official
-
-    rm -f ${renamed_proteins}
     """
 
     stub:

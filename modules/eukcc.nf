@@ -19,10 +19,11 @@ process EUKCC {
 	--db ${eukcc_db} \
  	${fasta} || [ \$? -eq 201 ]
 
-    result_file=\$(ls *eukcc_results/eukcc.tsv | head -n1)
-
-    #comma separate, change header, remove tax lineage column
-    awk '{gsub(".*/", "", \$1); \$1=\$1; OFS=","; print}' \${result_file} |\
+    # eukcc.tsv is tab separated and looks like:
+    #     fasta                      completeness  contamination  ncbi_lng
+    #     /path/to/MGYG000000001.fa  95.24         1.19           2759-33154-4751
+    # comma separate, drop the path and the lineage column, and set our own header
+    awk '{gsub(".*/", "", \$1); \$1=\$1; OFS=","; print}' ${fasta.baseName}_eukcc_results/eukcc.tsv |\
      cut -d',' -f1,2,3 |\
      sed '1s/.*/genome,completeness,contamination/' > ${fasta.baseName}_eukcc.csv 
     """
