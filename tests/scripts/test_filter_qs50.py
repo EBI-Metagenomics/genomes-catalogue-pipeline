@@ -1,25 +1,47 @@
 #!/bin/env python3
 
-import shutil
+import pytest
+
 from bin.filter_qs50 import main as filter_qs50_main
-from .base_classes import BaseTestWithFiles
 
 
-class TestFilterQS50(BaseTestWithFiles):
-    def _fixture_path(self):
-        return self._base_path() / "filter_qs50"
+@pytest.fixture
+def make_input(tmp_path_factory):
+    """Build a genomes folder and its quality.csv from {genome: (completeness, contamination)}"""
 
+    def _make(quality_values):
+        genomes = tmp_path_factory.mktemp("genomes")
+        rows = ["genome,completeness,contamination"]
+        for genome, (completeness, contamination) in quality_values.items():
+            (genomes / genome).write_text(">contig\nACGT\n")
+            rows.append(f"{genome},{completeness},{contamination}")
+        # kept outside the genomes folder, everything in there is treated as a genome
+        quality_csv = tmp_path_factory.mktemp("quality") / "quality.csv"
+        quality_csv.write_text("\n".join(rows) + "\n")
+        return genomes, quality_csv
+
+    return _make
+
+
+class TestFilterQS50:
     def _details(self, details_csv):
         lines = details_csv.read_text().splitlines()
         return {line.split(",")[0]: line.split(",")[3] for line in lines}
 
-    def test_filtering_and_failure_reasons(self, tmp_path):
+    def test_filtering_and_failure_reasons(self, tmp_path, make_input):
         """Genomes without quality values or below QS50 are filtered out, and every removal is traced"""
-        genomes = self._fixture_path() / "genomes"
+        genomes, quality_csv = make_input(
+            {
+                "kept.fa": (95.0, 1.0),
+                "no_values.fa": ("NA", "NA"),
+                "contaminated.fa": (95.0, 7.0),
+                "low_score.fa": (60.0, 3.0),
+            }
+        )
 
         filter_qs50_main(
             str(genomes),
-            str(self._fixture_path() / "quality.csv"),
+            str(quality_csv),
             str(tmp_path / "failed.txt"),
             str(tmp_path / "passed.csv"),
             str(tmp_path / "details.csv"),
@@ -42,14 +64,13 @@ class TestFilterQS50(BaseTestWithFiles):
         passed = (tmp_path / "passed.csv").read_text().splitlines()
         assert passed == ["genome,completeness,contamination", "kept.fa,95.0,1.0"]
 
-    def test_failed_genomes_are_deleted_from_the_input_folder(self, tmp_path):
+    def test_failed_genomes_are_deleted_from_the_input_folder(self, tmp_path, make_input):
         """With --remove the genomes that failed QC are deleted in place"""
-        genomes = tmp_path / "genomes"
-        shutil.copytree(self._fixture_path() / "genomes", genomes)
+        genomes, quality_csv = make_input({"kept.fa": (95.0, 1.0), "low_score.fa": (60.0, 3.0)})
 
         filter_qs50_main(
             str(genomes),
-            str(self._fixture_path() / "quality.csv"),
+            str(quality_csv),
             str(tmp_path / "failed.txt"),
             str(tmp_path / "passed.csv"),
             str(tmp_path / "details.csv"),
@@ -59,10 +80,12 @@ class TestFilterQS50(BaseTestWithFiles):
 
         assert [_.name for _ in genomes.iterdir()] == ["kept.fa"]
 
-    def test_details_csv_written_when_nothing_fails(self, tmp_path):
+    def test_details_csv_written_when_nothing_fails(self, tmp_path, make_input):
+        genomes, quality_csv = make_input({"kept.fa": (95.0, 1.0)})
+
         filter_qs50_main(
-            str(self._fixture_path() / "passing_genome"),
-            str(self._fixture_path() / "passing_quality.csv"),
+            str(genomes),
+            str(quality_csv),
             str(tmp_path / "failed.txt"),
             str(tmp_path / "passed.csv"),
             str(tmp_path / "details.csv"),

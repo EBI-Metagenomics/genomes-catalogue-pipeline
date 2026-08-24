@@ -17,9 +17,9 @@ process BAT {
 
     script:
     def renamed_proteins = "${bin.baseName}.contig_prefixed_proteins.faa"
-    def proteins_flag = predicted_proteins ? "-p ${renamed_proteins}" : ""
+    def proteins_flag = predicted_proteins && predicted_gff ? "-p ${renamed_proteins}" : ""
     """
-    if [ -e "${predicted_proteins}" ]; then
+    if [ -e "${predicted_proteins}" ] && [ -e "${predicted_gff}" ]; then
         echo "[MAG euk taxonomy] Adding contig IDs to the predicted protein headers"
         prefix_fasta_with_contig.py \
           -g ${predicted_gff} \

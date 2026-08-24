@@ -13,6 +13,8 @@ process EUKCC {
     
     script:
     """
+    # When EukCC does not find any marker genes, it exit with status code 201, here we
+    # allow this exit code to not fail the workflow, but still capture the output files
     eukcc single \
 	--out ${fasta.baseName}_eukcc_results \
 	--threads ${task.cpus} \
