@@ -7,7 +7,7 @@ process BAT {
 
     input:
     path bin
-    path predicted_proteins // optional, pass [] to let CAT predict the genes itself
+    path predicted_proteins // optional, pass [] to let CAT predict the genes by itself
     path predicted_gff // optional, only used to map the predicted proteins back to their contig
     path cat_db_folder
     path cat_taxonomy_db
