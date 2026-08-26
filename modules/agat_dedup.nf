@@ -16,6 +16,10 @@ process DEDUP_GFF {
 
     script:
     """
+    # AGAT's progress bar croaks ("progress bar already finished") on larger inputs,
+    # killing the task after a successful parse. Disable it via the local config.
+    agat config --expose --no-progress_bar > /dev/null
+
     agat_sp_fix_features_locations_duplicated.pl \\
         --gff ${gff} \\
         -o ${genome_name}.agat.gff
