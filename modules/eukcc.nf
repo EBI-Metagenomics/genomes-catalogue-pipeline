@@ -1,7 +1,7 @@
 process EUKCC {
 
 
-    container 'community.wave.seqera.io/library/python_metaeuk_pplacer_epa-ng_pruned:0b7ea587ebcad440'
+    container 'quay.io/biocontainers/eukcc:2.2.0--pyhdfd78af_0'
     tag "${fasta.baseName}"
     
     input:
