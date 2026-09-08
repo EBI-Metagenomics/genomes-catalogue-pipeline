@@ -82,6 +82,7 @@ include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
 include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
 include { CATALOGUE_SUMMARY } from '../modules/catalogue_summary'
+include { PSAURON } from '../modules/psauron'
 
 /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -180,19 +181,45 @@ workflow GAP_EUKS {
     checkm_all_genomes = new_data_checkm // this is eukcc
     extra_weight_table_all_genomes = extra_weight_table_new_genomes
 
-    // get fasta paths for rep genomes
-    gdtb_input_ch = dereplicated_genomes.out.single_genomes_fna_tuples
-        .map({ it[1] })
-        .mix( dereplicated_genomes.out.many_genomes_fna_tuples.filter { it[1].name.contains(it[0]) }
-        .map({ it[1] })
-        )
+    PROCESS_MANY_GENOMES_EUKS(
+        dereplicated_genomes.out.many_genomes_fna_tuples,
+        genomes_name_mapping,
+        ch_protein_evidence
+    )
 
-    BAT( 
-        gdtb_input_ch,
+    PROCESS_SINGLETON_GENOMES_EUKS(
+        dereplicated_genomes.out.single_genomes_fna_tuples,
+        genomes_name_mapping,
+        ch_protein_evidence
+    )
+
+    all_gene_calls = PROCESS_MANY_GENOMES_EUKS.out.gene_calls.mix(
+        PROCESS_SINGLETON_GENOMES_EUKS.out.gene_calls
+    )
+
+    rep_genomes_fna_tuples = dereplicated_genomes.out.single_genomes_fna_tuples
+        .mix( dereplicated_genomes.out.many_genomes_fna_tuples.filter { cluster, genome_fna -> genome_fna.name.contains(cluster) } )
+
+    // BAT classifies the species representatives, using the proteins called for them
+    bat_input = rep_genomes_fna_tuples
+        .join( all_gene_calls
+            .filter { genome_name, cluster, _faa, _gff -> genome_name == cluster }
+            .map { _genome_name, cluster, faa, gff -> tuple(cluster, faa, gff) }
+        )
+        .multiMap { _cluster, genome_fna, faa, gff ->
+            bin: genome_fna
+            proteins: faa
+            gff: gff
+        }
+
+    BAT(
+        bat_input.bin,
+        bat_input.proteins,
+        bat_input.gff,
         ch_cat_db_folder,
         ch_cat_taxonomy_db
     )
-    
+
     taxonomy_ch = BAT.out.bat_names.collectFile(
         keepHeader: true,
         name: "bat_taxonomy.txt"
@@ -200,12 +227,12 @@ workflow GAP_EUKS {
 
     REFORMAT_BAT(taxonomy_ch)
     reformatted_tax = REFORMAT_BAT.out.taxonomy
-        
+
     PARSE_DOMAIN(
         reformatted_tax,
         dereplicated_genomes.out.drep_split_text
     )
-    
+
     accessions_with_domains_ch = PARSE_DOMAIN.out.detected_domains.flatMap { file ->
         file.readLines().collect { line ->
             def (genomeName, domain) = line.split(',')
@@ -213,19 +240,40 @@ workflow GAP_EUKS {
         }
     }
 
-    PROCESS_MANY_GENOMES_EUKS(
-        dereplicated_genomes.out.many_genomes_fna_tuples,
-        genomes_name_mapping,
-        ch_protein_evidence,
-        reformatted_tax
-    )
+    psauron_target_genomes = reformatted_tax
+        .first()
+        .splitCsv(sep: "\t", header: true)
+        .map { row ->
+            def phylum = ""
+            (row.classification ?: "").split(";").each { rank ->
+                if (rank.trim().startsWith("p__")) {
+                    phylum = rank.trim()
+                }
+            }
+            tuple(row.user_genome, phylum)
+        }
+        .filter { _genome_name, phylum -> params.psauron_target_phyla.contains(phylum) }
+        .map { genome_name, _phylum -> genome_name }
+        .collect()
+        .map { target_list -> [target_list] }
 
-    PROCESS_SINGLETON_GENOMES_EUKS(
-        dereplicated_genomes.out.single_genomes_fna_tuples,
-        genomes_name_mapping,
-        ch_protein_evidence,
-        reformatted_tax
-    )
+    // BAT/taxonomy only covers representatives, so redundant members inherit the rep's taxonomy.
+    psauron_input = all_gene_calls
+        .combine(psauron_target_genomes)
+        .filter { _genome_name, cluster, _faa, _gff, target_list -> target_list.contains(cluster) }
+        .multiMap { genome_name, _cluster, faa, gff, _target_list ->
+            genome_name: genome_name
+            faa: faa
+            gff: gff
+        }
+
+    PSAURON(psauron_input.genome_name, psauron_input.faa, psauron_input.gff)
+
+    // Final GFF is the PSAURON-scored GFF where available, otherwise the postprocessed BRAKER/Merge GFF
+    all_gffs = all_gene_calls
+        .map { genome_name, cluster, _faa, gff -> tuple(genome_name, cluster, gff) }
+        .join( PSAURON.out.psauron.map { genome_name, _csv, gff -> tuple(genome_name, gff) }, remainder: true )
+        .map { _genome_name, cluster, gff, psauron_gff -> tuple(cluster, psauron_gff ?: gff) }
 
     gunc_failed = Channel.value(file("EMPTY_GUNC_FILE"))
     GENERATE_COMBINED_QC_REPORT(
@@ -249,9 +297,7 @@ workflow GAP_EUKS {
         PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna
     )
     
-    cluster_reps_gffs = PROCESS_MANY_GENOMES_EUKS.out.rep_gene_caller_gff.mix(
-        PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_gff
-    )
+    cluster_reps_gffs = all_gffs.filter { cluster, gff -> gff.name.contains(cluster) }
 
     all_gene_caller_fna = PROCESS_SINGLETON_GENOMES_EUKS.out.gene_caller_fna.mix(
         PROCESS_MANY_GENOMES_EUKS.out.gene_caller_fnas

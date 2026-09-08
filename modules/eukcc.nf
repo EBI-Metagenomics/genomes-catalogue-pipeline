@@ -1,7 +1,7 @@
 process EUKCC {
 
 
-    container 'quay.io/microbiome-informatics/eukcc:2.1.3'
+    container 'quay.io/biocontainers/eukcc:2.2.0--pyhdfd78af_0'
     tag "${fasta.baseName}"
     
     input:
@@ -13,19 +13,20 @@ process EUKCC {
     
     script:
     """
+    # When EukCC does not find any marker genes, it exit with status code 201, here we
+    # allow this exit code to not fail the workflow, but still capture the output files
     eukcc single \
 	--out ${fasta.baseName}_eukcc_results \
 	--threads ${task.cpus} \
 	--db ${eukcc_db} \
- 	${fasta}
+ 	${fasta} || [ \$? -eq 201 ]
 
-    result_file=\$(ls *eukcc_results/eukcc.csv | head -n1)
-
-    #comma separate, change header, remove tax lineage column
-    awk '{gsub(".*/", "", \$1); \$1=\$1; OFS=","; print}' \${result_file} |\
+    # eukcc.tsv is tab separated and looks like:
+    #     fasta                      completeness  contamination  ncbi_lng
+    #     /path/to/MGYG000000001.fa  95.24         1.19           2759-33154-4751
+    # comma separate, drop the path and the lineage column, and set our own header
+    awk '{gsub(".*/", "", \$1); \$1=\$1; OFS=","; print}' ${fasta.baseName}_eukcc_results/eukcc.tsv |\
      cut -d',' -f1,2,3 |\
      sed '1s/.*/genome,completeness,contamination/' > ${fasta.baseName}_eukcc.csv 
-
     """
-       
 }

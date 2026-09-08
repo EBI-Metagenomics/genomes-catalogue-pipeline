@@ -16,6 +16,10 @@ process FIX_METAEUK_CDS_PHASES {
 
     script:
     """
+    # AGAT's progress bar croaks ("progress bar already finished") on larger inputs,
+    # killing the task after a successful parse. Disable it via the local config.
+    agat config --expose --no-progress_bar > /dev/null
+
     agat_sp_fix_cds_phases.pl \\
         --gff ${metaeuk_gff} \\
         --fa ${genome_fasta} \\
