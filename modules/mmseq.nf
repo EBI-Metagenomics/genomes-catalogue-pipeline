@@ -9,7 +9,7 @@ process MMSEQ {
                 if ( output_file.name == "mmseq_${threshold_rounded}_outdir.tar.gz" ) {
                     return "additional_data/protein_catalogue/mmseq_${threshold_rounded}_outdir.tar.gz";
                 } else if ( output_file.name == "all_proteins.faa.gz" ) {
-                    return "additional_data/all_proteins.faa.gz";
+                    return "protein_catalogue/all_proteins.faa.gz";
                 // For the .9 protein catalogue, we need to add the IPS and EGG annotations
                 // This is done by PROTEIN_CATALOGUE_STORE_ANNOTATIONS
                 } else if ( output_file.extension == "gz" && id_threshold != 0.90 ) {
