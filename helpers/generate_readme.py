@@ -495,11 +495,12 @@ Website URL: {url}
 
 - protein_catalogue/
     * protein_catalogue-XX.tar.gz
-        - protein_catalogue-XX.faa : Protein FASTA file of the clustered, representative sequences.
+        - protein_catalogue-XX.faa : Protein FASTA file of the clustered, representative sequences. Computed from all genomes in the catalogue (representative and non-representative).
         - protein_catalogue-XX.tsv : Cluster membership of all the protein sequences.
     For 90% identity catalogue only:
         - protein_catalogue-90_eggNOG.tsv : eggNOG annotation results of the protein catalogue.
         - protein_catalogue-90_InterProScan.tsv : InterProScan annotation results of the protein catalogue.
+    * proteins.faa.gz : Protein FASTA containing all protein sequences from all genomes in the catalogue (representative and non-representative).
     """.format(
         version=version,
         url=cat_url,
