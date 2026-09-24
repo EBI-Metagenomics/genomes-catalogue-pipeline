@@ -15,7 +15,7 @@ function Usage {
 }
 
 GET_REPS() {
-    cut -f14 "${RESULTS_PATH}"/genomes-all_metadata.tsv | grep -v "Species" | sort -u
+    cat "$REPS_FILE"
 }
 
 
@@ -154,6 +154,26 @@ function GenerateDirectories {
       mkdir -p "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
       mkdir -p "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/"
   fi
+}
+
+
+function PrepareRun {
+    mkdir -p "$LOG_DIR"
+
+    export TMPDIR="${LOG_DIR}/tmp"
+    mkdir -p "$TMPDIR"
+
+    # Build the species representative list once. If this fails or comes back
+    # empty, stop here instead of letting every later loop run over nothing.
+    REPS_FILE="${LOG_DIR}/representatives.txt"
+    cut -f14 "${RESULTS_PATH}/genomes-all_metadata.tsv" | grep -v "Species" | sort -u > "$REPS_FILE"
+    local n_reps
+    n_reps=$(wc -l < "$REPS_FILE")
+    if [[ $n_reps -eq 0 ]]; then
+        echo "ERROR: no species representatives found in ${RESULTS_PATH}/genomes-all_metadata.tsv" >&2
+        exit 1
+    fi
+    echo "Found ${n_reps} species representatives"
 }
 
 
@@ -335,6 +355,7 @@ MAX_ARRAY_TASKS=2000
 BACKGROUND_JOBS=()
 
 GenerateDirectories
+PrepareRun
 GzipSpeciesCatalogue
 cd "${RESULTS_PATH}"
 GenerateWebsiteGFFs
