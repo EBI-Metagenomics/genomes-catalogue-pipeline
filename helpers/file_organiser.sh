@@ -49,7 +49,7 @@ function GenerateWebsiteGFFs {
             else
                 echo "$line"
             fi
-        done < "${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff" > "${R::-2}/${R}/${R}.gff.noseq"
+        done < <(zcat "${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff.gz") > "${R::-2}/${R}/${R}.gff.noseq"
     done
 }
 
@@ -69,6 +69,8 @@ function CopyWebsiteFiles {
         rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated.gff"
         rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated_with_mobilome.gff"
         mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/${R}.gff.noseq" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff"
+        bgzip -@ 2 "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff"
+        tabix -p gff -C "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff.gz"
     done
 }
 
