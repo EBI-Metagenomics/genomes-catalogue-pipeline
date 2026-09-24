@@ -21,6 +21,7 @@ process DEDUP_GFF {
     agat config --expose --no-progress_bar > /dev/null
 
     agat_sp_fix_features_locations_duplicated.pl \\
+        --model 1,2,3 \\
         --gff ${gff} \\
         -o ${genome_name}.agat.gff
 
