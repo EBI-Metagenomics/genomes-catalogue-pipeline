@@ -253,13 +253,16 @@ function CopyWebsiteFiles {
     do
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated.gff"
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated_with_mobilome.gff.gz"
+        rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.fai"
+        zcat "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" | singularity run $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip > "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" \
+        && mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz"
         mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/${R}.gff.noseq" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff"
         echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff" >> "$website_gffs"
     done
     echo "Compressing and indexing website GFFs"
     CheckNoGzConflicts "$website_gffs"
     RunArrayAndWait bgzip_website_gffs "$website_gffs" 1G 100 \
-        bash -c 'bgzip "$1" && tabix -p gff -C "$1.gz"' _
+        bash -c 'singularity run $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip "$1" && singularity run $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img tabix -p gff -C "$1.gz"' _
     VerifyGzipped "$website_gffs"
 }
 
@@ -330,13 +333,13 @@ function ZipAllGenomes {
 # Main
 # ---------------------------------------------------------------------------
 
-while getopts 'd:f:v:r:j:' flag; do
+while getopts 'd:f:v:r:s:' flag; do
     case "${flag}" in
         d) export SAVE_TO_PATH=$OPTARG ;;
         f) export CATALOGUE_FOLDER=$OPTARG ;;
         v) export CATALOGUE_VERSION=$OPTARG ;;
         r) export RESULTS_PATH=$OPTARG ;;
-        j) PREV_JSON_PATH=$OPTARG ;;
+        s) export SINGULARITY_CACHEDIR_PATH=$OPTARG ;;
         *) Usage exit 1 ;;
     esac
 done
@@ -344,10 +347,6 @@ done
 if [[ -z $SAVE_TO_PATH ]] || [[ -z $CATALOGUE_FOLDER ]] || [[ -z $RESULTS_PATH ]] || [[ -z $CATALOGUE_VERSION ]]; then
   echo 'Not all of the arguments are provided'
   Usage
-fi
-
-if [[ -n "$PREV_JSON_PATH" ]]; then
-    export PREV_JSON_PATH
 fi
 
 LOG_DIR="${RESULTS_PATH}/reorganisation_slurm_logs"
