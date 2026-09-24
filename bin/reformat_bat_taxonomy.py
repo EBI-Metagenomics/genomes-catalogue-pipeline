@@ -15,6 +15,10 @@ tax_family = "f__"
 tax_genus = "g__"
 tax_species = "s__"
 
+def is_eukaryota( data ):
+    return data[5].strip().lower().startswith("eukaryota")
+
+
 def taxo_reporter( out_file, bat_file ):
     with open(out_file, 'w') as to_print, open('all_bin2classification.txt', 'w') as to_concat:
         to_print.write("\t".join(
@@ -33,12 +37,17 @@ def taxo_reporter( out_file, bat_file ):
             ])+'\n')
         with open(bat_file, 'r') as file_in:
             header = file_in.readline()
+            best_rows = {}
             for line in file_in:
                 data = line.rstrip().split('\t')
-                genome,classification,reason,lineage,lineage_scores = data[:5]
-                genome_name = genome.split('.')[0]
+                genome_name = data[0].split('.')[0]
                 to_concat.write("\t".join(data[:5])+'\n')
-                
+                previous = best_rows.get(genome_name)
+                if previous is None or (not is_eukaryota(previous) and is_eukaryota(data)):
+                    best_rows[genome_name] = data
+
+            for genome_name, data in best_rows.items():
+                genome,classification,reason,lineage,lineage_scores = data[:5]
                 clean_lineage = []
                 d = data[5].split(':')[0].replace('no support', '').replace("'", '')
                 p = data[6].split(':')[0].replace('no support', '').replace("'", '')
