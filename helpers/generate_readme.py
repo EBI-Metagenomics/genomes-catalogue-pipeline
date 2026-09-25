@@ -445,37 +445,38 @@ Website URL: {url}
 ## The following files are available for download for the species representative in each species directory within the species_catalogue/ folder:
 
 - genome/
-    * [species_accession]_amrfinderplus.tsv : AMR annotations produced by AMRFinderPlus.
-    * [species_accession]_annotation_coverage.tsv : A summary of annotation coverage.
-    * [species_accession]_antismash.gff : AntiSMASH output file containing biosynthetic gene cluster information.
-    * [species_accession]_cazy_summary.tsv : CAZy summary parsed from the eggNOG annotation file.
-    * [species_accession]_cog_summary.tsv : COG summary parsed from the eggNOG annotation file.
-    * [species_accession]_crisprcasfinder.gff : Unfiltered CRISPRCasFinder results file, including calls that have evidence level 1 and are less likely to be genuine.
-    * [species_accession]_crisprcasfinder.tsv : Additional data for CRISPRCasFinder records reported in [species_accession]_crisprcasfinder.gff.
-    * [species_accession]_dbcan.gff : dbCAN annotation file containing putative polysaccharide utilisation loci, predicted substrates and functions of member genes.
-    * [species_accession]_defense_finder.gff : Anti-phage and anti-defense system annotations.
-    * [species_accession]_eggNOG.tsv : eggNOG annotations of the protein coding sequences.
-    * [species_accession].faa : Protein sequence FASTA file of the species representative.
-    * [species_accession].fna : DNA sequence FASTA file of the genome assembly of the species representative.
-    * [species_accession].fna.fai : A samtools-generated index of the genome assembly FASTA file.
-    * [species_accession].gff : Genome GFF file with various sequence annotations, including InterPro, eggNOG, Pfam, KEGG, COG, ncRNAs, CRISPR (filtered results with evidence level >= 2), mobilome and viral annotations, biosynthetic gene clusters, antimicrobial resistance genes, putative polysaccharide utilisation loci, anti-phage and anti-defense systems.
-    * [species_accession]_InterProScan.tsv : InterProScan annotation of the protein coding sequences.
-    * [species_accession]_kegg_classes.tsv : KEGG classes and their counts.
-    * [species_accession]_kegg_modules.tsv : KEGG modules and their counts.
-    * [species_accession]_kegg_pathways.tsv : KEGG pathway completeness.
-    * [species_accession]_mobilome.gff : Annotated viral sequence and mobile elements.
-    * [species_accession]_rRNAs.fasta : rRNA sequence FASTA file.
-    * [species_accession]_sanntis.gff : SanntiS output file containing biosynthetic gene cluster information.
+    * [species_accession]_amrfinderplus.tsv.gz : AMR annotations produced by AMRFinderPlus.
+    * [species_accession]_annotation_coverage.tsv.gz : A summary of annotation coverage.
+    * [species_accession]_antismash.gff.gz : AntiSMASH output file containing biosynthetic gene cluster information.
+    * [species_accession]_cazy_summary.tsv.gz : CAZy summary parsed from the eggNOG annotation file.
+    * [species_accession]_cog_summary.tsv.gz : COG summary parsed from the eggNOG annotation file.
+    * [species_accession]_crisprcasfinder.gff.gz : Unfiltered CRISPRCasFinder results file, including calls that have evidence level 1 and are less likely to be genuine.
+    * [species_accession]_crisprcasfinder.tsv.gz : Additional data for CRISPRCasFinder records reported in [species_accession]_crisprcasfinder.gff.
+    * [species_accession]_dbcan.gff.gz : dbCAN annotation file containing putative polysaccharide utilisation loci, predicted substrates and functions of member genes.
+    * [species_accession]_defense_finder.gff.gz : Anti-phage and anti-defense system annotations.
+    * [species_accession]_eggNOG.tsv.gz : eggNOG annotations of the protein coding sequences.
+    * [species_accession].faa.gz : Protein sequence FASTA file of the species representative.
+    * [species_accession].fna.gz : DNA sequence FASTA file of the genome assembly of the species representative.
+    * [species_accession].fna.gz.fai : A samtools-generated index of the genome assembly FASTA file.
+    * [species_accession].gff.gz : Genome GFF file with various sequence annotations, including InterPro, eggNOG, Pfam, KEGG, COG, ncRNAs, CRISPR (filtered results with evidence level >= 2), mobilome and viral annotations, biosynthetic gene clusters, antimicrobial resistance genes, putative polysaccharide utilisation loci, anti-phage and anti-defense systems.
+    * [species_accession]_InterProScan.tsv.gz : InterProScan annotation of the protein coding sequences.
+    * [species_accession]_kegg_classes.tsv.gz : KEGG classes and their counts.
+    * [species_accession]_kegg_modules.tsv.gz : KEGG modules and their counts.
+    * [species_accession]_kegg_pathways.tsv.gz : KEGG pathway completeness.
+    * [species_accession]_mobilome.gff.gz : Annotated viral sequence and mobile elements.
+    * [species_accession]_pathofact2_combined_report.tsv.gz : Pathogenicity-related annotations at protein level in TSV format
+    * [species_accession]_rRNAs.fasta.gz : rRNA sequence FASTA file.
+    * [species_accession]_sanntis.gff.gz : SanntiS output file containing biosynthetic gene cluster information.
 
 
 ## For species where there is more than one conspecific genome, pan-genomes can be found in:
 
 - pan-genome/
-    * pan-genome.fna : Nucleotide sequence FASTA file of the pan-genome.
-    * gene_presence_absence.csv : A list of genes in the pan-genome with their annotation and MGYG accessions.
-    * gene_presence_absence.Rtab : Presence/absence binary matrix of the pan-genome across all conspecific genomes.
-    * gene_prevalence_corrected.txt : Summary file reporting the observed count of each gene in the pan-genome, along with core/middle/rare classifications based on completeness-adjusted frequency. Cut-offs of 95% (core) and 5% (rare) are provided to CELEBRIMBOR prior to adjustment. Note: these classifications may be unreliable for small genome clusters due to limited sample size.
-    * mashtree.nwk : Tree generated from the pairwise Mash distances of conspecific genomes.
+    * pan-genome.fna.gz : Nucleotide sequence FASTA file of the pan-genome.
+    * gene_presence_absence.csv.gz : A list of genes in the pan-genome with their annotation and MGYG accessions.
+    * gene_presence_absence.Rtab.gz : Presence/absence binary matrix of the pan-genome across all conspecific genomes.
+    * gene_prevalence_corrected.txt.gz : Summary file reporting the observed count of each gene in the pan-genome, along with core/middle/rare classifications based on completeness-adjusted frequency. Cut-offs of 95% (core) and 5% (rare) are provided to CELEBRIMBOR prior to adjustment. Note: these classifications may be unreliable for small genome clusters due to limited sample size.
+    * mashtree.nwk.gz : Tree generated from the pairwise Mash distances of conspecific genomes.
 
 ## Additional files available in the parent directory:
 
@@ -485,7 +486,7 @@ Website URL: {url}
 
 - gene_catalogue/: 
     * gene_catalogue-100.ffn.gz : Nucleotide sequences corresponding to the protein cluster representatives in the protein catalogue clustered at 100% amino acid identity.
-    * clusters.tsv : A list of gene accession pairs where the first accession is that of a gene included in the gene catalogue as the representative and the second is a gene that is not included in the gene catalogue but belongs in the same cluster based on amino acid identity.
+    * clusters.tsv.gz : A list of gene accession pairs where the first accession is that of a gene included in the gene catalogue as the representative and the second is a gene that is not included in the gene catalogue but belongs in the same cluster based on amino acid identity.
 
 - genomes-all_metadata.tsv : Assembly statistics and metadata of all {num_genomes} genomes. 
 
