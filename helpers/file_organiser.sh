@@ -304,7 +304,7 @@ function CopyAdditionalFiles {
     # Submitted without --wait so they run alongside the rest of the script;
     # WaitForBackgroundJobs checks them at the end
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data"
-    job_id=$(sbatch --parsable -p production --mem=1G -t 20:00:00 --ntasks=1 \
+    job_id=$(sbatch --parsable -p production --mem=1G -t 2-20:00:00 --ntasks=1 \
         -o "${LOG_DIR}/gzip_mgyg_genomes_%j.log" -J gzip_mgyg_genomes \
         --wrap="tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes")
     BACKGROUND_JOBS+=("${job_id%%;*}")
@@ -312,7 +312,7 @@ function CopyAdditionalFiles {
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/gene_catalogue"
     job_id=$(sbatch --parsable -p production --mem=1G -t 10:00:00 --ntasks=1 \
         -o "${LOG_DIR}/gzip_gene_catalogue_%j.log" -J gzip_gene_catalogue \
-        --wrap="gzip gene_catalogue-100.ffn && gzip -t gene_catalogue-100.ffn.gz")
+        --wrap="gzip gene_catalogue-100.ffn clusters.tsv && gzip -t gene_catalogue-100.ffn.gz clusters.tsv.gz")
     BACKGROUND_JOBS+=("${job_id%%;*}")
 }
 
