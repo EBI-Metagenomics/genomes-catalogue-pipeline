@@ -14,7 +14,7 @@ process DEFENSE_FINDER {
         failOnError: true
     )
 
-    container 'quay.io/biocontainers/defense-finder:2.0.0--pyhdfd78af_0'
+    container 'quay.io/biocontainers/defense-finder:2.0.1--pyhdfd78af_0'
 
     input:
     tuple val(cluster_name), path(faa), path(prokka_gff)
@@ -28,13 +28,14 @@ process DEFENSE_FINDER {
     defense-finder run \\
         -o defense_finder_output \\
         --antidefensefinder \\
+        --skip-model-version-check \\
         --models-dir ${defense_finder_db} \\
         ${faa}
 
     process_defensefinder_result.py \\
         -i defense_finder_output/ \\
         -p ${prokka_gff} \\
-        -o defense_finder_output/${cluster_name}_defense_finder.gff -v 2.0.0
+        -o defense_finder_output/${cluster_name}_defense_finder.gff -v 2.0.1
 
     """
 }

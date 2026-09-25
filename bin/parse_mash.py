@@ -53,7 +53,7 @@ def main(mash, genomes_file, outfolder, infolder, metadata_table):
             if line == "\n":
                 break
             catalogue_genome, query_genome_path, score, _, _ = line.strip().split()
-            catalogue_genome = remove_extension(catalogue_genome)
+            catalogue_genome = remove_extension(os.path.basename(catalogue_genome))
             query_genome_no_ext = remove_extension(os.path.basename(query_genome_path))
             # save file name with extension for copying
             filename_dict[query_genome_no_ext] = os.path.basename(query_genome_path)
@@ -233,12 +233,12 @@ def generate_output(repeat_strains, new_strains, new_species, scores, distances_
     # ---- Write new strain table ----
     with open(new_strains_file, 'w') as out_ns:
         out_ns.write(header_line)
-        out_ns.write("\n".join(build_rows(new_strains)) + "\n")
+        out_ns.write("\n".join(build_rows(sorted(new_strains))) + "\n")
 
     # ---- Write repeat strain table ----
     with open(repeat_strains_file, 'w') as out_rs:
         out_rs.write(header_line)
-        out_rs.write("\n".join(build_rows(repeat_strains)) + "\n")
+        out_rs.write("\n".join(build_rows(sorted(repeat_strains))) + "\n")
         
     
 def parse_args():

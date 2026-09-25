@@ -33,6 +33,11 @@ def main(remove_list_file, add_list_file, message, output_file):
     with open(add_list_file, 'r') as file_in, open(output_file, 'a') as file_out:
         for line in file_in:
             accession = line.strip()
+            # Remove known extensions
+            for ext in (".fa", ".fna", ".fasta"):
+                if accession.endswith(ext):
+                    accession = accession[: -len(ext)]
+                    break
             if accession not in already_in_remove_list:
                 file_out.write(f"{accession}\t{message}\n")
 

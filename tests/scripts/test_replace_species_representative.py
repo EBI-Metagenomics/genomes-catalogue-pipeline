@@ -118,7 +118,7 @@ class TestGenomePipeline(unittest.TestCase):
         qs = make_qs()
 
         replacement_results = {
-            "g0": {"new_rep": "", "genome_list": []}
+            "g0": {"new_rep": "", "genome_list": ["g1", "g2"]}
         }
 
         added_genomes = {"g0": ["g1", "g2"]}
@@ -135,6 +135,28 @@ class TestGenomePipeline(unittest.TestCase):
         )
 
         self.assertEqual(new_results["g0"]["new_rep"], "g1")
+    
+    def test_replacement_best_qs_is_not_isolate(self):
+        qs = make_qs()
+
+        replacement_results = {
+            "g0": {"new_rep": "g0", "genome_list": ["g1", "g2"]}
+        }
+
+        added_genomes = {"g0": ["g1", "g2"]}
+
+        new_results, _, _ = replacement_decision(
+            replacement_results,
+            added_genomes,
+            qs,
+            remove_list=[],
+            stats_to_print={},
+            report_to_print={},
+            isolates={"g0"},
+            checkm2_switch=False
+        )
+        # No replacement is made because the old rep is an isolate and the new genomes are not
+        self.assertEqual(new_results["g0"]["new_rep"], "g0")
     
     def test_replacement_checkm2_switch_false_no_new_genomes(self):
         qs = make_qs()
@@ -206,7 +228,7 @@ class TestGenomePipeline(unittest.TestCase):
         qs = make_qs()
 
         replacement_results = {
-            "g0": {"new_rep": "g0", "genome_list": ["g2"]}
+            "g0": {"new_rep": "g0", "genome_list": ["g2", "g1"]}
         }
 
         added_genomes = {"g0": ["g1"]}

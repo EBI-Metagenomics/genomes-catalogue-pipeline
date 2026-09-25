@@ -803,9 +803,11 @@ def get_trnas(trnas_file):
                 contig, feature, start = cols[0], cols[2], cols[3]
                 if feature == "tRNA":
                     line = line.replace("tRNAscan-SE", "tRNAscan-SE:2.0.9")
+                    # tRNAscan-SE ends the attributes column with a trailing semicolon, removing for consistency
+                    line = line.strip().rstrip(";")
                     trnas.setdefault(contig, dict()).setdefault(
                         int(start), list()
-                    ).append(line.strip())
+                    ).append(line)
     return trnas
 
 

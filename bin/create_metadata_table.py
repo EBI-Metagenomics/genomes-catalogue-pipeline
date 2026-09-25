@@ -29,7 +29,7 @@ from assembly_stats import run_assembly_stats
 
 logging.basicConfig(level=logging.INFO)
 
-UNINFORMATIVE = {"not collected", "not present", "na", "n/a", "missing", "not applicable"}
+UNINFORMATIVE = {"not collected", "not present", "na", "n/a", "missing", "not applicable", "not determined"}
 
 
 def main(
@@ -174,7 +174,10 @@ def add_sample_project_loc(df, location_file, previous_version_data):
                 for col in ["Sample_accession", "Study_accession", "Country", "Continent"]:
                     val = prev_data_dict[genome][col]
                     if col in ["Country", "Continent"]:
-                        if isinstance(val, str) and val.strip().lower() in UNINFORMATIVE:
+                        is_uninformative = pd.isna(val) or (
+                            isinstance(val, str) and val.strip().lower() in UNINFORMATIVE
+                        )
+                        if is_uninformative:
                             df.at[idx, col] = "not provided"
                             continue
                     df.at[idx, col] = val
@@ -197,6 +200,9 @@ def add_taxonomy(df, taxonomy_file, genome_list, reps):
 
 
 def add_species_rep(df, clusters_file):
+    # File contents look like this:
+    # many_genomes: 4_1:MGYG000883449.fa, MGYG000878385.fa, MGYG000881739.fa
+    # one_genome: 5_0:MGYG000898853.fa
     reps = dict()
     with open(clusters_file, "r") as file_in:
         for line in file_in:
@@ -205,10 +211,10 @@ def add_species_rep(df, clusters_file):
                 reps[genome] = genome
             elif line.startswith("many_genomes"):
                 fields = line.strip().split(":")
-                rep = fields[2].split(".")[0]
+                rep = fields[2].split(",")[0].rsplit(".", 1)[0]
                 cluster_members = fields[2].split(",")
                 for i in range(0, len(cluster_members)):
-                    reps[cluster_members[i].split(".")[0]] = rep
+                    reps[cluster_members[i].rsplit(".", 1)[0]] = rep
             else:
                 if not line.strip() == "":
                     logging.error("Unknown clusters file format: {}".format(line))
@@ -222,7 +228,7 @@ def add_original_accession(df, naming_file):
     with open(naming_file, "r") as file_in:
         for line in file_in:
             fields = line.strip().split("\t")
-            old, new = fields[0].split(".")[0], fields[1].split(".")[0]
+            old, new = fields[0].rsplit(".", 1)[0], fields[1].rsplit(".", 1)[0]
             conversion_table[new] = old
     df["Genome_accession"] = df["Genome"].map(conversion_table)
     return df, conversion_table
@@ -245,13 +251,13 @@ def add_rna(df, genome_list, rna_folder, euk=False):
         rna_results["tRNAs"][genome] = load_trna(trna_file)
         (
             rna_results
-        ) = load_rrna(rrna_file, rna_results, euk=euk)
+        ) = load_rrna(rrna_file, rna_results, genome_name=genome, euk=euk)
     for key in chain(rna_types, ["tRNAs"]):
         df[key] = df["Genome"].map(rna_results[key])
     return df
 
 
-def load_rrna(rrna_file, rna_results, euk=False):
+def load_rrna(rrna_file, rna_results, genome_name=None, euk=False):
     conversion = {"SSU_rRNA_eukarya": "rRNA_18S",
                   "LSU_rRNA_eukarya": "rRNA_28S",
                   "5S_rRNA": "rRNA_5S",
@@ -261,12 +267,16 @@ def load_rrna(rrna_file, rna_results, euk=False):
 
     with open(rrna_file, "r") as file_in:
         for line in file_in:
-            genome, rna_type, coverage = line.strip().split("\t")
-            # In the conversion dictionary, prokaryotic SSU and LSU keys are truncated but all the other keys are 
+            file_genome, rna_type, coverage = line.strip().split("\t")
+            # In the conversion dictionary, prokaryotic SSU and LSU keys are truncated but all the other keys are
             # shown in full. The line below checks for this to assign correct conversion.
             key = rna_type if euk or not rna_type.startswith(("SSU_rRNA", "LSU_rRNA")) else rna_type.rsplit("_", 1)[0]
             converted_rna_type = conversion[key]
-            rna_results[converted_rna_type][genome] = coverage
+            # Both genome_name and file_genome are included below to avoid errors on versioned genomes, e.g.
+            # MGYG000000761.1. Version is truncated in the RNA output (file_genome), only showing MGYG000000761.
+            # With two key options the function can run both just using the information inside the file (if no
+            # versioned genomes exist, or with the provided gene name)
+            rna_results[converted_rna_type][genome_name or file_genome] = coverage
     return rna_results
 
 
@@ -282,8 +292,8 @@ def add_checkm(df, checkm_results):
         for line in file_in:
             if not line.startswith("genome,"):
                 fields = line.strip().split(",")
-                checkm_compl[fields[0].split(".")[0]] = fields[1]
-                checkm_contam[fields[0].split(".")[0]] = fields[2]
+                checkm_compl[fields[0].rsplit(".", 1)[0]] = fields[1]
+                checkm_contam[fields[0].rsplit(".", 1)[0]] = fields[2]
     df["Completeness"] = df["Genome"].map(checkm_compl)
     df["Contamination"] = df["Genome"].map(checkm_contam)
     return df
@@ -344,7 +354,7 @@ def load_genome_list(genomes_dir, gunc_file):
     if gunc_file and gunc_file != "EMPTY":
         with open(gunc_file, "r") as gunc_in:
             for line in gunc_in:
-                acc = line.strip().split(".")[0]
+                acc = line.strip()
                 try:
                     genome_list.remove(acc)
                 except:

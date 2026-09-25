@@ -31,7 +31,7 @@ def main(ips, eggnog, rep_list, outdir, mmseqs_tsv, cores):
         os.makedirs(outdir)
 
     with open(rep_list, "r") as f:
-        genome_list = {line.strip().split(".")[0] for line in f}
+        genome_list = {line.strip() for line in f}
     logging.info(f"Loaded {len(genome_list)} representative accessions.")
 
     if len(genome_list) <= 10000:
