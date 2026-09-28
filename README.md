@@ -4,7 +4,7 @@
 
 Gurbich TA, Almeida A, Beracochea M, Burdett T, Burgin J, Cochrane G, Raj S, Richardson L, Rogers AB, Sakharova E, Salazar GA and Finn RD. (2023) [MGnify Genomes: A Resource for Biome-specific Microbial Genome Catalogues.](https://www.sciencedirect.com/science/article/pii/S0022283623000724) <i>J Mol Biol</i>. doi: https://doi.org/10.1016/j.jmb.2023.168016
 
-Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/genome-viewer.html
+Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/mgnify-genomes.html
 
 ### Tools used in the pipeline
 | Tool/Database                                                                                    | Version          | Purpose                                                                                                                |
