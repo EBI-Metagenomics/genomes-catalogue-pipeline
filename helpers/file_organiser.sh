@@ -328,14 +328,17 @@ function CopyAdditionalFiles {
     mkdir -p "$LOG_DIR"
     local job_id
 
-    # Submitted without --wait so they run alongside the rest of the script;
-    # WaitForBackgroundJobs checks them at the end
-    cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data"
-    job_id=$(sbatch --parsable -p production --mem=1G -t 2-20:00:00 --ntasks=1 \
-        -o "${LOG_DIR}/gzip_mgyg_genomes_%j.log" -J gzip_mgyg_genomes \
-        --wrap="tar -czvf mgyg_genomes.tar.gz mgyg_genomes && rm -r mgyg_genomes")
-    BACKGROUND_JOBS+=("${job_id%%;*}")
+    echo "Gzipping mgyg_genomes files"
+    local mgyg_list="${LOG_DIR}/mgyg_genomes_files.txt"
+    find "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/additional_data/mgyg_genomes" \
+        -type f ! -name '*.gz' > "$mgyg_list"
+    CheckNoGzConflicts "$mgyg_list"
+    RunArrayAndWait gzip_mgyg_genomes "$mgyg_list" 1G 500 \
+        bash -c 'gzip "$1" && gzip -t "$1.gz"' _
+    VerifyGzipped "$mgyg_list"
 
+    # Submitted without --wait so it runs alongside the rest of the script;
+    # WaitForBackgroundJobs checks it at the end
     cd "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/gene_catalogue"
     job_id=$(sbatch --parsable -p production --mem=1G -t 10:00:00 --ntasks=1 \
         -o "${LOG_DIR}/gzip_gene_catalogue_%j.log" -J gzip_gene_catalogue \
