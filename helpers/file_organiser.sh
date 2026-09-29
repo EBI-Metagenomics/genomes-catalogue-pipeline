@@ -263,7 +263,7 @@ function CopyWebsiteFiles {
     echo "Compressing and indexing website GFFs"
     CheckNoGzConflicts "$website_gffs"
     RunArrayAndWait bgzip_website_gffs "$website_gffs" 1G 100 \
-        bash -c 'singularity run $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip "$1" && singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img tabix -p gff -C "$1.gz"' _
+        bash -c 'singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip "$1" && singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img tabix -p gff -C "$1.gz"' _
     VerifyGzipped "$website_gffs"
 }
 
