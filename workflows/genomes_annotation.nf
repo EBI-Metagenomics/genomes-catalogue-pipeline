@@ -526,6 +526,7 @@ workflow GAP {
         file(coverage_summary),
         file(cluster_faa),
         file(pangenome_fasta), // only for many_genomes clusters otherwise empty
+        file(gene_prevalence) // only for many_genomes clusters otherwise empty
     )
     */
     files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
@@ -534,6 +535,8 @@ workflow GAP {
         cluster_reps_faas
     ).join(
         PROCESS_MANY_GENOMES.out.pangenome_fna, remainder: true
+    ).join(
+        PROCESS_MANY_GENOMES.out.gene_prevalence, remainder: true
     )
 
     GENOME_SUMMARY_JSON(
