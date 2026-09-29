@@ -85,6 +85,19 @@ VerifyGzipped() {
     if [[ $bad -ne 0 ]]; then echo "Verification failed, stopping." >&2; exit 1; fi
 }
 
+# Confirm every bgzipped FASTA in the list got both faidx output files
+# (list holds .fna.gz paths; samtools faidx on BGZF input produces .fai + .gzi)
+VerifyFaidx() {
+    local file_list=$1 bad=0
+    while read -r f; do
+        if [[ ! -s "${f}.fai" || ! -s "${f}.gzi" ]]; then
+            echo "Missing .fai/.gzi index for: $f" >&2
+            bad=1
+        fi
+    done < "$file_list"
+    if [[ $bad -ne 0 ]]; then echo "Faidx verification failed, stopping." >&2; exit 1; fi
+}
+
 # Write a crash-safe gzip script. The original is only removed once a complete,
 # verified .gz is on disk, so it is safe to rerun after an interruption at any point.
 WriteSafeGzip() {
@@ -248,18 +261,23 @@ function CopyWebsiteFiles {
     done
     echo "Cleaning up website folders"
     local website_gffs="${LOG_DIR}/website_gffs.txt"
+    local website_fnas="${LOG_DIR}/website_fnas.txt"
     mkdir -p "$LOG_DIR"
     : > "$website_gffs"
+    : > "$website_fnas"
     for R in $(GET_REPS)
     do
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated.gff"
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated_with_mobilome.gff.gz"
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.fai"
         zcat "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" | singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip > "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" \
-        && mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz"
+        && mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" \
+        && singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img samtools faidx "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz"
+        echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" >> "$website_fnas"
         mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/${R}.gff.noseq" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff"
         echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff" >> "$website_gffs"
     done
+    VerifyFaidx "$website_fnas"
     echo "Compressing and indexing website GFFs"
     CheckNoGzConflicts "$website_gffs"
     RunArrayAndWait bgzip_website_gffs "$website_gffs" 1G 100 \
@@ -279,17 +297,26 @@ function CopyFTPFiles {
     cp -r protein_catalogue "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     cp -r README.txt "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/README_${CATALOGUE_VERSION}.txt"
     cp -r species_catalogue "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
+    local ftp_fnas="${LOG_DIR}/ftp_fnas.txt"
+    mkdir -p "$LOG_DIR"
+    : > "$ftp_fnas"
     for R in $(GET_REPS)
     do
         rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}_annotated.gff"
         mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff.gz" \
         "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.gff.gz"
         rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/${R}.gff.noseq"
+        # Old .fna.fai was built against the uncompressed .fna and is stale now
+        # that this copy is (b)gzipped as .fna.gz; index the .fna.gz instead
+        rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.fai"
+        singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img samtools faidx "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.gz"
+        echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.gz" >> "$ftp_fnas"
         # Replace the all_genomes GFF with a GFF that includes the mobilome
         rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/${R}.gff"
         cp "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.gff.gz" \
         "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/"
     done
+    VerifyFaidx "$ftp_fnas"
 }
 
 
