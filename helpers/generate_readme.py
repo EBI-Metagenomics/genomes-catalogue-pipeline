@@ -436,7 +436,7 @@ combined together. In some cases, this can produce clusters where some of the co
 
 Website URL: {url}
 
-* A total of {num_genomes} prokaryotic genomes from the {biome} microbiome were clustered into {num_species} species representatives.
+* A total of {num_genomes} prokaryotic genomes from the {biome} microbiome were clustered into {num_species} species-level clusters.
 {study_list_string}
 * The catalogue was generated using MGnify genomes pipeline v{ver_pipeline}: {git_link}. 
 * A protein catalogue was produced with all protein coding sequences clustered at 100%, 95%, 90% and 50% amino acid identity.
@@ -464,7 +464,7 @@ Website URL: {url}
     * [species_accession]_kegg_modules.tsv.gz : KEGG modules and their counts.
     * [species_accession]_kegg_pathways.tsv.gz : KEGG pathway completeness.
     * [species_accession]_mobilome.gff.gz : Annotated viral sequence and mobile elements.
-    * [species_accession]_pathofact2_combined_report.tsv.gz : Pathogenicity-related annotations at protein level in TSV format
+    * [species_accession]_pathofact2_combined_report.tsv.gz : Pathogenicity-related annotations at protein level in TSV format.
     * [species_accession]_rRNAs.fasta.gz : rRNA sequence FASTA file.
     * [species_accession]_sanntis.gff.gz : SanntiS output file containing biosynthetic gene cluster information.
 
