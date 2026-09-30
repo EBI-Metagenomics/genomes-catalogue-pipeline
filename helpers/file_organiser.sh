@@ -341,10 +341,13 @@ function CopyFTPFiles {
         mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz" \
         "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.gff.gz"
         rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/${R}.gff.noseq"
-        # Old .fna.fai was built against the uncompressed .fna and is stale now
-        # that this copy is (b)gzipped as .fna.gz; index the .fna.gz instead
+        # The .fna.gz copied from species_catalogue is plain gzip (safe_gzip.sh),
+        # which samtools faidx cannot index. The website copy was already
+        # re-compressed with bgzip and indexed in CopyWebsiteFiles, so reuse it.
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.fai"
-        singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img samtools faidx "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.gz"
+        cp "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" \
+           "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.fai" \
+           "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/"
         echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.gz" >> "$ftp_fnas"
         # Replace the all_genomes GFF with a GFF that includes the mobilome
         # (eukaryotes have no mobilome, so their all_genomes GFF is kept as is)
