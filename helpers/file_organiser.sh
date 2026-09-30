@@ -192,8 +192,12 @@ function PrepareRun {
 
     # Build the species representative list once. If this fails or comes back
     # empty, stop here instead of letting every later loop run over nothing.
+    # Species representative column: 14 for prokaryotes, 16 for eukaryotes.
+    # The header line is skipped by position rather than by name.
+    local reps_col=14
+    if [[ $EUK == true ]]; then reps_col=16; fi
     REPS_FILE="${LOG_DIR}/representatives.txt"
-    cut -f14 "${RESULTS_PATH}/genomes-all_metadata.tsv" | grep -v "Species" | sort -u > "$REPS_FILE"
+    tail -n +2 "${RESULTS_PATH}/genomes-all_metadata.tsv" | cut -f"${reps_col}" | sort -u > "$REPS_FILE"
     local n_reps
     n_reps=$(wc -l < "$REPS_FILE")
     if [[ $n_reps -eq 0 ]]; then
@@ -201,6 +205,17 @@ function PrepareRun {
         exit 1
     fi
     echo "Found ${n_reps} species representatives"
+
+    # Every value must look like an MGYG accession. Anything else (a blank-ish
+    # placeholder, a value from the wrong column) breaks ${R::-2} further down,
+    # and bash abandons the whole step without tripping set -e.
+    local bad_reps
+    bad_reps=$(grep -vE '^MGYG[0-9]+$' "$REPS_FILE" || true)
+    if [[ -n "$bad_reps" ]]; then
+        echo "ERROR: unexpected values in column ${reps_col} of ${RESULTS_PATH}/genomes-all_metadata.tsv:" >&2
+        printf '%s\n' "$bad_reps" | cat -A | head -n 20 >&2
+        exit 1
+    fi
 
     # Check up front that every representative has the GFF that becomes <MGYG>.gff,
     # so a missing file stops the run before anything is copied
