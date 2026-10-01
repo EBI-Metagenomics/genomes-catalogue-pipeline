@@ -3,19 +3,33 @@
 set -e
 
 # The script organises output from the catalogue generation + Virify + Mobilome annotation pipeline to prepare it for upload to MGnify
+# With -e (eukaryotic catalogue) there is no mobilome: <MGYG>_annotated.gff is used as <MGYG>.gff
+# and the all_genomes GFFs are left as they are
 
 function Usage {
-    echo "Usage: $0 [-d /path/to/new/output/location] [-f ftp-folder-name] [-v catalogue-version] [-r /path/to/results/folder]"
+    echo "Usage: $0 [-d /path/to/new/output/location] [-f ftp-folder-name] [-v catalogue-version] [-r /path/to/results/folder] [-s /path/to/singularity/cache] [-e]"
     echo "Options:"
     echo "-d   Directory to save results to (FULL PATH)"
     echo "-f   FTP name of the catalogue, for example, human-oral or non-model-fish-gut"
     echo "-v   Catalogue version, for example, v1.0"
     echo "-r   Full path to nextflow pipeline results folder"
+    echo "-s   Path to the Singularity image cache"
+    echo "-e   Eukaryotic catalogue: no mobilome, <MGYG>_annotated.gff becomes <MGYG>.gff"
     exit 1
 }
 
 GET_REPS() {
     cat "$REPS_FILE"
+}
+
+# Stem of the per-genome GFF that becomes <MGYG>.gff (without .gff/.gff.gz).
+# Prokaryotes: the GFF with mobilome annotations. Eukaryotes: the plain annotated GFF.
+GENOME_GFF_STEM() {
+    if [[ $EUK == true ]]; then
+        echo "${1}_annotated"
+    else
+        echo "${1}_annotated_with_mobilome"
+    fi
 }
 
 
@@ -178,8 +192,12 @@ function PrepareRun {
 
     # Build the species representative list once. If this fails or comes back
     # empty, stop here instead of letting every later loop run over nothing.
+    # Species representative column: 14 for prokaryotes, 16 for eukaryotes.
+    # The header line is skipped by position rather than by name.
+    local reps_col=14
+    if [[ $EUK == true ]]; then reps_col=16; fi
     REPS_FILE="${LOG_DIR}/representatives.txt"
-    cut -f14 "${RESULTS_PATH}/genomes-all_metadata.tsv" | grep -v "Species" | sort -u > "$REPS_FILE"
+    tail -n +2 "${RESULTS_PATH}/genomes-all_metadata.tsv" | cut -f"${reps_col}" | sort -u > "$REPS_FILE"
     local n_reps
     n_reps=$(wc -l < "$REPS_FILE")
     if [[ $n_reps -eq 0 ]]; then
@@ -187,6 +205,29 @@ function PrepareRun {
         exit 1
     fi
     echo "Found ${n_reps} species representatives"
+
+    # Every value must look like an MGYG accession. Anything else (a blank-ish
+    # placeholder, a value from the wrong column) breaks ${R::-2} further down,
+    # and bash abandons the whole step without tripping set -e.
+    local bad_reps
+    bad_reps=$(grep -vE '^MGYG[0-9]+$' "$REPS_FILE" || true)
+    if [[ -n "$bad_reps" ]]; then
+        echo "ERROR: unexpected values in column ${reps_col} of ${RESULTS_PATH}/genomes-all_metadata.tsv:" >&2
+        printf '%s\n' "$bad_reps" | cat -A | head -n 20 >&2
+        exit 1
+    fi
+
+    # Check up front that every representative has the GFF that becomes <MGYG>.gff,
+    # so a missing file stops the run before anything is copied
+    local R stem missing=0
+    for R in $(GET_REPS); do
+        stem="${RESULTS_PATH}/species_catalogue/${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R")"
+        if [[ ! -s "${stem}.gff" && ! -s "${stem}.gff.gz" ]]; then
+            echo "Missing ${stem}.gff(.gz)" >&2
+            missing=1
+        fi
+    done
+    if [[ $missing -ne 0 ]]; then echo "ERROR: annotation GFFs missing, stopping." >&2; exit 1; fi
 }
 
 
@@ -205,12 +246,19 @@ function GzipSpeciesCatalogue {
         for sub in genome pan-genome; do
             # Singleton species have no pan-genome folder
             if [[ ! -d "${base}/${sub}" ]]; then continue; fi
-            # The two annotated GFFs are excluded because later steps
-            # rm/mv them by their uncompressed names
-            find "${base}/${sub}" -type f \
-                ! -name '*.gz' ! -name '*.gz.tmp' ! -name '*.fai' \
-                ! -name "${R}_annotated.gff" \
-                ! -name "${R}_annotated_with_mobilome.gff" >> "$list"
+            if [[ $EUK == true ]]; then
+                # No mobilome: gzip the annotated GFF too, later steps use
+                # ${R}_annotated.gff.gz as the genome GFF
+                find "${base}/${sub}" -type f \
+                    ! -name '*.gz' ! -name '*.gz.tmp' ! -name '*.fai' >> "$list"
+            else
+                # The two annotated GFFs are excluded because later steps
+                # rm/mv them by their uncompressed names
+                find "${base}/${sub}" -type f \
+                    ! -name '*.gz' ! -name '*.gz.tmp' ! -name '*.fai' \
+                    ! -name "${R}_annotated.gff" \
+                    ! -name "${R}_annotated_with_mobilome.gff" >> "$list"
+            fi
         done
     done
 
@@ -244,7 +292,7 @@ function GenerateWebsiteGFFs {
             else
                 echo "$line"
             fi
-        done < <(zcat "${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff.gz") > "${R::-2}/${R}/${R}.gff.noseq"
+        done < <(zcat "${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz") > "${R::-2}/${R}/${R}.gff.noseq"
     done
 }
 
@@ -268,7 +316,7 @@ function CopyWebsiteFiles {
     for R in $(GET_REPS)
     do
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated.gff"
-        rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated_with_mobilome.gff.gz"
+        rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz"
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.fai"
         zcat "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" | singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip > "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" \
         && mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" \
@@ -302,19 +350,27 @@ function CopyFTPFiles {
     : > "$ftp_fnas"
     for R in $(GET_REPS)
     do
-        rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}_annotated.gff"
-        mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}_annotated_with_mobilome.gff.gz" \
+        if [[ $EUK != true ]]; then
+            rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}_annotated.gff"
+        fi
+        mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz" \
         "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.gff.gz"
         rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/${R}.gff.noseq"
-        # Old .fna.fai was built against the uncompressed .fna and is stale now
-        # that this copy is (b)gzipped as .fna.gz; index the .fna.gz instead
+        # The .fna.gz copied from species_catalogue is plain gzip (safe_gzip.sh),
+        # which samtools faidx cannot index. The website copy was already
+        # re-compressed with bgzip and indexed in CopyWebsiteFiles, so reuse it.
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.fai"
-        singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img samtools faidx "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.gz"
+        cp "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" \
+           "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.fai" \
+           "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/"
         echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.fna.gz" >> "$ftp_fnas"
         # Replace the all_genomes GFF with a GFF that includes the mobilome
-        rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/${R}.gff"
-        cp "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.gff.gz" \
-        "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/"
+        # (eukaryotes have no mobilome, so their all_genomes GFF is kept as is)
+        if [[ $EUK != true ]]; then
+            rm "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/${R}.gff"
+            cp "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/species_catalogue/${R::-2}/${R}/genome/${R}.gff.gz" \
+            "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/"
+        fi
     done
     VerifyFaidx "$ftp_fnas"
 }
@@ -364,13 +420,15 @@ function ZipAllGenomes {
 # Main
 # ---------------------------------------------------------------------------
 
-while getopts 'd:f:v:r:s:' flag; do
+EUK=false
+while getopts 'd:f:v:r:s:e' flag; do
     case "${flag}" in
         d) export SAVE_TO_PATH=$OPTARG ;;
         f) export CATALOGUE_FOLDER=$OPTARG ;;
         v) export CATALOGUE_VERSION=$OPTARG ;;
         r) export RESULTS_PATH=$OPTARG ;;
         s) export SINGULARITY_CACHEDIR_PATH=$OPTARG ;;
+        e) EUK=true ;;
         *) Usage exit 1 ;;
     esac
 done
@@ -383,6 +441,10 @@ fi
 LOG_DIR="${RESULTS_PATH}/reorganisation_slurm_logs"
 MAX_ARRAY_TASKS=2000
 BACKGROUND_JOBS=()
+
+if [[ $EUK == true ]]; then
+    echo "Eukaryotic catalogue mode: no mobilome, using <MGYG>_annotated.gff as <MGYG>.gff"
+fi
 
 GenerateDirectories
 PrepareRun
