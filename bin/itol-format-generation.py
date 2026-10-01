@@ -5,7 +5,8 @@ import random
 
 # Argument parser setup
 parser = argparse.ArgumentParser(description="Generates labels and legends for iTOL and existing/novel layer")
-parser.add_argument("-i", "--input", dest="input", required=True, help="gtdbtk.bac120.summary.tsv/gtdbtk.ar53.summary.tsv")
+parser.add_argument("-i", "--input", dest="input", required=True,
+                    help="gtdbtk.bac120.summary.tsv/gtdbtk.ar53.summary.tsv")
 parser.add_argument("-t", "--taxa", dest="taxa", required=True, help="phylum/class/order/family/genus/species")
 parser.add_argument("-d", "--domain", dest="domain", required=True, help="bac/arc")
 args = parser.parse_args()
@@ -28,8 +29,8 @@ col_dict = {}
 with open(args.input, 'r') as file_in, \
     open(f"itol_gtdb-layer_{args.domain}_{args.taxa}.txt", "w") as circles, \
     open(f"itol_gtdb-legend_{args.domain}_{args.taxa}.txt", "w") as legend, \
-    open(f"novel_{args.domain}_{args.taxa}.txt", "w") as novel, \
-    open(f"existing_{args.domain}_{args.taxa}.txt", "w") as existing:
+    open(f"novel_existing_{args.domain}_{args.taxa}-layer.txt", "w") as nov_exis, \
+    open(f"novel_existing_{args.domain}_{args.taxa}-legend.txt", "w") as nov_exis_legend:
     # circles
     circles.write("DATASET_COLORSTRIP\n"
                   "SEPARATOR COMMA\n"
@@ -41,6 +42,16 @@ with open(args.input, 'r') as file_in, \
                  f"LEGEND_TITLE,{args.taxa}\n"
                  "DATA\n")
 
+    nov_exis.write("DATASET_COLORSTRIP\n"
+                   "SEPARATOR COMMA\n"
+                   "DATASET_LABEL,novelty\n"
+                   "DATA\n")
+
+    nov_exis_legend.write("TREE_COLORS\n"
+                          "SEPARATOR COMMA\n"
+                          "DATASET_TITLE,novelty\n"
+                          "DATA\n")
+
     for line in file_in:
         if 'user_genome' in line:
             continue
@@ -49,9 +60,11 @@ with open(args.input, 'r') as file_in, \
         tax_lineage = line[1]
         species = tax_lineage.split(";")[TAXA['species']]
         if species == 's__':
-            novel.write(genome + "\n")
+            nov_exis.write(f"{genome},#d9ffc1,Novel MAG\n")
+            nov_exis_legend.write(f"{genome},range,#d9ffc1,Novel MAG\n")
         else:
-            existing.write(genome + "\n")
+            nov_exis.write(f"{genome},#b4c8ff,Existing MAG\n")
+            nov_exis_legend.write(f"{genome},range,#b4c8ff,Existing MAG\n")
 
         tax_unit = tax_lineage.split(";")[TAXA[args.taxa]]
         taxon = tax_unit.split("__")[-1]
