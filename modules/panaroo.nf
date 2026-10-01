@@ -12,8 +12,6 @@ process PANAROO {
                 return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/gene_presence_absence.Rtab";
             } else if ( output_file.name == "${cluster_name}.pan-genome.fna" ) {
                 return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/pan-genome.fna";
-            } else if ( output_file.name == "${cluster_name}_panaroo.tar.gz" ) {
-                return "additional_data/panaroo_output/${cluster_name}_panaroo.tar.gz";
             } else if ( output_file.name == "gene_presence_absence.csv" ) {
                 return "species_catalogue/${cluster_prefix}/${cluster_name}/pan-genome/gene_presence_absence.csv";
             } else {
@@ -26,7 +24,7 @@ process PANAROO {
 
     container 'quay.io/biocontainers/panaroo:1.3.2--pyhdfd78af_0'
     
-    label 'retry_twice'
+    label 'retry_three_times'
 
     input:
     tuple val(cluster_name), path(gff_files)

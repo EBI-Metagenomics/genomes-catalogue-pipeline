@@ -11,7 +11,7 @@ process INDEX_FNA {
                 String cluster_prefix = cluster_name.substring(0, cluster_name.length() - 2);
                 def is_rep = genome_name == cluster_name;
                 if ( is_rep ) {
-                    return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${filename}";
+                    return "species_catalogue/${cluster_prefix}/${genome_name}/genome/${genome_name}.fna.fai";
                 }
             }
         },
