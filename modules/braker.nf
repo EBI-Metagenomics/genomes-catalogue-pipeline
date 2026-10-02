@@ -5,6 +5,7 @@ process BRAKER {
 
     input:
     val genome_name
+    val cluster_name
     path genome
     path protein_evidence
 

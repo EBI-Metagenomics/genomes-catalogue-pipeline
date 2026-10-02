@@ -61,13 +61,15 @@ workflow EUK_GENE_CALLING {
         braker_input = tuple_genome_proteins_nocluster
             .map { genome_name, _genome, prot_evidence -> tuple(genome_name, prot_evidence) }
             .join(all_genomes_for_gene_calling)
-            .multiMap { genome_name, prot_evidence, genome ->
+            .join(cluster_name_ch)
+            .multiMap { genome_name, prot_evidence, genome, cluster ->
                 genome_name: genome_name
+                cluster_name: cluster
                 genome: genome
                 proteins: prot_evidence
             }
 
-        BRAKER(braker_input.genome_name, braker_input.genome, braker_input.proteins)
+        BRAKER(braker_input.genome_name, braker_input.cluster_name, braker_input.genome, braker_input.proteins)
         DEDUP_GFF(BRAKER.out.gff3)
 
         dedup_gff_with_genome = DEDUP_GFF.out.dedup_gff.join(all_genomes_for_gene_calling)
@@ -93,12 +95,14 @@ workflow EUK_GENE_CALLING {
             .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
 
         metaeuk_input = ch_metaeuk_input
-            .multiMap { genome_name, genome, prot_evidence ->
+            .join(cluster_name_ch)
+            .multiMap { genome_name, genome, prot_evidence, cluster ->
                 genome_name: genome_name
+                cluster_name: cluster
                 genome: genome
                 proteins: prot_evidence
             }
-        METAEUK(metaeuk_input.genome_name, metaeuk_input.genome, metaeuk_input.proteins)
+        METAEUK(metaeuk_input.genome_name, metaeuk_input.cluster_name, metaeuk_input.genome, metaeuk_input.proteins)
 
         metaeuk_genomes = ch_metaeuk_input.map { genome_name, genome, _prot -> tuple(genome_name, genome) }
         FIX_METAEUK_CDS_PHASES(METAEUK.out.gff.join(metaeuk_genomes))
