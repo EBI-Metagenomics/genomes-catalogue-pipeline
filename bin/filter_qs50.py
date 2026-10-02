@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.INFO)
 
 def main(input_folder, checkm, output, output_csv, details_csv, remove, filter):
     genome_list = [_ for _ in os.listdir(input_folder) if _.endswith(("fa", "fna", "fasta"))]
-    logging.info("Found {} input genomes. Beginning filtering.".format(len(genome_list)))
+    logging.info(f"Found {len(genome_list)} input genomes. Beginning filtering.")
     remove_list, no_file = load_checkm(checkm, genome_list, output_csv, details_csv=details_csv)
     print_result(remove_list, output)
     output_genomes = os.path.basename(input_folder) + '_filtered'
@@ -57,9 +57,15 @@ def load_checkm(checkm, genome_list, output_csv, details_csv=None):
                 continue
             genome, completeness, contamination = line.split(",")
             if genome in genome_list:
-                if not qs50(float(contamination), float(completeness)): 
+                try:
+                    reason = "" if qs50(float(contamination), float(completeness)) else "Failed QS50"
+                except ValueError:
+                    # EukCC reports NA when they can't assess a genome
+                    logging.warning(f"Genome {genome} has no completeness/contamination value")
+                    reason = "Missing completeness/contamination value"
+                if reason:
                     remove_list.add(genome)
-                    details.append(line)
+                    details.append(f"{line},{reason}")
                 else:
                     file_out.write(line + "\n")
             else:
@@ -73,8 +79,7 @@ def load_checkm(checkm, genome_list, output_csv, details_csv=None):
                 else:
                     # Sometimes a genome might have been filtered out from the fasta set but left behind in the
                     # checkm output; log this but don't fail
-                    logging.warning("Genome {} is present in the CheckM file but genome FASTA doesn't exist".format(
-                        genome))
+                    logging.warning(f"Genome {genome} is present in the CheckM file but genome FASTA doesn't exist")
                     no_file.add(genome)
     if details_csv:
         with open(details_csv, "w") as details_out:
@@ -86,7 +91,7 @@ def load_checkm(checkm, genome_list, output_csv, details_csv=None):
 def print_result(remove_list, output):
     with open(output, "w") as file_out:
         for genome in remove_list:
-            file_out.write('{}\n'.format(genome))
+            file_out.write(f'{genome}\n')
 
 
 def qs50(contamination, completeness):
