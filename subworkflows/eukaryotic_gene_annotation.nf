@@ -95,7 +95,7 @@ workflow EUK_GENE_CALLING {
             .map { genome_name, prot_evidence, genome -> tuple(genome_name, genome, prot_evidence) }
 
         metaeuk_input = ch_metaeuk_input
-            .join(cluster_name_ch)
+            .combine(cluster_name_ch, by: 0)
             .multiMap { genome_name, genome, prot_evidence, cluster ->
                 genome_name: genome_name
                 cluster_name: cluster
