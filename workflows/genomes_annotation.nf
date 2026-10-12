@@ -433,8 +433,8 @@ workflow GAP {
     Generate taxonomy trees with iqtree or fasttree
     */
     BUILD_TAXONOMY_TREES (
-        GTDBTK_TAX.out.gtdbtk_user_msa_bac120,
-        GTDBTK_TAX.out.gtdbtk_user_msa_ar53,
+        channel.empty(), // bac120 trees/MSA now come from GENERATE_GTDB_FULL_MSA
+        channel.empty(), // ar53 trees/MSA now come from GENERATE_GTDB_FULL_MSA
         GTDBTK_QC.out.gtdbtk_summary_bac120.ifEmpty(file("EMPTY")),
         GTDBTK_QC.out.gtdbtk_summary_arc53.ifEmpty(file("EMPTY")),
         channel.value("bac120"),
