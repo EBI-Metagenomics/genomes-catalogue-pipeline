@@ -4,13 +4,6 @@ process GTDBTK_ALIGN {
     containerOptions "--bind ${gtdbtk_refdata}:/opt/gtdbtk_refdata"
     
     label 'retry_twice'
-    
-    publishDir(
-        path: "${params.outdir}/phylogenies",
-        pattern: "*.fasta.gz",
-        mode: 'copy',
-        failOnError: true
-    )
 
     input:
     path identify_folder
