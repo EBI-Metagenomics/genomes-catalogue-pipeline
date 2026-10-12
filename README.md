@@ -4,7 +4,7 @@
 
 Gurbich TA, Almeida A, Beracochea M, Burdett T, Burgin J, Cochrane G, Raj S, Richardson L, Rogers AB, Sakharova E, Salazar GA and Finn RD. (2023) [MGnify Genomes: A Resource for Biome-specific Microbial Genome Catalogues.](https://www.sciencedirect.com/science/article/pii/S0022283623000724) <i>J Mol Biol</i>. doi: https://doi.org/10.1016/j.jmb.2023.168016
 
-Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/genome-viewer.html
+Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/mgnify-genomes.html
 
 ### Tools used in the pipeline
 | Tool/Database                                                                                    | Version          | Purpose                                                                                                                |
@@ -34,7 +34,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | mgnify-pipelines-toolkit                                                                         | 1.5.1            | Post-process antiSMASH results                                                                                         |
 | GECCO                                                                                            | 0.9.8            | Biosynthetic gene cluster annotation                                                                                   |
 | SanntiS                                                                                          | 0.9.3.2          | Biosynthetic gene cluster annotation                                                                                   |
-| DefenseFinder                                                                                    | 2.0.0            | Annotation of anti-phage and anti-defense systems                                                                      |
+| DefenseFinder                                                                                    | 2.0.1            | Annotation of anti-phage and anti-defense systems                                                                      |
 | DefenseFinder models                                                                             | 2.0.2            | Database for DefenseFinder                                                                                             |
 | CasFinder                                                                                        | 3.1.0            | Database for DefenseFinder                                                                                             |
 | run_dbCAN                                                                                        | 4.1.4            | Polysaccharide utilization loci prediction                                                                             |
@@ -43,10 +43,10 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | tRNAscan-SE                                                                                      | 2.0.9            | tRNA predictions                                                                                                       |
 | Rfam                                                                                             | 15.1             | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
 | Panaroo                                                                                          | 1.3.2            | Pan-genome computation for clusters smaller than 1000 genomes                                                          |
-| CGT (CELEBRIMBOR)                                                                                | 1.0.0            | Pan-genome gene frequency correction based on genome completeness                                                                      |
+| CGT (CELEBRIMBOR)                                                                                | 0.1.1            | Pan-genome gene frequency correction based on genome completeness                                                                      |
 | Seqtk                                                                                            | 1.3              | Generating a gene catalogue                                                                                            |
-| VIRify                                                                                           | 3.0.2            | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
-| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 3.0.1            | Mobilome annotation (executed as a separate step)                                                                      |
+| VIRify                                                                                           | 4.0.0            | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
+| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 5.0.2            | Mobilome annotation (executed as a separate step)                                                                      |
 | samtools                                                                                         | 1.15             | FASTA indexing                                                                                                         |
 | EukCC                                                                                            | 2.1.3            | Completeness and contamination of eukaryotic genomes                                                                   |
 | BUSCO                                                                                            | 5.8.0            | Eukaryotic genome quality                                                                                              |

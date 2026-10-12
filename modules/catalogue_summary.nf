@@ -4,8 +4,6 @@ process CATALOGUE_SUMMARY {
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
-    label 'process_light'
-
     input:
     path metadata_tsv
     path mmseqs_tsv
@@ -16,7 +14,7 @@ process CATALOGUE_SUMMARY {
     script:
     """
     wc -l ${mmseqs_tsv} | cut -d ' ' -f1 > protein_count.txt
-    cut -f1 ${mmseqs_tsv} | sort -u | wc -l > cluster90_count.txt
+    awk '!seen[\$1]++ {count++} END {print count}' ${mmseqs_tsv} > cluster90_count.txt
     
     generate_catalogue_summary_json.py \
     -p protein_count.txt \

@@ -9,7 +9,6 @@ include { DREP } from '../modules/drep'
 include { RUN_CLUSTER_UPDATE } from '../modules/run_cluster_update'
 include { CLASSIFY_CLUSTERS } from '../modules/classify_clusters'
 include { SPLIT_DREP as SPLIT_DREP_NEW_SPECIES } from '../modules/split_drep'
-include { PRINT_DREP_FILES } from '../modules/print_drep_files'
 include { MASH_COMPARE } from '../modules/mash_compare'
 include { COMBINE_GENOME_FOLDERS } from '../modules/utils'
 

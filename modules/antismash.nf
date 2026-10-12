@@ -15,9 +15,6 @@ process ANTISMASH {
 
     script:
     """
-    export PYTHONNOUSERSITE=1
-    unset PYTHONPATH
-    
     antismash \\
     -t bacteria \\
     -c ${task.cpus} \\

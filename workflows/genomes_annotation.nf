@@ -526,6 +526,7 @@ workflow GAP {
         file(coverage_summary),
         file(cluster_faa),
         file(pangenome_fasta), // only for many_genomes clusters otherwise empty
+        file(gene_prevalence) // only for many_genomes clusters otherwise empty
     )
     */
     files_for_json_summary = ANNOTATE_GFF.out.annotated_gff.join(
@@ -534,6 +535,8 @@ workflow GAP {
         cluster_reps_faas
     ).join(
         PROCESS_MANY_GENOMES.out.pangenome_fna, remainder: true
+    ).join(
+        PROCESS_MANY_GENOMES.out.gene_prevalence, remainder: true
     )
 
     GENOME_SUMMARY_JSON(
@@ -548,12 +551,12 @@ workflow GAP {
         cluster_reps_fnas.map({ it[1] })
     )
 
-    cluster_rep_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
-        PROCESS_MANY_GENOMES.out.rep_prokka_ffn
+    all_genomes_ffn = PROCESS_SINGLETON_GENOMES.out.prokka_ffn.mix(
+        PROCESS_MANY_GENOMES.out.prokka_ffns
     )
 
     GENE_CATALOGUE(
-        cluster_rep_ffn.map({ it[1] }).collectFile(name: "cluster_reps.ffn", newLine: true),
+        all_genomes_ffn.map({ it[1] }).collectFile(name: "all_genomes.ffn", newLine: true),
         MMSEQ_SWF.out.mmseq_100_cluster_tsv
     )
 

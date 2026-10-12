@@ -103,7 +103,7 @@ def parse_gff_annotations(gff_files):
                 locus_tag = attrs.get("ID", "")
                 if locus_tag:
                     annotations[locus_tag] = {
-                        "gene": attrs.get("gene", ""),
+                        "gene": attrs.get("gene", "").replace(" ", "_"),
                         "product": attrs.get("product", ""),
                     }
 

@@ -421,6 +421,8 @@ workflow GAP_EUKS {
         cluster_reps_faas
     ).join(
         ch_pangenomes_fna, remainder: true
+    ).join(
+        Channel.empty(), remainder: true  // no gene prevalence for euks
     )
 
     GENOME_SUMMARY_JSON(
