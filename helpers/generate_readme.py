@@ -404,21 +404,44 @@ def print_file(
     bacteria = int(num_species.replace(",", "")) - archaea
     tree_tool_ar = get_tree_tool(archaea)
     tree_tool_bac = get_tree_tool(bacteria)
-    if archaea > 2:
-        phylo_text = """
-    * ar53_{tree_tool_ar}.nwk : A phylogenetic tree for archaeal genomes in Newick format.
-    * bac120_{tree_tool_bac}.nwk : A phylogenetic tree for bacterial genomes in Newick format.
-    * ar53_alignment.faa.gz : A multiple sequence alignment for archaeal genomes.
-    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes.""".format(
-            tree_tool_ar=tree_tool_ar,
-            tree_tool_bac=tree_tool_bac
-        )
-    else:
-        phylo_text = """
-    * bac120_{tree_tool_bac}.nwk : A phylogenetic tree for bacterial genomes in Newick format.
-    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes. """.format(
-            tree_tool_bac=tree_tool_bac
-        )
+    has_archaea = archaea > 2
+
+    phylo_lines = [
+        f"    * bac120_{tree_tool_bac}.nwk : A phylogenetic tree for bacterial genomes in Newick format.",
+        "    * bac120_alignment.faa.gz : A multiple sequence alignment for bacterial genomes.",
+    ]
+    if has_archaea:
+        phylo_lines += [
+            f"    * ar53_{tree_tool_ar}.nwk : A phylogenetic tree for archaeal genomes in Newick format.",
+            "    * ar53_alignment.faa.gz : A multiple sequence alignment for archaeal genomes.",
+        ]
+
+    itol_intro = ("    * iTOL/ : Files for visualising phylogenetic trees in iTOL (https://itol.embl.de). "
+                  f"Use bacterial annotation files with the corresponding bacterial tree (bac120_{tree_tool_bac}.nwk)")
+    if has_archaea:
+        itol_intro += f" and archaeal annotation files with the corresponding archaeal tree (ar53_{tree_tool_ar}.nwk)"
+    phylo_lines.append(itol_intro + ".")
+
+    domains = [("bac", "bacterial")] + ([("arc", "archaeal")] if has_archaea else [])
+    for domain, domain_name in domains:
+        phylo_lines += [
+            f"        * itol_gtdb-layer_{domain}_phylum.txt : A color-coded annotation layer showing the phylum-level "
+            f"taxonomy of {domain_name} genomes in the phylogenetic tree.",
+            f"        * itol_gtdb-legend_{domain}_phylum.txt : Range coloring of the {domain_name} tree by phylum, "
+            f"using the same randomly assigned colors as the annotation layer.",
+            f"        * novel_existing_{domain}_phylum-layer.txt : A color layer distinguishing {domain_name} genomes "
+            f"assigned to novel species (according to the GTDB release used) from those belonging to existing species. "
+            f"Novel species are shown in light green, existing species in light blue.",
+            f"        * novel_existing_{domain}_phylum-legend.txt : Range coloring of the {domain_name} tree by "
+            f"novel/existing species status, using the same colors as the novelty layer.",
+            f"        * cluster_size_{domain}.txt : A bar chart layer showing the number of genomes in each "
+            f"{domain_name} species cluster.",
+            f"        * cluster_size_log10_{domain}.txt : A bar chart layer showing log10(number of genomes + 1) "
+            f"in each {domain_name} species cluster.",
+        ]
+
+    phylo_text = "\n" + "\n".join(phylo_lines)
+
     if xlarge:
         xlarge_note = """
 * Due to the size of this catalogue, the clustering process was performed in two phases. First, the entire genome set \

@@ -71,16 +71,14 @@ include { METADATA_AND_PHYLOTREE } from '../subworkflows/metadata_and_phylotree'
 include { KRAKEN_SWF } from '../subworkflows/kraken_swf'
 include { DETECT_RNA } from '../subworkflows/detect_rna_swf.nf'
 include { UPDATE_CLUSTERS } from '../subworkflows/update_clusters_swf.nf'
+include { BUILD_TAXONOMY_TREES } from '../subworkflows/build_taxonomy_trees.nf'
+include { GENERATE_GTDB_FULL_MSA } from '../subworkflows/generate_gtdb_full_msa.nf'
 
 include { MASH_TO_NWK } from '../modules/mash2nwk'
 include { FUNCTIONAL_ANNOTATION_SUMMARY } from '../modules/functional_summary'
 include { INDEX_FNA } from '../modules/index_fna'
 include { ANNOTATE_GFF } from '../modules/annotate_gff'
 include { GENOME_SUMMARY_JSON } from '../modules/genome_summary_json'
-include { IQTREE as IQTREE_BAC } from '../modules/iqtree'
-include { IQTREE as IQTREE_AR } from '../modules/iqtree'
-include { FASTTREE as FASTTREE_BAC } from '../modules/fasttree'
-include { FASTTREE as FASTTREE_AR } from '../modules/fasttree'
 include { GENE_CATALOGUE } from '../modules/gene_catalogue'
 include { MASH_SKETCH } from '../modules/mash_sketch'
 include { KEGG_COMPLETENESS } from '../modules/kegg_completeness.nf'
@@ -321,7 +319,24 @@ workflow GAP {
     gtdbtk_tables_ch = channel.empty() \
         .mix(GTDBTK_TAX.out.gtdbtk_summary_bac120, GTDBTK_TAX.out.gtdbtk_summary_arc53) \
         .collectFile(name: 'gtdbtk.summary.tsv')
-
+        
+    // ------------------------
+    // ---> BUGFIX of GTDB full alignment and trees -- fix GTDBTK_TAX and then remove subworkflow at all
+    GENERATE_GTDB_FULL_MSA (
+        filtered_single_genome_fna_tuples 
+            .map({ it[1] }) 
+            .mix( 
+                dereplicated_genomes.out.many_genomes_fna_tuples 
+                    .filter { 
+                        it[1].name.contains(it[0])
+                    }
+                    .map({ it[1] })
+            ) 
+            .collect(),
+        channel.value("fa"), // genome file extension
+        ch_gtdb_db
+    )
+    // ------------------------
     
     MMSEQ_SWF(
         PROCESS_MANY_GENOMES.out.prokka_faas.map({ it[1] }).collectFile(name: "pangenome_prokka.faa"),
@@ -415,35 +430,21 @@ workflow GAP {
     )
 
     /*
-    IQTree needs at least 3 sequences, but it's too slow for more than 2000 sequences so we use FastTree in that case
+    Generate taxonomy trees with iqtree or fasttree
     */
-    def treeCreationCriteria = branchCriteria {
-        iqtree: file(it).countFasta() > 2 && file(it).countFasta() < 2000
-        fasttree: file(it).countFasta() >= 2000
-    }
-
-    GTDBTK_TAX.out.gtdbtk_user_msa_bac120.branch( treeCreationCriteria ).set { gtdbtk_user_msa_bac120 }
-
-    IQTREE_BAC(
-        gtdbtk_user_msa_bac120.iqtree,
-        channel.value("bac120")
+    BUILD_TAXONOMY_TREES (
+        channel.empty(), // bac120 trees/MSA now come from GENERATE_GTDB_FULL_MSA
+        channel.empty(), // ar53 trees/MSA now come from GENERATE_GTDB_FULL_MSA
+        GTDBTK_QC.out.gtdbtk_summary_bac120.ifEmpty(file("EMPTY")),
+        GTDBTK_QC.out.gtdbtk_summary_arc53.ifEmpty(file("EMPTY")),
+        channel.value("bac120"),
+        channel.value("ar53"),
+        METADATA_AND_PHYLOTREE.out.metadata_tsv
     )
-    FASTTREE_BAC(
-        gtdbtk_user_msa_bac120.fasttree,
-        channel.value("bac120")
-    )
-
-    GTDBTK_TAX.out.gtdbtk_user_msa_ar53.branch( treeCreationCriteria ).set{ gtdbtk_user_msa_ar53 }
-
-    IQTREE_AR(
-        gtdbtk_user_msa_ar53.iqtree,
-        channel.value("ar53")
-    )
-    FASTTREE_AR(
-        gtdbtk_user_msa_ar53.fasttree,
-        channel.value("ar53")
-    )
-
+    
+    /*
+    Summary for functional annotations
+    */
     faa_and_annotations = cluster_reps_faas.join(
         ips_annotation_tsvs
     ).join(
