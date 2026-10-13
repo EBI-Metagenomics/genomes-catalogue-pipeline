@@ -1,6 +1,6 @@
 process GENERATE_ITOL_FILES {
 
-    publishDir "${params.outdir}/phylogenies", mode: 'copy', failOnError: true, pattern: "*.txt"
+    publishDir "${params.outdir}/phylogenies/iTOL", mode: 'copy', failOnError: true, pattern: "*.txt"
 
     container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
 
