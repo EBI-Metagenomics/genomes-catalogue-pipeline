@@ -502,9 +502,24 @@ def summarise_removed_genomes(removed_genomes_df, out_dir):
 
     lines = [f"* {len(removed_genomes_df)} genomes were removed from the catalogue. "
              f"See the full list and the reason for each removal in removed_genomes.tsv"]
-    for reason, count in removed_genomes_df["Reason"].value_counts().items():
+    summary_reasons = removed_genomes_df["Reason"].map(summarise_removal_reason)
+    for reason, count in summary_reasons.value_counts().items():
         lines.append(f"    - {reason}: {count}")
     return "\n".join(lines)
+
+
+def summarise_removal_reason(reason):
+    """
+    Collapse a detailed removal reason into a category for the README summary.
+    The full reason is still written to removed_genomes.tsv.
+    """
+    if reason.startswith("Duplicate of "):
+        return "Exact duplicate"
+    if reason.startswith("Assembly from this sample already exists"):
+        return "Multiple assemblies from the same source data"
+    if ":" in reason:
+        return reason.split(":", 1)[0].strip()
+    return reason
 
 
 def summarise_removed_species(removals, previous_metadata_table, out_dir):
