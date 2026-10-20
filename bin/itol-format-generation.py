@@ -8,13 +8,31 @@ from collections import Counter
 
 # Argument parser setup
 parser = argparse.ArgumentParser(description="Generates labels and legends for iTOL and existing/novel layer")
-parser.add_argument("-i", "--input", dest="input", required=True,
-                    help="gtdbtk.bac120.summary.tsv/gtdbtk.ar53.summary.tsv")
-parser.add_argument("-t", "--taxa", dest="taxa", required=True, help="phylum/class/order/family/genus/species")
-parser.add_argument("-d", "--domain", dest="domain", required=True, help="bac/arc")
-parser.add_argument("-m", "--metadata", dest="metadata", required=False,
-                    help="genomes metadata table with Genome, Species_rep and Lineage columns; generates cluster "
-                         "size layers for the domain given in --domain")
+parser.add_argument(
+    "-i", "--input", 
+    dest="input", 
+    required=True,
+    help="gtdbtk.bac120.summary.tsv/gtdbtk.ar53.summary.tsv")
+parser.add_argument(
+    "-t", "--taxa",
+    dest="taxa",
+    required=True,
+    help="phylum/class/order/family/genus/species",
+    choices=["phylum", "class", "order", "family", "genus", "species"]
+)
+parser.add_argument(
+    "-d", "--domain",
+    dest="domain",
+    required=True,
+    help="bac/arc",
+    choices=["bac", "arc"]
+)
+parser.add_argument(
+    "-m", "--metadata", 
+    dest="metadata", 
+    required=False,
+    help="genomes metadata table with Genome, Species_rep and Lineage columns; generates cluster "
+         "size layers for the domain given in --domain")
 args = parser.parse_args()
 
 TAXA = {
