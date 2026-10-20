@@ -423,8 +423,9 @@ def print_file(
     phylo_lines.append(itol_intro + ".")
 
     domains = [("bac", "bacterial")] + ([("arc", "archaeal")] if has_archaea else [])
+    itol_lines = []
     for domain, domain_name in domains:
-        phylo_lines += [
+        itol_lines += [
             f"        * itol_gtdb-layer_{domain}_phylum.txt : A colour-coded annotation layer showing the phylum-level "
             f"taxonomy of {domain_name} genomes in the phylogenetic tree.",
             f"        * itol_gtdb-legend_{domain}_phylum.txt : Range colouring of the {domain_name} tree by phylum, "
@@ -439,6 +440,9 @@ def print_file(
             f"        * cluster_size_log10_{domain}.txt : A bar chart layer showing log10(number of genomes + 1) "
             f"in each {domain_name} species cluster.",
         ]
+
+    # List iTOL files alphabetically by file name
+    phylo_lines += sorted(itol_lines, key=lambda line: line.strip().lstrip("* ").split(" ")[0].lower())
 
     phylo_text = "\n".join(phylo_lines)
 
