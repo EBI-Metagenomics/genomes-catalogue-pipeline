@@ -416,8 +416,7 @@ def find_removed_genomes(metadata_table, previous_metadata_table, additional_dat
     Identify all genomes present in the previous metadata table but not the current one,
     and attach the reason for each removal. Reasons are taken from the first source
     that has one, in this order:
-        1. the remove list (--remove-list), if provided (this was the user-supplied list to the pipeline when generating
-            the catalogue
+        1. the remove list (--remove-list), if provided
         2. update_execution_reports/qs50_failed_previous_catalogue_version.csv
         3. combined_QC_failed_report.txt
     Raises ValueError if any removed genome has no reason in any of them.
@@ -497,7 +496,9 @@ def summarise_removed_genomes(removed_genomes_df, out_dir):
     if removed_genomes_df.empty:
         return ""
 
-    removed_genomes_df.to_csv(Path(out_dir) / "removed_genomes.tsv", sep="\t", index=False)
+    removed_genomes_df[["Genome", "Was_species_rep", "Reason"]].rename(
+        columns={"Reason": "Reason_for_removal"}
+    ).to_csv(Path(out_dir) / "removed_genomes.tsv", sep="\t", index=False)
 
     lines = [f"* {len(removed_genomes_df)} genomes were removed from the catalogue. "
              f"See the full list and the reason for each removal in removed_genomes.tsv"]
