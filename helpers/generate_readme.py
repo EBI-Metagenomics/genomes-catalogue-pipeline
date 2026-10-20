@@ -516,7 +516,7 @@ Website URL: {url}
 - kraken2_db_{catalog_name}_{version}/ : A folder containing the Kraken 2 and Bracken databases. 
 
 - phylogenies/: 
-Note: Alignments and the trees generated from them are based on GTDB-Tk results. Genomes classified only to the domain level by GTDB-Tk (e.g. d__Bacteria;p__;c__;o__;f__;g__;s__) will not be included.
+    Note: Alignments and the trees generated from them are based on GTDB-Tk results. Genomes classified only to the domain level by GTDB-Tk (e.g. d__Bacteria;p__;c__;o__;f__;g__;s__) will not be included.
 {phylo_text}
 
 - protein_catalogue/
