@@ -13,7 +13,8 @@ parser.add_argument("-i", "--input", dest="input", required=True,
 parser.add_argument("-t", "--taxa", dest="taxa", required=True, help="phylum/class/order/family/genus/species")
 parser.add_argument("-d", "--domain", dest="domain", required=True, help="bac/arc")
 parser.add_argument("-m", "--metadata", dest="metadata", required=False,
-                    help="genomes metadata table with Genome and Species_rep columns; generates cluster size layers")
+                    help="genomes metadata table with Genome, Species_rep and Lineage columns; generates cluster "
+                         "size layers for the domain given in --domain")
 args = parser.parse_args()
 
 TAXA = {
@@ -30,16 +31,30 @@ def random_color():
     return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
 
-def count_cluster_sizes(metadata):
+DOMAIN_PREFIXES = {
+    'bac': 'd__Bacteria',
+    'arc': 'd__Archaea'
+}
+
+
+def count_cluster_sizes(metadata, domain):
+    if domain not in DOMAIN_PREFIXES:
+        raise ValueError(f"Unknown domain '{domain}'; expected one of: {', '.join(DOMAIN_PREFIXES)}")
+    domain_prefix = DOMAIN_PREFIXES[domain]
     cluster_sizes = Counter()
     opener = gzip.open if metadata.endswith(".gz") else open
     with opener(metadata, 'rt') as file_in:
         header = file_in.readline().rstrip('\n').split('\t')
         genome_index = header.index("Genome")
         rep_index = header.index("Species_rep")
+        lineage_index = header.index("Lineage")
+        max_index = max(genome_index, rep_index, lineage_index)
         for line in file_in:
             cols = line.rstrip('\n').split('\t')
-            if len(cols) <= max(genome_index, rep_index) or not cols[genome_index]:
+            if len(cols) <= max_index or not cols[genome_index]:
+                continue
+            # keep only genomes from the requested domain (first rank of the GTDB-Tk lineage)
+            if cols[lineage_index].split(';')[0].strip() != domain_prefix:
                 continue
             cluster_sizes[cols[rep_index]] += 1
     return cluster_sizes
@@ -113,7 +128,7 @@ with open(args.input, 'r') as file_in, \
         legend.write("%s,range,%s,%s\n" % (genome, color, taxon))
 
 if args.metadata:
-    cluster_sizes = count_cluster_sizes(args.metadata)
+    cluster_sizes = count_cluster_sizes(args.metadata, args.domain)
     write_cluster_size_layer(cluster_sizes, f"cluster_size_{args.domain}.txt", "cluster_size", lambda count: count)
     write_cluster_size_layer(cluster_sizes, f"cluster_size_log10_{args.domain}.txt", "cluster_size_log10",
                              lambda count: round(math.log10(count + 1), 4))
