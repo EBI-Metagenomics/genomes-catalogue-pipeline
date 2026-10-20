@@ -425,15 +425,15 @@ def print_file(
     domains = [("bac", "bacterial")] + ([("arc", "archaeal")] if has_archaea else [])
     for domain, domain_name in domains:
         phylo_lines += [
-            f"        * itol_gtdb-layer_{domain}_phylum.txt : A color-coded annotation layer showing the phylum-level "
+            f"        * itol_gtdb-layer_{domain}_phylum.txt : A colour-coded annotation layer showing the phylum-level "
             f"taxonomy of {domain_name} genomes in the phylogenetic tree.",
-            f"        * itol_gtdb-legend_{domain}_phylum.txt : Range coloring of the {domain_name} tree by phylum, "
-            f"using the same randomly assigned colors as the annotation layer.",
-            f"        * novel_existing_{domain}_phylum-layer.txt : A color layer distinguishing {domain_name} genomes "
+            f"        * itol_gtdb-legend_{domain}_phylum.txt : Range colouring of the {domain_name} tree by phylum, "
+            f"using the same randomly assigned colours as the annotation layer.",
+            f"        * novel_existing_{domain}_phylum-layer.txt : A colour layer distinguishing {domain_name} genomes "
             f"assigned to novel species (according to the GTDB release used) from those belonging to existing species. "
             f"Novel species are shown in light green, existing species in light blue.",
-            f"        * novel_existing_{domain}_phylum-legend.txt : Range coloring of the {domain_name} tree by "
-            f"novel/existing species status, using the same colors as the novelty layer.",
+            f"        * novel_existing_{domain}_phylum-legend.txt : Range colouring of the {domain_name} tree by "
+            f"novel/existing species status, using the same colours as the novelty layer.",
             f"        * cluster_size_{domain}.txt : A bar chart layer showing the number of genomes in each "
             f"{domain_name} species cluster.",
             f"        * cluster_size_log10_{domain}.txt : A bar chart layer showing log10(number of genomes + 1) "
