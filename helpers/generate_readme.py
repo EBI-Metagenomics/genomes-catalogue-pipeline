@@ -2,6 +2,7 @@
 # coding=utf-8
 
 import argparse
+import sys
 from pathlib import Path
 import pandas as pd
 
@@ -19,14 +20,16 @@ def main(
     previous_version,
     previous_metadata_table,
     additional_data_path,
-    study_list_threshold
+    study_list_threshold,
+    remove_list=None
 ):
     # If this is a README for an updated catalogue, check that all arguments are provided
-    if previous_readme or previous_version or previous_metadata_table:
+    if previous_readme or previous_version or previous_metadata_table or remove_list:
         if not all([previous_readme, previous_version, previous_metadata_table, additional_data_path]):
             raise ValueError(
                 "For updates, you must provide --previous-readme, "
-                "--previous-version, --additional-data-path, and --previous-metadata-table together."
+                "--previous-version, --additional-data-path, and --previous-metadata-table together "
+                "(--remove-list is optional and only valid for updates)."
             )
 
     (
@@ -59,7 +62,7 @@ def main(
     # If this is an update, generate a changelog from the previous version  
     if previous_readme:
         changelog = create_changelog(version, previous_version, metadata_table, previous_metadata_table,
-                                     additional_data_path, outfile_name)
+                                     additional_data_path, outfile_name, remove_list)
         previous_changelog = extract_previous_changelogs(previous_readme)
     else:
         changelog = ""
@@ -151,9 +154,12 @@ def process_metadata_table(metadata_table):
 
 
 def create_changelog(version, previous_version, metadata_table, previous_metadata_table,
-                     additional_data_path, outfile_name):
+                     additional_data_path, outfile_name, remove_list=None):
     new_df = count_new_genomes(metadata_table, previous_metadata_table)
     species_rep_replacements, removals = load_rep_changes(additional_data_path)
+    removed_genomes_df = find_removed_genomes(metadata_table, previous_metadata_table, additional_data_path,
+                                              remove_list)
+    out_dir = Path(outfile_name).parent
     new_species_count, new_strains_count = count_new_species_and_strains(additional_data_path, metadata_table)
     changelog_header = f"## Changes in release {version} since {previous_version}\n"
 
@@ -171,17 +177,17 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
 
     lines.append("* Due to version changes and updates to the pipeline, all annotations were regenerated.")
 
-    if species_rep_replacements:
-        lines.append("\nThe following species representatives were replaced:")
-        lines.append("Old rep\tNew rep\tReason for replacement")
-        for old_rep in species_rep_replacements:
-            lines.append(f"{old_rep}\t{species_rep_replacements[old_rep]['new_rep']}\t"
-                         f"{species_rep_replacements[old_rep]['reason']}")
+    removed_genomes_line = summarise_removed_genomes(removed_genomes_df, out_dir)
+    if removed_genomes_line:
+        lines.append(removed_genomes_line)
 
-    if removals:
-        lines.append("\nThe following genomes were removed from the catalogue and the species is no longer represented:")
-        for genome in removals:
-            lines.append(genome)
+    removed_species_line = summarise_removed_species(removals, previous_metadata_table, out_dir)
+    if removed_species_line:
+        lines.append(removed_species_line)
+
+    replaced_reps_line = summarise_replaced_reps(species_rep_replacements, out_dir)
+    if replaced_reps_line:
+        lines.append(replaced_reps_line)
 
     # Join all lines into a single block
     changelog_text = "\n".join(lines)
@@ -299,6 +305,249 @@ def summarise_new_genomes(new_genomes_df, outfile_name):
         + " were added to the catalogue. See the full list and the source projects in added_genomes.tsv"
     )
     return summary
+
+
+def load_remove_list(remove_list, previous_df):
+    """
+    Load the list of genomes removed on purpose, with the reason for each removal.
+
+    Each line holds an accession and a reason, separated by a tab or other
+    whitespace (the reason may itself contain spaces), e.g.:
+        JDVW01          Genome suppressed
+        MGYG000007070   Source sample not known
+    Accessions that are not MGYG accessions are treated as INSDC accessions and
+    converted to MGYG accessions via the Genome_accession column of the previous
+    metadata table.
+
+    Returns
+    -------
+    dict
+        {MGYG accession: reason}
+    """
+    if not remove_list:
+        return {}
+
+    insdc_to_mgyg = dict(
+        zip(previous_df["Genome_accession"].astype(str), previous_df["Genome"])
+    ) if "Genome_accession" in previous_df.columns else {}
+
+    reasons = {}
+    unresolved = []
+    with open(remove_list, "r") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split(None, 1)
+            accession = parts[0]
+            reason = parts[1].strip() if len(parts) > 1 else ""  # empty reason is reported later
+
+            if accession.startswith("MGYG"):
+                mgyg = accession
+            else:
+                mgyg = insdc_to_mgyg.get(accession)
+                if mgyg is None:
+                    unresolved.append(accession)
+                    continue
+            reasons[mgyg] = reason
+
+    if unresolved:
+        warn(f"{len(unresolved)} accession(s) in the remove list were not found in the "
+             f"Genome_accession column of the previous metadata table and were ignored", unresolved)
+    return reasons
+
+
+def strip_accession_extension(accession):
+    """Remove a FASTA file extension (optionally gzipped) from an MGYG accession."""
+    accession = accession.strip()
+    if accession.endswith(".gz"):
+        accession = accession[:-3]
+    for ext in (".fa", ".fna", ".fasta"):
+        if accession.endswith(ext):
+            return accession[: -len(ext)]
+    return accession
+
+
+def load_qc_failed_reasons(additional_data_path):
+    """
+    Load reasons for removal from the two QC reports in additional_data_path.
+    Both files must exist.
+
+    - update_execution_reports/qs50_failed_previous_catalogue_version.csv (comma-delimited):
+      any line starting with an MGYG accession -> "Failed QC"
+    - combined_QC_failed_report.txt (tab-delimited):
+      lines starting with an MGYG accession -> reason from column 2
+
+    Accessions may carry a file extension (e.g. .fa), which is removed.
+
+    Returns
+    -------
+    qs50_reasons, combined_qc_reasons : dict, dict
+        {MGYG accession: reason}
+    """
+    qs50_path = Path(additional_data_path) / "update_execution_reports" / "qs50_failed_previous_catalogue_version.csv"
+    combined_qc_path = Path(additional_data_path) / "combined_QC_failed_report.txt"
+    for path in (qs50_path, combined_qc_path):
+        if not path.exists():
+            raise FileNotFoundError(f"Missing QC report file: {path}")
+
+    qs50_reasons = {}
+    with open(qs50_path, "r") as fh:
+        for line in fh:
+            if line.startswith("MGYG"):
+                accession = strip_accession_extension(line.split(",", 1)[0])
+                qs50_reasons[accession] = "Failed QC"
+
+    combined_qc_reasons = {}
+    with open(combined_qc_path, "r") as fh:
+        for line in fh:
+            if line.startswith("MGYG"):
+                fields = line.rstrip("\n").split("\t")
+                accession = strip_accession_extension(fields[0])
+                reason = fields[1].strip() if len(fields) > 1 else ""
+                if reason:
+                    combined_qc_reasons[accession] = reason
+
+    return qs50_reasons, combined_qc_reasons
+
+
+def find_removed_genomes(metadata_table, previous_metadata_table, additional_data_path, remove_list=None):
+    """
+    Identify all genomes present in the previous metadata table but not the current one,
+    and attach the reason for each removal. Reasons are taken from the first source
+    that has one, in this order:
+        1. the remove list (--remove-list), if provided (this was the user-supplied list to the pipeline when generating
+            the catalogue
+        2. update_execution_reports/qs50_failed_previous_catalogue_version.csv
+        3. combined_QC_failed_report.txt
+    Raises ValueError if any removed genome has no reason in any of them.
+
+    Returns
+    -------
+    pd.DataFrame
+        Columns: 'Genome', 'Genome_accession', 'Species_rep' (in the previous release),
+        'Was_species_rep', 'Reason'.
+    """
+    current_df = pd.read_csv(metadata_table, sep="\t")
+    previous_df = pd.read_csv(previous_metadata_table, sep="\t")
+
+    remove_list_reasons = load_remove_list(remove_list, previous_df)
+    qs50_reasons, combined_qc_reasons = load_qc_failed_reasons(additional_data_path)
+    reasons = remove_list_reasons  # checks below apply to the remove list only
+    current_genomes = set(current_df["Genome"])
+
+    still_present = sorted(g for g in reasons if g in current_genomes)
+    if still_present:
+        warn(f"{len(still_present)} genome(s) in the remove list are still in the current metadata table",
+             still_present)
+    not_in_previous = sorted(set(reasons) - set(previous_df["Genome"]) - current_genomes)
+    if not_in_previous:
+        warn(f"{len(not_in_previous)} MGYG accession(s) in the remove list are not in the previous "
+             f"metadata table", not_in_previous)
+
+    cols = [c for c in ("Genome", "Genome_accession", "Species_rep") if c in previous_df.columns]
+    removed_df = previous_df[~previous_df["Genome"].isin(current_genomes)][cols].copy()
+    removed_df["Was_species_rep"] = removed_df["Genome"] == removed_df["Species_rep"]
+    def resolve_reason(genome):
+        # An empty reason in the remove list falls through to the QC reports
+        for source in (remove_list_reasons, qs50_reasons, combined_qc_reasons):
+            if source.get(genome):
+                return source[genome]
+        return None
+
+    removed_df["Reason"] = removed_df["Genome"].map(resolve_reason)
+
+    # Every removed genome must have a reason; stop rather than write an incomplete changelog
+    missing = list(removed_df.loc[removed_df["Reason"].isna(), "Genome"])
+    if missing:
+        sources = ["qs50_failed_previous_catalogue_version.csv", "combined_QC_failed_report.txt"]
+        sources.insert(0, "the remove list" if remove_list else "a remove list (--remove-list was not provided)")
+        listed_without_reason = [g for g in missing if g in remove_list_reasons]
+        message = format_accessions(
+            f"{len(missing)} genome(s) were removed from the catalogue but have no reason for removal in "
+            f"{', '.join(sources[:-1])} or {sources[-1]}", missing)
+        if listed_without_reason:
+            message += "\n" + format_accessions(
+                f"Of these, {len(listed_without_reason)} are in the remove list without a reason",
+                listed_without_reason)
+        raise ValueError(message)
+
+    return removed_df
+
+
+def format_accessions(message, accessions, limit=10):
+    """Append up to `limit` accessions to a message."""
+    if not accessions:
+        return message
+    shown = ", ".join(accessions[:limit])
+    more = f" ... (+{len(accessions) - limit} more)" if len(accessions) > limit else ""
+    return f"{message}: {shown}{more}"
+
+
+def warn(message, accessions=None, limit=10):
+    """Print a warning to stderr, listing up to `limit` accessions."""
+    print(f"WARNING: {format_accessions(message, accessions, limit)}", file=sys.stderr)
+
+
+def summarise_removed_genomes(removed_genomes_df, out_dir):
+    """
+    Write all removed genomes to removed_genomes.tsv and return a changelog summary
+    with a per-reason breakdown. Returns an empty string if nothing was removed.
+    """
+    if removed_genomes_df.empty:
+        return ""
+
+    removed_genomes_df.to_csv(Path(out_dir) / "removed_genomes.tsv", sep="\t", index=False)
+
+    lines = [f"* {len(removed_genomes_df)} genomes were removed from the catalogue. "
+             f"See the full list and the reason for each removal in removed_genomes.tsv"]
+    for reason, count in removed_genomes_df["Reason"].value_counts().items():
+        lines.append(f"    - {reason}: {count}")
+    return "\n".join(lines)
+
+
+def summarise_removed_species(removals, previous_metadata_table, out_dir):
+    """
+    Write species that are no longer in the catalogue (identified by their previous
+    species representative) to removed_species.tsv and return a changelog summary.
+    Returns an empty string if no species were removed.
+    """
+    if not removals:
+        return ""
+
+    previous_df = pd.read_csv(previous_metadata_table, sep="\t")
+    lineage = dict(zip(previous_df["Genome"], previous_df["Lineage"])) if "Lineage" in previous_df.columns else {}
+
+    removed_species_df = pd.DataFrame({
+        "Previous_species_rep": removals,
+        "Lineage": [lineage.get(rep, "") for rep in removals],
+    })
+    removed_species_df.to_csv(Path(out_dir) / "removed_species.tsv", sep="\t", index=False)
+
+    return (f"* {len(removals)} species are no longer in the catalogue. "
+            f"See their previous species representatives in removed_species.tsv")
+
+
+def summarise_replaced_reps(species_rep_replacements, out_dir):
+    """
+    Write species representative replacements to replaced_species_reps.tsv and return
+    a changelog summary with a per-reason breakdown. Returns an empty string if none.
+    """
+    if not species_rep_replacements:
+        return ""
+
+    replaced_df = pd.DataFrame(
+        [(old, change["new_rep"], change["reason"]) for old, change in species_rep_replacements.items()],
+        columns=["Previous_species_rep", "New_species_rep", "Reason"],
+    )
+    replaced_df.to_csv(Path(out_dir) / "replaced_species_reps.tsv", sep="\t", index=False)
+
+    lines = [f"* {len(replaced_df)} species representatives were replaced. "
+             f"See the previous and new representatives and the reason for each replacement "
+             f"in replaced_species_reps.tsv"]
+    for reason, count in replaced_df["Reason"].value_counts().items():
+        lines.append(f"    - {reason}: {count}")
+    return "\n".join(lines)
 
 
 def load_rep_changes(additional_data_path):
@@ -614,6 +863,16 @@ def parse_args():
              "the full study list is written to a separate study_list.txt file (alongside "
              "the README) instead of being listed inline. Default: 20.",
     )
+    parser.add_argument(
+        "--remove-list", required=False,
+        help="If this README is for an update, optionally provide the list of genomes that were removed, "
+             "with the reason for each removal: one genome per line, accession then reason, separated by "
+             "whitespace. Accessions can be MGYG or INSDC (INSDC accessions are looked up in the "
+             "Genome_accession column of the previous metadata table). Removed genomes with no reason in this "
+             "list are looked up in the QC reports in --additional-data-path "
+             "(update_execution_reports/qs50_failed_previous_catalogue_version.csv, then "
+             "combined_QC_failed_report.txt); the script stops if any removed genome has no reason.",
+    )
     return parser.parse_args()
 
 
@@ -630,5 +889,6 @@ if __name__ == "__main__":
         args.previous_version,
         args.previous_metadata_table,
         args.additional_data_path,
-        args.study_list_threshold
+        args.study_list_threshold,
+        args.remove_list
     )
