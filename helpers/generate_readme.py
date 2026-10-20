@@ -440,7 +440,7 @@ def print_file(
             f"in each {domain_name} species cluster.",
         ]
 
-    phylo_text = "\n" + "\n".join(phylo_lines)
+    phylo_text = "\n".join(phylo_lines)
 
     if xlarge:
         xlarge_note = """
@@ -515,7 +515,9 @@ Website URL: {url}
 
 - kraken2_db_{catalog_name}_{version}/ : A folder containing the Kraken 2 and Bracken databases. 
 
-- phylogenies/: {phylo_text}
+- phylogenies/: 
+Note: Alignments and the trees generated from them are based on GTDB-Tk results. Genomes classified only to the domain level by GTDB-Tk (e.g. d__Bacteria;p__;c__;o__;f__;g__;s__) will not be included.
+{phylo_text}
 
 - protein_catalogue/
     * protein_catalogue-XX.tar.gz
@@ -576,7 +578,7 @@ def parse_args():
         "--git-link",
         type=str,
         help="Full link to the github repo release. "
-             "Example: https://github.com/EBI-Metagenomics/genomes-pipeline/releases/tag/v1.2.1",
+             "Example: https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v3.0.0",
     )
     parser.add_argument(
         "--xlarge", action='store_true',
