@@ -12,19 +12,17 @@ parser.add_argument(
     "-i", "--input", 
     dest="input", 
     required=True,
-    help="gtdbtk.bac120.summary.tsv/gtdbtk.ar53.summary.tsv")
+    help="Path to gtdbtk.bac120.summary.tsv (for bacteria) or gtdbtk.ar53.summary.tsv (for archaea)")
 parser.add_argument(
     "-t", "--taxa",
     dest="taxa",
     required=True,
-    help="phylum/class/order/family/genus/species",
     choices=["phylum", "class", "order", "family", "genus", "species"]
 )
 parser.add_argument(
     "-d", "--domain",
     dest="domain",
     required=True,
-    help="bac/arc",
     choices=["bac", "arc"]
 )
 parser.add_argument(
