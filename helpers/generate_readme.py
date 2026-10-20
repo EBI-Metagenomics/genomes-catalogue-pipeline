@@ -175,8 +175,6 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
             new_species_line = f"This resulted in {new_species_count} new species and {new_strains_count} new strains."
             lines.append(new_species_line)
 
-    lines.append("* Due to version changes and updates to the pipeline, all annotations were regenerated.")
-
     removed_genomes_line = summarise_removed_genomes(removed_genomes_df, out_dir)
     if removed_genomes_line:
         lines.append(removed_genomes_line)
@@ -188,7 +186,9 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
     replaced_reps_line = summarise_replaced_reps(species_rep_replacements, out_dir)
     if replaced_reps_line:
         lines.append(replaced_reps_line)
-
+    
+    lines.append("* Due to version changes and updates to the pipeline, all annotations were regenerated.")
+    
     # Join all lines into a single block
     changelog_text = "\n".join(lines)
     return changelog_text
