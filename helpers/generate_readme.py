@@ -179,7 +179,7 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
                          f"{species_rep_replacements[old_rep]['reason']}")
 
     if removals:
-        lines.append("\nThe following genomes were removed from the catalogue:")
+        lines.append("\nThe following genomes were removed from the catalogue and the species is no longer represented:")
         for genome in removals:
             lines.append(genome)
 
