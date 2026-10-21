@@ -73,6 +73,10 @@
         "ncbi_genomes": {
             "type": "string"
         },
+        "itol_taxa_level": {
+            "type": "string",
+            "default": "phylum"
+        },
         "xlarge": {
             "type": "boolean"
         },

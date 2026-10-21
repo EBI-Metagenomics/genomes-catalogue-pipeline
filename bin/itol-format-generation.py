@@ -1,14 +1,36 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import argparse
+import gzip
+import math
 import random
+from collections import Counter
 
 # Argument parser setup
 parser = argparse.ArgumentParser(description="Generates labels and legends for iTOL and existing/novel layer")
-parser.add_argument("-i", "--input", dest="input", required=True,
-                    help="gtdbtk.bac120.summary.tsv/gtdbtk.ar53.summary.tsv")
-parser.add_argument("-t", "--taxa", dest="taxa", required=True, help="phylum/class/order/family/genus/species")
-parser.add_argument("-d", "--domain", dest="domain", required=True, help="bac/arc")
+parser.add_argument(
+    "-i", "--input", 
+    dest="input", 
+    required=True,
+    help="Path to gtdbtk.bac120.summary.tsv (for bacteria) or gtdbtk.ar53.summary.tsv (for archaea)")
+parser.add_argument(
+    "-t", "--taxa",
+    dest="taxa",
+    required=True,
+    choices=["phylum", "class", "order", "family", "genus", "species"]
+)
+parser.add_argument(
+    "-d", "--domain",
+    dest="domain",
+    required=True,
+    choices=["bac", "arc"]
+)
+parser.add_argument(
+    "-m", "--metadata", 
+    dest="metadata", 
+    required=False,
+    help="genomes metadata table with Genome, Species_rep and Lineage columns; generates cluster "
+         "size layers for the domain given in --domain")
 args = parser.parse_args()
 
 TAXA = {
@@ -23,6 +45,47 @@ TAXA = {
 
 def random_color():
     return "#{:06x}".format(random.randint(0, 0xFFFFFF))
+
+
+DOMAIN_PREFIXES = {
+    'bac': 'd__Bacteria',
+    'arc': 'd__Archaea'
+}
+
+
+def count_cluster_sizes(metadata, domain):
+    if domain not in DOMAIN_PREFIXES:
+        raise ValueError(f"Unknown domain '{domain}'; expected one of: {', '.join(DOMAIN_PREFIXES)}")
+    domain_prefix = DOMAIN_PREFIXES[domain]
+    cluster_sizes = Counter()
+    opener = gzip.open if metadata.endswith(".gz") else open
+    with opener(metadata, 'rt') as file_in:
+        header = file_in.readline().rstrip('\n').split('\t')
+        genome_index = header.index("Genome")
+        rep_index = header.index("Species_rep")
+        lineage_index = header.index("Lineage")
+        max_index = max(genome_index, rep_index, lineage_index)
+        for line in file_in:
+            cols = line.rstrip('\n').split('\t')
+            if len(cols) <= max_index or not cols[genome_index]:
+                continue
+            # keep only genomes from the requested domain (first rank of the GTDB-Tk lineage)
+            if cols[lineage_index].split(';')[0].strip() != domain_prefix:
+                continue
+            cluster_sizes[cols[rep_index]] += 1
+    return cluster_sizes
+
+
+def write_cluster_size_layer(cluster_sizes, filename, label, transform):
+    with open(filename, "w") as file_out:
+        file_out.write("DATASET_SIMPLEBAR\n"
+                       "SEPARATOR TAB\n"
+                       f"DATASET_LABEL\t{label}\n"
+                       "COLOR\t#ff0000\n"
+                       "WIDTH\t3\n"
+                       "DATA\n")
+        for rep, count in cluster_sizes.items():
+            file_out.write(f"{rep}\t{transform(count)}\n")
 
 
 col_dict = {}
@@ -79,3 +142,9 @@ with open(args.input, 'r') as file_in, \
         color = col_dict[tax_unit]
         circles.write("%s,%s,%s\n" % (genome, color, taxon))
         legend.write("%s,range,%s,%s\n" % (genome, color, taxon))
+
+if args.metadata:
+    cluster_sizes = count_cluster_sizes(args.metadata, args.domain)
+    write_cluster_size_layer(cluster_sizes, f"cluster_size_{args.domain}.txt", "cluster_size", lambda count: count)
+    write_cluster_size_layer(cluster_sizes, f"cluster_size_log10_{args.domain}.txt", "cluster_size_log10",
+                             lambda count: round(math.log10(count + 1), 4))

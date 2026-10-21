@@ -20,7 +20,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Prokka                                                                                           | 1.14.6           | Protein annotation                                                                                                     |
 | IQ-TREE 2                                                                                        | 2.2.0.3          | Generating a phylogenetic tree                                                                                         |
 | Kraken 2                                                                                         | 2.1.2            | Generating a kraken database                                                                                           |
-| Bracken                                                                                          | 2.6.2            | Generating a bracken database                                                                                          |
+| Bracken                                                                                          | 2.8              | Generating a bracken database                                                                                          |
 | MMseqs2                                                                                          | 18.8cc5c         | Generating a protein catalogue; pan-genome computation for clusters ≥1000 genomes                                      |
 | eggNOG-mapper                                                                                    | 2.1.11           | Protein annotation (eggNOG, KEGG, COG,  CAZy)                                                                          |
 | eggNOG DB                                                                                        | 5.0.2            | Database for eggNOG-mapper                                                                                             |
@@ -47,7 +47,7 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Seqtk                                                                                            | 1.3              | Generating a gene catalogue                                                                                            |
 | VIRify                                                                                           | 4.0.0            | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
 | [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 5.0.2            | Mobilome annotation (executed as a separate step)                                                                      |
-| samtools                                                                                         | 1.15             | FASTA indexing                                                                                                         |
+| samtools                                                                                         | 1.9              | FASTA indexing                                                                                                         |
 | EukCC                                                                                            | 2.1.3            | Completeness and contamination of eukaryotic genomes                                                                   |
 | BUSCO                                                                                            | 5.8.0            | Eukaryotic genome quality                                                                                              |
 | RepeatModeler                                                                                    | 2.0.6            | Identification of repeat elements in eukaryotic genomes                                                                |
@@ -69,11 +69,11 @@ The pipeline needs the following reference databases and configuration files (ro
 
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db_5.0.2.tgz
-- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_15.0/
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_15.1/
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
-- https://data.ace.uq.edu.au/public/gtdb/data/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz
-- ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.12/2024-01-31.1/
+- https://data.ace.uq.edu.au/public/gtdb/data/releases/release232/232.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r232_data.tar.gz
+- https://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/4.2/2026-03-24.1/
 - https://zenodo.org/records/4626519/files/uniref100.KO.v1.dmnd.gz
 
 ### Containers
@@ -126,41 +126,43 @@ nextflow run EBI-Metagenomics/genomes-pipeline -c <custom.config> -profile <prof
 ```
 
 ## Catalogue update process
+The pipeline has an update functionality, triggered by the `--update_catalogue_path` argument. The update process performs the following:
 
-The pipeline has an update functionality, triggered by the `--update_catalogue_path` argument. The update process
-performs the following:
-- removes genomes (if a list of accessions to remove is provided or any of the existing genomes are no longer present in the ENA or fail QC)
-- adds genomes (if a list of genomes to add is specified)
-- reannotates new and existing genomes and recomputes associated databases (in all cases)
+* removes genomes (if a list of accessions to remove is provided or any of the existing genomes are no longer present in the ENA or fail QC)
+* adds genomes (if a list of genomes to add is specified)
+* reannotates new and existing genomes and recomputes associated databases (in all cases)
 
 While a regular pipeline execution uses dRep to cluster genomes, **the clustering during the update process is different in the following ways**:
 
-- existing clustering from the previous catalogue version is preserved 
-- the genomes that are flagged for removal (by the user or the pipeline) are removed without disrupting the existing clusters
-- if new genomes are being added, their placement is determined using [Mash](https://github.com/marbl/Mash) and the following rules:
-  1. if the smallest Mash distance between the new genome and any of the existing catalogue genomes is less than 0.001, the new genome is classified as a repeat strain
-  2. if the smallest distance is greater than 0.05, the new genome is classified as a new species
-  3. all other new genomes are classified as new strains
-  4. a repeat strain is only added to the catalogue in the following cases: 1) if it is an isolate while the closest match in the catalogue is a MAG OR 2) if the quality improvement of the new strain compared to the one in the catalogue is at least 10% (see notes on quality comparison below)
-  5. new strains and new species are always added to the catalogue, as long as they pass the general quality control checks used for new genomes
+* existing clustering from the previous catalogue version is preserved
+* the genomes that are flagged for removal (by the user or the pipeline) are removed without disrupting the existing clusters
+* if new genomes are being added, their placement is determined using [Mash](https://github.com/marbl/Mash) and the following rules:
+   1. if the smallest Mash distance between the new genome and any of the existing catalogue genomes is less than 0.001, the new genome is classified as a repeat strain
+   2. if the smallest distance is greater than 0.05 (or no match is found), the new genome is classified as a new species
+   3. all other new genomes are classified as new strains
+   4. if several repeat strains match the same catalogue genome, only the best one is considered (isolates first, then highest QS, then highest N50). A repeat strain is only added to the catalogue in the following cases: 1) if it is an isolate while the closest match in the catalogue is a MAG, 2) if the closest match has been removed from the catalogue, OR 3) if it passes the quality improvement test against the closest match (see notes on quality comparison below)
+   5. new strains and new species are always added to the catalogue, as long as they pass the general quality control checks used for new genomes. New species are clustered among themselves with dRep to form new species clusters.
 
 ### Quality comparisons for new genomes
-During the catalogue cluster update process, the quality scores for all genomes are calculated as:  
-`QS = % completeness – 5 * % contamination + 0.5 * log(N50)`  
-A 10% quality improvement is computed as `threshold = QS * 1.1`.  
-The quality score improvement is used to decide:
-- if a repeat strain should be added to the catalogue
-- if the species representative genome should be re-assigned.
+During the catalogue cluster update process, the quality scores for all genomes are calculated as:
+`QS = % completeness – 5 * % contamination + 0.5 * log10(N50)`
+A 10% quality improvement threshold is computed from the QS of the existing genome as `threshold = QS * 1.1`.
+The quality improvement test is used to decide:
 
-For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.  
-If threshold > 100, the decision process changes to prioritise genome contiguity. The species representative is replaced if there is a genome that satisfies the following conditions:
-- QS and completeness is same or higher than the existing rep
-- Contamination is the same or less than the existing rep
-- N50 is at least 10% AND 10,000bp higher than that of the existing species rep (to account for small increases to an already low N50 - only a significant increase should justify a replacement)
-- The length of the new representative should be at least 90% of the length of the old represenative
+* if a repeat strain should be added to the catalogue
+* if the species representative genome should be re-assigned.
+
+For threshold values <= 100, a genome passes if its QS is at or above the threshold. If several genomes pass, the one with the highest QS (ties broken by N50) is chosen as the new representative.
+If threshold > 100, the decision process changes to prioritise genome contiguity. A genome passes if it satisfies all of the following conditions:
+
+* QS is at least 0.1% higher than that of the existing genome, and completeness is the same or higher
+* Contamination is the same or less than that of the existing genome
+* N50 is at least 10% AND 10,000bp higher than that of the existing genome (to account for small increases to an already low N50 - only a significant increase should justify a replacement)
+* The length is at least 90% of the length of the existing genome
+
+Only genomes newly added to a cluster are considered as replacement candidates, unless the catalogue has switched from CheckM1 to CheckM2, in which case all cluster members are re-evaluated. If the current species representative has been removed from the catalogue, the highest-QS remaining member (ties broken by N50) becomes the new representative.
 
 An isolate genome is always prioritised over a MAG. That means, if the current representative is an isolate, it can only be replaced with a better quality isolate. If the current species rep is a MAG and an isolate has been added to the cluster, a species representative replacement will be made even if the new genome has lower quality.
-
 
 ### Development
 
