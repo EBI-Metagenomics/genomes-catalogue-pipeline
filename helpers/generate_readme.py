@@ -157,10 +157,19 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
                      additional_data_path, outfile_name, remove_list=None):
     new_df = count_new_genomes(metadata_table, previous_metadata_table)
     species_rep_replacements, removals = load_rep_changes(additional_data_path)
+    removed_species, species_rep_replacements, previous_species_count, current_species_count = \
+        resolve_species_changes(metadata_table, previous_metadata_table, species_rep_replacements, removals)
     removed_genomes_df = find_removed_genomes(metadata_table, previous_metadata_table, additional_data_path,
                                               remove_list)
     out_dir = Path(outfile_name).parent
     new_species_count, new_strains_count = count_new_species_and_strains(additional_data_path, metadata_table)
+
+    # The changelog counts must explain the change in the species total
+    expected_species_count = previous_species_count - len(removed_species) + new_species_count
+    if expected_species_count != current_species_count:
+        warn(f"Species counts do not add up: {previous_species_count} previous - {len(removed_species)} removed "
+             f"+ {new_species_count} new = {expected_species_count}, but the catalogue has "
+             f"{current_species_count} species. Check the changelog counts")
     changelog_header = f"## Changes in release {version} since {previous_version}\n"
 
     # Initialize lines
@@ -179,7 +188,7 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
     if removed_genomes_line:
         lines.append(removed_genomes_line)
 
-    removed_species_line = summarise_removed_species(removals, previous_metadata_table, out_dir)
+    removed_species_line = summarise_removed_species(removed_species, previous_metadata_table, out_dir)
     if removed_species_line:
         lines.append(removed_species_line)
 
@@ -447,6 +456,7 @@ def find_removed_genomes(metadata_table, previous_metadata_table, additional_dat
     cols = [c for c in ("Genome", "Genome_accession", "Species_rep") if c in previous_df.columns]
     removed_df = previous_df[~previous_df["Genome"].isin(current_genomes)][cols].copy()
     removed_df["Was_species_rep"] = removed_df["Genome"] == removed_df["Species_rep"]
+
     def resolve_reason(genome):
         # An empty reason in the remove list falls through to the QC reports
         for source in (remove_list_reasons, qs50_reasons, combined_qc_reasons):
@@ -600,20 +610,72 @@ def load_rep_changes(additional_data_path):
     removals = []
 
     for _, row in df.iterrows():
-        old_rep = row["old_rep"]
+        old_rep = strip_accession_extension(str(row["old_rep"]))
         new_rep = row["new_rep"]
         reason = row["reason"]
 
         # Treat NaN or empty new_rep as removal
-        if pd.isna(new_rep) or new_rep == "":
+        if pd.isna(new_rep) or str(new_rep).strip() == "":
             removals.append(old_rep)
         else:
             species_rep_replacements[old_rep] = {
-                "new_rep": new_rep,
+                "new_rep": strip_accession_extension(str(new_rep)),
                 "reason": reason,
             }
 
     return species_rep_replacements, removals
+
+
+def resolve_species_changes(metadata_table, previous_metadata_table, species_rep_replacements, removals):
+    """
+    Work out which previous species are no longer in the catalogue, using the metadata tables.
+
+    A previous species is removed if none of its genomes are in the current catalogue and it was not given a 
+    replacement representative that is.
+
+    Returns
+    -------
+    removed_species : list
+        Previous species representatives of the species no longer in the catalogue.
+    valid_replacements : dict
+        The replacements whose new representative is in the current catalogue,
+        {old_rep: {"new_rep": new_rep, "reason": reason}}.
+    previous_species_count, current_species_count : int
+    """
+    previous_df = pd.read_csv(previous_metadata_table, sep="\t", usecols=["Genome", "Species_rep"]).dropna()
+    current_df = pd.read_csv(metadata_table, sep="\t", usecols=["Genome", "Species_rep"]).dropna()
+    previous_reps = set(previous_df["Species_rep"])
+    current_genomes = set(current_df["Genome"])
+
+    # Previous species that still have at least one genome in the catalogue
+    with_genomes_left = set(previous_df.loc[previous_df["Genome"].isin(current_genomes), "Species_rep"])
+
+    valid_replacements = {}
+    replaced_by_missing = []
+    for old_rep, change in species_rep_replacements.items():
+        if change["new_rep"] in current_genomes:
+            valid_replacements[old_rep] = change
+        else:
+            replaced_by_missing.append(old_rep)
+    if replaced_by_missing:
+        warn(f"{len(replaced_by_missing)} species representative replacement(s) in "
+             f"update_cluster_rep_changes_report.tsv point to a genome that is not in the current catalogue "
+             f"and are not reported as replacements", sorted(replaced_by_missing))
+
+    removed_species = sorted(previous_reps - with_genomes_left - set(valid_replacements))
+
+    not_in_report = sorted(set(removed_species) - set(removals))
+    if not_in_report:
+        warn(f"{len(not_in_report)} species are no longer in the catalogue but are not reported as removed in "
+             f"update_cluster_rep_changes_report.tsv; they are included in removed_species.tsv; they may have been "
+             f"removed due to quality issues or failed GUNC - worth checking to make sure. If that is the case, "
+             f"everything is fine and no action is needed. If not, investigate where they got removed", not_in_report)
+    still_present = sorted(set(removals) - set(removed_species))
+    if still_present:
+        warn(f"{len(still_present)} species reported as removed in update_cluster_rep_changes_report.tsv "
+             f"are still in the catalogue and are not counted as removed", still_present)
+
+    return removed_species, valid_replacements, len(previous_reps), current_df["Species_rep"].nunique()
 
 
 def count_new_genomes(metadata_table, previous_metadata_table):
