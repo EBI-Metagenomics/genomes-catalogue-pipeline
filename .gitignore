@@ -13,3 +13,4 @@ testing*
 ref-dbs/
 
 .nf-test/*
+.nf-test.log

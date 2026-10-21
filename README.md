@@ -4,7 +4,7 @@
 
 Gurbich TA, Almeida A, Beracochea M, Burdett T, Burgin J, Cochrane G, Raj S, Richardson L, Rogers AB, Sakharova E, Salazar GA and Finn RD. (2023) [MGnify Genomes: A Resource for Biome-specific Microbial Genome Catalogues.](https://www.sciencedirect.com/science/article/pii/S0022283623000724) <i>J Mol Biol</i>. doi: https://doi.org/10.1016/j.jmb.2023.168016
 
-Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/genome-viewer.html
+Detailed information about existing MGnify catalogues: https://docs.mgnify.org/src/docs/mgnify-genomes.html
 
 ### Tools used in the pipeline
 | Tool/Database                                                                                    | Version          | Purpose                                                                                                                |
@@ -15,37 +15,39 @@ Detailed information about existing MGnify catalogues: https://docs.mgnify.org/s
 | Mash                                                                                             | 2.3              | Sketch for the catalogue; placement of genomes into clusters (update only); strain tree                                |
 | GUNC                                                                                             | 1.0.6            | Quality control                                                                                                        |
 | GUNC DB                                                                                          | 2.0.4            | Database for GUNC                                                                                                      |
-| GTDB-Tk                                                                                          | 2.4.1            | Assigning taxonomy; generating alignments                                                                              |
-| GTDB                                                                                             | r226             | Database for GTDB-Tk                                                                                                   |
+| GTDB-Tk                                                                                          | 2.7.1            | Assigning taxonomy; generating alignments                                                                              |
+| GTDB                                                                                             | r232             | Database for GTDB-Tk                                                                                                   |
 | Prokka                                                                                           | 1.14.6           | Protein annotation                                                                                                     |
 | IQ-TREE 2                                                                                        | 2.2.0.3          | Generating a phylogenetic tree                                                                                         |
 | Kraken 2                                                                                         | 2.1.2            | Generating a kraken database                                                                                           |
-| Bracken                                                                                          | 2.6.2            | Generating a bracken database                                                                                          |
-| MMseqs2                                                                                          | 13.45111         | Generating a protein catalogue                                                                                         |
+| Bracken                                                                                          | 2.8              | Generating a bracken database                                                                                          |
+| MMseqs2                                                                                          | 18.8cc5c         | Generating a protein catalogue; pan-genome computation for clusters ≥1000 genomes                                      |
 | eggNOG-mapper                                                                                    | 2.1.11           | Protein annotation (eggNOG, KEGG, COG,  CAZy)                                                                          |
 | eggNOG DB                                                                                        | 5.0.2            | Database for eggNOG-mapper                                                                                             |
 | DIAMOND                                                                                          | 2.0.11           | Protein annotation (eggNOG)                                                                                            |
-| InterProScan                                                                                     | 5.76-107.0       | Protein annotation (InterPro, Pfam)                                                                                    |
-| kegg-pathways-completeness tool                                                                  | 1.3.0            | Computes KEGG pathway completeness                                                                                     |
+| InterProScan                                                                                     | 5.77-108.0       | Protein annotation (InterPro, Pfam)                                                                                    |
+| kegg-pathways-completeness tool                                                                  | 1.4.3            | Computes KEGG pathway completeness                                                                                     |
 | CRISPRCasFinder                                                                                  | 4.3.2            | Annotation of CRISPR arrays                                                                                            |
-| AMRFinderPlus                                                                                    | 4.0.23           | Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation |
-| AMRFinderPlus DB                                                                                 | 4.0 2025-07-16.1 | Database for AMRFinderPlus                                                                                             |
-| antiSMASH                                                                                        | 7.1.0            | Biosynthetic gene cluster annotation                                                                                   |
+| AMRFinderPlus                                                                                    | 4.2.7            | Antimicrobial resistance gene annotation; virulence factors, biocide, heat, acid, and metal resistance gene annotation |
+| AMRFinderPlus DB                                                                                 | 4.2 2026-03-24.1 | Database for AMRFinderPlus                                                                                             |
+| antiSMASH                                                                                        | 8.0.1            | Biosynthetic gene cluster annotation                                                                                   |
+| mgnify-pipelines-toolkit                                                                         | 1.5.1            | Post-process antiSMASH results                                                                                         |
 | GECCO                                                                                            | 0.9.8            | Biosynthetic gene cluster annotation                                                                                   |
 | SanntiS                                                                                          | 0.9.3.2          | Biosynthetic gene cluster annotation                                                                                   |
-| DefenseFinder                                                                                    | 2.0.0            | Annotation of anti-phage and anti-defense systems                                                                      |
+| DefenseFinder                                                                                    | 2.0.1            | Annotation of anti-phage and anti-defense systems                                                                      |
 | DefenseFinder models                                                                             | 2.0.2            | Database for DefenseFinder                                                                                             |
 | CasFinder                                                                                        | 3.1.0            | Database for DefenseFinder                                                                                             |
 | run_dbCAN                                                                                        | 4.1.4            | Polysaccharide utilization loci prediction                                                                             |
 | dbCAN DB                                                                                         | V13              | Database for run_dbCAN                                                                                                 |
 | Infernal                                                                                         | 1.1.4            | RNA predictions                                                                                                        |
 | tRNAscan-SE                                                                                      | 2.0.9            | tRNA predictions                                                                                                       |
-| Rfam                                                                                             | 15.0             | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
-| Panaroo                                                                                          | 1.3.2            | Pan-genome computation                                                                                                 |
+| Rfam                                                                                             | 15.1             | Identification of SSU/LSU rRNA and other ncRNAs                                                                        |
+| Panaroo                                                                                          | 1.3.2            | Pan-genome computation for clusters smaller than 1000 genomes                                                          |
+| CGT (CELEBRIMBOR)                                                                                | 0.1.1            | Pan-genome gene frequency correction based on genome completeness                                                                      |
 | Seqtk                                                                                            | 1.3              | Generating a gene catalogue                                                                                            |
-| VIRify                                                                                           | 3.0.2            | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
-| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 3.0.1            | Mobilome annotation (executed as a separate step)                                                                      |
-| samtools                                                                                         | 1.15             | FASTA indexing                                                                                                         |
+| VIRify                                                                                           | 4.0.0            | Viral sequence annotation (executed as a separate step and uses VirSorter v1)                                          |
+| [Mobilome annotation pipeline](https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline) | 5.0.2            | Mobilome annotation (executed as a separate step)                                                                      |
+| samtools                                                                                         | 1.9              | FASTA indexing                                                                                                         |
 | EukCC                                                                                            | 2.1.3            | Completeness and contamination of eukaryotic genomes                                                                   |
 | BUSCO                                                                                            | 5.8.0            | Eukaryotic genome quality                                                                                              |
 | RepeatModeler                                                                                    | 2.0.6            | Identification of repeat elements in eukaryotic genomes                                                                |
@@ -67,11 +69,11 @@ The pipeline needs the following reference databases and configuration files (ro
 
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/gunc_db_2.0.4.dmnd.gz
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/eggnog_db_5.0.2.tgz
-- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_15.0/
+- ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/rfam_15.1/
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/kegg_classes.tsv
 - ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/genomes-pipeline/continent_countries.csv
-- https://data.ace.uq.edu.au/public/gtdb/data/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz
-- ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.12/2024-01-31.1/
+- https://data.ace.uq.edu.au/public/gtdb/data/releases/release232/232.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r232_data.tar.gz
+- https://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/4.2/2026-03-24.1/
 - https://zenodo.org/records/4626519/files/uniref100.KO.v1.dmnd.gz
 
 ### Containers
@@ -124,41 +126,43 @@ nextflow run EBI-Metagenomics/genomes-pipeline -c <custom.config> -profile <prof
 ```
 
 ## Catalogue update process
+The pipeline has an update functionality, triggered by the `--update_catalogue_path` argument. The update process performs the following:
 
-The pipeline has an update functionality, triggered by the `--update_catalogue_path` argument. The update process
-performs the following:
-- removes genomes (if a list of accessions to remove is provided or any of the existing genomes are no longer present in the ENA or fail QC)
-- adds genomes (if a list of genomes to add is specified)
-- reannotates new and existing genomes and recomputes associated databases (in all cases)
+* removes genomes (if a list of accessions to remove is provided or any of the existing genomes are no longer present in the ENA or fail QC)
+* adds genomes (if a list of genomes to add is specified)
+* reannotates new and existing genomes and recomputes associated databases (in all cases)
 
 While a regular pipeline execution uses dRep to cluster genomes, **the clustering during the update process is different in the following ways**:
 
-- existing clustering from the previous catalogue version is preserved 
-- the genomes that are flagged for removal (by the user or the pipeline) are removed without disrupting the existing clusters
-- if new genomes are being added, their placement is determined using [Mash](https://github.com/marbl/Mash) and the following rules:
-  1. if the smallest Mash distance between the new genome and any of the existing catalogue genomes is less than 0.001, the new genome is classified as a repeat strain
-  2. if the smallest distance is greater than 0.05, the new genome is classified as a new species
-  3. all other new genomes are classified as new strains
-  4. a repeat strain is only added to the catalogue in the following cases: 1) if it is an isolate while the closest match in the catalogue is a MAG OR 2) if the quality improvement of the new strain compared to the one in the catalogue is at least 10% (see notes on quality comparison below)
-  5. new strains and new species are always added to the catalogue, as long as they pass the general quality control checks used for new genomes
+* existing clustering from the previous catalogue version is preserved
+* the genomes that are flagged for removal (by the user or the pipeline) are removed without disrupting the existing clusters
+* if new genomes are being added, their placement is determined using [Mash](https://github.com/marbl/Mash) and the following rules:
+   1. if the smallest Mash distance between the new genome and any of the existing catalogue genomes is less than 0.001, the new genome is classified as a repeat strain
+   2. if the smallest distance is greater than 0.05 (or no match is found), the new genome is classified as a new species
+   3. all other new genomes are classified as new strains
+   4. if several repeat strains match the same catalogue genome, only the best one is considered (isolates first, then highest QS, then highest N50). A repeat strain is only added to the catalogue in the following cases: 1) if it is an isolate while the closest match in the catalogue is a MAG, 2) if the closest match has been removed from the catalogue, OR 3) if it passes the quality improvement test against the closest match (see notes on quality comparison below)
+   5. new strains and new species are always added to the catalogue, as long as they pass the general quality control checks used for new genomes. New species are clustered among themselves with dRep to form new species clusters.
 
 ### Quality comparisons for new genomes
-During the catalogue cluster update process, the quality scores for all genomes are calculated as:  
-`QS = % completeness – 5 * % contamination + 0.5 * log(N50)`  
-A 10% quality improvement is computed as `threshold = QS * 1.1`.  
-The quality score improvement is used to decide:
-- if a repeat strain should be added to the catalogue
-- if the species representative genome should be re-assigned.
+During the catalogue cluster update process, the quality scores for all genomes are calculated as:
+`QS = % completeness – 5 * % contamination + 0.5 * log10(N50)`
+A 10% quality improvement threshold is computed from the QS of the existing genome as `threshold = QS * 1.1`.
+The quality improvement test is used to decide:
 
-For threshold values <= 100, the highest quality genome above the threshold is chosen as the new representative.  
-If threshold > 100, the decision process changes to prioritise genome contiguity. The species representative is replaced if there is a genome that satisfies the following conditions:
-- QS and completeness is same or higher than the existing rep
-- Contamination is the same or less than the existing rep
-- N50 is at least 10% AND 10,000bp higher than that of the existing species rep (to account for small increases to an already low N50 - only a significant increase should justify a replacement)
-- The length of the new representative should be at least 90% of the length of the old represenative
+* if a repeat strain should be added to the catalogue
+* if the species representative genome should be re-assigned.
+
+For threshold values <= 100, a genome passes if its QS is at or above the threshold. If several genomes pass, the one with the highest QS (ties broken by N50) is chosen as the new representative.
+If threshold > 100, the decision process changes to prioritise genome contiguity. A genome passes if it satisfies all of the following conditions:
+
+* QS is at least 0.1% higher than that of the existing genome, and completeness is the same or higher
+* Contamination is the same or less than that of the existing genome
+* N50 is at least 10% AND 10,000bp higher than that of the existing genome (to account for small increases to an already low N50 - only a significant increase should justify a replacement)
+* The length is at least 90% of the length of the existing genome
+
+Only genomes newly added to a cluster are considered as replacement candidates, unless the catalogue has switched from CheckM1 to CheckM2, in which case all cluster members are re-evaluated. If the current species representative has been removed from the catalogue, the highest-QS remaining member (ties broken by N50) becomes the new representative.
 
 An isolate genome is always prioritised over a MAG. That means, if the current representative is an isolate, it can only be replaced with a better quality isolate. If the current species rep is a MAG and an isolate has been added to the cluster, a species representative replacement will be made even if the new genome has lower quality.
-
 
 ### Development
 

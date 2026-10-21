@@ -57,6 +57,7 @@ process PROKKA {
     tuple val(cluster_name), file("${fasta.baseName}_prokka/${fasta.baseName}.ffn"), emit: ffn
 
     script:
+    def args = task.ext.args ?: ''
     """
     cat ${fasta} | tr '-' ' ' > ${fasta.baseName}_cleaned.fasta
 
@@ -70,7 +71,8 @@ process PROKKA {
     --force \
     --locustag ${fasta.baseName} \
     --norrna \
-    --notrna 
+    --notrna \
+    $args
     """
 
     // stub:

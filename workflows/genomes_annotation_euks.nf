@@ -412,11 +412,9 @@ workflow GAP_EUKS {
         file(coverage_summary),
         file(cluster_faa),
         file(pangenome_fasta), // only for many_genomes clusters otherwise empty
-        file(core_genes)       // only for many_genomes clusters otherwise empty
     )
     */
     ch_pangenomes_fna = Channel.empty()
-    ch_core_genes = Channel.empty()
     files_for_json_summary = ANNOTATE_EUKS_GFF.out.annotated_gff.join(
         FUNCTIONAL_ANNOTATION_SUMMARY.out.coverage
     ).join(
@@ -424,7 +422,7 @@ workflow GAP_EUKS {
     ).join(
         ch_pangenomes_fna, remainder: true
     ).join(
-        ch_core_genes, remainder: true
+        Channel.empty(), remainder: true  // no gene prevalence for euks
     )
 
     GENOME_SUMMARY_JSON(

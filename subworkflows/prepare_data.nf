@@ -12,9 +12,9 @@ include { CALCULATE_ASSEMBLY_STATS } from '../modules/precompute_assembly_stats'
 
 workflow PREPARE_DATA {
     take:
-        ena_assemblies              // channel: path
+        ena_assemblies_dir          // channel: path
         ena_genomes_checkm          // channel: file
-        ncbi_assemblies             // channel: path
+        ncbi_assemblies_dir         // channel: path
         genomes_name_start          // val
         genomes_name_end            // val
         preassigned_accessions      // channel: file | empty
@@ -26,30 +26,51 @@ workflow PREPARE_DATA {
         genomes_ch = channel.empty()
         genomes_checkm_ch = channel.empty()
         genomes_busco_ch = file("NO_BUSCO_FILE")
+        
+        // If ncbi folder is present, prepare genome chunks for CheckM2
+        if ( ncbi_assemblies_dir ) {
+            // Create a channel of individual genome files from the ncbi_genomes folder
+            ch_genomes_for_checkm2 = channel.fromPath("${params.ncbi_genomes}/*")
+            // Buffer into chunks of N files
+            ch_genome_checkm2_chunks = ch_genomes_for_checkm2
+                .buffer(size: params.checkm2_chunk_size, remainder: true) 
+        }
 
-        if ( ncbi_assemblies && ena_assemblies ) {
+        if ( ncbi_assemblies_dir && ena_assemblies_dir ) {
             CHECKM2_NCBI(
-                ncbi_assemblies,
+                ch_genome_checkm2_chunks,
                 ch_checkm2_db
             )
+            checkm2_csv = CHECKM2_NCBI.out.checkm_csv
+                .collectFile(
+                    name: 'checkm2_results_merged.csv',
+                    keepHeader: true,
+                    skip: 1
+            )
             MERGE_NCBI_ENA(
-                ena_assemblies,
-                ncbi_assemblies,
-                CHECKM2_NCBI.out.checkm_csv,
+                ena_assemblies_dir,
+                ncbi_assemblies_dir,
+                checkm2_csv,
                 ena_genomes_checkm
             )
             // Merged genomes folders and checkm values //
             genomes_ch = MERGE_NCBI_ENA.out.genomes
             genomes_checkm_ch = MERGE_NCBI_ENA.out.merged_checkm_csv
-        } else if ( ncbi_assemblies ) {
+        } else if ( ncbi_assemblies_dir ) {
             CHECKM2_NCBI(
-                ncbi_assemblies,
+                ch_genome_checkm2_chunks,
                 ch_checkm2_db
             )
-            genomes_ch = ncbi_assemblies
-            genomes_checkm_ch = CHECKM2_NCBI.out.checkm_csv
-        } else if ( ena_assemblies ) {
-            genomes_ch = ena_assemblies
+            checkm2_csv = CHECKM2_NCBI.out.checkm_csv
+                .collectFile(
+                    name: 'checkm2_results_merged.csv',
+                    keepHeader: true,
+                    skip: 1
+            )
+            genomes_ch = ncbi_assemblies_dir
+            genomes_checkm_ch = checkm2_csv
+        } else if ( ena_assemblies_dir ) {
+            genomes_ch = ena_assemblies_dir
             genomes_checkm_ch = ena_genomes_checkm
         }
 

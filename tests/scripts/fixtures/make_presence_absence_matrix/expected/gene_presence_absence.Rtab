@@ -1,0 +1,5 @@
+Gene	G1	G2	G3
+dnaA	1	1	0
+group_1	1	0	0
+group_2	0	1	0
+recA	1	1	1

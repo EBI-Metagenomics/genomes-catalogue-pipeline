@@ -1,0 +1,65 @@
+nextflow_process {
+
+    name "Test Process CGT"
+    script "modules/cgt.nf"
+    process "CGT"
+
+    tag "modules"
+    tag "cgt"
+
+    test("Should produce output filtering checkm2 to cluster genomes only") {
+
+        tag "positive"
+
+        when {
+            params {
+                outdir = "tests/results"
+            }
+            process {
+                """
+                input[0] = channel.from([
+                    tuple(
+                        "CAJLGA01",
+                        file("$baseDir/tests/modules/fixtures/cgt/checkm2.csv"),
+                        file("$baseDir/tests/modules/fixtures/cgt/gene_presence_absence.Rtab")
+                    )
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.cgt.size() == 1
+            assert process.out.cgt[0][1] =~ /.*_cgt\.txt/
+        }
+    }
+
+    test("Stub run should produce output file") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "tests/results"
+            }
+            process {
+                """
+                input[0] = channel.from([
+                    tuple(
+                        "CAJLGA01",
+                        file("$baseDir/tests/modules/fixtures/cgt/checkm2.csv"),
+                        file("$baseDir/tests/modules/fixtures/cgt/gene_presence_absence.Rtab")
+                    )
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.cgt.size() == 1
+            assert process.out.cgt[0][1] =~ /.*_cgt\.txt/
+        }
+    }
+}

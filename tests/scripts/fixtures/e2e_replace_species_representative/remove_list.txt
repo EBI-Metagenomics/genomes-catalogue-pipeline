@@ -1,0 +1,2 @@
+MGYG000000007	some_reason
+MGYG000000003	another_reason

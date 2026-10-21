@@ -16,7 +16,9 @@ process ANTISMASH_MAKE_GFF {
 
     label 'process_light'
 
-    container 'quay.io/microbiome-informatics/genomes-pipeline.python3base:v1.1'
+    container "${ workflow.containerEngine in ['singularity', 'apptainer'] ?
+        'https://depot.galaxyproject.org/singularity/mgnify-pipelines-toolkit:1.5.1--pyhdfd78af_1' :
+        'biocontainers/mgnify-pipelines-toolkit:1.5.1--pyhdfd78af_1' }"
 
     input:
     tuple val(cluster), file(antismash_json)
@@ -26,7 +28,7 @@ process ANTISMASH_MAKE_GFF {
 
     script:
     """
-    antismash_gff_builder.py -i ${antismash_json} -o ${cluster}_antismash.gff --cds_tag locus_tag
+    antismash_gff_builder -i ${antismash_json} -o ${cluster}_antismash.gff --cds_tag locus_tag
     """
 
     stub:

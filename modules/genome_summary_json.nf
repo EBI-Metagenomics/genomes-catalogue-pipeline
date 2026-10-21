@@ -17,7 +17,7 @@ process GENOME_SUMMARY_JSON {
     label 'process_light'
 
     input:
-    tuple val(cluster), path(annotated_gff), path(coverage_summary), path(cluster_rep_faa), file(pangenome_fasta), file(core_genes)
+    tuple val(cluster), path(annotated_gff), path(coverage_summary), path(cluster_rep_faa), file(pangenome_fasta), file(gene_prevalence)
     path metadata
     val biome
 
@@ -29,8 +29,8 @@ process GENOME_SUMMARY_JSON {
     if (pangenome_fasta) {
         args = args + "--pangenome-fna ${pangenome_fasta} "
     }
-    if (core_genes) {
-        args = args + "--core-genes ${core_genes} "
+    if (gene_prevalence) {
+        args = args + "--gene-prevalence ${gene_prevalence} "
     }
     if (params.kingdom == "eukaryotes"){
         args = args + " " + "--euk"
