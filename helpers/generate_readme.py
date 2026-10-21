@@ -516,7 +516,7 @@ def summarise_removal_reason(reason):
     if reason.startswith("Duplicate of "):
         return "Exact duplicate"
     if reason.startswith("Assembly from this sample already exists"):
-        return "Multiple assemblies from the same source data"
+        return "Removed during curation of redundant genomes derived from the same source sample"
     if ":" in reason:
         return reason.split(":", 1)[0].strip()
     return reason
