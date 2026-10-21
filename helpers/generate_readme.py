@@ -664,12 +664,6 @@ def resolve_species_changes(metadata_table, previous_metadata_table, species_rep
 
     removed_species = sorted(previous_reps - with_genomes_left - set(valid_replacements))
 
-    not_in_report = sorted(set(removed_species) - set(removals))
-    if not_in_report:
-        warn(f"{len(not_in_report)} species are no longer in the catalogue but are not reported as removed in "
-             f"update_cluster_rep_changes_report.tsv; they are included in removed_species.tsv; they may have been "
-             f"removed due to quality issues or failed GUNC - worth checking to make sure. If that is the case, "
-             f"everything is fine and no action is needed. If not, investigate where they got removed", not_in_report)
     still_present = sorted(set(removals) - set(removed_species))
     if still_present:
         warn(f"{len(still_present)} species reported as removed in update_cluster_rep_changes_report.tsv "
