@@ -32,8 +32,9 @@ def main(
                 "(--remove-list is optional and only valid for updates)."
             )
 
-    # Parse the datascout version 
+    # Parse the datascout version and build the pipeline README link 
     ver_datascout = extract_datascout_version(datascout_link)
+    readme_link = build_pipeline_readme_link(git_link)
 
     (
         num_genomes,
@@ -85,8 +86,41 @@ def main(
         changelog,
         previous_changelog,
         ver_datascout,
-        datascout_link
+        datascout_link,
+        readme_link
     )
+
+
+def build_pipeline_readme_link(git_link):
+    """
+    Build a link to the pipeline README on the master branch from the pipeline release link.
+
+    Removes /releases/tag/<version> from the release link and appends /blob/master/README.md:
+        https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0
+        -> https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/blob/master/README.md
+
+    Parameters
+    ----------
+    git_link : str
+        Link to the pipeline GitHub release.
+
+    Returns
+    -------
+    str
+        Link to the pipeline README.
+
+    Raises
+    ------
+    ValueError
+        If the link does not end in /releases/tag/<version>.
+    """
+    match = re.match(r"^(.+?)/releases/tag/[^/]+/?$", git_link.strip())
+    if not match:
+        raise ValueError(
+            f"Could not build the pipeline README link from --git-link '{git_link}'. "
+            f"Expected a link like https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0"
+        )
+    return f"{match.group(1)}/blob/master/README.md"
 
 
 def extract_datascout_version(datascout_link):
@@ -744,7 +778,8 @@ def print_file(
     changelog,
     previous_changelog,
     ver_datascout,
-    datascout_link
+    datascout_link,
+    readme_link
 ):
 
     if xlarge:
@@ -764,7 +799,7 @@ combined together. In some cases, this can produce clusters where some of the co
 
 Website URL: {url}
 
-* A total of {num_genomes} prokaryotic genomes from the {biome} microbiome were clustered into {num_species} species-level clusters.
+* A total of {num_genomes} eukaryotic genomes from the {biome} microbiome were clustered into {num_species} species-level clusters.
 {study_list_string}
 * The catalogue was generated using MGnify genomes pipeline v{ver_pipeline}: {git_link}. 
 * Proteomic evidence for gene calling was obtained using datascout v{ver_datascout}: {datascout_link}
@@ -774,52 +809,34 @@ Website URL: {url}
 ## The following files are available for download for the species representative in each species directory within the species_catalogue/ folder:
 
 - genome/
-    * [species_accession]_amrfinderplus.tsv.gz : AMR annotations produced by AMRFinderPlus.
-    * [species_accession]_annotation_coverage.tsv.gz : A summary of annotation coverage.
-    * [species_accession]_antismash.gff.gz : AntiSMASH output file containing biosynthetic gene cluster information.
+    * [species_accession]_annotation_coverage.tsv.gz : Number and percentage of proteins annotated with InterProScan, eggNOG, COG and KEGG, and of proteins with no annotation.
+    * [species_accession]_braker.gff.gz : Structural annotation generated with BRAKER3, using protein evidence where available and ab initio prediction otherwise.
     * [species_accession]_cazy_summary.tsv.gz : CAZy summary parsed from the eggNOG annotation file.
     * [species_accession]_cog_summary.tsv.gz : COG summary parsed from the eggNOG annotation file.
-    * [species_accession]_crisprcasfinder.gff.gz : Unfiltered CRISPRCasFinder results file, including calls that have evidence level 1 and are less likely to be genuine.
-    * [species_accession]_crisprcasfinder.tsv.gz : Additional data for CRISPRCasFinder records reported in [species_accession]_crisprcasfinder.gff.
-    * [species_accession]_dbcan.gff.gz : dbCAN annotation file containing putative polysaccharide utilisation loci, predicted substrates and functions of member genes.
-    * [species_accession]_defense_finder.gff.gz : Anti-phage and anti-defense system annotations.
-    * [species_accession]_eggNOG.tsv.gz : eggNOG annotations of the protein coding sequences.
+    * [species_accession]_dbcan.gff.gz : Result of carbohydrate-utilising enzyme annotation at the protein level by run_dbcan.
+    * [species_accession]_eggNOG.tsv.gz : EggNOG annotations of the protein sequences.
     * [species_accession].faa.gz : Protein sequence FASTA file of the species representative.
-    * [species_accession].fna.gz : DNA sequence FASTA file of the genome assembly of the species representative.
+    * [species_accession].fna.gz : DNA sequence FASTA file of the genome assembly of the species representative, with repeats soft-masked (where possible).
     * [species_accession].fna.gz.fai : A samtools-generated index of the genome assembly FASTA file.
-    * [species_accession].gff.gz : Genome GFF file with various sequence annotations, including InterPro, eggNOG, Pfam, KEGG, COG, ncRNAs, CRISPR (filtered results with evidence level >= 2), mobilome and viral annotations, biosynthetic gene clusters, antimicrobial resistance genes, putative polysaccharide utilisation loci, anti-phage and anti-defense systems.
-    * [species_accession]_InterProScan.tsv.gz : InterProScan annotation of the protein coding sequences.
+    * [species_accession].gff.gz : Genome GFF file with various sequence annotations, including InterPro, eggNOG, Pfam, KEGG, COG, ncRNAs. The structural annotation is the merged result of BRAKER3 and MetaEuk, as described in the pipeline README: {readme_link} 
+    * [species_accession]_InterProScan.tsv.gz : InterProScan annotation of the protein sequences.
     * [species_accession]_kegg_classes.tsv.gz : KEGG classes and their counts.
     * [species_accession]_kegg_modules.tsv.gz : KEGG modules and their counts.
     * [species_accession]_kegg_pathways.tsv.gz : KEGG pathway completeness.
-    * [species_accession]_mobilome.gff.gz : Annotated viral sequence and mobile elements.
-    * [species_accession]_pathofact2_combined_report.tsv.gz : Pathogenicity-related annotations at protein level in TSV format.
+    * [species_accession]_metaeuk.gff.gz : Structural annotation generated with MeatEuk (only available when there is suitable proteomic evidence).
     * [species_accession]_rRNAs.fasta.gz : rRNA sequence FASTA file.
-    * [species_accession]_sanntis.gff.gz : SanntiS output file containing biosynthetic gene cluster information.
-
-
-## For species where there is more than one conspecific genome, pan-genomes can be found in:
-
-- pan-genome/
-    * pan-genome.fna.gz : Nucleotide sequence FASTA file of the pan-genome.
-    * gene_presence_absence.csv.gz : A list of genes in the pan-genome with their annotation and MGYG accessions.
-    * gene_presence_absence.Rtab.gz : Presence/absence binary matrix of the pan-genome across all conspecific genomes.
-    * gene_prevalence_corrected.txt.gz : Summary file reporting the observed count of each gene in the pan-genome, along with core/middle/rare classifications based on completeness-adjusted frequency. Cut-offs of 95% (core) and 5% (rare) are provided to CELEBRIMBOR prior to adjustment. Note: these classifications may be unreliable for small genome clusters due to limited sample size.
-    * mashtree.nwk.gz : Tree generated from the pairwise Mash distances of conspecific genomes.
 
 ## Additional files available in the parent directory:
 
 - all_genomes.msh : A Mash sketch of all {num_genomes} genomes.
 
-- all_genomes/ : Combined GFF/FASTA file (Prokka output) for each of the {num_genomes} genomes. For species representative genomes, the GFF contains additional annotations as described above.  
+- all_genomes/ : Contains a combined GFF/FASTA file for each of the {num_genomes} genomes. For genomes with proteomic evidence, the combined files contain merged outputs from BRAKER3 and MetaEuk. For genomes without proteomic evidence, they contain processed BRAKER3 ab initio predictions. GFF files for species representative genomes include additional annotations, as described above. The original BRAKER3 and MetaEuk outputs for each genome are also included in this directory. 
 
 - gene_catalogue/: 
     * gene_catalogue-100.ffn.gz : Nucleotide sequences corresponding to the protein cluster representatives in the protein catalogue clustered at 100% amino acid identity.
     * clusters.tsv.gz : A list of gene accession pairs where the first accession is that of a gene included in the gene catalogue as the representative and the second is a gene that is not included in the gene catalogue but belongs in the same cluster based on amino acid identity.
 
 - genomes-all_metadata.tsv : Assembly statistics and metadata of all {num_genomes} genomes. 
-
-- kraken2_db_{catalog_name}_{version}/ : A folder containing the Kraken 2 and Bracken databases. 
 
 - protein_catalogue/
     * protein_catalogue-XX.tar.gz
@@ -838,6 +855,7 @@ Website URL: {url}
         git_link=git_link,
         ver_datascout=ver_datascout,
         datascout_link=datascout_link,
+        readme_link=readme_link,
         xlarge_note=xlarge_note,
         study_list_string=study_list_string,
         biome=biome,
@@ -880,7 +898,9 @@ def parse_args():
     parser.add_argument(
         "--git-link",
         type=str,
-        help="Full link to the github repo release. "
+        required=True,
+        help="Full link to the github repo release. The link to the pipeline README is built from it, "
+             "so it must end in /releases/tag/<version>. "
              "Example: https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0",
     )
     parser.add_argument(
