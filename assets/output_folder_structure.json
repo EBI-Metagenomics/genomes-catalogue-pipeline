@@ -6,7 +6,6 @@
       "all_genomes.msh"
   ],
   "additional_data": [
-      "panaroo_output", 
       "mgyg_genomes",
     {
       "intermediate_files": [

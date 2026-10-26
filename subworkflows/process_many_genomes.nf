@@ -92,6 +92,7 @@ workflow PROCESS_MANY_GENOMES {
 
     emit:
         pangenome_fna         = PANAROO.out.panaroo_pangenome_fna.mix( mmseqs_pangenome_fna )
+        gene_prevalence       = CGT.out.cgt
         prokka_faas           = PROKKA.out.faa
         prokka_fnas           = PROKKA.out.fna
         prokka_ffns           = PROKKA.out.ffn

@@ -38,7 +38,7 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file, euk_flag=F
                 species_rep_accession == species_name
             ):  # we are running the script on 1 species at a time
                 geo_range.add(cols[field_indices["Continent"]])  # continent
-                
+
                 if species_rep_accession == cols[field_indices["Genome"]]:  # means this is the representative
                     tax_lineage = cols[field_indices["Lineage"]]
                     tax_lineage = "d__unclassified" if tax_lineage.startswith("d__;p__;") else tax_lineage
@@ -98,7 +98,7 @@ def get_metadata(species_name, coverage, fasta, biome, metadata_file, euk_flag=F
 def get_field_indices(header):
     fields = header.strip().split("\t")
     field_indices = dict()
-    for field in ["Genome", "Genome_type", "Length", "N_contigs", "N50", "GC_content", "Lineage", "Genome_accession", 
+    for field in ["Genome", "Genome_type", "Length", "N_contigs", "N50", "GC_content", "Lineage", "Genome_accession",
                   "Sample_accession", "Study_accession", "Continent", "Completeness", "Contamination", "Species_rep",
                   "rRNA_5S", "rRNA_16S", "rRNA_23S", "rRNA_5.8S", "rRNA_18S", "rRNA_28S", "BUSCO_quality", "tRNAs"]:
         try:
@@ -110,7 +110,7 @@ def get_field_indices(header):
                 print(f"Error: Required field '{field}' is missing. Exiting.")
                 sys.exit(1)
     return field_indices
-    
+
 
 def get_cdscount(fasta):
     cds = 0
@@ -121,13 +121,36 @@ def get_cdscount(fasta):
     return cds
 
 
-def get_genecount(list_file):
-    count = 0
-    with open(list_file, "r") as file_in:
+def get_prevalence_counts(prevalence_file):
+    """
+    Count core and accessory genes from the CGT (CELEBRIMBOR) output
+    (published as gene_prevalence_corrected.txt). Accessory = middle + rare.
+    Expected format:
+        # Core threshold: ...        <- optional comment lines
+        # Rare threshold: ...
+        gene<TAB>count<TAB>label     <- header
+        group_1<TAB>12<TAB>core
+    """
+    label_to_category = {"core": "core", "middle": "accessory", "rare": "accessory"}
+    counts = {"core": 0, "accessory": 0}
+    label_idx = None
+    with open(prevalence_file, "r") as file_in:
         for line in file_in:
-            if line.strip() != "":
-                count += 1
-    return count
+            if not line.strip() or line.startswith("#"):
+                continue
+            cols = line.rstrip("\n").split("\t")
+            if label_idx is None:
+                if "label" not in cols:
+                    sys.exit(f"Error: no 'label' column in the header of {prevalence_file}")
+                label_idx = cols.index("label")
+                continue
+            label = cols[label_idx].strip().lower()
+            if label not in label_to_category:
+                sys.exit(f"Error: unexpected gene label '{label}' in {prevalence_file}")
+            counts[label_to_category[label]] += 1
+    if label_idx is None:
+        sys.exit(f"Error: {prevalence_file} has no header line")
+    return counts
 
 
 def get_annotcov(annot):
@@ -154,20 +177,26 @@ def count_total_genomes(species_code, metadata_file, species_rep_idx):
     return count
 
 
-def get_pangenome(core, pangenome_fasta, species_code, metadata_file, species_rep_idx, euk_flag=False):
+def get_pangenome(gene_prevalence, pangenome_fasta, species_code, metadata_file, species_rep_idx, euk_flag=False):
     num_genomes_total = count_total_genomes(species_code, metadata_file, species_rep_idx)
     if euk_flag:
         return {"num_genomes_total": num_genomes_total}
-    
+
     pangenome_size = get_cdscount(pangenome_fasta)
-    core_count = get_genecount(core)
-    access_count = pangenome_size - core_count   
+    prevalence = get_prevalence_counts(gene_prevalence)
+    classified_total = sum(prevalence.values())
+    if classified_total != pangenome_size:
+        print(
+            f"Warning: {species_code}: pan-genome fasta has {pangenome_size} sequences but "
+            f"{gene_prevalence} classifies {classified_total} genes",
+            file=sys.stderr,
+        )
     return {
         "num_genomes_total": num_genomes_total,
         "num_genomes_non_redundant": num_genomes_total,
         "pangenome_size": pangenome_size,
-        "pangenome_core_size": core_count,
-        "pangenome_accessory_size": access_count,
+        "pangenome_core_size": prevalence["core"],
+        "pangenome_accessory_size": prevalence["accessory"],
     }
 
 
@@ -201,7 +230,7 @@ def write_obj_2_json(obj, filename):
 def main(
     species_faa,
     pangenome_fna,
-    core_genes,
+    gene_prevalence,
     annot_cov,
     gff,
     out_file,
@@ -252,17 +281,17 @@ def main(
 
     if (
         pangenome_fna
-        and core_genes
+        and gene_prevalence
         and os.path.exists(pangenome_fna)
         and os.stat(pangenome_fna).st_size
         != 0  # this is required because nextflow submits an empty file
     ):
         pangenome = get_pangenome(
-            core_genes, pangenome_fna, species_code, metadata_file, field_indices["Species_rep"], euk_flag
+            gene_prevalence, pangenome_fna, species_code, metadata_file, field_indices["Species_rep"], euk_flag
         )
         pangenome["geographic_range"] = meta_res[0]
         output["pangenome"] = pangenome
-        
+
     if euk_flag:
         # we don't have pangenomes for euks but they can have multi-genome clusters
         pangenome = get_pangenome(
@@ -270,7 +299,7 @@ def main(
         )
         pangenome["geographic_range"] = meta_res[0]
         output["pangenome"] = pangenome
-        
+
     write_obj_2_json(output, out_file)
 
 
@@ -281,7 +310,7 @@ def parse_args():
     parser.add_argument(
         "--species-faa",
         required=True,
-        help="The prefix (such as MGYG).faa file., pangenome.fasta, core_genes",
+        help="The species representative protein fasta (.faa).",
     )
     parser.add_argument(
         "--pangenome-fna",
@@ -289,7 +318,9 @@ def parse_args():
         help="The genome - pangenome fasta.",
     )
     parser.add_argument(
-        "--core-genes", required=False, help="The core genes from panaroo."
+        "--gene-prevalence",
+        required=False,
+        help="CGT output (gene_prevalence_corrected.txt) with core/middle/rare gene labels.",
     )
     parser.add_argument(
         "--annot-cov", help="Path to the genome annotation coverage file", required=True
@@ -323,7 +354,7 @@ if __name__ == "__main__":
     main(
         args.species_faa,
         args.pangenome_fna,
-        args.core_genes,
+        args.gene_prevalence,
         args.annot_cov,
         args.gff,
         args.out_file,

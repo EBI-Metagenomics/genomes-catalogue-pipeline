@@ -240,6 +240,9 @@ def add_taxonomy(df, taxonomy_file, genome_list, reps):
 
 
 def add_species_rep(df, clusters_file):
+    # File contents look like this:
+    # many_genomes: 4_1:MGYG000883449.fa, MGYG000878385.fa, MGYG000881739.fa
+    # one_genome: 5_0:MGYG000898853.fa
     reps = dict()
     with open(clusters_file, "r") as file_in:
         for line in file_in:
@@ -312,6 +315,10 @@ def load_rrna(rrna_file, rna_results, genome_name=None, euk=False):
             # The line below checks for this to assign correct conversion.
             key = rna_type if euk or not rna_type.startswith(("SSU_rRNA", "LSU_rRNA")) else rna_type.rsplit("_", 1)[0]
             converted_rna_type = conversion[key]
+            # Both genome_name and file_genome are included below to avoid errors on versioned genomes, e.g.
+            # MGYG000000761.1. Version is truncated in the RNA output (file_genome), only showing MGYG000000761.
+            # With two key options the function can run both just using the information inside the file (if no
+            # versioned genomes exist, or with the provided gene name)
             rna_results[converted_rna_type][genome_name or file_genome] = coverage
     return rna_results
 
