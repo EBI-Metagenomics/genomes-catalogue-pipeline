@@ -19,17 +19,25 @@
 import argparse
 import logging
 import os
-import pandas as pd
 import re
 import sys
-
 from itertools import chain
 
+import pandas as pd
 from assembly_stats import run_assembly_stats
 
 logging.basicConfig(level=logging.INFO)
 
-UNINFORMATIVE = {"not collected", "not present", "na", "n/a", "missing", "not applicable", "not determined"}
+UNINFORMATIVE = {
+    "not collected",
+    "not present",
+    "na",
+    "n/a",
+    "missing",
+    "not applicable",
+    "not determined",
+    "not provided",
+}
 
 
 def main(
@@ -50,15 +58,20 @@ def main(
     busco_output,
     euk=False,
 ):
-    # table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50',	'GC_content',
-    #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S', 'tRNAs', 'Genome_accession',
-    #           'Species_rep', 'MGnify_accession', 'Lineage', 'Sample_accession', 'Study_accession', 'Country',
-    #           'Continent', 'FTP_download']
+    # table_columns = ['Genome', 'Genome_type', 'Length', 'N_contigs', 'N50', 'GC_content',
+    #           'Completeness', 'Contamination', 'rRNA_5S', 'rRNA_16S', 'rRNA_23S',
+    #           'tRNAs', 'Genome_accession',
+    #           'Species_rep', 'MGnify_accession', 'Lineage', 'Sample_accession',
+    #           'Study_accession', 'Country', 'Continent', 'FTP_download']
     genome_list, genomes_ext = load_genome_list(genomes_dir, gunc_failed)
     logging.info("Loaded genome list")
     if previous_metadata_table:
-        logging.info("Loading data from the previous catalogue version's metadata table")
-        previous_version_data = load_previous_metadata_table(previous_metadata_table, genome_list)
+        logging.info(
+            "Loading data from the previous catalogue version's metadata table"
+        )
+        previous_version_data = load_previous_metadata_table(
+            previous_metadata_table, genome_list
+        )
     else:
         previous_version_data = pd.DataFrame()
     df = pd.DataFrame(genome_list, columns=["Genome"])
@@ -117,15 +130,19 @@ def add_busco(df, busco_output):
         "F": "Fragmented",
         "M": "Missing",
         "n": "Total BUSCOs",
-        "E": "Erroneous"
+        "E": "Erroneous",
     }
-    pattern = r'([CSDMFEn]):([\d\.%]+)'
+    pattern = r"([CSDMFEn]):([\d\.%]+)"
     busco_results = dict()
     with open(busco_output, "r") as f:
         for line in f:
             file_name, busco_line = line.strip().split("\t")
             file_name = file_name.replace(".fa", "")
-            converted_busco = re.sub(pattern, lambda m: f"{busco_mapping[m.group(1)]}:{m.group(2) }", busco_line)
+            converted_busco = re.sub(
+                pattern,
+                lambda m: f"{busco_mapping[m.group(1)]}:{m.group(2) }",
+                busco_line,
+            )
             file_name = file_name.replace(".fa", "")
             busco_results[file_name] = converted_busco
     df["BUSCO_quality"] = df["Genome"].map(busco_results)
@@ -133,11 +150,21 @@ def add_busco(df, busco_output):
 
 
 def load_previous_metadata_table(previous_metadata_table, genome_list):
-    columns_to_save = ["Genome", "Sample_accession", "Study_accession", "Country", "Continent"]
-    previous_version_data = pd.read_csv(previous_metadata_table, sep='\t', usecols=columns_to_save)
+    columns_to_save = [
+        "Genome",
+        "Sample_accession",
+        "Study_accession",
+        "Country",
+        "Continent",
+    ]
+    previous_version_data = pd.read_csv(
+        previous_metadata_table, sep="\t", usecols=columns_to_save
+    )
 
     # filter the dataframe to only keep genomes that we are using
-    previous_version_data = previous_version_data[previous_version_data["Genome"].isin(genome_list)]
+    previous_version_data = previous_version_data[
+        previous_version_data["Genome"].isin(genome_list)
+    ]
     return previous_version_data
 
 
@@ -158,20 +185,33 @@ def add_ftp(df, genome_list, catalog_ftp_name, catalog_version, species_reps):
 def add_sample_project_loc(df, location_file, previous_version_data):
     location_data_df = pd.read_csv(
         location_file,
-        sep='\t',
+        sep="\t",
         header=None,
-        names=['Genome_accession', 'Sample_accession', 'Study_accession', 'Country', 'Continent']
+        names=[
+            "Genome_accession",
+            "Sample_accession",
+            "Study_accession",
+            "Country",
+            "Continent",
+        ],
     )
-    df = df.merge(location_data_df, on='Genome_accession', how='left')
+    df = df.merge(location_data_df, on="Genome_accession", how="left")
 
     # If previous version data is available, override where applicable
     # Replace uninformative country/continent with "not provided" as is already done for all new genomes
     if not previous_version_data.empty:
-        prev_data_dict = previous_version_data.set_index("Genome").to_dict(orient="index")
+        prev_data_dict = previous_version_data.set_index("Genome").to_dict(
+            orient="index"
+        )
         for idx, row in df.iterrows():
             genome = row["Genome"]
             if genome in prev_data_dict:
-                for col in ["Sample_accession", "Study_accession", "Country", "Continent"]:
+                for col in [
+                    "Sample_accession",
+                    "Study_accession",
+                    "Country",
+                    "Continent",
+                ]:
                     val = prev_data_dict[genome][col]
                     if col in ["Country", "Continent"]:
                         is_uninformative = pd.isna(val) or (
@@ -181,7 +221,7 @@ def add_sample_project_loc(df, location_file, previous_version_data):
                             df.at[idx, col] = "not provided"
                             continue
                     df.at[idx, col] = val
-                    
+
     return df
 
 
@@ -258,18 +298,21 @@ def add_rna(df, genome_list, rna_folder, euk=False):
 
 
 def load_rrna(rrna_file, rna_results, genome_name=None, euk=False):
-    conversion = {"SSU_rRNA_eukarya": "rRNA_18S",
-                  "LSU_rRNA_eukarya": "rRNA_28S",
-                  "5S_rRNA": "rRNA_5S",
-                  "5_8S_rRNA": "rRNA_5.8S",
-                  "SSU_rRNA": "rRNA_16S",
-                  "LSU_rRNA": "rRNA_23S"}
+    conversion = {
+        "SSU_rRNA_eukarya": "rRNA_18S",
+        "LSU_rRNA_eukarya": "rRNA_28S",
+        "5S_rRNA": "rRNA_5S",
+        "5_8S_rRNA": "rRNA_5.8S",
+        "SSU_rRNA": "rRNA_16S",
+        "LSU_rRNA": "rRNA_23S",
+    }
 
     with open(rrna_file, "r") as file_in:
         for line in file_in:
             file_genome, rna_type, coverage = line.strip().split("\t")
-            # In the conversion dictionary, prokaryotic SSU and LSU keys are truncated but all the other keys are
-            # shown in full. The line below checks for this to assign correct conversion.
+            # In the conversion dictionary, prokaryotic SSU and LSU keys are truncated
+            # but all the other keys are shown in full.
+            # The line below checks for this to assign correct conversion.
             key = rna_type if euk or not rna_type.startswith(("SSU_rRNA", "LSU_rRNA")) else rna_type.rsplit("_", 1)[0]
             converted_rna_type = conversion[key]
             # Both genome_name and file_genome are included below to avoid errors on versioned genomes, e.g.
@@ -322,8 +365,9 @@ def calc_assembly_stats(genomes_dir, acc, ext):
 
 def add_precomputed_stats(df, precomputed_genome_stats):
     columns_to_save = ["Genome", "Length", "N_contigs", "N50", "GC_content"]
-    stats = pd.read_csv(precomputed_genome_stats, sep='\t', usecols=columns_to_save)
-    df = df.merge(stats, on="Genome", how="left")  # Left join to keep only existing genomes in df
+    stats = pd.read_csv(precomputed_genome_stats, sep="\t", usecols=columns_to_save)
+    # Left join to keep only existing genomes in df
+    df = df.merge(stats, on="Genome", how="left")
     # reorder columns
     df = df[[col for col in df.columns if col not in columns_to_save] + columns_to_save]
     return df
@@ -349,7 +393,7 @@ def add_genome_type(df, extra_weight_table):
 
 
 def load_genome_list(genomes_dir, gunc_file):
-    genome_list = [filename.rsplit(".", 1)[0].replace("_sm", "") for filename in os.listdir(genomes_dir)]
+    genome_list = [filename.rsplit(".", 1)[0] for filename in os.listdir(genomes_dir)]
     genomes_ext = os.listdir(genomes_dir)[0].rsplit(".", 1)[1]
     if gunc_file and gunc_file != "EMPTY":
         with open(gunc_file, "r") as gunc_in:
@@ -357,7 +401,7 @@ def load_genome_list(genomes_dir, gunc_file):
                 acc = line.strip()
                 try:
                     genome_list.remove(acc)
-                except:
+                except ValueError:
                     logging.info(
                         "Genome {} failed GUNC and is not present in the genomes"
                         " directory".format(acc)
@@ -463,7 +507,7 @@ def parse_args():
     )
     parser.add_argument(
         "--euk",
-        action='store_true',
+        action="store_true",
         help="Use this flag if the metadata table is being generated for a eukaryotic catalogue.",
     )
     return parser.parse_args()

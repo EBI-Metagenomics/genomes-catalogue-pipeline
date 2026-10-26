@@ -1,0 +1,10 @@
+contig_1	MetaEuk	gene	101	403	1200	+	.	Target_ID=acc_match;TCS_ID=acc_match|contig_1|+|100
+contig_1	MetaEuk	mRNA	101	403	1200	+	.	Target_ID=acc_match;TCS_ID=acc_match|contig_1|+|100_mRNA;Parent=acc_match|contig_1|+|100
+contig_1	MetaEuk	exon	101	403	1200	+	.	Target_ID=acc_match;TCS_ID=acc_match|contig_1|+|100_exon_0;Parent=acc_match|contig_1|+|100_mRNA
+contig_1	MetaEuk	CDS	101	403	1200	+	0	Target_ID=acc_match;TCS_ID=acc_match|contig_1|+|100_CDS_0;Parent=acc_match|contig_1|+|100_exon_0
+contig_2	MetaEuk	gene	201	900	1500	+	.	Target_ID=acc_uniq;TCS_ID=acc_uniq|contig_2|+|200
+contig_2	MetaEuk	mRNA	201	900	1500	+	.	Target_ID=acc_uniq;TCS_ID=acc_uniq|contig_2|+|200_mRNA;Parent=acc_uniq|contig_2|+|200
+contig_2	MetaEuk	exon	201	500	1500	+	.	Target_ID=acc_uniq;TCS_ID=acc_uniq|contig_2|+|200_exon_0;Parent=acc_uniq|contig_2|+|200_mRNA
+contig_2	MetaEuk	CDS	201	500	1500	+	0	Target_ID=acc_uniq;TCS_ID=acc_uniq|contig_2|+|200_CDS_0;Parent=acc_uniq|contig_2|+|200_exon_0
+contig_2	MetaEuk	exon	601	900	1500	+	.	Target_ID=acc_uniq;TCS_ID=acc_uniq|contig_2|+|200_exon_1;Parent=acc_uniq|contig_2|+|200_mRNA
+contig_2	MetaEuk	CDS	601	900	1500	+	1	Target_ID=acc_uniq;TCS_ID=acc_uniq|contig_2|+|200_CDS_1;Parent=acc_uniq|contig_2|+|200_exon_1

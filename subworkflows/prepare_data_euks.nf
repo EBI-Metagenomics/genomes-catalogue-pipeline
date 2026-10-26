@@ -48,13 +48,13 @@ workflow PREPARE_DATA_EUKS {
         }   
 
         if ( ncbi_assemblies && ena_assemblies ) {
-            BUSCO_ENA( ena_genomes_ch, busco_db )
+            BUSCO_ENA( ena_genomes_ch, busco_db, 'genome' )
             ena_busco = BUSCO_ENA.out.busco_summary.collectFile(
                 keepHeader: false,
                 name: "ena_busco.csv"
             )
 
-            BUSCO_NCBI( ncbi_genomes_ch, busco_db )
+            BUSCO_NCBI( ncbi_genomes_ch, busco_db, 'genome' )
             ncbi_busco = BUSCO_NCBI.out.busco_summary.collectFile(
                 keepHeader: false,
                 name: "ncbi_busco.csv"
@@ -81,7 +81,7 @@ workflow PREPARE_DATA_EUKS {
             genomes_busco_ch = MERGE_NCBI_ENA_EUKS.out.merged_busco_csv
 
         } else if ( ncbi_assemblies ) {
-            BUSCO_NCBI( ncbi_genomes_ch, busco_db )
+            BUSCO_NCBI( ncbi_genomes_ch, busco_db, 'genome' )
             ncbi_busco = BUSCO_NCBI.out.busco_summary.collectFile(
                 keepHeader: false,
                 name: "ncbi_busco.csv"
@@ -99,7 +99,7 @@ workflow PREPARE_DATA_EUKS {
             genomes_busco_ch = ncbi_busco
 
         } else if ( ena_assemblies ) {
-            BUSCO_ENA( ena_genomes_ch, busco_db )
+            BUSCO_ENA( ena_genomes_ch, busco_db, 'genome' )
             ena_busco = BUSCO_ENA.out.busco_summary.collectFile(
                 keepHeader: false,
                 name: "ena_busco.csv"
