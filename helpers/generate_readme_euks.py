@@ -185,27 +185,40 @@ def extract_previous_changelogs(previous_readme):
 
 
 def process_metadata_table(metadata_table):
-    total_genomes = 0
-    reps = set()
-    study_list = set()
-    version = ""
-    catalog_name = ""
-    with open(metadata_table, "r") as meta_in:
-        for line in meta_in:
-            if not line.startswith("Genome"):
-                total_genomes += 1
-                fields = line.strip().split("\t")
-                species_rep = fields[13]
-                genome_acc = fields[0]
-                study = fields[16]
-                ftp_link = fields[19]
-                reps.add(species_rep)
-                study_list.add(study)
-                if not version:
-                    subfields = ftp_link.strip().split("/")
-                    catalog_name = subfields[7]
-                    version = subfields[8]
-    total_genomes = "{:,}".format(total_genomes)
+    """
+    Summarise the current metadata table.
+
+    Columns are looked up by name: 'Genome', 'Species_rep', 'Study_accession' and 'FTP_download'.
+    The catalogue name and version are taken from the FTP link of the first genome, e.g.
+    ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/mgnify_genomes/<catalogue>/<version>/...
+
+    Returns
+    -------
+    total_genomes : str
+        Number of genomes, comma-formatted.
+    num_reps : str
+        Number of species representatives, comma-formatted.
+    study_list : set
+        Study accessions.
+    version, catalog_name : str
+    """
+    df = pd.read_csv(metadata_table, sep="\t", dtype=str)
+
+    required = ["Genome", "Species_rep", "Study_accession", "FTP_download"]
+    missing = [c for c in required if c not in df.columns]
+    if missing:
+        raise ValueError(f"Metadata table {metadata_table} is missing required column(s): {', '.join(missing)}")
+    if df.empty:
+        raise ValueError(f"Metadata table {metadata_table} has no genomes")
+
+    reps = set(df["Species_rep"].dropna())
+    study_list = set(df["Study_accession"].dropna())
+
+    subfields = df["FTP_download"].iloc[0].strip().split("/")
+    catalog_name = subfields[7]
+    version = subfields[8]
+
+    total_genomes = "{:,}".format(len(df))
     num_reps = "{:,}".format(len(reps))
     return total_genomes, num_reps, study_list, version, catalog_name
 
