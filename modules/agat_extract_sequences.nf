@@ -19,6 +19,10 @@ process EXTRACT_SEQUENCES {
     def protein_flag = mol_type == "protein" ? "-p" : ""
     def extension = mol_type == "protein" ? "faa" : "ffn"
     """
+    # AGAT's progress bar croaks ("progress bar already finished") on larger inputs,
+    # killing the task after a successful parse. Disable it via the local config.
+    agat config --expose --no-progress_bar > /dev/null
+
     agat_sp_extract_sequences.pl \\
         -g ${gff} \\
         -f ${genome_fasta} \\
