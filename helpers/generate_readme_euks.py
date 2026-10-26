@@ -2,6 +2,7 @@
 # coding=utf-8
 
 import argparse
+import re
 import sys
 from pathlib import Path
 import pandas as pd
@@ -31,6 +32,9 @@ def main(
                 "(--remove-list is optional and only valid for updates)."
             )
 
+    # Parse the datascout version 
+    ver_datascout = extract_datascout_version(datascout_link)
+
     (
         num_genomes,
         num_species,
@@ -57,7 +61,7 @@ def main(
             + ", ".join(sorted(study_list))
         )
 
-    # If this is an update, generate a changelog from the previous version  
+    # If this is an update, generate a changelog from the previous version
     if previous_readme:
         changelog = create_changelog(version, previous_version, metadata_table, previous_metadata_table,
                                      additional_data_path, outfile_name, remove_list)
@@ -79,8 +83,41 @@ def main(
         git_link,
         xlarge,
         changelog,
-        previous_changelog
+        previous_changelog,
+        ver_datascout,
+        datascout_link
     )
+
+
+def extract_datascout_version(datascout_link):
+    """
+    Extract the datascout version from a GitHub release link.
+
+    Expected format:
+        https://github.com/EBI-Metagenomics/datascout/releases/tag/v1.3.0
+
+    Parameters
+    ----------
+    datascout_link : str
+        Link to the datascout GitHub release.
+
+    Returns
+    -------
+    str
+        Version without the leading "v", e.g. "1.3.0".
+
+    Raises
+    ------
+    ValueError
+        If the link does not end in /releases/tag/<version>.
+    """
+    match = re.search(r"/releases/tag/v?(\d+(?:\.\d+)*)/?$", datascout_link.strip())
+    if not match:
+        raise ValueError(
+            f"Could not extract a datascout version from --datascout-link '{datascout_link}'. "
+            f"Expected a link like https://github.com/EBI-Metagenomics/datascout/releases/tag/v1.3.0"
+        )
+    return match.group(1)
 
 
 def extract_previous_changelogs(previous_readme):
@@ -181,9 +218,9 @@ def create_changelog(version, previous_version, metadata_table, previous_metadat
     replaced_reps_line = summarise_replaced_reps(species_rep_replacements, out_dir)
     if replaced_reps_line:
         lines.append(replaced_reps_line)
-    
+
     lines.append("* Due to version changes and updates to the pipeline, all annotations were regenerated.")
-    
+
     # Join all lines into a single block
     changelog_text = "\n".join(lines)
     return changelog_text
@@ -616,7 +653,7 @@ def resolve_species_changes(metadata_table, previous_metadata_table, species_rep
     """
     Work out which previous species are no longer in the catalogue, using the metadata tables.
 
-    A previous species is removed if none of its genomes are in the current catalogue and it was not given a 
+    A previous species is removed if none of its genomes are in the current catalogue and it was not given a
     replacement representative that is.
 
     Returns
@@ -705,7 +742,9 @@ def print_file(
     git_link,
     xlarge,
     changelog,
-    previous_changelog
+    previous_changelog,
+    ver_datascout,
+    datascout_link
 ):
 
     if xlarge:
@@ -728,6 +767,7 @@ Website URL: {url}
 * A total of {num_genomes} prokaryotic genomes from the {biome} microbiome were clustered into {num_species} species-level clusters.
 {study_list_string}
 * The catalogue was generated using MGnify genomes pipeline v{ver_pipeline}: {git_link}. 
+* Proteomic evidence for gene calling was obtained using datascout v{ver_datascout}: {datascout_link}
 * A protein catalogue was produced with all protein coding sequences clustered at 100%, 95%, 90% and 50% amino acid identity.
 * A gene catalogue is the collection of nucleotide sequences corresponding to the protein cluster representatives of the 100% identity clustering. {xlarge_note}
 
@@ -781,10 +821,6 @@ Website URL: {url}
 
 - kraken2_db_{catalog_name}_{version}/ : A folder containing the Kraken 2 and Bracken databases. 
 
-- phylogenies/: 
-    Note: Alignments and the trees generated from them are based on GTDB-Tk results. Genomes classified only to the domain level by GTDB-Tk (e.g. d__Bacteria;p__;c__;o__;f__;g__;s__) will not be included.
-{phylo_text}
-
 - protein_catalogue/
     * protein_catalogue-XX.tar.gz
         - protein_catalogue-XX.faa : Protein FASTA file of the clustered, representative sequences. Computed from all genomes in the catalogue (representative and non-representative).
@@ -800,11 +836,12 @@ Website URL: {url}
         num_species=num_species,
         ver_pipeline=ver_pipeline,
         git_link=git_link,
+        ver_datascout=ver_datascout,
+        datascout_link=datascout_link,
         xlarge_note=xlarge_note,
         study_list_string=study_list_string,
         biome=biome,
         catalog_name=catalog_name,
-        phylo_text=phylo_text
     )
 
     # Append changelogs if they exist
@@ -870,7 +907,8 @@ def parse_args():
     )
     parser.add_argument(
         "--datascout-link", required=True,
-        help="Link to the datascout release that was used to get evidence for gene calling for the catalogue,"
+        help="Link to the datascout release that was used to get evidence for gene calling for the catalogue. "
+             "The datascout version is extracted from the link, so it must end in /releases/tag/<version>, "
              "for example, https://github.com/EBI-Metagenomics/datascout/releases/tag/v1.4.0",
     )
     parser.add_argument(
