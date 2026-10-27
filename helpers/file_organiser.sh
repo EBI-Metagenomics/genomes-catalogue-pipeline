@@ -99,13 +99,18 @@ VerifyGzipped() {
     if [[ $bad -ne 0 ]]; then echo "Verification failed, stopping." >&2; exit 1; fi
 }
 
-# Confirm every bgzipped FASTA in the list got both faidx output files
+# Confirm every bgzipped FASTA in the list has its faidx output
 # (list holds .fna.gz paths; samtools faidx on BGZF input produces .fai + .gzi)
+# Usage: VerifyFaidx <file_list> [check_gzi]   check_gzi defaults to true
 VerifyFaidx() {
-    local file_list=$1 bad=0
+    local file_list=$1 check_gzi=${2:-true} bad=0
     while read -r f; do
-        if [[ ! -s "${f}.fai" || ! -s "${f}.gzi" ]]; then
-            echo "Missing .fai/.gzi index for: $f" >&2
+        if [[ ! -s "${f}.fai" ]]; then
+            echo "Missing .fai index for: $f" >&2
+            bad=1
+        fi
+        if [[ $check_gzi == true && ! -s "${f}.gzi" ]]; then
+            echo "Missing .gzi index for: $f" >&2
             bad=1
         fi
     done < "$file_list"
@@ -379,8 +384,11 @@ function CopyFTPFiles {
     cp -r all_genomes* "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     cp -r gene_catalogue "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     cp -r genomes-all_metadata.tsv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
-    cp -r kraken2_db* "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
-    cp -r phylogenies "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
+    # Eukaryotic catalogues have no Kraken2 database and no phylogenies
+    if [[ $EUK != true ]]; then
+        cp -r kraken2_db* "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
+        cp -r phylogenies "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
+    fi
     cp -r protein_catalogue "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     cp -r README.txt "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/README_${CATALOGUE_VERSION}.txt"
     # Optional files: copied when present, skipped otherwise
@@ -419,7 +427,8 @@ function CopyFTPFiles {
             "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/"
         fi
     done
-    VerifyFaidx "$ftp_fnas"
+    # The FTP copy only needs the .fai, not the .gzi
+    VerifyFaidx "$ftp_fnas" false
 }
 
 
