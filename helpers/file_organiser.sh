@@ -328,7 +328,7 @@ function GenerateWebsiteGFFs {
             fi
         done < <(zcat "${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz") > "$stripped"
         if [[ $EUK == true ]]; then
-            singularity exec "${SINGULARITY_CACHEDIR_PATH}/quay.io-biocontainers-gff3sort-0.1.a1a2bc9--pl526_0.img" \
+            singularity exec --no-mount "${SINGULARITY_CACHEDIR_PATH}/quay.io-biocontainers-gff3sort-0.1.a1a2bc9--pl526_0.img" \
                 gff3sort.pl --precise --chr_order original "$stripped" > "$noseq"
             rm "$stripped"
         fi
