@@ -313,16 +313,17 @@ function GzipSpeciesCatalogue {
 function GenerateWebsiteGFFs {
     echo "Generating GFFs for the website"
     cd "${RESULTS_PATH}/species_catalogue"
-    local noseq stripped
+    local noseq stripped n_skipped=0
     for R in $(GET_REPS)
     do
         noseq="${R::-2}/${R}/${R}.gff.noseq"
-        # Eukaryotes: strip into a temporary file first, then sort it into .noseq
-        if [[ $EUK == true ]]; then
-            stripped="${noseq}.unsorted"
-        else
-            stripped="$noseq"
+        # Already made by an earlier run: keep it. A .noseq is only ever
+        # created by the final mv below, so an existing one is complete.
+        if [[ -s "$noseq" ]]; then
+            n_skipped=$((n_skipped + 1))
+            continue
         fi
+        stripped="${noseq}.unsorted"
         while read -r line
         do
             if [[ ${line} == "##FASTA" ]]
@@ -333,11 +334,18 @@ function GenerateWebsiteGFFs {
             fi
         done < <(zcat "${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz") > "$stripped"
         if [[ $EUK == true ]]; then
+            # Eukaryotes: sort the features
             singularity exec "${SINGULARITY_CACHEDIR_PATH}/quay.io-biocontainers-gff3sort-0.1.a1a2bc9--pl526_0.img" \
-                gff3sort.pl --precise --chr_order original "$stripped" > "$noseq"
+                gff3sort.pl --precise --chr_order original "$stripped" > "${noseq}.tmp"
             rm "$stripped"
+        else
+            mv "$stripped" "${noseq}.tmp"
         fi
+        mv "${noseq}.tmp" "$noseq"
     done
+    if [[ $n_skipped -gt 0 ]]; then
+        echo "Kept ${n_skipped} existing .noseq files"
+    fi
 }
 
 
