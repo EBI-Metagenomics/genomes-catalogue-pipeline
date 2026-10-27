@@ -335,7 +335,7 @@ function GenerateWebsiteGFFs {
         done < <(zcat "${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz") > "$stripped"
         if [[ $EUK == true ]]; then
             # Eukaryotes: sort the features
-            singularity exec "${SINGULARITY_CACHEDIR_PATH}/quay.io-biocontainers-gff3sort-0.1.a1a2bc9--pl526_0.img" \
+            singularity exec "$GFF3SORT_IMAGE" \
                 gff3sort.pl --precise --chr_order original "$stripped" > "${noseq}.tmp"
             rm "$stripped"
         else
@@ -370,9 +370,9 @@ function CopyWebsiteFiles {
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated.gff"
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz"
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.fai"
-        zcat "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" | singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip > "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" \
+        zcat "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" | singularity exec "$SAMTOOLS_IMAGE" bgzip > "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" \
         && mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" \
-        && singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img samtools faidx "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz"
+        && singularity exec "$SAMTOOLS_IMAGE" samtools faidx "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz"
         echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" >> "$website_fnas"
         mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/${R}.gff.noseq" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff"
         echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff" >> "$website_gffs"
@@ -381,7 +381,7 @@ function CopyWebsiteFiles {
     echo "Compressing and indexing website GFFs"
     CheckNoGzConflicts "$website_gffs"
     RunArrayAndWait bgzip_website_gffs "$website_gffs" 1G 100 \
-        bash -c 'singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip "$1" && singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img tabix -p gff -C "$1.gz"' _
+        bash -c 'singularity exec "$SAMTOOLS_IMAGE" bgzip "$1" && singularity exec "$SAMTOOLS_IMAGE" tabix -p gff -C "$1.gz"' _
     VerifyGzipped "$website_gffs"
 }
 
@@ -501,10 +501,29 @@ while getopts 'd:f:v:r:s:e' flag; do
     esac
 done
 
-if [[ -z $SAVE_TO_PATH ]] || [[ -z $CATALOGUE_FOLDER ]] || [[ -z $RESULTS_PATH ]] || [[ -z $CATALOGUE_VERSION ]]; then
+if [[ -z $SAVE_TO_PATH ]] || [[ -z $CATALOGUE_FOLDER ]] || [[ -z $RESULTS_PATH ]] || [[ -z $CATALOGUE_VERSION ]] || [[ -z $SINGULARITY_CACHEDIR_PATH ]]; then
   echo 'Not all of the arguments are provided'
   Usage
 fi
+
+
+export SAMTOOLS_IMAGE="${SINGULARITY_CACHEDIR_PATH}/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img"
+export GFF3SORT_IMAGE="${SINGULARITY_CACHEDIR_PATH}/quay.io-biocontainers-gff3sort-0.1.a1a2bc9--pl526_0.img"
+
+# Check everything we need exists before doing any work
+REQUIRED_IMAGES=("$SAMTOOLS_IMAGE")
+if [[ $EUK == true ]]; then
+    REQUIRED_IMAGES+=("$GFF3SORT_IMAGE")
+fi
+
+missing_images=0
+for img in "${REQUIRED_IMAGES[@]}"; do
+    if [[ ! -s "$img" ]]; then
+        echo "ERROR: Singularity image not found or empty: $img" >&2
+        missing_images=1
+    fi
+done
+if [[ $missing_images -ne 0 ]]; then exit 1; fi
 
 LOG_DIR="${RESULTS_PATH}/reorganisation_slurm_logs"
 MAX_ARRAY_TASKS=2000
