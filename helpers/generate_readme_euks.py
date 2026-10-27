@@ -93,11 +93,11 @@ def main(
 
 def build_pipeline_readme_link(git_link):
     """
-    Build a link to the pipeline README on the master branch from the pipeline release link.
+    Build a link to the pipeline README from the pipeline release link.
 
-    Removes /releases/tag/<version> from the release link and appends /blob/master/README.md:
+    Keeps the full release tag link and appends /README.md:
         https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0
-        -> https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/blob/master/README.md
+        -> https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0/README.md
 
     Parameters
     ----------
@@ -114,13 +114,13 @@ def build_pipeline_readme_link(git_link):
     ValueError
         If the link does not end in /releases/tag/<version>.
     """
-    match = re.match(r"^(.+?)/releases/tag/[^/]+/?$", git_link.strip())
+    match = re.match(r"^(.+?/releases/tag/[^/]+)/?$", git_link.strip())
     if not match:
         raise ValueError(
             f"Could not build the pipeline README link from --git-link '{git_link}'. "
             f"Expected a link like https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0"
         )
-    return f"{match.group(1)}/blob/master/README.md"
+    return f"{match.group(1)}/README.md"
 
 
 def extract_datascout_version(datascout_link):
