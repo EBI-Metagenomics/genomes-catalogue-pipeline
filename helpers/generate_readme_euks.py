@@ -836,7 +836,7 @@ Website URL: {url}
     * [species_accession]_kegg_classes.tsv.gz : KEGG classes and their counts.
     * [species_accession]_kegg_modules.tsv.gz : KEGG modules and their counts.
     * [species_accession]_kegg_pathways.tsv.gz : KEGG pathway completeness.
-    * [species_accession]_metaeuk.gff.gz : Structural annotation generated with MeatEuk (only available when there is suitable proteomic evidence).
+    * [species_accession]_metaeuk.gff.gz : Structural annotation generated with MetaEuk (only available when there is suitable proteomic evidence).
     * [species_accession]_rRNAs.fasta.gz : rRNA sequence FASTA file.
 
 ## Additional files available in the parent directory:
