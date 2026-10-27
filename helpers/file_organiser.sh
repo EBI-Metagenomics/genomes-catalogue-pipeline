@@ -112,6 +112,28 @@ VerifyFaidx() {
     if [[ $bad -ne 0 ]]; then echo "Faidx verification failed, stopping." >&2; exit 1; fi
 }
 
+# Rename gene-caller GFF3s anywhere under a folder:
+#   <accession>.braker.gff3  -> <accession>_braker.gff
+#   <accession>.metaeuk.gff3 -> <accession>_metaeuk.gff
+# Does not overwrite an existing file (or its .gz)
+RenameGeneCallerGFFs() {
+    local root=$1 f target n=0
+    while IFS= read -r -d '' f; do
+        case "$f" in
+            *.braker.gff3)  target="${f%.braker.gff3}_braker.gff" ;;
+            *.metaeuk.gff3) target="${f%.metaeuk.gff3}_metaeuk.gff" ;;
+            *) continue ;;
+        esac
+        if [[ -e "$target" || -e "${target}.gz" ]]; then
+            echo "ERROR: cannot rename ${f}: ${target} or ${target}.gz already exists" >&2
+            exit 1
+        fi
+        mv "$f" "$target"
+        n=$((n + 1))
+    done < <(find "$root" -type f \( -name '*.braker.gff3' -o -name '*.metaeuk.gff3' \) -print0)
+    echo "Renamed ${n} BRAKER/MetaEuk GFF3 files under ${root}"
+}
+
 # Write a crash-safe gzip script. The original is only removed once a complete,
 # verified .gz is on disk, so it is safe to rerun after an interruption at any point.
 WriteSafeGzip() {
@@ -236,6 +258,10 @@ function GzipSpeciesCatalogue {
     local list="${LOG_DIR}/species_catalogue_files.txt"
     mkdir -p "$LOG_DIR"
     : > "$list"
+
+    # Rename <acc>.braker.gff3 / <acc>.metaeuk.gff3 to <acc>_braker.gff /
+    # <acc>_metaeuk.gff; the find below then picks them up for gzipping
+    RenameGeneCallerGFFs "${RESULTS_PATH}/species_catalogue"
 
     for R in $(GET_REPS); do
         local base="${RESULTS_PATH}/species_catalogue/${R::-2}/${R}"
@@ -406,9 +432,13 @@ function CopyAdditionalFiles {
 function ZipAllGenomes {
     echo "Zipping files in the all_genomes folder"
     local list="${LOG_DIR}/all_genomes_gffs.txt"
+    local all_genomes_dir="${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes"
     mkdir -p "$LOG_DIR"
-    find "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes" \
-        -type f -path '*/genomes1/*' -name 'MGYG*gff' > "$list"
+    # Renamed on the FTP copy, the results folder is left as it is
+    RenameGeneCallerGFFs "$all_genomes_dir"
+    find "$all_genomes_dir" -type f \
+        \( \( -path '*/genomes1/*' -name 'MGYG*gff' \) \
+           -o -name '*_braker.gff' -o -name '*_metaeuk.gff' \) | sort -u > "$list"
     CheckNoGzConflicts "$list"
     RunArrayAndWait gzip_all_genomes "$list" 1G 100 \
         bash -c 'gzip "$1" && gzip -t "$1.gz"' _
