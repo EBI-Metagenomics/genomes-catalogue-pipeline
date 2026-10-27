@@ -308,8 +308,16 @@ function GzipSpeciesCatalogue {
 function GenerateWebsiteGFFs {
     echo "Generating GFFs for the website"
     cd "${RESULTS_PATH}/species_catalogue"
+    local noseq stripped
     for R in $(GET_REPS)
     do
+        noseq="${R::-2}/${R}/${R}.gff.noseq"
+        # Eukaryotes: strip into a temporary file first, then sort it into .noseq
+        if [[ $EUK == true ]]; then
+            stripped="${noseq}.unsorted"
+        else
+            stripped="$noseq"
+        fi
         while read -r line
         do
             if [[ ${line} == "##FASTA" ]]
@@ -318,7 +326,12 @@ function GenerateWebsiteGFFs {
             else
                 echo "$line"
             fi
-        done < <(zcat "${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz") > "${R::-2}/${R}/${R}.gff.noseq"
+        done < <(zcat "${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz") > "$stripped"
+        if [[ $EUK == true ]]; then
+            singularity exec "${SINGULARITY_CACHEDIR_PATH}/quay.io-biocontainers-gff3sort-0.1.a1a2bc9--pl526_0" \
+                gff3sort.pl --precise --chr_order original "$stripped" > "$noseq"
+            rm "$stripped"
+        fi
     done
 }
 
