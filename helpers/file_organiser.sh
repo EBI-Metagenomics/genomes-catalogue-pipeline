@@ -400,7 +400,7 @@ function CopyFTPFiles {
     cp -r protein_catalogue "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     cp -r README.txt "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/README_${CATALOGUE_VERSION}.txt"
     # Optional files: copied when present, skipped otherwise
-    for optional_file in added_genomes.tsv study_list.txt removed_genomes.tsv removed_species.tsv; do
+    for optional_file in added_genomes.tsv study_list.txt removed_genomes.tsv removed_species.tsv replaced_species_reps.tsv; do
         if [[ -f "$optional_file" ]]; then
             cp "$optional_file" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
         else
