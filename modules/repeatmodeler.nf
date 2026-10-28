@@ -2,22 +2,33 @@ process REPEAT_MODELER {
     tag "${genome.baseName}"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://dfam/tetools:latest' :
-        'dfam/tettools:latest' }"
-
+        'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.7--pl5321hdfd78af_0':
+        'quay.io/biocontainers/repeatmodeler:2.0.7--pl5321hdfd78af_0' }"
 
     input:
     tuple val(cluster), path(genome), path(proteins)
 
     output:
-    tuple val(genome.baseName), path("*families.fa"), emit: repeat_families
-    tuple val(genome.baseName), path("*families.stk"), emit: repeat_aligment
-    tuple val(genome.baseName), path("*rmod.log"), emit: logile
+    tuple val(genome.baseName), path("*families.fa"), emit: repeat_families, optional: true
+    tuple val(genome.baseName), path("*families.stk"), emit: repeat_aligment, optional: true
+    tuple val(genome.baseName), path("*rmod.log"), emit: logile, optional: true
 
     script:
     """
+    set +e
     BuildDatabase -name ${genome.baseName} ${genome}
 
     RepeatModeler -database ${genome.baseName} -threads ${task.cpus} -LTRStruct
+    status=\$?
+
+    if [[ \$status -ne 0 ]]; then
+        if grep -Fq "Refining 0 families..." .command.log && \
+            grep -Fq "cat: can't open" .command.log   && \
+            grep -Fq "refined-cons.fa" .command.log; then
+            echo "RepeatModeler hit known empty-refinement failure; treating as non-fatal."
+            exit 0
+        fi
+        exit \$status
+    fi
     """
 }

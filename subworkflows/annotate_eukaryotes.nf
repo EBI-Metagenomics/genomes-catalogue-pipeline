@@ -8,12 +8,12 @@ include { EGGNOG_MAPPER as EGGNOG_MAPPER_ANNOTATIONS_PER_GENOME } from '../modul
 
 workflow ANNOTATE_EUKARYOTES {
     take:
-        cluster_reps_faas
-        interproscan_db
-        eggnog_db
-        eggnog_diamond_db
-        eggnog_data_dir
-        
+        cluster_reps_faas   // channel: [ val(cluster_name), path(faa) ] - channel containing proteins of the cluster representatives
+        interproscan_db     // val(path) - to InterProScan database
+        eggnog_db           // val(path) - to eggNOG database
+        eggnog_diamond_db   // val(path) - to eggNOG diamond database
+        eggnog_data_dir     // val(path) - to eggNOG database dir
+
     main:
         IPS_PER_GENOME(
             cluster_reps_faas,
@@ -39,9 +39,8 @@ workflow ANNOTATE_EUKARYOTES {
             eggnog_diamond_db,
             eggnog_data_dir
         )
-    
+
     emit:
         ips_annotation_tsvs = IPS_PER_GENOME.out.ips_annotations
         eggnog_annotation_tsvs = EGGNOG_MAPPER_ANNOTATIONS_PER_GENOME.out.annotations
 }
-        

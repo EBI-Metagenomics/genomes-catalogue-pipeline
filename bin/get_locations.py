@@ -24,6 +24,7 @@ import sys
 
 from get_ENA_metadata import get_location, load_xml, get_gca_location
 from get_NCBI_metadata import *
+from create_metadata_table import UNINFORMATIVE
 
 from retry import retry
 
@@ -44,8 +45,7 @@ def main(input_file, geofile, disable_ncbi_lookup):
                     continent = "Antarctica"
                 else:
                     continent = "not provided"
-                    if country.lower() in ["not provided", "not collected", "not present", "na", "n/a", "missing",
-                                           "not applicable", "not determined"]:
+                    if country.lower() in UNINFORMATIVE:
                         error_text += (f"Submitter did not provide a location for genome {original_acc}. "
                                        f"Submitted value: '{country}'. Recording country and continent as "
                                        f"'not provided'.")
