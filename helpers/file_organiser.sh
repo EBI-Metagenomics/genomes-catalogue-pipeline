@@ -99,17 +99,44 @@ VerifyGzipped() {
     if [[ $bad -ne 0 ]]; then echo "Verification failed, stopping." >&2; exit 1; fi
 }
 
-# Confirm every bgzipped FASTA in the list got both faidx output files
+# Confirm every bgzipped FASTA in the list has its faidx output
 # (list holds .fna.gz paths; samtools faidx on BGZF input produces .fai + .gzi)
+# Usage: VerifyFaidx <file_list> [check_gzi]   check_gzi defaults to true
 VerifyFaidx() {
-    local file_list=$1 bad=0
+    local file_list=$1 check_gzi=${2:-true} bad=0
     while read -r f; do
-        if [[ ! -s "${f}.fai" || ! -s "${f}.gzi" ]]; then
-            echo "Missing .fai/.gzi index for: $f" >&2
+        if [[ ! -s "${f}.fai" ]]; then
+            echo "Missing .fai index for: $f" >&2
+            bad=1
+        fi
+        if [[ $check_gzi == true && ! -s "${f}.gzi" ]]; then
+            echo "Missing .gzi index for: $f" >&2
             bad=1
         fi
     done < "$file_list"
     if [[ $bad -ne 0 ]]; then echo "Faidx verification failed, stopping." >&2; exit 1; fi
+}
+
+# Rename gene-caller GFF3s anywhere under a folder:
+#   <accession>.braker.gff3  -> <accession>_braker.gff
+#   <accession>.metaeuk.gff3 -> <accession>_metaeuk.gff
+# Does not overwrite an existing file (or its .gz)
+RenameGeneCallerGFFs() {
+    local root=$1 f target n=0
+    while IFS= read -r -d '' f; do
+        case "$f" in
+            *.braker.gff3)  target="${f%.braker.gff3}_braker.gff" ;;
+            *.metaeuk.gff3) target="${f%.metaeuk.gff3}_metaeuk.gff" ;;
+            *) continue ;;
+        esac
+        if [[ -e "$target" || -e "${target}.gz" ]]; then
+            echo "ERROR: cannot rename ${f}: ${target} or ${target}.gz already exists" >&2
+            exit 1
+        fi
+        mv "$f" "$target"
+        n=$((n + 1))
+    done < <(find "$root" -type f \( -name '*.braker.gff3' -o -name '*.metaeuk.gff3' \) -print0)
+    echo "Renamed ${n} BRAKER/MetaEuk GFF3 files under ${root}"
 }
 
 # Write a crash-safe gzip script. The original is only removed once a complete,
@@ -237,6 +264,10 @@ function GzipSpeciesCatalogue {
     mkdir -p "$LOG_DIR"
     : > "$list"
 
+    # Rename <acc>.braker.gff3 / <acc>.metaeuk.gff3 to <acc>_braker.gff /
+    # <acc>_metaeuk.gff; the find below then picks them up for gzipping
+    RenameGeneCallerGFFs "${RESULTS_PATH}/species_catalogue"
+
     for R in $(GET_REPS); do
         local base="${RESULTS_PATH}/species_catalogue/${R::-2}/${R}"
         if [[ ! -d "${base}/genome" ]]; then
@@ -282,8 +313,17 @@ function GzipSpeciesCatalogue {
 function GenerateWebsiteGFFs {
     echo "Generating GFFs for the website"
     cd "${RESULTS_PATH}/species_catalogue"
+    local noseq stripped n_skipped=0
     for R in $(GET_REPS)
     do
+        noseq="${R::-2}/${R}/${R}.gff.noseq"
+        # Already made by an earlier run: keep it. A .noseq is only ever
+        # created by the final mv below, so an existing one is complete.
+        if [[ -s "$noseq" ]]; then
+            n_skipped=$((n_skipped + 1))
+            continue
+        fi
+        stripped="${noseq}.unsorted"
         while read -r line
         do
             if [[ ${line} == "##FASTA" ]]
@@ -292,8 +332,20 @@ function GenerateWebsiteGFFs {
             else
                 echo "$line"
             fi
-        done < <(zcat "${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz") > "${R::-2}/${R}/${R}.gff.noseq"
+        done < <(zcat "${R::-2}/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz") > "$stripped"
+        if [[ $EUK == true ]]; then
+            # Eukaryotes: sort the features
+            singularity exec "$GFF3SORT_IMAGE" \
+                gff3sort.pl --precise --chr_order original "$stripped" > "${noseq}.tmp"
+            rm "$stripped"
+        else
+            mv "$stripped" "${noseq}.tmp"
+        fi
+        mv "${noseq}.tmp" "$noseq"
     done
+    if [[ $n_skipped -gt 0 ]]; then
+        echo "Kept ${n_skipped} existing .noseq files"
+    fi
 }
 
 
@@ -318,9 +370,9 @@ function CopyWebsiteFiles {
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}_annotated.gff"
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/$(GENOME_GFF_STEM "$R").gff.gz"
         rm -f "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.fai"
-        zcat "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" | singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip > "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" \
+        zcat "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" | singularity exec "$SAMTOOLS_IMAGE" bgzip > "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" \
         && mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz.tmp" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" \
-        && singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img samtools faidx "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz"
+        && singularity exec "$SAMTOOLS_IMAGE" samtools faidx "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz"
         echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.fna.gz" >> "$website_fnas"
         mv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/${R}.gff.noseq" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff"
         echo "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/website/${R}/genome/${R}.gff" >> "$website_gffs"
@@ -329,7 +381,7 @@ function CopyWebsiteFiles {
     echo "Compressing and indexing website GFFs"
     CheckNoGzConflicts "$website_gffs"
     RunArrayAndWait bgzip_website_gffs "$website_gffs" 1G 100 \
-        bash -c 'singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img bgzip "$1" && singularity exec $SINGULARITY_CACHEDIR_PATH/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img tabix -p gff -C "$1.gz"' _
+        bash -c 'singularity exec "$SAMTOOLS_IMAGE" bgzip "$1" && singularity exec "$SAMTOOLS_IMAGE" tabix -p gff -C "$1.gz"' _
     VerifyGzipped "$website_gffs"
 }
 
@@ -340,10 +392,21 @@ function CopyFTPFiles {
     cp -r all_genomes* "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     cp -r gene_catalogue "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     cp -r genomes-all_metadata.tsv "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
-    cp -r kraken2_db* "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
-    cp -r phylogenies "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
+    # Eukaryotic catalogues have no Kraken2 database and no phylogenies
+    if [[ $EUK != true ]]; then
+        cp -r kraken2_db* "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
+        cp -r phylogenies "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
+    fi
     cp -r protein_catalogue "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     cp -r README.txt "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/README_${CATALOGUE_VERSION}.txt"
+    # Optional files: copied when present, skipped otherwise
+    for optional_file in added_genomes.tsv study_list.txt removed_genomes.tsv removed_species.tsv replaced_species_reps.tsv; do
+        if [[ -f "$optional_file" ]]; then
+            cp "$optional_file" "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
+        else
+            echo "Optional file ${optional_file} not found in ${RESULTS_PATH}, skipping"
+        fi
+    done
     cp -r species_catalogue "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/"
     local ftp_fnas="${LOG_DIR}/ftp_fnas.txt"
     mkdir -p "$LOG_DIR"
@@ -372,7 +435,8 @@ function CopyFTPFiles {
             "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes/${R::-2}/${R}/genomes1/"
         fi
     done
-    VerifyFaidx "$ftp_fnas"
+    # The FTP copy only needs the .fai, not the .gzi
+    VerifyFaidx "$ftp_fnas" false
 }
 
 
@@ -406,9 +470,13 @@ function CopyAdditionalFiles {
 function ZipAllGenomes {
     echo "Zipping files in the all_genomes folder"
     local list="${LOG_DIR}/all_genomes_gffs.txt"
+    local all_genomes_dir="${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes"
     mkdir -p "$LOG_DIR"
-    find "${SAVE_TO_PATH}/${CATALOGUE_FOLDER}/${CATALOGUE_VERSION}/ftp/all_genomes" \
-        -type f -path '*/genomes1/*' -name 'MGYG*gff' > "$list"
+    # Renamed on the FTP copy, the results folder is left as it is
+    RenameGeneCallerGFFs "$all_genomes_dir"
+    find "$all_genomes_dir" -type f \
+        \( \( -path '*/genomes1/*' -name 'MGYG*gff' \) \
+           -o -name '*_braker.gff' -o -name '*_metaeuk.gff' \) | sort -u > "$list"
     CheckNoGzConflicts "$list"
     RunArrayAndWait gzip_all_genomes "$list" 1G 100 \
         bash -c 'gzip "$1" && gzip -t "$1.gz"' _
@@ -433,10 +501,29 @@ while getopts 'd:f:v:r:s:e' flag; do
     esac
 done
 
-if [[ -z $SAVE_TO_PATH ]] || [[ -z $CATALOGUE_FOLDER ]] || [[ -z $RESULTS_PATH ]] || [[ -z $CATALOGUE_VERSION ]]; then
+if [[ -z $SAVE_TO_PATH ]] || [[ -z $CATALOGUE_FOLDER ]] || [[ -z $RESULTS_PATH ]] || [[ -z $CATALOGUE_VERSION ]] || [[ -z $SINGULARITY_CACHEDIR_PATH ]]; then
   echo 'Not all of the arguments are provided'
   Usage
 fi
+
+
+export SAMTOOLS_IMAGE="${SINGULARITY_CACHEDIR_PATH}/community.wave.seqera.io-library-htslib_samtools_seqkit-049a7c2199a04854.img"
+export GFF3SORT_IMAGE="${SINGULARITY_CACHEDIR_PATH}/quay.io-biocontainers-gff3sort-0.1.a1a2bc9--pl526_0.img"
+
+# Check everything we need exists before doing any work
+REQUIRED_IMAGES=("$SAMTOOLS_IMAGE")
+if [[ $EUK == true ]]; then
+    REQUIRED_IMAGES+=("$GFF3SORT_IMAGE")
+fi
+
+missing_images=0
+for img in "${REQUIRED_IMAGES[@]}"; do
+    if [[ ! -s "$img" ]]; then
+        echo "ERROR: Singularity image not found or empty: $img" >&2
+        missing_images=1
+    fi
+done
+if [[ $missing_images -ne 0 ]]; then exit 1; fi
 
 LOG_DIR="${RESULTS_PATH}/reorganisation_slurm_logs"
 MAX_ARRAY_TASKS=2000
