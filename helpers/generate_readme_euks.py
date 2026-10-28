@@ -77,9 +77,9 @@ def build_pipeline_readme_link(git_link):
     """
     Build a link to the pipeline README from the pipeline release link.
 
-    Keeps the full release tag link and appends /README.md:
+    Points to README.md in the repository at the release tag:
         https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0
-        -> https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0/README.md
+        -> https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/blob/v5.0.0/README.md
 
     Parameters
     ----------
@@ -96,13 +96,14 @@ def build_pipeline_readme_link(git_link):
     ValueError
         If the link does not end in /releases/tag/<version>.
     """
-    match = re.match(r"^(.+?/releases/tag/[^/]+)/?$", git_link.strip())
+    match = re.match(r"^(.+?)/releases/tag/([^/]+)/?$", git_link.strip())
     if not match:
         raise ValueError(
             f"Could not build the pipeline README link from --git-link '{git_link}'. "
             f"Expected a link like https://github.com/EBI-Metagenomics/genomes-catalogue-pipeline/releases/tag/v5.0.0"
         )
-    return f"{match.group(1)}/README.md"
+    repo, tag = match.groups()
+    return f"{repo}/blob/{tag}/README.md"
 
 
 def process_metadata_table(metadata_table):
