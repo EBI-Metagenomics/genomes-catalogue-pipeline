@@ -46,10 +46,8 @@ def add_common_arguments(parser):
              "Examples: human gut, cow rumen, human oral, marine",
     )
     parser.add_argument(
-        "--pipeline-version",
-        default="5.0.0",
-        type=str,
-        help="Genomes pipeline version",
+        "--previous-version", required=False,
+        help="If this README is for an update, provide the previous catalogue version. For example, 'v1.0'.",
     )
     parser.add_argument(
         "--git-link",
