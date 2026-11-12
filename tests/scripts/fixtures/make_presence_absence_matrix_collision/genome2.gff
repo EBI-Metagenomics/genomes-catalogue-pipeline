@@ -1,0 +1,7 @@
+##gff-version 3
+##sequence-region G2 1 600
+G2	Prokka	CDS	1	300	.	+	0	ID=G2_00001;gene=gyrA;product=DNA gyrase subunit A
+G2	Prokka	CDS	301	600	.	+	0	ID=G2_00002;gene=gyrA;product=DNA gyrase subunit A
+##FASTA
+>G2
+ATCGATCGATCGATCGATCG
