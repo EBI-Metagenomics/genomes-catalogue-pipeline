@@ -159,16 +159,24 @@ def build_canonical_names(cluster_meta, gene_to_reps):
     """
     Assign a unique canonical name to every cluster representative.
 
-    Rules (applied in sorted representative order for determinism):
+    Rules (applied in sorted gene and representative order for determinism):
       - Clusters with a gene name that is unique across all clusters → use the gene name as-is.
       - Clusters sharing a gene name with other clusters → use <gene_name> for the first
-        (lexicographically smallest representative) and <gene_name>_N (N = 2, 3, ...) for
-        subsequent ones.
-      - Clusters with no gene name → group_N (sequential integer starting at 1).
+        (lexicographically smallest representative) and <gene_name>_N for subsequent ones,
+        where N is the smallest integer >= 2 that gives a name not used by any other cluster.
+        Prokka already names paralogs <gene_name>_2, <gene_name>_3, ..., so these names are
+        reserved for the clusters that carry them as their dominant gene name.
+      - Clusters with no gene name → group_N, where N is the next integer (starting at 1)
+        that gives a name not used by any other cluster.
 
     These canonical names are used as the row index in the Rtab, the Gene column in the
     CSV, and the FASTA header in pan-genome.fna, ensuring the three outputs are
     cross-referenceable.
+
+    Raises
+    ------
+    ValueError
+        If the canonical names are not unique.
 
     Input
     -----
@@ -187,12 +195,21 @@ def build_canonical_names(cluster_meta, gene_to_reps):
     """
     non_unique_genes = {g for g, reps in gene_to_reps.items() if len(reps) > 1}
 
-    # Pre-assign suffixed names for duplicates in sorted rep order
+    # Every dominant gene name is reserved for its own cluster(s), so a suffixed
+    # name (e.g. gyrA_2) never takes the name of another cluster
+    taken = set(gene_to_reps)
+
+    # Pre-assign suffixed names for duplicates in sorted gene and rep order
     gene_suffix_map = {}
-    for gene, reps in gene_to_reps.items():
-        if gene in non_unique_genes:
-            for i, rep in enumerate(sorted(reps), start=1):
-                gene_suffix_map[(gene, rep)] = gene if i == 1 else f"{gene}_{i}"
+    for gene in sorted(non_unique_genes):
+        first_rep, *other_reps = sorted(gene_to_reps[gene])
+        gene_suffix_map[(gene, first_rep)] = gene
+        suffix = 2
+        for rep in other_reps:
+            while f"{gene}_{suffix}" in taken:
+                suffix += 1
+            gene_suffix_map[(gene, rep)] = f"{gene}_{suffix}"
+            taken.add(f"{gene}_{suffix}")
 
     canonical_names = {}
     group_counter = 1
@@ -200,12 +217,17 @@ def build_canonical_names(cluster_meta, gene_to_reps):
     for rep in sorted(cluster_meta.keys()):
         gene = cluster_meta[rep]["gene"]
         if not gene:
+            while f"group_{group_counter}" in taken:
+                group_counter += 1
             canonical_names[rep] = f"group_{group_counter}"
             group_counter += 1
         elif gene in non_unique_genes:
             canonical_names[rep] = gene_suffix_map[(gene, rep)]
         else:
             canonical_names[rep] = gene
+
+    if len(set(canonical_names.values())) != len(canonical_names):
+        raise ValueError("Canonical gene names are not unique")
 
     return canonical_names, non_unique_genes
 
@@ -233,7 +255,14 @@ def make_presence_absence_matrix(clusters, all_genomes, canonical_names, outputf
           - Rows    : canonical gene names (index label "Gene").
           - Columns : genome names, sorted lexicographically.
           - Values  : 1 if the cluster is present in that genome, 0 otherwise.
+
+    Raises
+    ------
+    ValueError
+        If two clusters have the same canonical name (one row would overwrite the other).
     """
+    if len({canonical_names[rep] for rep in clusters}) != len(clusters):
+        raise ValueError("Canonical gene names are not unique; Rtab rows would be lost")
     pa = {
         canonical_names[rep]: {g: 1 for g in genome_members}
         for rep, genome_members in clusters.items()
@@ -265,8 +294,9 @@ def make_gene_presence_absence_csv(
         Empty string when no annotation is available.
 
     Per-genome columns
-        Locus tag(s) from that genome belonging to the cluster, tab-separated when
-        multiple paralogs are present. Empty string when the cluster is absent.
+        Locus tag(s) from that genome belonging to the cluster, semicolon-separated when
+        multiple paralogs are present (same as the Panaroo CSV). Empty string when the
+        cluster is absent.
 
     Input
     -----
@@ -299,7 +329,7 @@ def make_gene_presence_absence_csv(
             "Annotation": meta["annotation"],
         }
         for genome in all_genomes:
-            row[genome] = "\t".join(clusters[rep].get(genome, []))
+            row[genome] = ";".join(clusters[rep].get(genome, []))
 
         rows.append(row)
 
